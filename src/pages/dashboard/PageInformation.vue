@@ -2,12 +2,24 @@
 /**
  * Author: Đạt Võ - https://github.com/datvt243
  * Date: `--/--`
- * Description:
+ * Description: "Ảnh đại diện" block (issue #58) — chọn file + xem
+ * trước cục bộ, KHÔNG gửi lên server: backend (`resume-nodejs-api`)
+ * chưa có field `avatar` trên `Candidate` lẫn endpoint lưu ảnh cấp
+ * candidate (endpoint ảnh hiện có, `POST /:collection/:id/images`, chỉ
+ * dành cho project/certificate/award — gắn với 1 record cụ thể, sai
+ * hình dạng cho use case này). Cố tình KHÔNG thêm field `avatar` vào
+ * `information.model.ts`/đưa vào `VeeForm` — nếu field đó lọt vào
+ * payload gửi cho `handleUpdate`/`updateDoc`, backend sẽ từ chối TOÀN
+ * BỘ request cập nhật thông tin cơ bản (Joi `Joi.object()` mặc định
+ * `unknown(false)`, đã xác nhận lại ở issue #63). Thay vào đó dùng lại
+ * đúng pattern "chọn file, xem trước, disclose rõ chưa lưu" đã có sẵn ở
+ * `PageHome.vue`'s "Đính kèm CV" section — không phải hàng giả, chỉ là
+ * phần thật duy nhất làm được khi chưa có backend.
  */
 
 import VeeForm from '@/components/veevalidate/VeeForm.vue'
 
-import { ref, shallowRef, onMounted } from 'vue'
+import { ref, shallowRef, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useDocument, useHelper } from '@/composables'
 import { getLocalizedText, wrapLocalizedText } from '@/utilities/index'
 
@@ -24,6 +36,45 @@ const candidate = candidateStore()
  */
 /* import { useHelper } from '@/composables/useHelper' */
 const { toast } = useHelper()
+
+/**
+ * Ảnh đại diện — chọn + xem trước cục bộ, chưa lưu server (xem comment
+ * đầu file). `previewUrl` ưu tiên hơn `avatar` thật từ candidate (nếu
+ * backend sau này có field đó) vì đây là bản người dùng vừa chọn, mới
+ * hơn dữ liệu đã lưu.
+ */
+const avatarInput = ref(null)
+const avatarPreviewUrl = ref('')
+const avatarFileName = ref('')
+const avatarUrl = computed(() => avatarPreviewUrl.value || candidate.getCandidate?.avatar || '')
+
+const initials = computed(() => {
+    const { firstName = '', lastName = '' } = candidate.getCandidate
+    return (`${firstName?.[0] || ''}${lastName?.[0] || ''}` || 'U').toUpperCase()
+})
+
+function triggerAvatarPicker() {
+    avatarInput.value?.click()
+}
+
+function handleSelectAvatar(e) {
+    const file = e.target?.files?.[0]
+    e.target.value = ''
+    if (!file) return
+
+    if (avatarPreviewUrl.value) URL.revokeObjectURL(avatarPreviewUrl.value)
+    avatarPreviewUrl.value = URL.createObjectURL(file)
+    avatarFileName.value = file.name
+
+    toast?.({
+        message: `Đã chọn "${file.name}" — chỉ xem trước tại đây, tính năng lưu ảnh đại diện lên server đang chờ backend cập nhật.`,
+        bg: 'info',
+    })
+}
+
+onBeforeUnmount(() => {
+    if (avatarPreviewUrl.value) URL.revokeObjectURL(avatarPreviewUrl.value)
+})
 
 /**
  *
@@ -124,6 +175,23 @@ async function handleUpdateSocialNetwork(values) {
 
 <template>
     <div class="block-container mb-5">
+        <Heading text="Ảnh đại diện" />
+        <div class="avatar-row">
+            <div class="avatar-preview">
+                <img v-if="avatarUrl" :src="avatarUrl" alt="avatar" />
+                <span v-else>{{ initials }}</span>
+            </div>
+            <div class="flex-grow-1">
+                <Button icon="fa-solid fa-camera" type="outline-secondary" size="sm" text="Chọn ảnh" @click="triggerAvatarPicker" />
+                <input ref="avatarInput" type="file" accept="image/*" class="d-none" @change="handleSelectAvatar" />
+                <p v-if="avatarFileName" class="small opacity-75 mt-2 mb-0">Đã chọn: {{ avatarFileName }}</p>
+                <p class="small opacity-50 mt-2 mb-0">
+                    Chỉ xem trước tại đây — tính năng lưu ảnh đại diện lên server đang chờ backend cập nhật.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="block-container mb-5">
         <Heading text="Thông tin cơ bản" />
         <!-- <Teleport to="#reload">
             <button class="btn btn-sm btn-outline-info" @click="getData?.()">
@@ -151,3 +219,33 @@ async function handleUpdateSocialNetwork(values) {
         />
     </div>
 </template>
+
+<style scoped lang="scss">
+.avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.avatar-preview {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.35rem;
+    background-color: var(--bs-green);
+    color: #fff;
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+</style>

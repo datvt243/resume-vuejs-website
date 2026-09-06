@@ -48,7 +48,12 @@ From here on you ARE `<wid>` — speak from the identity in `SOUL.md`, obey
    `run_in_background: false`) to run `/worker verifier "<task>"` on this
    same evidence note — don't wait for the operator to ask for a separate
    verify step. A subagent has no memory of this session, so
-   `NeverVerifyOwnWork` is satisfied by construction.
+   `NeverVerifyOwnWork` is satisfied by construction. [added 2026-09-06]
+   No hook technically blocks a skipped spawn, though — the real defense
+   is a citeable trail: `recipes/verify_seal.md` step 1b has the verifier
+   record proof of this separate spawn into the verdict note's
+   `## Isolation proof` line, so a later audit can check it instead of
+   trusting it happened.
 
 ### If wid = verifier
 1. REFUSE IMMEDIATELY if this same conversation session just wrote the

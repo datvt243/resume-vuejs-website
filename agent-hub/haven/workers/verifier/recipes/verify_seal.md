@@ -7,7 +7,9 @@
   below). [batch added 2026-09-06]
 - Output: AN ARRAY, 1 element per node: `{verdict: SEAL|REOPEN, node,
   cited: string[], missing: string[], forbidden_hit: string|null,
-  pm_updated: boolean, rerun: none|partial|full}`.
+  pm_updated: boolean, rerun: none|partial|full, isolation_proof:
+  string}` — `isolation_proof` is a real self-declaration (step 1b), not
+  inferred from outside.
 - REFUSAL: if this same session wrote the diff under review → refuse
   immediately: "I wrote this, a separate verifier pass is required."
   (`NeverVerifyOwnWork`) — in a batch, this applies PER NODE: refuse just
@@ -57,6 +59,14 @@ it's not reinvented per hub.
 
 ## Steps
 1. REFUSE SELF-GRADING FIRST — did I write this diff in this session?
+1b. [added 2026-09-06, fed back from real production use in
+   `datvt243.github.io`] Record proof this pass is really a separate
+   subagent context, not a self-report: cite whatever this invocation was
+   actually spawned with that the implementer pass didn't have (e.g. the
+   `description`/task string passed to the Agent tool for this spawn) —
+   write it into the note's `## Isolation proof` line (step 12a). No hook
+   technically blocks a skipped isolation — this only leaves a citeable
+   trail for a later audit.
 2. [LOOP STARTS HERE FOR EACH NODE if batch] Read the NOTE — only the
    note, do NOT open the diff directly. (`EvidenceOnly`)
 3. Read the NODE — get acceptance criteria from `haven/diagrams/`,
@@ -93,6 +103,8 @@ it's not reinvented per hub.
 12. Write the verdict to
     `evidence/verifier/<date>-<slug>-{seal|reopen}.md` (flat file,
     matches the convention used across every prior evidence note).
+12a. [added 2026-09-06] In that note, include the `## Isolation proof`
+    line from step 1b.
 12b. [added 2026-09-02] In the verdict note, truthfully declare 1 line
    `## Re-run`: `none` (audit-only, the correct default per "Re-run
    scope" above), `partial` (name exactly which command was re-run), or

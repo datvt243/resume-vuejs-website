@@ -34,6 +34,14 @@ const formFields = shallowRef(model)
 // để khi lưu lại không mất phần `en` — xem utilities/index.ts
 const originalDescription = ref(null)
 
+// Nhân bản (issue #60): giữ `document._id` = id của bản ghi gốc (KHÔNG
+// để rỗng) trong lúc modal mở — VeeForm.vue có watch(document) tự
+// reset() form về default nếu `_id` falsy, nên xoá `_id` ngay từ đầu sẽ
+// làm mất luôn dữ liệu vừa copy. Thay vào đó chỉ đánh dấu qua cờ này,
+// rồi xoá `_id` ngay trước khi gọi updateDoc để tạo bản ghi MỚI (POST)
+// thay vì ghi đè bản ghi gốc (PUT).
+const isDuplicating = ref(false)
+
 /**
  *
  * Method
@@ -50,6 +58,11 @@ async function handleUpdate(values) {
         return val
     })({ ...values })
 
+    if (isDuplicating.value) {
+        data._id = null
+        isDuplicating.value = false
+    }
+
     await updateDoc(data, res => {
         const { data } = res
         addRecordToList(data)
@@ -64,6 +77,7 @@ async function handleDelete(doc) {
 }
 
 function showModalEditDoc(doc) {
+    isDuplicating.value = false
     const fields = formFields.value.map(e => e.name)
     for (const f of new Set(['_id', ...fields])) {
         document[f] = doc[f]
@@ -75,12 +89,25 @@ function showModalEditDoc(doc) {
 }
 
 function showModalCreateDoc() {
+    isDuplicating.value = false
     for (const k of formFields.value) {
         document[k.name] = k.default
     }
     originalDescription.value = null
     refModal.value?.show()
     refVeeForm.value?.reset()
+}
+
+function showModalDuplicateDoc(doc) {
+    isDuplicating.value = true
+    const fields = formFields.value.map(e => e.name)
+    for (const f of new Set(['_id', ...fields])) {
+        document[f] = doc[f]
+    }
+    originalDescription.value = doc.description
+    document.description = getLocalizedText(doc.description)
+
+    refModal.value?.show()
 }
 </script>
 
@@ -96,7 +123,13 @@ function showModalCreateDoc() {
         <div v-if="dataList.length" class="clearfix">
             <ListTransition>
                 <li v-for="edu in dataList" :key="edu._id">
-                    <ExperienceItem :model-value="edu" icon="fa-building" @on-edit="showModalEditDoc" @on-delete="handleDelete" />
+                    <ExperienceItem
+                        :model-value="edu"
+                        icon="fa-building"
+                        @on-edit="showModalEditDoc"
+                        @on-delete="handleDelete"
+                        @on-duplicate="showModalDuplicateDoc"
+                    />
                 </li>
             </ListTransition>
         </div>
@@ -105,7 +138,13 @@ function showModalCreateDoc() {
 
     <Modal
         ref="refModal"
-        :title="document._id ? `Chỉnh sửa: ${document.company}` : 'Thêm mới kinh nghiệm làm việc'"
+        :title="
+            isDuplicating
+                ? `Nhân bản: ${document.company}`
+                : document._id
+                  ? `Chỉnh sửa: ${document.company}`
+                  : 'Thêm mới kinh nghiệm làm việc'
+        "
         is-hidden-footer
     >
         <div class="block-container">
@@ -114,7 +153,7 @@ function showModalCreateDoc() {
                 :fields="formFields"
                 :document="document"
                 :submit-fn="handleUpdate"
-                :submit-text="document._id ? 'Cập nhật' : 'Thêm mới'"
+                :submit-text="isDuplicating ? 'Nhân bản' : document._id ? 'Cập nhật' : 'Thêm mới'"
                 buttonPosition="end"
             >
                 <template #button>

@@ -3,5 +3,6 @@ import { useDocument } from './useDocument'
 import { useInitTable } from './useInitTable'
 import { useHelper } from './useHelper'
 import { useVisits } from './useVisits'
+import { useProfileCompletion } from './useProfileCompletion'
 
-export { useCandidate, useDocument, useInitTable, useHelper, useVisits }
+export { useCandidate, useDocument, useInitTable, useHelper, useVisits, useProfileCompletion }

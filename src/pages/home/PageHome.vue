@@ -12,8 +12,9 @@
  * useVisits.ts) — LayoutDefault.vue (ancestor bọc mọi trang dashboard,
  * gồm cả trang này) đã fetch và cache vào candidateStore, ở đây chỉ đọc
  * lại giá trị cache, không fetch riêng. Section 4 (% hoàn thành hồ sơ)
- * chưa có API đứng sau, hiển thị số liệu mẫu — xem chú thích tại chỗ
- * khai báo. Section 3 (đính kèm CV): phần tải CV hiện tại là thật (dùng lại
+ * — issue #59 — giờ là số liệu thật, tính qua `useProfileCompletion`
+ * (dựa trên field `required` khai báo sẵn trong từng model, so với dữ
+ * liệu thật trong candidateStore). Section 3 (đính kèm CV): phần tải CV hiện tại là thật (dùng lại
  * endpoint download-pdf có sẵn, PDF được generate live từ dữ liệu hồ sơ
  * — không phải file đã "upload" như itviec); nút "Đính kèm file mới" chỉ
  * là UI, backend chưa có endpoint lưu file upload.
@@ -23,6 +24,7 @@ import { computed, ref } from 'vue'
 import { candidateStore } from '@/stores/candidate'
 import { authStore } from '@/stores/auth'
 import { useHelper } from '@/composables/useHelper'
+import { useProfileCompletion } from '@/composables/useProfileCompletion'
 import { API } from '@/config/api.config'
 
 const candidate = candidateStore()
@@ -91,9 +93,9 @@ function handleSelectFile(e) {
 }
 
 /**
- * section 4: % hoàn thành hồ sơ — tính năng thật chưa có, số liệu mẫu
+ * section 4: % hoàn thành hồ sơ — issue #59, số liệu thật
  */
-const profileCompletion = 72
+const { percent: profileCompletion, missingSections } = useProfileCompletion()
 </script>
 
 <template>
@@ -160,11 +162,20 @@ const profileCompletion = 72
                 <span class="completion-ring-caption">hoàn thành</span>
             </div>
             <div class="flex-grow-1" style="min-width: 220px">
-                <p class="mb-2">Hồ sơ của bạn đã sẵn sàng để tạo CV. Tiếp tục hoàn thiện hồ sơ để có CV ấn tượng hơn.</p>
-                <RouterLink to="/dashboard/information" class="fw-semibold">Xem hồ sơ →</RouterLink>
+                <template v-if="missingSections.length">
+                    <p class="mb-2">Hồ sơ còn thiếu {{ missingSections.length }} mục:</p>
+                    <ul class="missing-sections-list mb-0">
+                        <li v-for="section in missingSections" :key="section.to">
+                            <RouterLink :to="section.to">{{ section.label }} →</RouterLink>
+                        </li>
+                    </ul>
+                </template>
+                <template v-else>
+                    <p class="mb-2">Hồ sơ của bạn đã điền đầy đủ các mục bắt buộc — sẵn sàng để tạo CV.</p>
+                    <RouterLink to="/dashboard/information" class="fw-semibold">Xem hồ sơ →</RouterLink>
+                </template>
             </div>
         </div>
-        <p class="small opacity-50 mt-3 mb-0">Chức năng tính % hồ sơ hoàn thành chưa có, số liệu trên là số liệu mẫu.</p>
     </div>
 </template>
 
@@ -293,5 +304,18 @@ const profileCompletion = 72
 .completion-ring-caption {
     font-size: 0.7rem;
     opacity: 0.6;
+}
+
+.missing-sections-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+
+    li {
+        font-size: 0.9rem;
+    }
 }
 </style>

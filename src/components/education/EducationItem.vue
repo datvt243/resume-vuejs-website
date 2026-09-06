@@ -11,7 +11,7 @@ import type { Education } from '@/types/education.type'
 import { formatDate } from '@/utilities/index'
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
-const emits = defineEmits(['onEdit', 'onDelete'])
+const emits = defineEmits(['onEdit', 'onDelete', 'onDuplicate'])
 const props = defineProps({
     modelValue: {
         type: Object as PropType<Education>,
@@ -51,4 +51,6 @@ ItemTemplate(:model-value="item")
             FontAwesomeIcon(icon="fa-solid fa-trash")
         a.btn.btn-sm.btn-outline-warning.icon(href="javascript:void(0)" @click="emits('onEdit', {...model})")
             FontAwesomeIcon(icon="fa-solid fa-square-pen")
+        a.btn.btn-sm.btn-outline-primary.icon(href="javascript:void(0)" @click="emits('onDuplicate', {...model})")
+            FontAwesomeIcon(icon="fa-solid fa-copy")
 </template>

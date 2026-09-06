@@ -2,3 +2,4 @@
 2026-09-05T12:51:16Z role=verifier outcome=SEAL node=issue-61-forgot-reset-password rerun=partial hub_bytes_before=81491 hub_bytes_after=82943
 2026-09-05T19:24:26Z role=verifier outcome=SEAL node=agent-hub-archive-pass-4 rerun=partial hub_bytes_before=85915 hub_bytes_after=84881
 2026-09-05T21:21:18Z role=verifier outcome=SEAL node=gitignore-worker-runs-log-fix rerun=partial hub_bytes_before=84881 hub_bytes_after=86734
+2026-09-06T05:10:51Z role=verifier outcome=SEAL node=issue-60-duplicate-item rerun=full hub_bytes_before=87469 hub_bytes_after=90120

@@ -1,0 +1,1 @@
+import{o as t,d as e,e as o}from"./index-DekEtxUU.js";const s={class:"auth-container m-auto",style:{"max-width":"500px"}},a=o("p",null,"404!!! Page not Found",-1),n=[a],u={__name:"NotFound",setup(c){return(_,r)=>(t(),e("div",s,n))}};export{u as default};

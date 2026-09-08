@@ -14,6 +14,14 @@ const routes = [
     { path: '/forgot-password', name: 'forgot-password', component: () => import('@/pages/auth/PageForgotPassword.vue') },
     { path: '/reset-password', name: 'reset-password', component: () => import('@/pages/auth/PageResetPassword.vue') },
     {
+        path: '/resume/:email',
+        name: 'public-resume',
+        component: () => import('@/pages/public/PagePublicResume.vue'),
+        // No requiresAuth — this is the public share-link page (issue #56),
+        // fetches read-only data straight from the backend's own public
+        // endpoint (GET /api/me/:email, gated server-side by isPublic).
+    },
+    {
         path: '/dashboard',
         name: 'dashboard',
         component: () => import('@/pages/dashboard/PageDashboard.vue'),

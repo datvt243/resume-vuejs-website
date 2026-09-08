@@ -5,3 +5,8 @@
 2026-09-06T05:10:51Z role=verifier outcome=SEAL node=issue-60-duplicate-item rerun=full hub_bytes_before=87469 hub_bytes_after=90120
 2026-09-06T05:57:36Z role=verifier outcome=SEAL node=issue-59-profile-completion rerun=partial hub_bytes_before=90120 hub_bytes_after=93393
 2026-09-06T16:52:24Z role=verifier outcome=SEAL node=issue-58-avatar-upload rerun=partial hub_bytes_before=93393 hub_bytes_after=97391
+2026-09-06T17:41:17Z role=verifier outcome=REOPEN node=issue-57-manual-reorder rerun=full hub_bytes_before=97391 hub_bytes_after=99240
+2026-09-08T15:38:18Z role=verifier outcome=SEAL node=issue-57-manual-reorder rerun=full hub_bytes_before=97391 hub_bytes_after=101241
+2026-09-08T15:48:47Z role=verifier outcome=SEAL node=fontawesome-icon-registration-gaps rerun=partial hub_bytes_before=101241 hub_bytes_after=103656
+2026-09-08T16:09:14Z role=implementer outcome=blocked node=issue-8-jwt-localstorage-recheck-20260908 hub_bytes_before=98977 verifier_rerun=n/a
+2026-09-08T16:41:03Z role=verifier outcome=SEAL node=issue-56-public-resume-page rerun=partial hub_bytes_before=100045 hub_bytes_after=106695

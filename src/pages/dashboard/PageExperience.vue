@@ -12,11 +12,33 @@ import ExperienceItem from '@/components/experience/ExperienceItem.vue'
 import { ref, shallowRef } from 'vue'
 import { useCandidate } from '@/composables/useCandidate'
 import { useDocument } from '@/composables/useDocument'
+import { useManualOrder } from '@/composables/useManualOrder'
 import { getLocalizedText, wrapLocalizedText } from '@/utilities/index'
 
 import model from '@/models/experience.model.ts'
 
 const { experiences: dataList, removeRecordById, addRecordToList, getData } = useCandidate({ field: 'experiences' })
+
+// Sắp xếp thủ công (issue #57) — chỉ lưu ở trình duyệt (localStorage),
+// KHÔNG đồng bộ server (backend chưa có field order — xem comment đầu
+// `useManualOrder.ts`).
+const { orderedItems, reorder } = useManualOrder('experience', dataList)
+const dragId = ref(null)
+function onDragStart(id) {
+    dragId.value = id
+}
+function onDrop(targetId) {
+    if (dragId.value === null || dragId.value === targetId) return
+    const list = [...orderedItems.value]
+    const fromIndex = list.findIndex(e => e._id === dragId.value)
+    const toIndex = list.findIndex(e => e._id === targetId)
+    if (fromIndex === -1 || toIndex === -1) return
+
+    const [moved] = list.splice(fromIndex, 1)
+    list.splice(toIndex, 0, moved)
+    reorder(list)
+    dragId.value = null
+}
 
 /**
  *
@@ -121,15 +143,27 @@ function showModalDuplicateDoc(doc) {
         </Heading>
 
         <div v-if="dataList.length" class="clearfix">
+            <p class="small opacity-50 mb-2">Kéo-thả để sắp xếp thứ tự hiển thị (chỉ lưu trên trình duyệt này).</p>
             <ListTransition>
-                <li v-for="edu in dataList" :key="edu._id">
-                    <ExperienceItem
-                        :model-value="edu"
-                        icon="fa-building"
-                        @on-edit="showModalEditDoc"
-                        @on-delete="handleDelete"
-                        @on-duplicate="showModalDuplicateDoc"
-                    />
+                <li
+                    v-for="edu in orderedItems"
+                    :key="edu._id"
+                    class="draggable-item d-flex align-items-start gap-2"
+                    draggable="true"
+                    @dragstart="onDragStart(edu._id)"
+                    @dragover.prevent
+                    @drop="onDrop(edu._id)"
+                >
+                    <span class="drag-handle"><FontAwesomeIcon icon="fa-solid fa-grip-vertical" /></span>
+                    <div class="flex-grow-1">
+                        <ExperienceItem
+                            :model-value="edu"
+                            icon="fa-building"
+                            @on-edit="showModalEditDoc"
+                            @on-delete="handleDelete"
+                            @on-duplicate="showModalDuplicateDoc"
+                        />
+                    </div>
                 </li>
             </ListTransition>
         </div>
@@ -163,3 +197,16 @@ function showModalDuplicateDoc(doc) {
         </div>
     </Modal>
 </template>
+
+<style scoped>
+.draggable-item {
+    cursor: grab;
+}
+.draggable-item:active {
+    cursor: grabbing;
+}
+.drag-handle {
+    padding-top: 1.25rem;
+    opacity: 0.4;
+}
+</style>

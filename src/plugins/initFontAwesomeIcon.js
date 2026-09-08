@@ -37,6 +37,8 @@ import {
     faCircleXmark,
     faBriefcase,
     faGripVertical,
+    faCopy,
+    faCamera,
 } from '@fortawesome/free-solid-svg-icons'
 
 export default {
@@ -75,6 +77,8 @@ export default {
             faCircleXmark,
             faBriefcase,
             faGripVertical,
+            faCopy,
+            faCamera,
         )
 
         app.component('FontAwesomeIcon', FontAwesomeIcon)

@@ -148,7 +148,7 @@ const professionalSkillFields = computed(() => {
 </script>
 
 <template>
-  <div class="block-container mb-5">
+  <div class="block-container mb-[3rem]">
     <Heading text="Thông tin chung">
       <div class="btn-group">
         <Button @click="getData?.()" icon="fa-solid fa-repeat" type="outline-info" size="sm"></Button>
@@ -158,7 +158,7 @@ const professionalSkillFields = computed(() => {
   </div>
 
   <template v-if="isLoading">
-    <hr class="border-success mb-5" />
+    <hr class="border-success mb-[3rem]" />
 
     <VeeFormGeneralInformationUpdate key="professionalSkills" :model-value="generalInformation"
       :heading="'Kỹ năng chuyên môn'" :field-key="'professionalSkills'" :has-button-add="true"

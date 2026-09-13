@@ -18,9 +18,19 @@ import '@/composables/useTheme'
 import './styles/sweetalert2.scss'
 
 /**
- * import bootstrap
+ * Tailwind — sole CSS framework as of node `tailwindcss-bootstrap-removal`,
+ * the final step of the Bootstrap -> Tailwind phased migration (see
+ * agent-hub/haven/diagrams/dev-loop.prime-mermaid.md -> `tailwindcss-setup`
+ * through `tailwindcss-bootstrap-removal`). `bootstrap.scss` and the
+ * `bootstrap` npm package are gone — every class/component/CSS-variable
+ * dependency they used to supply was rebuilt in `./styles/tailwind.css`
+ * across the prior nodes (buttons, dropdowns, badges, alerts, forms,
+ * grid, navbar, color utilities, spinner, modal, toast, table,
+ * input-group, headings, clearfix, `.list`, the self-hosted `--bs-*`
+ * root tokens, and this app's own custom CSS that used to live inside
+ * bootstrap.scss's tail section).
  */
-import './styles/bootstrap.scss'
+import './styles/tailwind.css'
 
 /**
  * add store pinia

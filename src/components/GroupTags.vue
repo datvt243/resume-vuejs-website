@@ -42,9 +42,9 @@ async function removeTag(_tag, index) {
 
 <template>
     <div class="clearfix">
-        <div class="d-flex align-items-center mb-3">
+        <div class="flex items-center mb-[1rem]">
             <p class="h6 m-0">{{ props.title }}</p>
-            <div class="ps-4 m-0">
+            <div class="ps-[1.5rem] m-0">
                 <div class="input-group input-group-sm mb-0">
                     <input type="text" class="form-control" placeholder="Thêm mới" v-model="tag" />
                     <button class="btn btn-outline-success" type="button" @click="addTag()">

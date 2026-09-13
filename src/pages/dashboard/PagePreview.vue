@@ -59,7 +59,7 @@ onUnmounted(() => document.body.classList.remove('cv-print-mode'))
 </script>
 
 <template>
-    <div class="mb-4 no-print">
+    <div class="mb-[1.5rem] no-print">
         <Heading text="Xem trước CV">
             <Button text="Xuất PDF / In" icon="fa-solid fa-download" type="outline-success" size="sm" @click="handlePrint()" />
         </Heading>

@@ -33,14 +33,14 @@ async function _handleForgotPassword(values) {
 </script>
 
 <template>
-    <div class="forgot-password-page d-flex align-items-center justify-content-center">
+    <div class="forgot-password-page flex items-center justify-center">
         <div class="auth-card">
             <Heading text="Quên mật khẩu" />
-            <p class="small opacity-75">
+            <p class="text-sm opacity-75">
                 Nhập email đã đăng ký, hệ thống sẽ tạo một liên kết đặt lại mật khẩu.
             </p>
             <VeeForm :fields="formFields" :submit-fn="_handleForgotPassword" :submit-text="'Gửi yêu cầu'" />
-            <RouterLink to="/login" class="d-inline-block mt-3 small">Quay lại đăng nhập</RouterLink>
+            <RouterLink to="/login" class="inline-block mt-[1rem] text-sm">Quay lại đăng nhập</RouterLink>
         </div>
     </div>
 </template>

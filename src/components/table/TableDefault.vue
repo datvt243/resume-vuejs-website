@@ -59,7 +59,7 @@ const renderCellContent = defineComponent({
         }
 
         if (field === col) {
-            return h('div', { class: 'd-flex align-items-center' }, [
+            return h('div', { class: 'flex items-center' }, [
                 h(Convert, { 'model-value': _value, to: to }),
                 h(
                     'div',
@@ -81,11 +81,11 @@ const renderCellContent = defineComponent({
             <Table class="table-bordered">
                 <TableHead>
                     <TableRow>
-                        <TableCell tag="th" class="text-nowrap text-center" style="width: 80px">
-                            <span class="d-inline-block" style="width: 30px">#</span>
+                        <TableCell tag="th" class="whitespace-nowrap text-center" style="width: 80px">
+                            <span class="inline-block" style="width: 30px">#</span>
                         </TableCell>
                         <template v-for="{ label, field } in getColsWithHiddenCells" :key="`thead_cell_${field}`">
-                            <TableCell tag="th" class="text-nowrap text-capitalize">{{ label }}</TableCell>
+                            <TableCell tag="th" class="whitespace-nowrap capitalize">{{ label }}</TableCell>
                         </template>
                         <slot name="theadMore"></slot>
                     </TableRow>
@@ -94,12 +94,12 @@ const renderCellContent = defineComponent({
                     <template v-if="props.modelValue.length">
                         <template v-for="(doc, index) in props.modelValue" :key="`doc_${doc._id}`">
                             <TableRow :model-value="doc">
-                                <TableCell class="text-nowrap text-center" style="width: 80px">{{ index + 1 }}</TableCell>
+                                <TableCell class="whitespace-nowrap text-center" style="width: 80px">{{ index + 1 }}</TableCell>
                                 <template
                                     v-for="{ field, convert, className = '', type, name } in getColsWithHiddenCells"
                                     :key="`tbody_cell_${field}`"
                                 >
-                                    <TableCell :class="['text-nowrap text-capitalize', className || '']">
+                                    <TableCell :class="['whitespace-nowrap capitalize', className || '']">
                                         <renderCellContent
                                             :col="props.colControl"
                                             :field="field"
@@ -119,7 +119,7 @@ const renderCellContent = defineComponent({
                     <template v-else>
                         <tr>
                             <td colspan="999" class="text-center">
-                                <div class="alert alert-warning m-0 p-5 border-0">
+                                <div class="alert alert-warning m-0 p-[3rem] border-0">
                                     <span class="opacity-50">Không có dữ liệu để hiển thị</span>
                                 </div>
                             </td>

@@ -81,7 +81,7 @@ const formFields = [
 </script>
 
 <template>
-    <div class="register-page d-flex align-items-center justify-content-center">
+    <div class="register-page flex items-center justify-center">
         <div class="auth-card">
             <Heading text="Đăng ký" />
             <VeeForm

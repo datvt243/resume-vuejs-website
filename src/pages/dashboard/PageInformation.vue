@@ -174,24 +174,24 @@ async function handleUpdateSocialNetwork(values) {
 </script>
 
 <template>
-    <div class="block-container mb-5">
+    <div class="block-container mb-[3rem]">
         <Heading text="Ảnh đại diện" />
         <div class="avatar-row">
             <div class="avatar-preview">
                 <img v-if="avatarUrl" :src="avatarUrl" alt="avatar" />
                 <span v-else>{{ initials }}</span>
             </div>
-            <div class="flex-grow-1">
+            <div class="grow">
                 <Button icon="fa-solid fa-camera" type="outline-secondary" size="sm" text="Chọn ảnh" @click="triggerAvatarPicker" />
-                <input ref="avatarInput" type="file" accept="image/*" class="d-none" @change="handleSelectAvatar" />
-                <p v-if="avatarFileName" class="small opacity-75 mt-2 mb-0">Đã chọn: {{ avatarFileName }}</p>
-                <p class="small opacity-50 mt-2 mb-0">
+                <input ref="avatarInput" type="file" accept="image/*" class="hidden" @change="handleSelectAvatar" />
+                <p v-if="avatarFileName" class="text-sm opacity-75 mt-2 mb-0">Đã chọn: {{ avatarFileName }}</p>
+                <p class="text-sm opacity-50 mt-2 mb-0">
                     Chỉ xem trước tại đây — tính năng lưu ảnh đại diện lên server đang chờ backend cập nhật.
                 </p>
             </div>
         </div>
     </div>
-    <div class="block-container mb-5">
+    <div class="block-container mb-[3rem]">
         <Heading text="Thông tin cơ bản" />
         <!-- <Teleport to="#reload">
             <button class="btn btn-sm btn-outline-info" @click="getData?.()">

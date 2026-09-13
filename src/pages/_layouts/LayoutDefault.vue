@@ -53,7 +53,7 @@ const routers = [
     Header
     Main
         .container
-            .dashboard-layout.d-flex.gap-4.align-items-start
+            .dashboard-layout.flex.items-start(class="gap-[1.5rem]")
                 aside.dashboard-sidebar
                     .dashboard-sidebar-welcome
                         span.dashboard-sidebar-welcome-hi 👋 Chào mừng
@@ -65,9 +65,9 @@ const routers = [
                             | Lượt xem CV:
                             span {{ ' ' + (cvViewCount ?? 0) }}
                     .dashboard-sidebar-nav-card
-                        nav.nav.flex-column.dashboard-sidebar-nav
+                        nav.nav.flex-col.dashboard-sidebar-nav
                             RouterLink.dashboard-sidebar-link(v-for="r in routers" :key="r.name" :to="r.to" :class="{ active: r.to === $route.path }") {{ r.text }}
-                .dashboard-content.flex-grow-1
+                .dashboard-content.grow
                     #reload
                     slot
 

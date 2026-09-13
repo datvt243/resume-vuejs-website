@@ -40,7 +40,7 @@ const { value, errorMessage, handleChange, handleBlur } = useField(() => props.n
 </script>
 
 <template>
-    <div class="mb-3">
+    <div class="mb-[1rem]">
         <label :for="props.name" class="form-label">{{ props.label }}</label>
         <select
             :id="props.name"
@@ -55,7 +55,7 @@ const { value, errorMessage, handleChange, handleBlur } = useField(() => props.n
             <option v-for="el of options" :key="`opt_${el.value}`" :value="el.value">{{ el.text }}</option>
         </select>
 
-        <p v-if="errorMessage" class="text-danger small my-1">{{ errorMessage }}</p>
+        <p v-if="errorMessage" class="text-danger text-sm my-1">{{ errorMessage }}</p>
         <p v-if="props.text" class="form-text mb-0">{{ props.text }}</p>
     </div>
 </template>

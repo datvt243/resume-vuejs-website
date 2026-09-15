@@ -45,6 +45,7 @@ const formFields = [
         icon: 'fa-solid fa-envelope',
         text: "We'll never share your email with anyone else.",
         placeholder: 'Vui lòng nhập Email',
+        autocomplete: 'email',
         valid: yup => yup.string().email().required(),
     },
     {
@@ -52,6 +53,7 @@ const formFields = [
         label: 'Mật khẩu',
         type: 'password',
         icon: 'fa-solid fa-lock',
+        autocomplete: 'new-password',
         text: 'Tối thiểu 12 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.',
         // khớp với format backend yêu cầu (verified qua API: tối thiểu 12
         // ký tự + đủ 4 loại) — trước đây không có rule này nên đăng ký
@@ -71,6 +73,7 @@ const formFields = [
         label: 'Nhập lại Mật khẩu',
         type: 'password',
         icon: 'fa-solid fa-lock',
+        autocomplete: 'new-password',
         valid: yup =>
             yup
                 .string()

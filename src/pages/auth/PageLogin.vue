@@ -28,6 +28,7 @@ const formFields = [
         icon: 'fa-solid fa-envelope',
         text: "We'll never share your email with anyone else.",
         placeholder: 'Vui lòng nhập Email',
+        autocomplete: 'username',
         /* value: 'david@gmail.com', */
         valid: yup => yup.string().email('Email sai định dạng').required('Email là bắt buộc'),
     },
@@ -36,6 +37,7 @@ const formFields = [
         label: 'Mật khẩu',
         type: 'password',
         icon: 'fa-solid fa-lock',
+        autocomplete: 'current-password',
         /* value: 'david243', */
         valid: yup => yup.string().required('Mật khẩu là bắt buộc'),
     },

@@ -431,6 +431,9 @@
         border: 1px solid var(--bs-border-color-translucent);
         border-radius: var(--bs-border-radius, 0.375rem);
     }
+    .dropdown-menu:not(.show) {
+        display: none;
+    }
     .dropdown-item {
         display: block;
         width: 100%;

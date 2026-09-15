@@ -10,7 +10,7 @@ const yearNow = new Date().getFullYear()
 </script>
 
 <template lang="pug">
-footer.py-2.border-top
+footer.py-2.border-t(class="border-[var(--bs-border-color)]")
     .container.text-end.opacity-50
-        small.small copyright by <a href="https://github.com/datvt243" target="_blank">me</a> &copy; {{ yearNow }}
+        small.text-sm copyright by <a href="https://github.com/datvt243" target="_blank">me</a> &copy; {{ yearNow }}
 </template>

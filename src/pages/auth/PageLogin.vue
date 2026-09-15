@@ -52,11 +52,14 @@ async function _handleLogin(values) {
 </script>
 
 <template>
-    <div class="login-page d-flex align-items-center justify-content-center">
+    <div class="login-page flex items-center justify-center">
         <div class="auth-card">
             <Heading text="Đăng nhập" />
-            <VeeForm :fields="formFields" :submit-fn="_handleLogin" :submit-text="'Login'" />
-            <RouterLink to="/forgot-password" class="d-inline-block mt-3 small">Quên mật khẩu?</RouterLink>
+            <VeeForm :fields="formFields" :submit-fn="_handleLogin" :submit-text="'Login'">
+                <template #button>
+                    <RouterLink to="/forgot-password" class="ms-auto self-center text-sm">Quên mật khẩu?</RouterLink>
+                </template>
+            </VeeForm>
         </div>
     </div>
 </template>

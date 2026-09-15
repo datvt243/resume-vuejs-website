@@ -9,7 +9,7 @@ import { h } from 'vue'
 export default {
     props: {},
     setup(props, { slots }) {
-        return () => h('main', { class: 'main-container py-4' }, slots?.default && slots.default())
+        return () => h('main', { class: 'main-container py-[1.5rem]' }, slots?.default && slots.default())
     },
 }
 </script>

@@ -79,12 +79,12 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div v-if="loading" class="text-center py-5">
+    <div v-if="loading" class="text-center py-[3rem]">
         <p class="opacity-75">Đang tải hồ sơ...</p>
     </div>
 
     <div v-else-if="notFound" class="alert alert-warning text-center mx-auto" style="max-width: 500px">
-        <p class="m-0 p-3">Hồ sơ không tồn tại hoặc không được chia sẻ công khai.</p>
+        <p class="m-0 p-[1rem]">Hồ sơ không tồn tại hoặc không được chia sẻ công khai.</p>
     </div>
 
     <div v-else class="cv-preview block-container">

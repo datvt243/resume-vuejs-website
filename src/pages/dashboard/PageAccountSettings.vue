@@ -35,27 +35,27 @@ function handleDeleteAccount() {
 </script>
 
 <template>
-    <div class="mb-4">
+    <div class="mb-[1.5rem]">
         <Heading text="Cài đặt tài khoản" />
 
-        <Box class="account-settings-section mb-4">
+        <Box class="account-settings-section mb-[1.5rem]">
             <h6 class="text-uppercase opacity-75 mb-2">Email đăng nhập</h6>
             <p class="mb-1">{{ auth.getUser?.email || 'Chưa cập nhật' }}</p>
-            <p class="small opacity-50 mb-0">
+            <p class="text-sm opacity-50 mb-0">
                 Đổi email hiện chưa được hỗ trợ — backend chưa có endpoint cho việc này.
             </p>
         </Box>
 
-        <Box class="account-settings-section mb-4">
+        <Box class="account-settings-section mb-[1.5rem]">
             <h6 class="text-uppercase opacity-75 mb-2">Mật khẩu</h6>
-            <p class="small opacity-50 mb-0">
+            <p class="text-sm opacity-50 mb-0">
                 Đổi mật khẩu hiện chưa được hỗ trợ — backend chưa có endpoint cho việc này.
             </p>
         </Box>
 
         <Box class="account-settings-section border-danger">
             <h6 class="text-uppercase text-danger mb-2">Vùng nguy hiểm</h6>
-            <p class="small opacity-75 mb-2">
+            <p class="text-sm opacity-75 mb-2">
                 Xoá tài khoản sẽ xoá vĩnh viễn toàn bộ dữ liệu hồ sơ của bạn, không thể khôi phục.
             </p>
             <Button text="Xoá tài khoản" type="danger" icon="fa-solid fa-trash" size="sm" @click="handleDeleteAccount()" />

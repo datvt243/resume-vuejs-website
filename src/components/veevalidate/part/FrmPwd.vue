@@ -44,7 +44,7 @@ const { value, errorMessage, handleChange, handleBlur } = useField(() => props.n
 </script>
 
 <template>
-    <div class="mb-3">
+    <div class="mb-[1rem]">
         <label v-if="!props.icon" :for="props.name" class="form-label">{{ props.label }}</label>
         <div class="input-group">
             <span v-if="props.icon" class="input-group-text">
@@ -76,7 +76,7 @@ const { value, errorMessage, handleChange, handleBlur } = useField(() => props.n
             </span>
         </div>
 
-        <p v-if="errorMessage" class="text-danger small my-1">{{ errorMessage }}</p>
+        <p v-if="errorMessage" class="text-danger text-sm my-1">{{ errorMessage }}</p>
         <p v-if="props.text" class="form-text mb-0">{{ props.text }}</p>
     </div>
 </template>

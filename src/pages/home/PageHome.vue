@@ -99,14 +99,14 @@ const { percent: profileCompletion, missingSections } = useProfileCompletion()
 </script>
 
 <template>
-    <div class="profile-card mb-5">
+    <div class="profile-card mb-[3rem]">
         <RouterLink to="/dashboard/information" class="profile-card-edit-link">Cập nhật hồ sơ →</RouterLink>
-        <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-[1rem]">
             <div class="home-avatar">
                 <img v-if="avatarUrl" :src="avatarUrl" alt="avatar" />
                 <span v-else>{{ initials }}</span>
             </div>
-            <div class="flex-grow-1">
+            <div class="grow">
                 <p class="h4 mb-2">{{ fullName }}</p>
                 <p class="mb-1 opacity-75">
                     <FontAwesomeIcon icon="fa-solid fa-briefcase" class="me-2 opacity-50" />{{ position }}
@@ -122,46 +122,46 @@ const { percent: profileCompletion, missingSections } = useProfileCompletion()
         </div>
     </div>
 
-    <div class="stat-highlight mb-5">
+    <div class="stat-highlight mb-[3rem]">
         <div class="stat-highlight-number">
             {{ cvViewCount }}
             <span>lượt xem</span>
         </div>
-        <div class="flex-grow-1">
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <p class="fw-semibold mb-0">Lượt truy cập hồ sơ của bạn</p>
+        <div class="grow">
+            <div class="flex items-center gap-2 mb-1">
+                <p class="font-semibold mb-0">Lượt truy cập hồ sơ của bạn</p>
                 <span class="badge text-bg-success-subtle">Mới</span>
             </div>
-            <p class="small opacity-75 mb-1">Số lần trang hồ sơ công khai của bạn được xem (IP + vị trí, ghi nhận qua API thật). Số này sẽ không tăng qua app hiện tại — trang xem hồ sơ công khai qua link chia sẻ chưa được xây dựng ở frontend, chưa có nơi nào ở đây gọi API ghi nhận lượt xem.</p>
-            <RouterLink to="/dashboard/visits" class="small fw-semibold">Xem chi tiết từng lượt truy cập →</RouterLink>
+            <p class="text-sm opacity-75 mb-1">Số lần trang hồ sơ công khai của bạn được xem (IP + vị trí, ghi nhận qua API thật). Số này sẽ không tăng qua app hiện tại — trang xem hồ sơ công khai qua link chia sẻ chưa được xây dựng ở frontend, chưa có nơi nào ở đây gọi API ghi nhận lượt xem.</p>
+            <RouterLink to="/dashboard/visits" class="text-sm font-semibold">Xem chi tiết từng lượt truy cập →</RouterLink>
         </div>
     </div>
 
-    <div class="block-container mb-5">
+    <div class="block-container mb-[3rem]">
         <Heading text="Đính kèm CV" />
         <div class="attach-row">
             <div class="attach-icon">
                 <FontAwesomeIcon icon="fa-solid fa-file-lines" />
             </div>
-            <div class="flex-grow-1">
-                <a class="fw-semibold" :href="downloadCVUrl" :download="cvFileName" target="_blank">{{ cvFileName }}</a>
-                <p class="small opacity-50 mb-0">Được tạo tự động từ hồ sơ của bạn — luôn là bản mới nhất</p>
+            <div class="grow">
+                <a class="font-semibold" :href="downloadCVUrl" :download="cvFileName" target="_blank">{{ cvFileName }}</a>
+                <p class="text-sm opacity-50 mb-0">Được tạo tự động từ hồ sơ của bạn — luôn là bản mới nhất</p>
             </div>
             <Button icon="fa-solid fa-paperclip" type="outline-secondary" size="sm" text="Đính kèm file mới" @click="triggerFilePicker" />
-            <input ref="fileInput" type="file" accept="application/pdf" class="d-none" @change="handleSelectFile" />
+            <input ref="fileInput" type="file" accept="application/pdf" class="hidden" @change="handleSelectFile" />
         </div>
-        <p v-if="selectedFileName" class="small opacity-75 mt-2 mb-0">Đã chọn: {{ selectedFileName }}</p>
-        <p class="small opacity-50 mt-2 mb-0">Tính năng lưu file đính kèm đang chờ backend cập nhật, file chọn ở trên chưa được gửi lên server.</p>
+        <p v-if="selectedFileName" class="text-sm opacity-75 mt-2 mb-0">Đã chọn: {{ selectedFileName }}</p>
+        <p class="text-sm opacity-50 mt-2 mb-0">Tính năng lưu file đính kèm đang chờ backend cập nhật, file chọn ở trên chưa được gửi lên server.</p>
     </div>
 
     <div class="block-container">
         <Heading text="Profile Information" />
-        <div class="d-flex align-items-center gap-4 flex-wrap">
+        <div class="flex items-center gap-[1.5rem] flex-wrap">
             <div class="completion-ring" :style="{ '--percent': `${profileCompletion}%` }">
                 <span class="completion-ring-value">{{ profileCompletion }}%</span>
                 <span class="completion-ring-caption">hoàn thành</span>
             </div>
-            <div class="flex-grow-1" style="min-width: 220px">
+            <div class="grow" style="min-width: 220px">
                 <template v-if="missingSections.length">
                     <p class="mb-2">Hồ sơ còn thiếu {{ missingSections.length }} mục:</p>
                     <ul class="missing-sections-list mb-0">
@@ -172,7 +172,7 @@ const { percent: profileCompletion, missingSections } = useProfileCompletion()
                 </template>
                 <template v-else>
                     <p class="mb-2">Hồ sơ của bạn đã điền đầy đủ các mục bắt buộc — sẵn sàng để tạo CV.</p>
-                    <RouterLink to="/dashboard/information" class="fw-semibold">Xem hồ sơ →</RouterLink>
+                    <RouterLink to="/dashboard/information" class="font-semibold">Xem hồ sơ →</RouterLink>
                 </template>
             </div>
         </div>

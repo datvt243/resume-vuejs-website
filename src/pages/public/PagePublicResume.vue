@@ -3,14 +3,17 @@
  * Author: Đạt Võ - https://github.com/datvt243
  * Date: `--/--`
  * Description: Public, read-only CV page reachable via a share link
- * (`/resume/:email`) — no login required. Fetches directly from the
- * backend's already-public `GET /api/me/:email` (gated server-side by the
+ * (`/resume/:slug`) — no login required. Fetches directly from the
+ * backend's already-public `GET /api/me/:value` (gated server-side by the
  * candidate's `isPublic` flag; same response for "not found" and
  * "private" so a private profile can't be distinguished from a
- * non-existent one) — issue #56. Records a visit via
- * `POST /api/me/:email/visit` on load, completing the visit-tracking
- * feature (`dashboard-visit-count-integration`) that endpoint was built
- * for but nothing called yet.
+ * non-existent one) — issue #56. The backend resolves `:value` against
+ * the candidate's vanity `slug` FIRST, falling back to `email` for
+ * backward compatibility with links shared before issue #117 — this page
+ * passes whatever the URL segment is through unchanged, works for either.
+ * Records a visit via `POST /api/me/:value/visit` on load, completing the
+ * visit-tracking feature (`dashboard-visit-count-integration`) that
+ * endpoint was built for but nothing called yet.
  *
  * Deliberately bypasses `_axios`'s caller (`handleBase`)/`useCandidate`/
  * `useDocument` — those assume an authenticated dashboard context
@@ -32,7 +35,7 @@ import { formatDate, getLocalizedText } from '@/utilities/index'
 import generalInformationModel from '@/models/generalInformation.model'
 
 const route = useRoute()
-const email = route.params.email
+const identifier = route.params.slug
 
 const loading = ref(true)
 const notFound = ref(false)
@@ -58,7 +61,7 @@ function certDateRange(item) {
 
 onMounted(async () => {
     try {
-        const res = await _axios({ method: 'get', customURL: `api/me/${email}` })
+        const res = await _axios({ method: 'get', customURL: `api/me/${identifier}` })
         if (!res?.success || !res?.data) {
             notFound.value = true
             return
@@ -69,7 +72,7 @@ onMounted(async () => {
          * Ghi nhận lượt ghé thăm — fire-and-forget, không chặn hiển thị CV
          * nếu ghi nhận thất bại.
          */
-        _axios({ method: 'post', customURL: `api/me/${email}/visit` }).catch(() => {})
+        _axios({ method: 'post', customURL: `api/me/${identifier}/visit` }).catch(() => {})
     } catch {
         notFound.value = true
     } finally {

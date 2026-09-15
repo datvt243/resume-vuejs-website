@@ -99,7 +99,7 @@ header.py-2.border-b.bg-body-tertiary(class="border-[var(--bs-border-color)]")
                         span.pe-0(class="md:pe-2")
                             FontAwesomeIcon(icon="fa fa-download")
                         span.hidden(class="md:inline") Download CV
-                    Dropdown(:text="mesUser" :style="'outline-light'" split is-sm)
+                    Dropdown(:text="mesUser" :style="theme === 'dark' ? 'outline-light' : 'outline-dark'" split is-sm)
                         li.dropdown-item
                             a.dropdown-link(:href="_settings.getMe()" target="_blank")
                                 span.pe-2.text-info

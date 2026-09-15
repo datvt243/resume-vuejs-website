@@ -19,7 +19,8 @@
 
 import VeeForm from '@/components/veevalidate/VeeForm.vue'
 
-import { ref, shallowRef, onMounted, onBeforeUnmount, computed } from 'vue'
+import { ref, reactive, shallowRef, onMounted, onBeforeUnmount, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useDocument, useHelper } from '@/composables'
 import { getLocalizedText, wrapLocalizedText } from '@/utilities/index'
 
@@ -107,6 +108,53 @@ const socialMediaFields = ref([
 ])
 
 /**
+ * Slug tùy chỉnh cho link CV công khai (issue #117) — cố tình KHÔNG thêm
+ * vào `modalDefault`/`formFields`: form đó submit qua `updateDoc` (PUT
+ * `candidate/update`), validate bằng `schemaCandidate` ở backend — schema
+ * đó KHÔNG khai báo `slug`, và Joi mặc định `unknown(false)` nên cả
+ * request cập nhật thông tin cơ bản sẽ bị từ chối hoàn toàn (cùng class
+ * lỗi đã ghi chú ở đầu file cho field `avatar`, issue #63). `slug` chỉ
+ * được backend chấp nhận qua `PATCH candidate/update`
+ * (`schemaCandidatePatch`) — dùng `updatePatchDoc` riêng, giống hệt
+ * pattern của `socialMediaFields`/`handleUpdateSocialNetwork` ở trên.
+ */
+const router = useRouter()
+const slugFields = ref([
+    {
+        name: 'slug',
+        label: 'Slug (link CV công khai)',
+        type: 'text',
+        placeholder: 'vd: nguyen-van-a',
+        text: 'Dùng để tạo link CV công khai dễ đọc, thay vì lộ email trên URL. Để trống nếu chưa muốn đặt.',
+        default: '',
+        col: 'col-md-12',
+        valid: yup =>
+            yup
+                .string()
+                .trim()
+                .lowercase()
+                .matches(/^[a-z0-9]+(-[a-z0-9]+)*$/, {
+                    excludeEmptyString: true,
+                    message: 'Slug chỉ được chứa chữ thường, số và dấu gạch ngang',
+                })
+                .test('slug-length', 'Slug phải từ 3-50 ký tự', v => !v || (v.length >= 3 && v.length <= 50)),
+    },
+])
+// `_id` is included so VeeForm's own `watch(document, ...)` (VeeForm.vue)
+// takes the `setValues()` branch instead of its `!doc._id -> reset()`
+// branch — required for the seeded `slug` value to actually land in
+// vee-validate's real form state (not just a DOM-attribute display trick
+// like `socialMediaFields`' `field.value` above, which only affects what
+// renders, not what `values` submits if the user leaves it untouched).
+const slugDocument = reactive({ _id: '', slug: '' })
+const publicLink = computed(() => {
+    const value = slugDocument.slug || candidate.getCandidate?.email || ''
+    if (!value) return ''
+    const resolved = router.resolve({ name: 'public-resume', params: { slug: value } })
+    return `${window.location.origin}${import.meta.env.BASE_URL}${resolved.href}`
+})
+
+/**
  *
  */
 const { document, updateDoc, updatePatchDoc } = useDocument({ collection: 'candidate', fields: formFields.value })
@@ -132,6 +180,9 @@ onMounted(() => {
         const [, key] = name.split('.')
         field['value'] = socialMedia[key] || ''
     }
+
+    slugDocument._id = _candidate._id || ''
+    slugDocument.slug = _candidate.slug || ''
 })
 
 async function handleUpdate(values) {
@@ -171,6 +222,17 @@ async function handleUpdateSocialNetwork(values) {
         candidate.setCandidateByField({ socialMedia })
     })
 }
+
+async function handleUpdateSlug(values) {
+    const _id = candidate.getId
+    if (!_id) return false
+
+    await updatePatchDoc({ _id, slug: values.slug }, res => {
+        const { data } = res
+        slugDocument.slug = data.slug || ''
+        candidate.setCandidateByField({ slug: data.slug })
+    })
+}
 </script>
 
 <template>
@@ -208,7 +270,7 @@ async function handleUpdateSocialNetwork(values) {
             buttonPosition="center"
         />
     </div>
-    <div class="block-container">
+    <div class="block-container mb-[3rem]">
         <Heading text="Liên kết mạng xã hội" />
         <VeeForm
             :key="'frm-social-media'"
@@ -217,6 +279,18 @@ async function handleUpdateSocialNetwork(values) {
             :submit-text="'Cập nhật'"
             buttonPosition="center"
         />
+    </div>
+    <div class="block-container">
+        <Heading text="Link CV công khai" />
+        <VeeForm
+            :key="'frm-slug'"
+            :fields="slugFields"
+            :document="slugDocument"
+            :submit-fn="handleUpdateSlug"
+            :submit-text="'Cập nhật'"
+            buttonPosition="center"
+        />
+        <p v-if="publicLink" class="text-sm opacity-75 mb-0">Link CV của bạn: <strong>{{ publicLink }}</strong></p>
     </div>
 </template>
 

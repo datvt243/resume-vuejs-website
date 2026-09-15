@@ -39,8 +39,11 @@ async function _handleForgotPassword(values) {
             <p class="text-sm opacity-75">
                 Nhập email đã đăng ký, hệ thống sẽ tạo một liên kết đặt lại mật khẩu.
             </p>
-            <VeeForm :fields="formFields" :submit-fn="_handleForgotPassword" :submit-text="'Gửi yêu cầu'" />
-            <RouterLink to="/login" class="inline-block mt-[1rem] text-sm">Quay lại đăng nhập</RouterLink>
+            <VeeForm :fields="formFields" :submit-fn="_handleForgotPassword" :submit-text="'Gửi yêu cầu'">
+                <template #button>
+                    <RouterLink to="/login" class="ms-auto self-center text-xs">Quay lại đăng nhập</RouterLink>
+                </template>
+            </VeeForm>
         </div>
     </div>
 </template>

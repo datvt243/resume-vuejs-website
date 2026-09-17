@@ -27,6 +27,7 @@
         "ckeditor5": "^42.0.1",
         "ckeditor5-premium-features": "^42.0.1",
         "pinia": "^2.1.7",
+        "qrcode": "^1.5.4",
         "vee-validate": "^4.13.1",
         "vue": "^3.4.29",
         "vue-router": "4",

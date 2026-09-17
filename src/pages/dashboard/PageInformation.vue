@@ -18,6 +18,7 @@
  */
 
 import VeeForm from '@/components/veevalidate/VeeForm.vue'
+import QrCode from '@/components/QrCode.vue'
 
 import { ref, reactive, shallowRef, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -291,6 +292,7 @@ async function handleUpdateSlug(values) {
             buttonPosition="center"
         />
         <p v-if="publicLink" class="text-sm opacity-75 mb-0">Link CV của bạn: <strong>{{ publicLink }}</strong></p>
+        <QrCode :value="publicLink" />
     </div>
 </template>
 

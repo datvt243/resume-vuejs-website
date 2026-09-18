@@ -41,4 +41,5 @@
 2026-09-15T18:07:59Z role=verifier outcome=SEAL node=issue-117-public-slug rerun=full hub_bytes_before=231033 hub_bytes_after=240587
 2026-09-17T15:35:41Z role=implementer outcome=blocked node=issue-120-import-cv-pdf-linkedin hub_bytes_before=240587 verifier_rerun=n/a
 2026-09-17T17:24:48Z role=verifier outcome=SEAL node=issue-121-qr-code-public-link rerun=full hub_bytes_before=242014 hub_bytes_after=246900
+2026-09-18T16:04:03Z role=implementer outcome=blocked node=issue-120-import-cv-pdf-linkedin-recheck-20260918 hub_bytes_before=111191 verifier_rerun=n/a
 2026-09-18T16:19:42Z role=verifier outcome=SEAL node=issue-119-cv-theme-templates rerun=full hub_bytes_before=111191 hub_bytes_after=120383

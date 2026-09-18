@@ -44,3 +44,4 @@
 2026-09-18T16:04:03Z role=implementer outcome=blocked node=issue-120-import-cv-pdf-linkedin-recheck-20260918 hub_bytes_before=111191 verifier_rerun=n/a
 2026-09-18T16:19:42Z role=verifier outcome=SEAL node=issue-119-cv-theme-templates rerun=full hub_bytes_before=111191 hub_bytes_after=120383
 2026-09-18T16:34:37Z role=implementer outcome=blocked node=issue-118-application-tracker-blocked hub_bytes_before=116761 verifier_rerun=n/a
+2026-09-18T17:01:08Z role=implementer outcome=blocked node=issue-116-multi-profile-blocked hub_bytes_before=118613 verifier_rerun=n/a

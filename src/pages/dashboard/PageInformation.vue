@@ -23,6 +23,7 @@ import QrCode from '@/components/QrCode.vue'
 import { ref, reactive, shallowRef, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDocument, useHelper } from '@/composables'
+import { useCvTheme, DEFAULT_THEME } from '@/composables/useCvTheme'
 import { getLocalizedText, wrapLocalizedText } from '@/utilities/index'
 
 /* import { useDocument } from '@/composables/useDocument' */
@@ -148,10 +149,16 @@ const slugFields = ref([
 // like `socialMediaFields`' `field.value` above, which only affects what
 // renders, not what `values` submits if the user leaves it untouched).
 const slugDocument = reactive({ _id: '', slug: '' })
+// Issue #119: carry the owner's chosen CV theme into the copyable public
+// link/QR code as `?theme=`, so anonymous visitors see the same theme
+// picked in `PagePreview.vue` — no backend preference field needed.
+// Omitted for the default theme to keep the link clean when unused.
+const { selectedTheme } = useCvTheme()
 const publicLink = computed(() => {
     const value = slugDocument.slug || candidate.getCandidate?.email || ''
     if (!value) return ''
-    const resolved = router.resolve({ name: 'public-resume', params: { slug: value } })
+    const query = selectedTheme.value !== DEFAULT_THEME ? { theme: selectedTheme.value } : {}
+    const resolved = router.resolve({ name: 'public-resume', params: { slug: value }, query })
     return `${window.location.origin}${import.meta.env.BASE_URL}${resolved.href}`
 })
 

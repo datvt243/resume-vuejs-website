@@ -1,0 +1,1 @@
+@media print{body.cv-print-mode header,body.cv-print-mode footer,body.cv-print-mode .dashboard-sidebar,body.cv-print-mode .no-print{display:none!important}body.cv-print-mode .dashboard-layout{display:block!important}body.cv-print-mode #cv-print-area{max-width:100%}}

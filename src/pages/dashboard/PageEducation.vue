@@ -138,7 +138,7 @@ function showModalDuplicateDoc(doc) {
 </script>
 
 <template>
-    <div class="mb-4">
+    <div class="mb-[1.5rem]">
         <Heading text="Học vấn">
             <div class="btn-group">
                 <Button @click="showModalCreateDoc()" icon="fa-solid fa-plus" type="outline-success" size="sm"></Button>
@@ -147,19 +147,19 @@ function showModalDuplicateDoc(doc) {
         </Heading>
 
         <div v-if="dataList.length" class="clearfix">
-            <p class="small opacity-50 mb-2">Kéo-thả để sắp xếp thứ tự hiển thị (chỉ lưu trên trình duyệt này).</p>
+            <p class="text-sm opacity-50 mb-2">Kéo-thả để sắp xếp thứ tự hiển thị (chỉ lưu trên trình duyệt này).</p>
             <ListTransition>
                 <li
                     v-for="edu in orderedItems"
                     :key="edu._id"
-                    class="draggable-item d-flex align-items-start gap-2"
+                    class="draggable-item flex items-start gap-2"
                     draggable="true"
                     @dragstart="onDragStart(edu._id)"
                     @dragover.prevent
                     @drop="onDrop(edu._id)"
                 >
                     <span class="drag-handle"><FontAwesomeIcon icon="fa-solid fa-grip-vertical" /></span>
-                    <div class="flex-grow-1">
+                    <div class="grow">
                         <EducationItem
                             :model-value="edu"
                             icon="fa-graduation-cap"
@@ -189,7 +189,7 @@ function showModalDuplicateDoc(doc) {
                 buttonPosition="end"
             >
                 <template #button>
-                    <button type="button" class="btn btn-secondary mx-3" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-secondary mx-[1rem]" data-bs-dismiss="modal">Đóng</button>
                 </template>
             </VeeForm>
         </div>

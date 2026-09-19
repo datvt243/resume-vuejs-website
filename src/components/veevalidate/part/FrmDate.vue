@@ -38,7 +38,7 @@ const getPlaceholder = computed(() => {
 </script>
 
 <template>
-    <div class="mb-3">
+    <div class="mb-[1rem]">
         <label :for="props.name" class="form-label">{{ props.label }}</label>
         <input
             class="form-control"
@@ -52,7 +52,7 @@ const getPlaceholder = computed(() => {
             @blur="handleBlur"
         />
 
-        <p v-if="errorMessage" class="text-danger small my-1">{{ errorMessage }}</p>
+        <p v-if="errorMessage" class="text-danger text-sm my-1">{{ errorMessage }}</p>
         <p v-if="props.text" class="form-text mb-0">{{ props.text }}</p>
     </div>
 </template>

@@ -17,7 +17,11 @@ export default {
             h(
                 'div',
                 {
-                    class: 'heading d-flex align-item-center justify-content-between pb-2 mb-4 border-bottom text-uppercase',
+                    // border-b alone would use Tailwind's own default gray
+                    // (from preflight), not Bootstrap's theme-reactive
+                    // var(--bs-border-color) — arbitrary-value color keeps
+                    // this dark/light-mode correct, matching current behavior
+                    class: 'heading flex align-item-center justify-between pb-2 mb-[1.5rem] border-b border-[var(--bs-border-color)] uppercase',
                 },
                 [
                     h('p', { class: [props.tag, ' m-0'] }, props.text),

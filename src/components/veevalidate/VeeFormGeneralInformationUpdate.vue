@@ -136,7 +136,7 @@ async function handleUpdate(values, action = 'create') {
 </script>
 
 <template>
-    <div class="block-container mb-5">
+    <div class="block-container mb-[3rem]">
         <Heading :text="props.heading">
             <template v-if="props.hasButtonAdd">
                 <button class="btn btn-sm btn-success" @click="showModalCreateDoc()">
@@ -145,7 +145,7 @@ async function handleUpdate(values, action = 'create') {
             </template>
         </Heading>
 
-        <div v-if="$slots.group" class="clearfix mb-3">
+        <div v-if="$slots.group" class="clearfix mb-[1rem]">
             <slot name="group"></slot>
         </div>
 
@@ -187,7 +187,7 @@ async function handleUpdate(values, action = 'create') {
                     reset-after-save
                 >
                     <template #button>
-                        <button type="button" class="btn btn-secondary mx-3" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-secondary mx-[1rem]" data-bs-dismiss="modal">Đóng</button>
                     </template>
                 </VeeForm>
             </div>

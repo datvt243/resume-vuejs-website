@@ -109,7 +109,7 @@ function showModalDuplicateDoc(doc) {
 </script>
 
 <template>
-    <div class="mb-4">
+    <div class="mb-[1.5rem]">
         <Heading text="Chứng chỉ">
             <div class="btn-group">
                 <Button @click="showModalCreateDoc()" icon="fa-solid fa-plus" type="outline-success" size="sm"></Button>
@@ -188,7 +188,7 @@ function showModalDuplicateDoc(doc) {
                 buttonPosition="end"
             >
                 <template #button>
-                    <button type="button" class="btn btn-secondary mx-3" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-secondary mx-[1rem]" data-bs-dismiss="modal">Đóng</button>
                 </template>
             </VeeForm>
         </div>

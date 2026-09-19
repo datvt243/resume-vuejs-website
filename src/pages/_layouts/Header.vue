@@ -55,7 +55,7 @@ const mesUser = computed(() => {
         return _name || 'User'
     })(user || {})
 
-    return `<small class="opacity-60">Xin chào</small> <span class="d-none d-sm-inline">, ${fullName}</span>`
+    return `<small class="opacity-60">Xin chào</small> <span class="hidden sm:inline">, ${fullName}</span>`
 })
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
@@ -66,17 +66,17 @@ function _handelLogout() {
 </script>
 
 <template lang="pug">
-header.py-2.border-bottom.bg-body-tertiary
+header.py-2.border-b.bg-body-tertiary(class="border-[var(--bs-border-color)]")
     template(v-if="!store.isAuthenticated")
-        Navbar.flex-grow-1
+        Navbar.grow
             .ms-auto.border-lg-t
-                ul.navbar-nav.ms-auto.mb-2.mb-lg-0.align-items-lg-center
+                ul.navbar-nav.ms-auto.mb-2(class="lg:mb-0 lg:items-center")
                     li.nav-item(v-for='(r, i) in authRouter' :key="`router_${i}`")
                         template(v-if="r.to")
                             RouterLink.nav-link(:to="r.to" :class="{ active: r.to === $route.fullPath}") {{ r.text }}
-                        span.nav-link.d-none.d-lg-block(v-else) /
+                        span.nav-link.hidden(v-else class="lg:block") /
                     li.nav-item
-                        button.btn.btn-sm.btn-outline-secondary.rounded-circle(
+                        button.btn.btn-sm.btn-outline-secondary.rounded-full(
                             type="button"
                             @click="toggleTheme"
                             :title="theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'"
@@ -84,22 +84,22 @@ header.py-2.border-bottom.bg-body-tertiary
                             FontAwesomeIcon(:icon="theme === 'dark' ? 'fa fa-sun' : 'fa fa-moon'")
     .container(v-else)
         nav.navbar.navbar-expand-lg
-            a.navbar-brand.fw-bold.d-flex.align-items-center(href="#")
+            a.navbar-brand.font-bold.flex.items-center(href="#")
                 FontAwesomeIcon.text-success.me-2(icon="fa-solid fa-file-lines")
                 | Resume API
             .ms-auto
-                .d-flex.align-items-center.gap-2
-                    button.btn.btn-sm.btn-outline-secondary.rounded-circle(
+                .flex.items-center.gap-2
+                    button.btn.btn-sm.btn-outline-secondary.rounded-full(
                         type="button"
                         @click="toggleTheme"
                         :title="theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'"
                     )
                         FontAwesomeIcon(:icon="theme === 'dark' ? 'fa fa-sun' : 'fa fa-moon'")
                     a.btn.btn-sm.btn-outline-success.rounded-pill(:href="_settings.getFile()" target="_blank")
-                        span.pe-0.pe-md-2
+                        span.pe-0(class="md:pe-2")
                             FontAwesomeIcon(icon="fa fa-download")
-                        span.d-none.d-md-inline Download CV
-                    Dropdown(:text="mesUser" :style="'outline-light'" split is-sm)
+                        span.hidden(class="md:inline") Download CV
+                    Dropdown(:text="mesUser" :style="theme === 'dark' ? 'outline-light' : 'outline-dark'" split is-sm)
                         li.dropdown-item
                             a.dropdown-link(:href="_settings.getMe()" target="_blank")
                                 span.pe-2.text-info
@@ -107,7 +107,7 @@ header.py-2.border-bottom.bg-body-tertiary
                                 | View API
                         li.dropdown-divider
                         li.dropdown-item
-                            span.d-block.pointer(@click="_handelLogout")
+                            span.block.pointer(@click="_handelLogout")
                                 span.pe-2.text-danger
                                     FontAwesomeIcon(icon="fa fa-arrow-right-from-bracket")
                                 | Logout

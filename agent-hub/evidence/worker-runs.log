@@ -10,3 +10,39 @@
 2026-09-08T15:48:47Z role=verifier outcome=SEAL node=fontawesome-icon-registration-gaps rerun=partial hub_bytes_before=101241 hub_bytes_after=103656
 2026-09-08T16:09:14Z role=implementer outcome=blocked node=issue-8-jwt-localstorage-recheck-20260908 hub_bytes_before=98977 verifier_rerun=n/a
 2026-09-08T16:41:03Z role=verifier outcome=SEAL node=issue-56-public-resume-page rerun=partial hub_bytes_before=100045 hub_bytes_after=106695
+2026-09-08T17:04:23Z role=verifier outcome=SEAL node=remove-report-tokens rerun=partial hub_bytes_before=102016 hub_bytes_after=108380
+2026-09-12T12:30:25Z role=verifier outcome=SEAL node=tailwindcss-setup rerun=full hub_bytes_before=108380 hub_bytes_after=111367
+2026-09-12T12:55:08Z role=verifier outcome=SEAL node=tailwindcss-auth-pages rerun=full hub_bytes_before=111367 hub_bytes_after=116582
+2026-09-12T17:54:46Z role=verifier outcome=SEAL node=tailwindcss-modal-rewrite rerun=full hub_bytes_before=116582 hub_bytes_after=122851
+2026-09-12T18:16:55Z role=verifier outcome=SEAL node=tailwindcss-dropdown-toast-navbar rerun=full hub_bytes_before=122851 hub_bytes_after=120228
+2026-09-12T18:33:33Z role=verifier outcome=SEAL node=tailwindcss-crud-pages-utilities rerun=full hub_bytes_before=128842 hub_bytes_after=132879
+2026-09-12T18:49:36Z role=verifier outcome=REOPEN node=tailwindcss-button-component-system rerun=full hub_bytes_before=132879 hub_bytes_after=110044
+2026-09-12T19:05:04Z role=verifier outcome=SEAL node=tailwindcss-button-component-system rerun=full hub_bytes_before=110044 hub_bytes_after=139315
+2026-09-12T19:25:12Z role=verifier outcome=SEAL node=tailwindcss-dropdown-menu-styling rerun=full hub_bytes_before=139315 hub_bytes_after=145686
+2026-09-12T19:38:10Z role=verifier outcome=SEAL node=tailwindcss-badge-alert rerun=full hub_bytes_before=145686 hub_bytes_after=147746
+2026-09-12T19:49:28Z role=verifier outcome=SEAL node=tailwindcss-form-controls rerun=full hub_bytes_before=150410 hub_bytes_after=156470
+2026-09-12T20:12:24Z role=verifier outcome=REOPEN node=tailwindcss-remaining-utilities-sweep rerun=full hub_bytes_before=156470 hub_bytes_after=161549
+2026-09-12T20:17:36Z role=verifier outcome=SEAL node=tailwindcss-remaining-utilities-sweep rerun=partial hub_bytes_before=161549 hub_bytes_after=163563
+2026-09-13T10:35:03Z role=verifier outcome=SEAL node=tailwindcss-grid-system rerun=full hub_bytes_before=163563 hub_bytes_after=170989
+2026-09-13T10:50:39Z role=verifier outcome=SEAL node=tailwindcss-navbar-component-system rerun=full hub_bytes_before=170989 hub_bytes_after=179179
+2026-09-13T11:00:02Z role=verifier outcome=REOPEN node=tailwindcss-color-utilities rerun=full hub_bytes_before=179179 hub_bytes_after=182857
+2026-09-13T11:03:04Z role=verifier outcome=SEAL node=tailwindcss-color-utilities rerun=partial hub_bytes_before=182857 hub_bytes_after=184119
+2026-09-13T11:10:33Z role=verifier outcome=REOPEN node=tailwindcss-spinner-border rerun=full hub_bytes_before=184119 hub_bytes_after=187491
+2026-09-13T11:15:40Z role=verifier outcome=SEAL node=tailwindcss-spinner-border rerun=partial hub_bytes_before=187491 hub_bytes_after=189705
+2026-09-13T16:57:10Z role=verifier outcome=REOPEN node=tailwindcss-root-tokens-and-remaining-gaps rerun=full hub_bytes_before=189705 hub_bytes_after=194672
+2026-09-13T17:07:02Z role=verifier outcome=SEAL node=tailwindcss-root-tokens-and-remaining-gaps rerun=partial hub_bytes_before=194672 hub_bytes_after=198079
+2026-09-13T17:31:32Z role=verifier outcome=SEAL node=tailwindcss-bootstrap-removal rerun=full hub_bytes_before=198079 hub_bytes_after=203007
+2026-09-13T19:06:06Z role=verifier outcome=SEAL node=tailwindcss-post-ship-review-fixes rerun=full hub_bytes_before=203007 hub_bytes_after=209014
+2026-09-15T17:01:32Z role=verifier outcome=SEAL node=fix-register-login-autofill-autocomplete rerun=partial hub_bytes_before=209190 hub_bytes_after=212403
+2026-09-15T17:09:58Z role=verifier outcome=SEAL node=fix-forgot-password-button-row rerun=full hub_bytes_before=209190 hub_bytes_after=212703
+2026-09-15T17:15:36Z role=verifier outcome=SEAL node=fix-dropdown-menu-default-hidden rerun=partial hub_bytes_before=209190 hub_bytes_after=212816
+2026-09-15T17:27:52Z role=verifier outcome=SEAL node=fix-ckeditor-light-theme-colors rerun=full hub_bytes_before=209190 hub_bytes_after=214859
+2026-09-15T17:34:19Z role=verifier outcome=SEAL node=fix-header-dropdown-outline-theme rerun=full hub_bytes_before=209190 hub_bytes_after=214132
+2026-09-15T18:07:59Z role=verifier outcome=SEAL node=issue-117-public-slug rerun=full hub_bytes_before=231033 hub_bytes_after=240587
+2026-09-17T15:35:41Z role=implementer outcome=blocked node=issue-120-import-cv-pdf-linkedin hub_bytes_before=240587 verifier_rerun=n/a
+2026-09-17T17:24:48Z role=verifier outcome=SEAL node=issue-121-qr-code-public-link rerun=full hub_bytes_before=242014 hub_bytes_after=246900
+2026-09-18T16:04:03Z role=implementer outcome=blocked node=issue-120-import-cv-pdf-linkedin-recheck-20260918 hub_bytes_before=111191 verifier_rerun=n/a
+2026-09-18T16:19:42Z role=verifier outcome=SEAL node=issue-119-cv-theme-templates rerun=full hub_bytes_before=111191 hub_bytes_after=120383
+2026-09-18T16:34:37Z role=implementer outcome=blocked node=issue-118-application-tracker-blocked hub_bytes_before=116761 verifier_rerun=n/a
+2026-09-18T17:01:08Z role=implementer outcome=blocked node=issue-116-multi-profile-blocked hub_bytes_before=118613 verifier_rerun=n/a
+2026-09-18T17:42:25Z role=implementer outcome=blocked node=issue-8-jwt-localstorage-recheck-20260919 hub_bytes_before=120555 verifier_rerun=n/a

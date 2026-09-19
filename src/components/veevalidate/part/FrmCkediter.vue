@@ -36,10 +36,10 @@ function _handleChange($event) {
 </script>
 
 <template>
-    <div class="mb-3">
+    <div class="mb-[1rem]">
         <label v-if="props.label" :for="props.name" class="form-label">{{ props.label }}</label>
         <CKEditor :model-value="value" @update:model-value="_handleChange" />
-        <p v-if="errorMessage" class="text-danger small my-1">{{ errorMessage }}</p>
+        <p v-if="errorMessage" class="text-danger text-sm my-1">{{ errorMessage }}</p>
         <p v-if="props.text" class="form-text mb-0">{{ props.text }}</p>
     </div>
 </template>

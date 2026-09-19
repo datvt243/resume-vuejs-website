@@ -14,12 +14,16 @@ const routes = [
     { path: '/forgot-password', name: 'forgot-password', component: () => import('@/pages/auth/PageForgotPassword.vue') },
     { path: '/reset-password', name: 'reset-password', component: () => import('@/pages/auth/PageResetPassword.vue') },
     {
-        path: '/resume/:email',
+        path: '/resume/:slug',
         name: 'public-resume',
         component: () => import('@/pages/public/PagePublicResume.vue'),
-        // No requiresAuth — this is the public share-link page (issue #56),
-        // fetches read-only data straight from the backend's own public
-        // endpoint (GET /api/me/:email, gated server-side by isPublic).
+        // No requiresAuth — this is the public share-link page (issue #56).
+        // The :slug param is looked up against the backend's own public
+        // endpoint (GET /api/me/:value, gated server-side by isPublic),
+        // which resolves by vanity slug FIRST, falling back to email for
+        // backward compatibility with links shared before issue #117 —
+        // same single route/param works for both, no separate fallback
+        // route needed.
     },
     {
         path: '/dashboard',

@@ -31,7 +31,7 @@ const { value, errorMessage } = useField(() => props.name)
 </script>
 
 <template>
-    <div class="mb-3">
+    <div class="mb-[1rem]">
         <label v-if="props.label" :for="props.name" class="form-label">{{ props.label }}</label>
         <FieldArray :name="props.name" v-slot="{ fields, push, remove }">
             <div v-for="(field, idx) in fields" :key="field.key">
@@ -40,7 +40,7 @@ const { value, errorMessage } = useField(() => props.name)
             </div>
             <button type="button" @click="push({ id: Date.now(), name: '', url: '' })">Add</button>
         </FieldArray>
-        <p v-if="errorMessage" class="text-danger small my-1">{{ errorMessage }}</p>
+        <p v-if="errorMessage" class="text-danger text-sm my-1">{{ errorMessage }}</p>
         <p v-if="props.text" class="form-text mb-0">{{ props.text }}</p>
     </div>
 </template>

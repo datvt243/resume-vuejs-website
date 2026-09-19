@@ -57,17 +57,17 @@ onBeforeUnmount(stopCountdown)
         <div class="countdown-ring" :class="{ overtime: isOvertime }" :style="{ '--percent': `${progressPercent}%` }">
             <span v-if="!isOvertime" class="countdown-number">{{ secondsLeft }}</span>
             <span v-else class="spinner-border spinner-border-sm text-success" role="status">
-                <span class="visually-hidden">Loading...</span>
+                <span class="sr-only">Loading...</span>
             </span>
         </div>
 
-        <div class="mt-3 text-center loading-info">
-            <div class="fw-semibold">Đang kết nối tới server...</div>
-            <div class="small opacity-75 mt-1">
+        <div class="mt-[1rem] text-center loading-info">
+            <div class="font-semibold">Đang kết nối tới server...</div>
+            <div class="text-sm opacity-75 mt-1">
                 Server-free nên lần gọi API đầu tiên có thể mất đến
                 {{ COLD_START_SECONDS }} giây để khởi động.
             </div>
-            <div v-if="isOvertime" class="small opacity-75 mt-1">Server khởi động lâu hơn dự kiến, vui lòng đợi thêm chút nữa...</div>
+            <div v-if="isOvertime" class="text-sm opacity-75 mt-1">Server khởi động lâu hơn dự kiến, vui lòng đợi thêm chút nữa...</div>
         </div>
     </div>
 </template>

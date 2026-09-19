@@ -45,21 +45,21 @@ const description = computed(() => getLocalizedText(props.modelValue.description
 </script>
 
 <template lang="pug">
-.item.border.p-4.rounded
-    .d-flex
-        .flex-shrink-0.pe-3
+.item.border.rounded(class="p-[1.5rem]")
+    .flex
+        .flex-shrink-0(class="pe-[1rem]")
             template(v-if="model?.image")
-                img.image( :src="model.image" :alt="model.title") 
+                img.image( :src="model.image" :alt="model.title")
             template(v-else)
-                span.image.opacity-75.d-inline-block.mt-2.text-center
+                span.image.opacity-75.inline-block.mt-2.text-center
                     FontAwesomeIcon(:icon="['fa-solid', `${ props.icon }`]")
-        .col.flex-grow-1
-            .d-flex.mb-3
+        .col.grow
+            .flex(class="mb-[1rem]")
                 .col-auto
                     p.item-title {{ model.title }}
                 .col-auto.ms-auto
                     slot
-            div.border-start.ps-3.border-success.mb-4
+            div.border-start.border-success(class="ps-[1rem] mb-[1.5rem]")
                 p.item-note(v-if="model.subTitle") {{ model.subTitle }}
                 p.item-note(v-if="getDate") {{ getDate }}
                 slot(name="sub")

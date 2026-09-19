@@ -136,7 +136,7 @@ const objComponent = {
             </template>
         </div>
         <FrmInput v-if="getFieldId" key="_id" v-bind="getFieldId" type="hidden" label="" class="mb-0" />
-        <div class="footer d-flex my-3" :class="[`justify-content-${props.buttonPosition}`]">
+        <div class="footer flex my-[1rem]" :class="[`justify-${props.buttonPosition}`]">
             <button type="button" class="btn btn-success" @click="onSubmit" :disabled="!meta.valid">{{ submitText }}</button>
             <slot name="button"></slot>
         </div>

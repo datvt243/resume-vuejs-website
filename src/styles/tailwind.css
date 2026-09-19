@@ -1,0 +1,1557 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Node `tailwindcss-root-tokens-and-remaining-gaps` — self-hosted,
+ * Bootstrap-independent replacement for the `--bs-*` CSS custom
+ * properties every `@layer components` rule in this file (nodes 6-14)
+ * already references (`var(--bs-primary)`, `var(--bs-border-color)`,
+ * etc.). Found during final-removal prep: those variables are currently
+ * defined ONLY by Bootstrap's own `_root.scss` output
+ * (`bootstrap.scss`'s `:root`/`[data-bs-theme=dark]` block) — deleting
+ * `bootstrap.scss` outright would silently undefine every one of them,
+ * breaking every dormant rule built in nodes 6-14 simultaneously, not
+ * just the Bootstrap classes those nodes were reproducing. Rather than
+ * rewriting ~24 variables' worth of references across 9 prior nodes'
+ * rules (large, error-prone diff), this block re-defines the SAME
+ * variable NAMES here, self-hosted, with no `bootstrap` package
+ * dependency — every existing `var(--bs-*)` reference keeps working
+ * unchanged. Values are copied verbatim from this app's actual compiled
+ * output (`dist/assets/index-*.css`, confirmed via a fresh build — NOT
+ * vanilla Bootstrap defaults, since `bootstrap.scss` customizes
+ * `$primay`/`$green` to `#00d095`, which is why `--bs-success` here is
+ * green, not Bootstrap's default blue-adjacent teal), covering every
+ * `--bs-*` variable actually referenced anywhere in `src/` (confirmed
+ * via a repo-wide `var(--bs-*)` grep — 24 distinct names). Only the
+ * variables that differ between light/dark are overridden in the
+ * `[data-bs-theme='dark']` block, mirroring Bootstrap's own structure
+ * exactly (theme-invariant colors like `--bs-primary`/`--bs-danger`
+ * aren't repeated). `--bs-link-color-rgb`/`--bs-link-hover-color-rgb`
+ * included too, for the new `a` Reboot-equivalent rule below.
+ */
+:root,
+[data-bs-theme='light'] {
+    --bs-body-bg: #fff;
+    --bs-body-color: #212529;
+    --bs-border-color: #dee2e6;
+    --bs-border-color-translucent: rgba(0, 0, 0, 0.175);
+    --bs-border-radius: 0.375rem;
+    --bs-border-radius-sm: 0.25rem;
+    --bs-border-width: 1px;
+    --bs-danger: #dc3545;
+    --bs-dark: #212529;
+    --bs-emphasis-color: #000;
+    --bs-emphasis-color-rgb: 0, 0, 0;
+    --bs-green: #00d095;
+    --bs-info: #0dcaf0;
+    --bs-light: #f8f9fa;
+    --bs-primary: #0d6efd;
+    --bs-secondary: #6c757d;
+    --bs-secondary-bg: #e9ecef;
+    --bs-secondary-color: rgba(33, 37, 41, 0.75);
+    --bs-success: #00d095;
+    --bs-tertiary-bg: #f8f9fa;
+    --bs-warning: #ffc107;
+    --bs-warning-bg-subtle: #fff3cd;
+    --bs-warning-border-subtle: #ffe69c;
+    --bs-warning-text-emphasis: #664d03;
+    --bs-link-color-rgb: 13, 110, 253;
+    --bs-link-hover-color-rgb: 10, 88, 202;
+}
+[data-bs-theme='dark'] {
+    --bs-body-bg: #212529;
+    --bs-body-color: #dee2e6;
+    --bs-border-color: #495057;
+    --bs-border-color-translucent: rgba(255, 255, 255, 0.15);
+    --bs-emphasis-color: #fff;
+    --bs-emphasis-color-rgb: 255, 255, 255;
+    --bs-secondary-bg: #343a40;
+    --bs-secondary-color: rgba(222, 226, 230, 0.75);
+    --bs-tertiary-bg: #2b3035;
+    --bs-warning-bg-subtle: #332701;
+    --bs-warning-border-subtle: #997404;
+    --bs-warning-text-emphasis: #ffda6a;
+    --bs-link-color-rgb: 110, 168, 254;
+    --bs-link-hover-color-rgb: 139, 185, 254;
+}
+
+/* Reboot-equivalent for bare, unclassed elements — same node. Confirmed
+   via grep this app has no bare unclassed headings (every real heading
+   tag already carries its own component-specific class:
+   `Heading.vue`'s `.h4`, `PagePreview.vue`/`PagePublicResume.vue`'s
+   `.cv-name`/`.cv-section-title` with their own scoped `<style>`), no
+   bare `<hr>` (both instances already carry `.dropdown-divider`/
+   `.border-success`), and no bare form controls outside `.form-control`
+   (already built, node `tailwindcss-form-controls`) — so only `body`
+   and bare `<a>` (confirmed 2 real instances: `Footer.vue`'s copyright
+   link, `Header.vue`'s dead-class `.dropdown-link`) actually need a
+   Reboot-equivalent. Font stack copied verbatim from `bootstrap.scss`'s
+   `$font-family-sans-serif` override (JetBrains Mono + the same
+   cross-platform fallback chain). Placed in `@layer base` (Tailwind's
+   own layer for exactly this purpose — bare-element defaults — bucketed
+   before `@layer components`/`@layer utilities` either way). */
+@layer base {
+    body {
+        margin: 0;
+        font-family:
+            'JetBrains Mono',
+            monospace,
+            system-ui,
+            -apple-system,
+            'Segoe UI',
+            Roboto,
+            'Helvetica Neue',
+            'Noto Sans',
+            'Liberation Sans',
+            Arial,
+            sans-serif,
+            'Apple Color Emoji',
+            'Segoe UI Emoji',
+            'Segoe UI Symbol',
+            'Noto Color Emoji';
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: var(--bs-body-color);
+        background-color: var(--bs-body-bg);
+        -webkit-text-size-adjust: 100%;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+    a {
+        color: rgba(var(--bs-link-color-rgb), 1);
+        text-decoration: underline;
+    }
+    a:hover {
+        color: rgba(var(--bs-link-hover-color-rgb), 1);
+    }
+}
+
+/*
+ * Bootstrap -> Tailwind phased migration, node
+ * `tailwindcss-button-component-system`.
+ *
+ * Bootstrap COMPONENT classes (as opposed to plain utilities) — .btn,
+ * .btn-group, .btn-outline-*, .dropdown-toggle caret — have no Tailwind
+ * equivalent (Tailwind ships bare utilities, not pre-made components).
+ * Reproducing them here in @layer components, under the SAME class
+ * names, means the ~28 files using `.btn`-family classes need zero
+ * per-file edits — only the CSS *source* changes, from Bootstrap's
+ * stylesheet to this one, so Bootstrap's own .btn/.btn-group/.dropdown-*
+ * SCSS can eventually be dropped at the final removal node.
+ *
+ * Fidelity level (operator-approved, "vừa đủ"/good-enough): colors,
+ * hover state, border-radius, and size (sm) match Bootstrap's real
+ * output — using Bootstrap's own `var(--bs-*)` color variables directly,
+ * so dark mode stays automatic for free, same pattern already used by
+ * `.auth-card`'s `var(--bs-tertiary-bg)` (node `tailwindcss-auth-pages`).
+ * Deliberately NOT reproduced: focus-visible ring, `.btn-check`
+ * integration, gradient/box-shadow nuance — real, disclosed gaps vs
+ * Bootstrap's actual `_buttons.scss` (~15 CSS custom properties per
+ * variant), not silently dropped.
+ */
+@layer components {
+    .btn {
+        display: inline-block;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+        cursor: pointer;
+        user-select: none;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: var(--bs-border-radius, 0.375rem);
+        transition:
+            color 0.15s ease-in-out,
+            background-color 0.15s ease-in-out,
+            border-color 0.15s ease-in-out;
+    }
+    .btn:hover {
+        text-decoration: none;
+    }
+    .btn.disabled,
+    .btn:disabled {
+        opacity: 0.65;
+        pointer-events: none;
+    }
+
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        border-radius: var(--bs-border-radius-sm, 0.25rem);
+    }
+
+    /* Solid + outline variants for Bootstrap's 8 standard theme colors.
+       Text color follows Bootstrap 5's real contrast mapping: warning/
+       info/light get dark text, the rest get white/light text.
+
+       Each variant is a fully self-contained rule (color + background +
+       border in one block) — DELIBERATELY not factored into a shared
+       comma-grouped selector for the text-color assignment. A comma-
+       grouped selector (e.g. `.btn-primary, .btn-secondary, ... { color:
+       #fff }`) followed by separate individual-selector override rules
+       was tried first and silently dropped 7 of 16 variants from the
+       compiled output — a real, reproduced Tailwind v3 `@layer
+       components` compilation defect triggered by that exact shape
+       (verified independently by the verifier on
+       `tailwindcss-button-component-system`'s first pass, REOPENed for
+       this reason). Every rule below is single-selector, single-block —
+       confirmed via `grep` on the compiled output that all 16 survive. */
+    .btn-primary {
+        color: #fff;
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+    }
+    .btn-primary:hover {
+        background-color: color-mix(in srgb, var(--bs-primary) 85%, black);
+        border-color: color-mix(in srgb, var(--bs-primary) 80%, black);
+    }
+    .btn-secondary {
+        color: #fff;
+        background-color: var(--bs-secondary);
+        border-color: var(--bs-secondary);
+    }
+    .btn-secondary:hover {
+        background-color: color-mix(in srgb, var(--bs-secondary) 85%, black);
+        border-color: color-mix(in srgb, var(--bs-secondary) 80%, black);
+    }
+    .btn-success {
+        color: #fff;
+        background-color: var(--bs-success);
+        border-color: var(--bs-success);
+    }
+    .btn-success:hover {
+        background-color: color-mix(in srgb, var(--bs-success) 85%, black);
+        border-color: color-mix(in srgb, var(--bs-success) 80%, black);
+    }
+    .btn-danger {
+        color: #fff;
+        background-color: var(--bs-danger);
+        border-color: var(--bs-danger);
+    }
+    .btn-danger:hover {
+        background-color: color-mix(in srgb, var(--bs-danger) 85%, black);
+        border-color: color-mix(in srgb, var(--bs-danger) 80%, black);
+    }
+    .btn-warning {
+        color: #000;
+        background-color: var(--bs-warning);
+        border-color: var(--bs-warning);
+    }
+    .btn-warning:hover {
+        background-color: color-mix(in srgb, var(--bs-warning) 85%, black);
+        border-color: color-mix(in srgb, var(--bs-warning) 80%, black);
+    }
+    .btn-info {
+        color: #000;
+        background-color: var(--bs-info);
+        border-color: var(--bs-info);
+    }
+    .btn-info:hover {
+        background-color: color-mix(in srgb, var(--bs-info) 85%, black);
+        border-color: color-mix(in srgb, var(--bs-info) 80%, black);
+    }
+    .btn-light {
+        color: #000;
+        background-color: var(--bs-light);
+        border-color: var(--bs-light);
+    }
+    .btn-light:hover {
+        background-color: color-mix(in srgb, var(--bs-light) 85%, black);
+        border-color: color-mix(in srgb, var(--bs-light) 80%, black);
+    }
+    .btn-dark {
+        color: #fff;
+        background-color: var(--bs-dark);
+        border-color: var(--bs-dark);
+    }
+    .btn-dark:hover {
+        background-color: color-mix(in srgb, var(--bs-dark) 85%, white);
+        border-color: color-mix(in srgb, var(--bs-dark) 80%, white);
+    }
+
+    .btn-outline-primary {
+        color: var(--bs-primary);
+        background-color: transparent;
+        border-color: var(--bs-primary);
+    }
+    .btn-outline-primary:hover {
+        color: #fff;
+        background-color: var(--bs-primary);
+    }
+    .btn-outline-secondary {
+        color: var(--bs-secondary);
+        background-color: transparent;
+        border-color: var(--bs-secondary);
+    }
+    .btn-outline-secondary:hover {
+        color: #fff;
+        background-color: var(--bs-secondary);
+    }
+    .btn-outline-success {
+        color: var(--bs-success);
+        background-color: transparent;
+        border-color: var(--bs-success);
+    }
+    .btn-outline-success:hover {
+        color: #fff;
+        background-color: var(--bs-success);
+    }
+    .btn-outline-danger {
+        color: var(--bs-danger);
+        background-color: transparent;
+        border-color: var(--bs-danger);
+    }
+    .btn-outline-danger:hover {
+        color: #fff;
+        background-color: var(--bs-danger);
+    }
+    .btn-outline-warning {
+        color: var(--bs-warning);
+        background-color: transparent;
+        border-color: var(--bs-warning);
+    }
+    .btn-outline-warning:hover {
+        color: #000;
+        background-color: var(--bs-warning);
+    }
+    .btn-outline-info {
+        color: var(--bs-info);
+        background-color: transparent;
+        border-color: var(--bs-info);
+    }
+    .btn-outline-info:hover {
+        color: #000;
+        background-color: var(--bs-info);
+    }
+    .btn-outline-light {
+        color: var(--bs-light);
+        background-color: transparent;
+        border-color: var(--bs-light);
+    }
+    .btn-outline-light:hover {
+        color: #000;
+        background-color: var(--bs-light);
+    }
+    .btn-outline-dark {
+        color: var(--bs-dark);
+        background-color: transparent;
+        border-color: var(--bs-dark);
+    }
+    .btn-outline-dark:hover {
+        color: #fff;
+        background-color: var(--bs-dark);
+    }
+
+    /* .btn-group: merges adjacent buttons' borders, resets radius on
+       interior edges. Simplified vs Bootstrap's real selectors (which
+       also account for .btn-check radio/checkbox siblings — not used
+       anywhere in this app, confirmed via grep) but matches the actual
+       visible behavior for every current consumer. */
+    .btn-group {
+        position: relative;
+        display: inline-flex;
+        vertical-align: middle;
+    }
+    .btn-group > .btn {
+        position: relative;
+        flex: 1 1 auto;
+    }
+    .btn-group > .btn:hover,
+    .btn-group > .btn:focus,
+    .btn-group > .btn:active {
+        z-index: 1;
+    }
+    .btn-group > .btn:not(:first-child) {
+        margin-left: -1px;
+    }
+    .btn-group > .btn:not(:last-child):not(.dropdown-toggle) {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    .btn-group > .btn:nth-child(n + 2) {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    .btn-group-sm > .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        border-radius: var(--bs-border-radius-sm, 0.25rem);
+    }
+
+    /* Dropdown toggle caret + split-button width (Dropdown.vue's JS
+       open/close logic was already rewritten in
+       `tailwindcss-dropdown-toast-navbar` — this is just the caret's
+       CSS, previously supplied by Bootstrap's dropdown.scss). */
+    .dropdown-toggle::after {
+        display: inline-block;
+        margin-left: 0.255em;
+        vertical-align: 0.255em;
+        content: '';
+        border-top: 0.3em solid;
+        border-right: 0.3em solid transparent;
+        border-bottom: 0;
+        border-left: 0.3em solid transparent;
+    }
+    .dropdown-toggle-split {
+        padding-left: 0.5625rem;
+        padding-right: 0.5625rem;
+    }
+    /* .dropdown-menu / .dropdown-item / .dropdown-divider — node
+       `tailwindcss-dropdown-menu-styling`. Bootstrap's real positioning
+       rule (top:100%, left:0, margin-top: spacer) is gated behind a
+       `[data-bs-popper]` attribute that ONLY Bootstrap's own JS
+       (Popper.js integration) ever set — since `tailwindcss-dropdown-
+       toast-navbar` removed that JS, `[data-bs-popper]` is never set
+       again, so the position rule below is unconditional here instead
+       (found by reading Bootstrap's actual `_dropdown.scss`, not
+       assumed — this repo's Dropdown.vue was otherwise relying on
+       accidental document-flow placement, not real intentional
+       positioning). Colors reuse the SAME root-scoped `var(--bs-*)`
+       tokens as `.auth-card` (`tailwindcss-auth-pages`) rather than the
+       dropdown-specific `--bs-dropdown-*` variables, which are only
+       ever defined INSIDE Bootstrap's own `.dropdown-menu` rule itself
+       (element-scoped, not `:root`) — using the root-scoped ones means
+       this doesn't silently break the moment Bootstrap's own
+       `.dropdown-menu` CSS is removed at the final cleanup node. */
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 1000;
+        margin-top: 0.125rem;
+        min-width: 10rem;
+        padding: 0.5rem 0;
+        color: var(--bs-body-color);
+        background-color: var(--bs-tertiary-bg);
+        border: 1px solid var(--bs-border-color-translucent);
+        border-radius: var(--bs-border-radius, 0.375rem);
+    }
+    .dropdown-menu:not(.show) {
+        display: none;
+    }
+    .dropdown-item {
+        display: block;
+        width: 100%;
+        padding: 0.25rem 1rem;
+        clear: both;
+        font-weight: 400;
+        color: var(--bs-body-color);
+        text-align: inherit;
+        text-decoration: none;
+        white-space: nowrap;
+        background-color: transparent;
+        border: 0;
+    }
+    .dropdown-item:hover,
+    .dropdown-item:focus {
+        color: var(--bs-body-color);
+        background-color: var(--bs-secondary-bg);
+    }
+    .dropdown-item.disabled,
+    .dropdown-item:disabled {
+        color: var(--bs-secondary-color, #6c757d);
+        pointer-events: none;
+        background-color: transparent;
+    }
+    .dropdown-divider {
+        height: 0;
+        margin: 0.5rem 0;
+        overflow: hidden;
+        border-top: 1px solid var(--bs-border-color-translucent);
+        opacity: 1;
+    }
+
+    .dropdown-toggle-split::after {
+        margin-left: 0;
+    }
+
+    /* .badge / .alert — node `tailwindcss-badge-alert`. Scoped to only
+       the colors actually used in src/ today (success/secondary for
+       badges, warning for alerts) rather than the full 8-color set built
+       for buttons — confirmed via grep, low marginal value building
+       unused variants here vs. buttons (used everywhere already). Add
+       more colors on demand following the same pattern if a future page
+       needs one. `.rounded-pill` included since it's used alongside
+       `.badge` and has no Tailwind equivalent name (`rounded-full`
+       exists but under a different name, so no collision either way). */
+    .badge {
+        display: inline-block;
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: var(--bs-border-radius, 0.375rem);
+    }
+    .rounded-pill {
+        border-radius: 50rem;
+    }
+    .text-bg-success {
+        color: #fff;
+        background-color: var(--bs-success);
+    }
+    .text-bg-secondary {
+        color: #fff;
+        background-color: var(--bs-secondary);
+    }
+
+    .alert {
+        position: relative;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: var(--bs-border-radius, 0.375rem);
+    }
+    .alert-warning {
+        color: var(--bs-warning-text-emphasis, #664d03);
+        background-color: var(--bs-warning-bg-subtle, #fff3cd);
+        border-color: var(--bs-warning-border-subtle, #ffe69c);
+    }
+
+    /* .form-control / .form-label / .form-text / .form-check* — node
+       `tailwindcss-form-controls`. Focus/checked colors (`#80e8ca`
+       border, `#00d095` checked bg) are hardcoded to match this app's
+       actual customized Bootstrap build (`$component-active-bg: $green`
+       in `bootstrap.scss`) — read directly from the real compiled
+       output, not vanilla Bootstrap's default blue, so this doesn't
+       regress the app's existing brand-green accent. `.form-label`
+       folds in `bootstrap.scss`'s own `.form .form-label` custom
+       override directly (padding/opacity/line-height) rather than
+       reproducing the nested `.form` ancestor selector — confirmed via
+       `grep` that `VeeForm.vue`'s root is always `<form class="form">`,
+       so `.form-label` never actually appears outside that context in
+       this app. Skipped (confirmed unused via grep): `.form-select`,
+       `.form-switch`, `.is-valid`/`.is-invalid` validation states,
+       indeterminate checkboxes — same "only what's actually used"
+       scoping as `tailwindcss-badge-alert`. */
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: var(--bs-body-color);
+        appearance: none;
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+        border: var(--bs-border-width, 1px) solid var(--bs-border-color);
+        border-radius: var(--bs-border-radius, 0.375rem);
+        transition:
+            border-color 0.15s ease-in-out,
+            box-shadow 0.15s ease-in-out;
+    }
+    .form-control:focus {
+        color: var(--bs-body-color);
+        background-color: var(--bs-body-bg);
+        border-color: #80e8ca;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem #0d6efd40;
+    }
+    /* Real bug found via operator QA on the login page: Chrome's saved-
+       password autofill forces its own background color
+       (rgb(232,240,254), a light blue) onto `<input>` elements via the
+       UA-only `:-webkit-autofill` pseudo-class — a browser behavior, not
+       something `background-color` alone can override (browsers apply
+       autofill styling with higher precedence than any author CSS
+       background/color declaration). Clashes badly in dark mode (the
+       surrounding card is near-black). Fixed with the standard trick:
+       an inset `box-shadow` large enough to fully cover the input's
+       background (browsers DO let author CSS override the shadow) tinted
+       to the current theme's real input background, `-webkit-text-fill-
+       color` to force the typed text back to the theme's text color (the
+       browser also overrides plain `color` the same way), and a
+       multi-thousand-second `transition-delay` on `background-color` so
+       Chrome's own flash-to-yellow-then-fade animation never gets a
+       chance to render before this rule takes over. */
+    .form-control:-webkit-autofill,
+    .form-control:-webkit-autofill:hover,
+    .form-control:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0 1000px var(--bs-body-bg) inset;
+        box-shadow: 0 0 0 1000px var(--bs-body-bg) inset;
+        -webkit-text-fill-color: var(--bs-body-color);
+        caret-color: var(--bs-body-color);
+        transition: background-color 600000s ease-in-out 0s;
+    }
+    .form-label {
+        margin-bottom: 0.5rem;
+        padding-left: 5px;
+        padding-right: 5px;
+        opacity: 0.75;
+        line-height: 1;
+    }
+    .form-text {
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: var(--bs-secondary-color);
+    }
+
+    .form-check {
+        display: block;
+        min-height: 1.5rem;
+        padding-left: 1.5em;
+        margin-bottom: 0.125rem;
+    }
+    .form-check .form-check-input {
+        float: left;
+        margin-left: -1.5em;
+    }
+    .form-check-input {
+        flex-shrink: 0;
+        width: 1em;
+        height: 1em;
+        margin-top: 0.25em;
+        vertical-align: top;
+        appearance: none;
+        background-color: var(--bs-body-bg);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        border: var(--bs-border-width, 1px) solid var(--bs-border-color);
+    }
+    .form-check-input[type='checkbox'] {
+        border-radius: 0.25em;
+    }
+    .form-check-input[type='radio'] {
+        border-radius: 50%;
+    }
+    .form-check-input:focus {
+        border-color: #80e8ca;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem #0d6efd40;
+    }
+    .form-check-input:checked {
+        background-color: #00d095;
+        border-color: #00d095;
+    }
+    .form-check-input:checked[type='checkbox'] {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+    }
+    .form-check-input:checked[type='radio'] {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");
+    }
+    .form-check-input:disabled {
+        pointer-events: none;
+        filter: none;
+        opacity: 0.5;
+    }
+    .form-check-label {
+        cursor: default;
+    }
+
+    /* .container / .row / .col / .col-auto / .col-12 / .col-md-6 /
+       .col-md-12 — node `tailwindcss-grid-system`. Values read directly
+       from Bootstrap's real `_variables.scss` ($grid-gutter-width: 1.5rem,
+       $container-max-widths, $grid-breakpoints) and `mixins/_grid.scss`
+       (`make-row`, `make-col-ready`, `make-col`, `make-col-auto`) rather
+       than guessed. Scoped to only the 7 exact grid classes that actually
+       appear anywhere in src/ today (confirmed via grep across all 3
+       syntaxes — class attr, Pug dot-chain, JS render-prop): `.container`
+       (`Footer`/`Header`/`LayoutAuth`/`LayoutDefault`/`Navbar`), `.row` +
+       `.col-12` + `.col-md-6` + `.col-md-12` (`VeeForm.vue`'s dynamic
+       per-field column width), `.col` + `.col-auto`
+       (`ItemTemplate.vue` — used standalone inside a Tailwind `.flex`
+       wrapper, NOT inside a `.row`, matching how Bootstrap's real CSS
+       already treated it: `.col`/`.col-auto` are always-on selectors from
+       `make-grid-columns`, independent of any `.row > *` ancestor rule,
+       so no padding applies there in real Bootstrap either — reproduced
+       exactly, not "fixed"). Full 12-column generation (`.col-1`..
+       `.col-11`, `.offset-*`, `.row-cols-*`, `.g-*` gutter utilities,
+       `.container-sm/-lg/-xl/-xxl`) deliberately not built — unused
+       anywhere, same "only what's used" scoping as badges/alerts/forms. */
+    .container {
+        width: 100%;
+        padding-right: 0.75rem;
+        padding-left: 0.75rem;
+        margin-right: auto;
+        margin-left: auto;
+    }
+    @media (min-width: 576px) {
+        .container {
+            max-width: 540px;
+        }
+    }
+    @media (min-width: 768px) {
+        .container {
+            max-width: 720px;
+        }
+    }
+    @media (min-width: 992px) {
+        .container {
+            max-width: 960px;
+        }
+    }
+    @media (min-width: 1200px) {
+        .container {
+            max-width: 1140px;
+        }
+    }
+    @media (min-width: 1400px) {
+        .container {
+            max-width: 1320px;
+        }
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -0.75rem;
+        margin-left: -0.75rem;
+    }
+    .row > * {
+        flex-shrink: 0;
+        width: 100%;
+        max-width: 100%;
+        padding-right: 0.75rem;
+        padding-left: 0.75rem;
+    }
+    .col {
+        flex: 1 0 0%;
+    }
+    .col-auto {
+        flex: 0 0 auto;
+        width: auto;
+    }
+    .col-12 {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+    @media (min-width: 768px) {
+        .col-md-6 {
+            flex: 0 0 auto;
+            width: 50%;
+        }
+        .col-md-12 {
+            flex: 0 0 auto;
+            width: 100%;
+        }
+    }
+
+    /* .nav / .nav-link / .navbar / .navbar-brand / .navbar-nav /
+       .navbar-expand-lg — node `tailwindcss-navbar-component-system`.
+       Values read from Bootstrap's real `_nav.scss`/`_navbar.scss` +
+       their `_variables.scss` defaults ($nav-link-padding-y: .5rem,
+       $nav-link-padding-x: 1rem, $navbar-padding-y: $spacer*.5 = .5rem,
+       $navbar-nav-link-padding-x: .5rem, $navbar-brand-font-size:
+       $font-size-lg = 1.25rem, $navbar-brand-margin-end: 1rem,
+       $navbar-brand-padding-y computed = (nav-link-height -
+       navbar-brand-height)*.5 = .3125rem) rather than guessed. Colors use
+       `var(--bs-emphasis-color)` / `var(--bs-body-color)` — both
+       :root/[data-bs-theme]-scoped (confirmed against Bootstrap's
+       compiled CSS), not the `.navbar`-element-scoped `--bs-navbar-*`
+       vars, same root-scoped-preference reasoning as `.dropdown-menu`
+       (node `tailwindcss-dropdown-menu-styling`) so this doesn't break
+       once `.navbar`'s own Bootstrap rule is removed at final cleanup.
+       `.nav-item` gets no rule — Bootstrap itself gives it zero CSS
+       outside `.nav-tabs`/`.nav-pills`/`.nav-fill` contexts, none of
+       which this app uses (confirmed via grep), so a rule would be
+       inventing behavior Bootstrap never actually provided here.
+       `.navbar-nav`'s real padding-x-zero effect on descendant
+       `.nav-link` (via a CSS custom property Bootstrap sets on
+       `.navbar-nav` itself and `.nav-link` reads) is reproduced directly
+       as a descendant-selector override instead, simpler for this scope.
+       Real, LIVE change: `.nav` is load-bearing today in
+       `LayoutDefault.vue`'s sidebar nav (`nav.nav.flex-col...` — Tailwind's
+       `flex-col` alone doesn't set `display:flex`, so without `.nav`'s
+       `display:flex` that layout was already silently depending on
+       Bootstrap's real CSS, not a Tailwind-migration artifact).
+
+       `.collapse`/`.navbar-toggler`/`.navbar-toggler-icon`/
+       `.navbar-collapse` also included below — initially assumed unused
+       and left out of this comment, but `Navbar.vue` (the mobile-collapse
+       nav rewritten in node `tailwindcss-dropdown-toast-navbar`) uses all
+       4, confirmed by re-reading that file directly rather than trusting
+       the first grep pass. `Navbar.vue`'s JS already drives the open/close
+       `display` via inline `:style` (same pattern as `Modal.vue`), so
+       `.collapse` only needs the CLOSED-state default here.
+       `.navbar-toggler-icon`'s hamburger-SVG background is copied
+       byte-for-byte from Bootstrap's own COMPILED output (both light and
+       dark theme variants, `node_modules/bootstrap/dist/css/bootstrap.css`)
+       rather than re-deriving the `escape-svg()` encoding by hand, gated
+       on `[data-bs-theme='dark']` to match this app's existing dark-mode
+       toggle mechanism (`useTheme` composable). Skipped, confirmed unused
+       via grep: `.nav-tabs`, `.nav-pills`, `.nav-underline`, `.nav-fill`,
+       `.nav-justified`, `.navbar-text`, `.navbar-nav-scroll`, dark-navbar
+       color variants beyond the toggler icon — same "only what's used"
+       scoping as every prior component node. */
+    .nav {
+        display: flex;
+        flex-wrap: wrap;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+    .nav-link {
+        display: block;
+        padding: 0.5rem 1rem;
+        color: var(--bs-body-color);
+        text-decoration: none;
+        transition: color 0.15s ease-in-out;
+    }
+    .nav-link:hover,
+    .nav-link:focus {
+        color: var(--bs-emphasis-color);
+    }
+    .nav-link.active {
+        color: var(--bs-emphasis-color);
+    }
+    .navbar-nav {
+        display: flex;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+    }
+    .navbar-nav .nav-link {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .navbar {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+    /* Real bug found via operator QA on the login page: `.navbar`'s own
+       `display:flex` above only lays out its DIRECT children. Bootstrap's
+       real `_navbar.scss` also flex-ifies `.navbar > .container` /
+       `.navbar > .container-fluid` specifically (its `%container-flex-
+       properties` placeholder), because `.container`'s own base rule
+       (`width:100%; margin:auto`, node `tailwindcss-grid-system`) is NOT
+       flex — a `.navbar` that nests `.container` INSIDE itself (like
+       `Navbar.vue`, used for the unauthenticated header on
+       login/register/forgot-password/reset-password) needs this second
+       rule or its brand/toggler/collapse children fall back to normal
+       block/inline flow instead of being spaced apart, which is exactly
+       what was observed: the mobile toggler button sat right next to the
+       brand instead of being pushed to the far right. The AUTHENTICATED
+       header (`Header.vue`'s `v-else` branch) wasn't affected — there,
+       `.container` wraps `.navbar` from the OUTSIDE, so `.navbar`'s own
+       direct-child flex rule above already applied correctly, which is
+       why this was missed during the original node's static/harness
+       verification (no live browser was available then to catch it). */
+    .navbar > .container {
+        display: flex;
+        flex-wrap: inherit;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .navbar-brand {
+        display: inline-block;
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        color: var(--bs-emphasis-color);
+        text-decoration: none;
+        white-space: nowrap;
+    }
+    .navbar-brand:hover,
+    .navbar-brand:focus {
+        color: var(--bs-emphasis-color);
+    }
+    @media (min-width: 992px) {
+        .navbar-expand-lg {
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+        }
+        .navbar-expand-lg .navbar-nav {
+            flex-direction: row;
+        }
+        .navbar-expand-lg .navbar-nav .nav-link {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+        /* Without this pair, desktop width would still hide the nav
+           links behind the (still-visible) mobile toggle button, since
+           `.collapse:not(.show)` below defaults to `display:none` and
+           `Navbar.vue`'s `expanded` ref starts `false` — this exact
+           `!important` override is how real Bootstrap keeps `.navbar-
+           expand-lg` permanently expanded above its breakpoint,
+           confirmed in `_navbar.scss`'s `navbar-expand-loop` mixin. */
+        .navbar-expand-lg .navbar-collapse {
+            display: flex !important;
+            flex-basis: auto;
+        }
+        .navbar-expand-lg .navbar-toggler {
+            display: none;
+        }
+    }
+
+    /* Keyed off `.navbar-collapse` (unique name), NOT bare `.collapse` —
+       `.collapse` is a real Tailwind utility (`visibility: collapse`,
+       for table rows) and, since Tailwind's `@layer utilities` always
+       outranks `@layer components` regardless of source order, a
+       components-layer override of it can't win normally. Confirmed via
+       compiled-CSS inspection during this node's own verification: the
+       bare `.collapse{visibility:collapse}` utility was ALREADY present
+       in the bundle (Tailwind generates it from any literal "collapse"
+       class-list token, and `Navbar.vue` had one) — this would have
+       silently broken the navbar's open state on both mobile and desktop
+       had it shipped. Fixed by dropping the bare `.collapse` token from
+       `Navbar.vue`'s markup entirely (see that file's own comment) and
+       keying this rule off `.navbar-collapse` only. */
+    .navbar-collapse:not(.show) {
+        display: none;
+    }
+    .navbar-toggler {
+        padding: 0.25rem 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1;
+        color: var(--bs-emphasis-color);
+        background-color: transparent;
+        border: 1px solid rgba(var(--bs-emphasis-color-rgb), 0.15);
+        border-radius: var(--bs-border-radius, 0.375rem);
+    }
+    .navbar-toggler:focus {
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(var(--bs-emphasis-color-rgb), 0.15);
+    }
+    .navbar-toggler-icon {
+        display: inline-block;
+        width: 1.5em;
+        height: 1.5em;
+        vertical-align: middle;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 100%;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+    [data-bs-theme='dark'] .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+    .navbar-collapse {
+        flex-basis: 100%;
+        flex-grow: 1;
+        align-items: center;
+    }
+
+    /* .text-success/.text-info/.text-warning/.text-primary/.text-danger,
+       .border-success/.border-danger, .bg-body-tertiary — node
+       `tailwindcss-color-utilities`. UNLIKE every other rule in this
+       file, these are DELIBERATELY DORMANT, not live — confirmed via
+       Bootstrap's own compiled `dist/css/bootstrap.css` that ALL of
+       these are real Bootstrap UTILITY classes (as opposed to component
+       classes like `.btn`/`.dropdown-menu`), and Bootstrap's utility
+       layer emits them with `!important`
+       (`.text-danger{color:rgba(var(--bs-danger-rgb),var(--bs-text-opacity))!important}`
+       etc) — since Bootstrap's real CSS (`bootstrap.scss`) is still
+       imported (dual-framework, by design until the final removal node)
+       and these class names were never renamed, Bootstrap's own
+       `!important` rule ALREADY wins today regardless of anything added
+       here, identical to the `.mt-4` collision mechanism found in node
+       `tailwindcss-auth-pages` — just inverted (there, Bootstrap's
+       `!important` was an unwanted collision to dodge; here, it's a
+       free ride that means zero live-visual risk from adding this
+       block). These rules are added now anyway, WITHOUT `!important`, so
+       they sit dormant and are ready to activate automatically the
+       moment Bootstrap's own CSS is deleted at the final removal node —
+       same "build now, reuse the same name, activate later" strategy as
+       `.btn`/`.dropdown-menu`/etc. (nodes 6-9), just with the dormancy
+       enforced by cascade weight instead of layer order this time.
+       Simplified vs Bootstrap's real output: omits the `--bs-text-
+       opacity`/`--bs-border-opacity`/`--bs-bg-opacity` CSS custom
+       property indirection (confirmed via grep — nothing in this app
+       ever overrides those, so a flat `var(--bs-*)` color is
+       equivalent for every current use) and the `-emphasis`/`-subtle`
+       variants (confirmed unused via grep, except `PageHome.vue`'s
+       `text-bg-success-subtle` — NOT a real Bootstrap class at all,
+       already inert today, deliberately left alone rather than
+       "fixed" into new behavior). Skipped, deferred as a separate,
+       unrelated system: `.spinner-border`/`.spinner-border-sm`
+       (`Spinner.vue`) — a component animation, not a color utility. */
+    .text-primary {
+        color: var(--bs-primary);
+    }
+    .text-success {
+        color: var(--bs-success);
+    }
+    .text-info {
+        color: var(--bs-info);
+    }
+    .text-warning {
+        color: var(--bs-warning);
+    }
+    .text-danger {
+        color: var(--bs-danger);
+    }
+    .border-success {
+        border-color: var(--bs-success);
+    }
+    .border-danger {
+        border-color: var(--bs-danger);
+    }
+    .bg-body-tertiary {
+        background-color: var(--bs-tertiary-bg);
+    }
+
+    /* .spinner-border / .spinner-border-sm — node
+       `tailwindcss-spinner-border`. Dormant today, same as `.btn`/
+       `.dropdown-menu`/etc. (nodes 6-9) — but NOT because of any real
+       CSS `@layer` at-rule surviving into the compiled output (verified:
+       `grep -c '@layer' dist/assets/index-*.css` → 0 — Tailwind v3's
+       `@layer components`/`@layer utilities` are a BUILD-TIME bucketing
+       instruction only, resolved away entirely, never emitted as actual
+       `@layer` CSS). The real mechanism is ordinary last-rule-wins
+       cascade by plain source order: `main.ts` imports `tailwind.css`
+       BEFORE `bootstrap.scss`, so for this equal-specificity,
+       non-`!important` class name, Bootstrap's real `.spinner-border`
+       rule simply appears later in the single concatenated stylesheet
+       and wins — a real but ORDER-DEPENDENT outcome, not an inherent
+       guarantee. Disclosed risk: if `main.ts`'s import order were ever
+       reversed, this rule (and every other "dormant" rule from nodes
+       6-14) would flip live immediately, all at once — the phased
+       migration's dormancy safety net depends on that import order
+       staying fixed until the final Bootstrap-removal node deliberately
+       deletes the `bootstrap.scss` import outright. Confirmed via grep
+       the only consumer is `Spinner.vue`'s cold-start overlay
+       (`class="spinner-border spinner-border-sm text-success"`), and
+       only `.spinner-border`/`.spinner-border-sm` are used — Bootstrap's
+       sibling `.spinner-grow`/`.spinner-grow-sm` (a different animation
+       variant) is confirmed unused via grep, not built. Values read
+       directly from Bootstrap's real compiled `dist/css/bootstrap.css`
+       (`--bs-spinner-width/-height: 2rem` base / `1rem` `-sm`,
+       `--bs-spinner-border-width: .25em` base / `.2em` `-sm`,
+       `--bs-spinner-vertical-align: -.125em`,
+       `--bs-spinner-animation-speed: .75s`) — flattened directly instead
+       of reproducing Bootstrap's CSS-custom-property indirection, same
+       simplification already applied to badges/alerts/color-utilities.
+       `prefers-reduced-motion` speed override skipped — confirmed no
+       accessibility requirement tracked for it in this app currently,
+       same "only what's used" scoping as every prior node. `currentcolor`
+       (`border-right-color: transparent`, everything else `currentcolor`)
+       correctly still resolves via `Spinner.vue`'s own `.text-success`
+       class, which remains live today via Bootstrap's own `!important`
+       rule regardless of this node (see `tailwindcss-color-utilities`). */
+    .spinner-border {
+        display: inline-block;
+        width: 2rem;
+        height: 2rem;
+        vertical-align: -0.125em;
+        border-radius: 50%;
+        border: 0.25em solid currentcolor;
+        border-right-color: transparent;
+        animation: spinner-border 0.75s linear infinite;
+    }
+    .spinner-border-sm {
+        width: 1rem;
+        height: 1rem;
+        border-width: 0.2em;
+    }
+    @keyframes spinner-border {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* ==========================================================
+       Node `tailwindcss-root-tokens-and-remaining-gaps` — every
+       remaining REAL Bootstrap class dependency found by an exhaustive
+       final-removal-prep survey (3-syntax class-token scan across
+       `.vue`/`.js`/`.ts`, cross-referenced against Bootstrap's real
+       compiled selectors, filtered against every class already built in
+       nodes 6-14). Unlike nodes 6-14, dormancy no longer matters here —
+       these are being added specifically so they're ready the moment
+       `bootstrap.scss` is actually deleted in the next node, not to sit
+       dormant indefinitely.
+       ========================================================== */
+
+    /* .h4/.h5/.h6 — confirmed real usage: `Heading.vue` (.h4, via a
+       dynamic `props.tag` class), `PageHome.vue` (.h4), `Modal.vue`
+       (.h5, on `.modal-title`), `GroupTags.vue` + `PageAccountSettings.vue`
+       (.h6). `.h1`-`.h3` skipped — confirmed unused (`PagePreview.vue`/
+       `PagePublicResume.vue`'s real `<h2>`/`<h3>` tags carry their own
+       `.cv-name`/`.cv-section-title` classes with independent scoped
+       `<style>`, not the Bootstrap `.h2`/`.h3` utility). `color:
+       var(--bs-heading-color)` omitted — Bootstrap's own value for that
+       variable is the literal keyword `inherit`, so declaring
+       `color: inherit` here is equivalent and avoids one more variable
+       dependency. */
+    h6,
+    .h6,
+    h5,
+    .h5,
+    h4,
+    .h4 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        line-height: 1.2;
+        color: inherit;
+    }
+    .h4 {
+        font-size: calc(1.275rem + 0.3vw);
+    }
+    @media (min-width: 1200px) {
+        .h4 {
+            font-size: 1.5rem;
+        }
+    }
+    .h5 {
+        font-size: 1.25rem;
+    }
+    h6,
+    .h6 {
+        font-size: 1rem;
+    }
+
+    /* .clearfix — confirmed real usage in 8 files, including the global
+       `Box.vue` component (rendered via a JS `h()` call, caught by the
+       extended survey). */
+    .clearfix::after {
+        display: block;
+        clear: both;
+        content: '';
+    }
+
+    /* .text-uppercase — confirmed usage: `Toasts.vue`'s toast-header
+       label, `PageAccountSettings.vue` (×3, already dormant-safe via
+       node `tailwindcss-color-utilities`'s sibling `.text-danger`
+       pairing on one of them). Bootstrap-only name — Tailwind's own
+       equivalent utility is `.uppercase`, a different name, so this one
+       genuinely has no free ride from either framework and needs its
+       own rule, unlike most of node `tailwindcss-color-utilities`'s
+       set. */
+    .text-uppercase {
+        text-transform: uppercase;
+    }
+
+    /* .border-start — confirmed usage: `ItemTemplate.vue`'s left accent
+       border (paired with `.border-success`, already built in node
+       `tailwindcss-color-utilities`). Deliberately left bare/undecided
+       in that node's own evidence (and REOPENED once on cross-reference
+       accuracy) — resolved now, since final removal means "leave it
+       bare" is no longer a safe option. */
+    .border-start {
+        border-left: var(--bs-border-width) solid var(--bs-border-color);
+    }
+
+    /* .dropdown (bare) — confirmed real usage: `Dropdown.vue`'s own root
+       `:class="['dropdown', ...]"`. Provides the `position: relative`
+       anchor that `.dropdown-menu`'s `position: absolute` (node
+       `tailwindcss-dropdown-menu-styling`) is positioned against — a
+       real, load-bearing gap, not cosmetic. */
+    .dropdown {
+        position: relative;
+    }
+
+    /* .input-group / .input-group-sm / .input-group-text — confirmed
+       real usage: `GroupTags.vue` (icon-less add-tag row, `.input-group
+       .input-group-sm`), `FrmInput.vue` (icon-prefixed text input),
+       `FrmPwd.vue` (icon-prefixed + trailing show/hide-password icon).
+       Simplified vs Bootstrap's real selectors: the adjacency
+       border-radius reset skips the `.form-floating`/`.has-validation`/
+       `.dropdown-toggle`/`.dropdown-menu` exceptions (confirmed unused
+       in any `.input-group` in this app via grep) — every child here is
+       always exactly `.form-control`/`.input-group-text`/`.btn`. */
+    .input-group {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        width: 100%;
+    }
+    .input-group > .form-control {
+        position: relative;
+        flex: 1 1 auto;
+        width: 1%;
+        min-width: 0;
+    }
+    .input-group > .form-control:focus {
+        z-index: 5;
+    }
+    .input-group .btn {
+        position: relative;
+        z-index: 2;
+    }
+    .input-group .btn:focus {
+        z-index: 5;
+    }
+    .input-group-text {
+        display: flex;
+        align-items: center;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: var(--bs-body-color);
+        text-align: center;
+        white-space: nowrap;
+        background-color: var(--bs-tertiary-bg);
+        border: var(--bs-border-width) solid var(--bs-border-color);
+        border-radius: var(--bs-border-radius);
+    }
+    .input-group > :not(:first-child) {
+        margin-left: calc(var(--bs-border-width) * -1);
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    .input-group > :not(:last-child) {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    .input-group-sm > .form-control,
+    .input-group-sm > .input-group-text,
+    .input-group-sm > .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        border-radius: var(--bs-border-radius-sm);
+    }
+
+    /* .table / .table-hover / .table-bordered / .table-responsive —
+       confirmed sole consumer: `table/part/Table.js` + `TableDefault.vue`
+       (a JS `h()` render-prop file — `class: ['table table-hover', ...]`
+       — invisible to any `class="..."`-anchored survey, the same blind
+       spot class found in node 10, caught this time by extending the
+       token scan to `.js`/`.ts` files too). Includes the cell
+       `border-style`/`border-color`/`border-width` reset that in real
+       Bootstrap comes from Reboot's global `thead,tbody,tfoot,tr,td,th`
+       rule (not a `.table`-specific rule) — scoped here to `.table`
+       descendants specifically rather than reproduced as a bare global
+       element selector, since this app has exactly one table system and
+       a narrower selector is safer/more predictable than a sitewide
+       reset. */
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        vertical-align: top;
+        border-color: var(--bs-border-color);
+    }
+    .table thead,
+    .table tbody,
+    .table tfoot,
+    .table tr,
+    .table td,
+    .table th {
+        border-color: inherit;
+        border-style: solid;
+        border-width: 0;
+    }
+    .table > :not(caption) > * > * {
+        padding: 0.5rem 0.5rem;
+        color: var(--bs-emphasis-color);
+        background-color: var(--bs-body-bg);
+        border-bottom-width: var(--bs-border-width);
+    }
+    .table > tbody {
+        vertical-align: inherit;
+    }
+    .table > thead {
+        vertical-align: bottom;
+    }
+    .table-hover > tbody > tr:hover > * {
+        color: var(--bs-emphasis-color);
+        background-color: rgba(var(--bs-emphasis-color-rgb), 0.075);
+    }
+    .table-bordered > :not(caption) > * {
+        border-width: var(--bs-border-width) 0;
+    }
+    .table-bordered > :not(caption) > * > * {
+        border-width: 0 var(--bs-border-width);
+    }
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* .toast / .toast-container / .toast-header / .toast-body —
+       confirmed sole consumer: `Toasts.vue` (JS-rewritten in node
+       `tailwindcss-dropdown-toast-navbar`, CSS never rebuilt until now).
+       `.toast-container`'s own real `position: absolute` is overridden
+       today (and will remain overridden after removal) by the SAME
+       element's own `fixed`/`top-0`/`end-0` Tailwind utility classes,
+       already present since an earlier node — reproduced faithfully
+       anyway for fidelity on the properties that AREN'T overridden
+       (`z-index`, `width: max-content`, `pointer-events: none`); the
+       `position` property specifically never actually takes effect
+       either before or after this change, not a regression introduced
+       here. `.toast:not(.show){display:none}` intentionally omitted —
+       `Toasts.vue` already drives that via its own inline `:style`
+       binding (`display: visible ? 'block' : 'none'`), same pattern as
+       `Modal.vue`. */
+    .toast {
+        width: 350px;
+        max-width: 100%;
+        font-size: 0.875rem;
+        color: var(--bs-body-color);
+        pointer-events: auto;
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+        border: var(--bs-border-width) solid var(--bs-border-color-translucent);
+        border-radius: var(--bs-border-radius);
+    }
+    .toast-container {
+        position: absolute;
+        z-index: 1090;
+        width: max-content;
+        max-width: 100%;
+        pointer-events: none;
+    }
+    .toast-header {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0.75rem;
+        color: var(--bs-secondary-color);
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+        border-bottom: var(--bs-border-width) solid var(--bs-border-color-translucent);
+        border-top-left-radius: calc(var(--bs-border-radius) - var(--bs-border-width));
+        border-top-right-radius: calc(var(--bs-border-radius) - var(--bs-border-width));
+    }
+    .toast-body {
+        padding: 0.75rem;
+        word-wrap: break-word;
+    }
+
+    /* .modal / .modal-dialog / .modal-dialog-scrollable / .modal-content
+       / .modal-header / .modal-title / .modal-body / .modal-footer /
+       .modal-backdrop / .modal-lg — confirmed sole consumer: `Modal.vue`
+       (JS-rewritten in node `tailwindcss-modal-rewrite`, CSS never
+       rebuilt until now — the single biggest gap found in this survey,
+       used across 6 CRUD dashboard pages). `.modal-lg` only — confirmed
+       via grep the `size` prop is never overridden anywhere, always the
+       component's own `'modal-lg'` default. `.modal.show{display:block}`
+       and the backdrop's `v-if` mount/unmount intentionally omitted —
+       `Modal.vue` already drives visibility via its own inline `:style`
+       binding and `v-if`, same pattern as `Toasts.vue`. `body.modal-open`
+       intentionally NOT reproduced — confirmed (via Bootstrap's own
+       source, `_modal.scss` line 3) that Bootstrap 5 has never shipped
+       real CSS for that class; the actual scroll-lock always came from
+       Bootstrap's JS setting `body.style.overflow` directly as an inline
+       style, which `Modal.vue`'s rewrite never reproduced either — a
+       real, PRE-EXISTING gap (modals have never actually locked body
+       scroll since node `tailwindcss-modal-rewrite`), unrelated to
+       Bootstrap CSS presence/absence either way, noted here but not
+       fixed (out of scope: behavioral gap, not a CSS-migration one). */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1055;
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+        outline: 0;
+    }
+    .modal-dialog {
+        position: relative;
+        width: auto;
+        margin: 0.5rem;
+        pointer-events: none;
+    }
+    @media (min-width: 576px) {
+        .modal-dialog {
+            max-width: 500px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+        .modal-dialog {
+            margin: 1.75rem auto;
+        }
+    }
+    @media (min-width: 992px) {
+        .modal-lg {
+            max-width: 800px;
+        }
+    }
+    .modal-dialog-scrollable {
+        height: calc(100% - 3.5rem);
+    }
+    @media (max-width: 575.98px) {
+        .modal-dialog-scrollable {
+            height: calc(100% - 1rem);
+        }
+    }
+    .modal-dialog-scrollable .modal-content {
+        max-height: 100%;
+        overflow: hidden;
+    }
+    .modal-dialog-scrollable .modal-body {
+        overflow-y: auto;
+    }
+    .modal-content {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        color: var(--bs-body-color);
+        pointer-events: auto;
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+        border: var(--bs-border-width) solid var(--bs-border-color-translucent);
+        border-radius: var(--bs-border-radius-sm);
+        outline: 0;
+    }
+    .modal-header {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+    }
+    .modal-title {
+        margin-bottom: 0;
+        line-height: 1.5;
+    }
+    .modal-body {
+        position: relative;
+        flex: 1 1 auto;
+        padding: 1rem;
+    }
+    .modal-footer {
+        display: flex;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0.75rem;
+        border-top: var(--bs-border-width) solid var(--bs-border-color);
+    }
+    .modal-footer > * {
+        margin: 0.25rem;
+    }
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1050;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000;
+    }
+    .modal-backdrop.show {
+        opacity: 0.5;
+    }
+
+    /* ==========================================================
+       Genuine app-authored custom CSS, extracted verbatim (values
+       unchanged) from `bootstrap.scss`'s own hand-written tail section
+       — NOT part of the `bootstrap` npm package, but physically living
+       inside the same file this whole session, so no prior node's
+       "Bootstrap class" survey ever looked for it. Found only by reading
+       `bootstrap.scss` itself top-to-bottom during final-removal prep.
+       Colors hardcoded (not `var(--bs-green)`) to match the original
+       SCSS's own literal `$_green: #00d095` local variable, which was
+       never a real Bootstrap token to begin with.
+       ========================================================== */
+
+    /* `.heading`'s green color/border was already fully live via this
+       exact rule (loaded from `bootstrap.scss`, unlayered, `!important`
+       on border-color) for the entire session — meaning node
+       `tailwindcss-remaining-utilities-sweep`'s `border-[var(--bs-border-
+       color)]` fix on `Heading.vue`'s root div has been silently
+       overridden by THIS rule the whole time, not a regression
+       introduced now. Preserving the actual current visual (green
+       border) rather than the gray `--bs-border-color` that node 10
+       intended but which never actually took effect — changing it now
+       would be the real regression. `!important` kept for the same
+       reason: removing it would let the arbitrary-value utility class
+       win instead, changing the live appearance. */
+    .heading {
+        color: #00d095;
+        border-color: #00d095 !important;
+    }
+    .pointer {
+        cursor: pointer;
+    }
+    /* Wrongly declared dead in this node's first pass — a grep miss on
+       Pug syntax (the exact blind-spot class this node's own Layer-1
+       survey said it had corrected for, missed here anyway).
+       `ListTransition.vue` (global, auto-registered component, used by
+       every `Page{Award,Certificate,Education,Experience,Project}.vue`
+       CRUD list view) renders `TransitionGroup(... class="list" tag="ul")`
+       — a real, live `<ul class="list">` with real `<li>` children.
+       Found and fixed via verifier REOPEN. */
+    .list {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+    .list > li {
+        margin-bottom: 1.5rem;
+    }
+    /* Overrides the base `.modal-title` rule above — must stay AFTER it
+       in source order (same specificity, last declared wins). */
+    .modal-title {
+        color: #00d095;
+        text-transform: uppercase;
+    }
+    .modal-footer .btn {
+        min-width: 100px;
+    }
+    /* Real compiled selector is `.form .footer .btn` (3 levels nested in
+       the original SCSS) — kept as-is rather than narrowed to bare
+       `.footer .btn`, even though the only current `.footer` consumer
+       (`VeeForm.vue`) is always inside `.form` anyway (confirmed via
+       grep), so the two are equivalent today; matching the real
+       selector exactly avoids silently widening scope if a bare
+       `.footer` outside a `.form` is ever added later. */
+    .form .footer .btn {
+        min-width: 160px;
+    }
+    .item .image {
+        width: 120px;
+        display: block;
+        margin: 0;
+        font-size: 3rem;
+    }
+    .item-title {
+        font-size: 1.5rem;
+        text-transform: capitalize;
+        color: #00d095;
+        margin-bottom: 0.5em;
+        margin: 0;
+    }
+    .item-note {
+        opacity: 0.75;
+        font-size: 1rem;
+        font-style: italic;
+        margin-bottom: 0.5rem;
+    }
+    .item:not(:last-child) {
+        margin-bottom: 1.5rem;
+    }
+    /* `.post-content` renders user-authored rich-text HTML (`v-html`) —
+       education/experience/project/award/certificate/reference item
+       descriptions, via `ItemTemplate.vue` (global component). */
+    .post-content > * {
+        margin-bottom: 1rem;
+    }
+    .post-content ul,
+    .post-content ol {
+        padding-left: 1rem;
+        margin: 0;
+    }
+    .post-content ul > li,
+    .post-content ol > li {
+        margin-bottom: 1rem;
+    }
+    .post-content ul > li > ul,
+    .post-content ol > li > ul,
+    .post-content ul > li > li,
+    .post-content ol > li > li {
+        margin-top: 1rem;
+    }
+    .post-content ul > li > ul,
+    .post-content ol > li > ul {
+        list-style: square;
+        padding-left: 1.5rem;
+    }
+    .post-content ul {
+        list-style: disc;
+    }
+    .post-content ol {
+        list-style: decimal;
+    }
+}

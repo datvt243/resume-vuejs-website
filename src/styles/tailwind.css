@@ -501,6 +501,16 @@
         color: #fff;
         background-color: var(--bs-secondary);
     }
+    .text-bg-warning {
+        /* node `issue-118-application-tracker` — added on demand per the
+           comment above, matches `.btn-warning`'s dark-text convention */
+        color: #000;
+        background-color: var(--bs-warning);
+    }
+    .text-bg-danger {
+        color: #fff;
+        background-color: var(--bs-danger);
+    }
 
     .alert {
         position: relative;

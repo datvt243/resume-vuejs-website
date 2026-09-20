@@ -80,6 +80,12 @@ const routes = [
                 meta: { requiresAuth: true },
             },
             {
+                path: 'application',
+                name: 'application',
+                component: () => import('@/pages/dashboard/PageApplication.vue'),
+                meta: { requiresAuth: true },
+            },
+            {
                 path: 'visits',
                 name: 'visits',
                 component: () => import('@/pages/dashboard/PageVisits.vue'),

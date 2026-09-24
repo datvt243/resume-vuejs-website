@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { formatDate, formatDateToInput, getLocalizedText, wrapLocalizedText } from './index'
+import { describe, it, expect, beforeEach } from 'vitest'
+import { formatDate, formatDateToInput, getLocalizedText, wrapLocalizedText, getCookie, getCsrfHeader } from './index'
 
 describe('formatDate', () => {
     it('returns the placeholder for a falsy date', () => {
@@ -52,6 +52,42 @@ describe('getLocalizedText', () => {
     it('defaults to vi, then falls back to en, when the requested language is missing', () => {
         expect(getLocalizedText({ vi: 'chào' })).toBe('chào')
         expect(getLocalizedText({ en: 'hello' })).toBe('hello')
+    })
+})
+
+describe('getCookie', () => {
+    beforeEach(() => {
+        document.cookie = 'csrfToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+    })
+
+    it('returns an empty string when the cookie is not set', () => {
+        expect(getCookie('csrfToken')).toBe('')
+    })
+
+    it('reads a set cookie by name, decoding its value', () => {
+        document.cookie = 'csrfToken=abc%20123'
+        expect(getCookie('csrfToken')).toBe('abc 123')
+    })
+
+    it('picks the right cookie among several', () => {
+        document.cookie = 'other=xyz'
+        document.cookie = 'csrfToken=real-token'
+        expect(getCookie('csrfToken')).toBe('real-token')
+    })
+})
+
+describe('getCsrfHeader', () => {
+    beforeEach(() => {
+        document.cookie = 'csrfToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+    })
+
+    it('returns an empty object when no csrfToken cookie is set', () => {
+        expect(getCsrfHeader()).toEqual({})
+    })
+
+    it('returns the x-csrf-token header when the cookie is set', () => {
+        document.cookie = 'csrfToken=real-token'
+        expect(getCsrfHeader()).toEqual({ 'x-csrf-token': 'real-token' })
     })
 })
 

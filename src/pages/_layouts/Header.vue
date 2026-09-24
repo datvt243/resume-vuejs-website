@@ -22,7 +22,6 @@ const candidate = candidateStore()
 const { theme, toggleTheme } = useTheme()
 
 const _user = store.getUser
-const _token = store.getToken
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 const _settings = {
@@ -31,7 +30,9 @@ const _settings = {
         return _user?.email ? `${this.host}api/me/${_user.email}` : '#'
     },
     getFile() {
-        return `${this.host}api/v1/download-pdf?token=${_token}`
+        // issue #8: auth is now an httpOnly cookie, sent automatically on
+        // this same-browser navigation — no `?token=` to build from JS.
+        return `${this.host}api/v1/download-pdf`
     },
 }
 

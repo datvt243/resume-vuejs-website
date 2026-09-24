@@ -1,0 +1,1 @@
+import{r as c,D as i}from"./index-BFdV1mQR.js";const o="cvActiveProfileId";function l(){const t=c(localStorage.getItem(o)||"");i(t,e=>{e?localStorage.setItem(o,e):localStorage.removeItem(o)});function r(e){t.value=e||""}return{activeProfileId:t,setActiveProfile:r}}export{l as u};

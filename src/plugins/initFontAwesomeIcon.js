@@ -39,6 +39,7 @@ import {
     faGripVertical,
     faCopy,
     faCamera,
+    faArrowUpRightFromSquare,
 } from '@fortawesome/free-solid-svg-icons'
 
 export default {
@@ -79,6 +80,7 @@ export default {
             faGripVertical,
             faCopy,
             faCamera,
+            faArrowUpRightFromSquare,
         )
 
         app.component('FontAwesomeIcon', FontAwesomeIcon)

@@ -43,6 +43,7 @@ const routers = [
     { text: 'Giải thưởng', name: 'award', to: '/dashboard/award' },
     { text: 'Chứng chỉ', name: 'certificate', to: '/dashboard/certificate' },
     { text: 'Người tham khảo', name: 'reference', to: '/dashboard/reference' },
+    { text: 'Ứng tuyển', name: 'application', to: '/dashboard/application' },
     { text: 'Xem trước / Xuất PDF', name: 'preview', to: '/dashboard/preview' },
     { text: 'Cài đặt tài khoản', name: 'account-settings', to: '/dashboard/account-settings' },
 ]

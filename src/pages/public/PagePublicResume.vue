@@ -53,7 +53,16 @@ const theme = computed(() => resolveTheme(route.query.theme))
 
 onMounted(async () => {
     try {
-        const res = await _axios({ method: 'get', customURL: `api/me/${identifier}` })
+        // Issue #116: optional `?profile=` query param (appended to the
+        // copyable public link in PageInformation.vue) — the backend
+        // filters each section to that profile's selected subset,
+        // falling back to unfiltered on any invalid/foreign/missing id.
+        const profileId = typeof route.query.profile === 'string' ? route.query.profile : undefined
+        const res = await _axios({
+            method: 'get',
+            customURL: `api/me/${identifier}`,
+            params: profileId ? { profile: profileId } : undefined,
+        })
         if (!res?.success || !res?.data) {
             notFound.value = true
             return

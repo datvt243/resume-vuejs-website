@@ -22,8 +22,9 @@ import QrCode from '@/components/QrCode.vue'
 
 import { ref, reactive, shallowRef, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useDocument, useHelper } from '@/composables'
+import { useDocument, useHelper, useCandidate } from '@/composables'
 import { useCvTheme, DEFAULT_THEME } from '@/composables/useCvTheme'
+import { useActiveProfile } from '@/composables/useActiveProfile'
 import { getLocalizedText, wrapLocalizedText } from '@/utilities/index'
 
 /* import { useDocument } from '@/composables/useDocument' */
@@ -154,10 +155,23 @@ const slugDocument = reactive({ _id: '', slug: '' })
 // picked in `PagePreview.vue` — no backend preference field needed.
 // Omitted for the default theme to keep the link clean when unused.
 const { selectedTheme } = useCvTheme()
+
+// Issue #116: carry the owner's chosen CV profile into the copyable
+// public link as `?profile=`, same mechanism issue #119 used for `?theme=`
+// — a pure frontend choice, no backend preference field. Falls back to
+// "no filter" (full data, pre-#116 behavior) if the stored id no longer
+// matches a real profile (e.g. it was deleted since).
+const { profiles } = useCandidate({ field: 'profiles', collection: 'profile' })
+const { activeProfileId, setActiveProfile } = useActiveProfile()
+const activeProfile = computed(() => profiles.value.find(p => p._id === activeProfileId.value) || null)
+
 const publicLink = computed(() => {
     const value = slugDocument.slug || candidate.getCandidate?.email || ''
     if (!value) return ''
-    const query = selectedTheme.value !== DEFAULT_THEME ? { theme: selectedTheme.value } : {}
+    const query = {
+        ...(selectedTheme.value !== DEFAULT_THEME ? { theme: selectedTheme.value } : {}),
+        ...(activeProfile.value ? { profile: activeProfile.value._id } : {}),
+    }
     const resolved = router.resolve({ name: 'public-resume', params: { slug: value }, query })
     return `${window.location.origin}${import.meta.env.BASE_URL}${resolved.href}`
 })
@@ -298,6 +312,13 @@ async function handleUpdateSlug(values) {
             :submit-text="'Cập nhật'"
             buttonPosition="center"
         />
+        <div v-if="profiles.length" class="flex items-center gap-[0.5rem] mb-[0.5rem]">
+            <span class="text-sm opacity-75">Profile CV cho link này:</span>
+            <select class="form-select form-select-sm w-auto" :value="activeProfileId" @change="setActiveProfile($event.target.value)">
+                <option value="">Tất cả (mặc định)</option>
+                <option v-for="p in profiles" :key="p._id" :value="p._id">{{ p.name }}</option>
+            </select>
+        </div>
         <p v-if="publicLink" class="text-sm opacity-75 mb-0">Link CV của bạn: <strong>{{ publicLink }}</strong></p>
         <QrCode :value="publicLink" />
     </div>

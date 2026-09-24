@@ -72,3 +72,28 @@ export const wrapLocalizedText = (newText: string, original: LocalizedText): { v
     const en = original && typeof original === 'object' ? original.en || '' : ''
     return { vi: newText || '', en }
 }
+
+const CSRF_COOKIE_NAME = 'csrfToken'
+const CSRF_HEADER_NAME = 'x-csrf-token'
+
+/**
+ * Read a cookie by name (document.cookie has no native getter). Used for
+ * the CSRF double-submit cookie (issue #8/#134) — the auth token cookies
+ * themselves are httpOnly and deliberately unreadable from here.
+ */
+export const getCookie = (name: string): string => {
+    const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`))
+    return match ? decodeURIComponent(match[1]) : ''
+}
+
+/**
+ * Header to attach on state-changing requests once auth moved to httpOnly
+ * cookies (issue #8) — the backend's `verifyToken`/`verifyCsrf` middleware
+ * requires this to match the `csrfToken` cookie for any cookie-sourced,
+ * non-GET request. Empty object (no header) when the cookie isn't set yet
+ * (e.g. not logged in) — the backend only checks it for cookie-sourced auth.
+ */
+export const getCsrfHeader = (): Record<string, string> => {
+    const token = getCookie(CSRF_COOKIE_NAME)
+    return token ? { [CSRF_HEADER_NAME]: token } : {}
+}

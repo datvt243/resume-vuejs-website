@@ -68,7 +68,9 @@ const cvViewCount = computed(() => info.value?.visitCount ?? 0)
  *   server vì backend chưa có endpoint lưu file upload
  */
 const _host = window.location.host === 'localhost' ? 'http://localhost:3001/' : API
-const downloadCVUrl = computed(() => `${_host}api/v1/download-pdf?token=${auth.getToken}`)
+// issue #8: auth is now an httpOnly cookie, sent automatically on this
+// same-browser navigation — no `?token=` to build from JS anymore.
+const downloadCVUrl = computed(() => `${_host}api/v1/download-pdf`)
 const cvFileName = computed(() => {
     const { firstName = '', lastName = '' } = info.value
     const name = `${firstName}_${lastName}`.replace(/\s+/g, '_').replace(/^_+|_+$/g, '')

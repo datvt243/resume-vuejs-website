@@ -5,29 +5,41 @@
  */
 
 import { defineStore } from 'pinia'
-import { ref, reactive, computed } from 'vue'
+import { reactive, computed } from 'vue'
+import axios from 'axios'
 import { candidateStore } from '@/stores/candidate'
+import { API, subURL } from '@/config/api.config'
+import { getCsrfHeader } from '@/utilities'
 
+/**
+ * issue #8: the JWT itself no longer lives here — it's an httpOnly cookie
+ * the browser holds and sends automatically, unreadable from JS (that was
+ * the whole point, XSS can no longer exfiltrate it via localStorage).
+ * `_user` stays cached (display data only, not a credential) and doubles
+ * as the client-side "am I logged in" signal.
+ */
 export const authStore = defineStore('auth', () => {
     const _user = reactive(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : {})
-    const _token = ref(localStorage.getItem('token') || '')
-    const _refreshToken = ref(localStorage.getItem('tokenRefresh') || '')
 
-    const getToken = computed(() => _token.value)
-    const getRefreshToken = computed(() => _refreshToken.value)
     const getUser = computed(() => _user)
-    const isAuthenticated = computed(() => !!_token.value)
+    const isAuthenticated = computed(() => !!_user?.email)
 
-    function logOut(opt = {}) {
+    async function logOut(opt = {}) {
+        try {
+            // clears the httpOnly auth cookies server-side — without this
+            // call they'd keep authenticating requests even after the UI
+            // "logs out" locally.
+            await axios.post(`${API}${subURL}auth/logout`, {}, { withCredentials: true, headers: getCsrfHeader() })
+        } catch (e) {
+            // best-effort: still clear local state below even if this fails
+            // (e.g. already-expired token, offline)
+        }
+
         // remove localStorage
         localStorage.removeItem('user')
-        localStorage.removeItem('token')
-        localStorage.removeItem('tokenRefresh')
 
-        // reset [user, token, isAuthenticated]
+        // reset [user]
         Object.keys(_user).forEach(key => delete _user[key])
-        _token.value = ''
-        _refreshToken.value = ''
         candidateStore().clean()
 
         // direct router
@@ -39,14 +51,6 @@ export const authStore = defineStore('auth', () => {
         localStorage.setItem('user', JSON.stringify(val))
     }
 
-    function setToken(val) {
-        _token.value = val
-        localStorage.setItem('token', val)
-    }
-    function setRefreshToken(val) {
-        _refreshToken.value = val
-        localStorage.setItem('tokenRefresh', val)
-    }
     function clearUser() {
         Object.keys(_user).forEach(key => delete _user[key])
     }
@@ -55,11 +59,7 @@ export const authStore = defineStore('auth', () => {
         logOut,
         isAuthenticated,
         setUser,
-        setToken,
-        setRefreshToken,
         clearUser,
-        getToken,
-        getRefreshToken,
         getUser,
     }
 })

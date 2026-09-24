@@ -52,3 +52,4 @@
 2026-09-20T14:10:00Z role=implementer outcome=noted node=issue-116-multi-profile-unblocked-20260920 hub_bytes_before=135749 verifier_rerun=n/a
 2026-09-20T14:10:00Z role=implementer outcome=noted node=issue-8-jwt-localstorage-unblocked-20260920 hub_bytes_before=135749 verifier_rerun=n/a
 2026-09-24T19:33:05Z role=verifier outcome=SEAL node=issue-8-jwt-httponly-cookie-migration rerun=full hub_bytes_before=133944 hub_bytes_after=136486
+2026-09-24T19:43:05Z role=verifier outcome=SEAL node=issue-116-multi-profile-frontend rerun=partial hub_bytes_before=136486 hub_bytes_after=132739

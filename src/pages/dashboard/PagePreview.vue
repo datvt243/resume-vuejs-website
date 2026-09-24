@@ -16,6 +16,7 @@ import { candidateStore } from '@/stores/candidate'
 import { authStore } from '@/stores/auth'
 import { useCandidate } from '@/composables/useCandidate'
 import { useCvTheme } from '@/composables/useCvTheme'
+import { useActiveProfile } from '@/composables/useActiveProfile'
 import CvResumeLayout from '@/components/cv/CvResumeLayout.vue'
 
 const candidate = candidateStore()
@@ -31,6 +32,19 @@ const { awards } = useCandidate({ field: 'awards' })
 const { certificates } = useCandidate({ field: 'certificates' })
 const { references } = useCandidate({ field: 'references' })
 
+// Issue #116: filter the exported/printed sections to the active
+// profile's selected subset — done CLIENT-SIDE (all sections are already
+// loaded here) rather than a server round-trip like the public page uses.
+const { profiles } = useCandidate({ field: 'profiles', collection: 'profile' })
+const { activeProfileId, setActiveProfile } = useActiveProfile()
+const activeProfile = computed(() => profiles.value.find(p => p._id === activeProfileId.value) || null)
+
+function filterByProfile(list, idsField) {
+    if (!activeProfile.value) return list
+    const ids = activeProfile.value[idsField] || []
+    return list.filter(item => ids.includes(item._id))
+}
+
 const cvData = computed(() => ({
     firstName: info.value.firstName,
     lastName: info.value.lastName,
@@ -39,12 +53,12 @@ const cvData = computed(() => ({
     email: auth.getUser?.email,
     introduction: info.value.introduction,
     generalInformation: generalInformation.value,
-    educations: educations.value,
-    experiences: experiences.value,
-    projects: projects.value,
-    awards: awards.value,
-    certificates: certificates.value,
-    references: references.value,
+    educations: filterByProfile(educations.value, 'educationIds'),
+    experiences: filterByProfile(experiences.value, 'experienceIds'),
+    projects: filterByProfile(projects.value, 'projectIds'),
+    awards: filterByProfile(awards.value, 'awardIds'),
+    certificates: filterByProfile(certificates.value, 'certificateIds'),
+    references: filterByProfile(references.value, 'referenceIds'),
 }))
 
 const { selectedTheme, setTheme, THEMES } = useCvTheme()
@@ -77,6 +91,13 @@ onUnmounted(() => document.body.classList.remove('cv-print-mode'))
             >
                 {{ t.label }}
             </button>
+        </div>
+        <div v-if="profiles.length" class="flex items-center gap-[0.5rem]">
+            <span class="text-sm opacity-75">Profile CV:</span>
+            <select class="form-select form-select-sm w-auto" :value="activeProfileId" @change="setActiveProfile($event.target.value)">
+                <option value="">Tất cả (mặc định)</option>
+                <option v-for="p in profiles" :key="p._id" :value="p._id">{{ p.name }}</option>
+            </select>
         </div>
     </div>
 

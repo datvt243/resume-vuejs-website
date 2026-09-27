@@ -245,29 +245,41 @@ Live: https://datvt243.github.io/resume-vuejs-website/
 ## Known Issues
 
 Xem toàn bộ danh sách bugs và technical debt tại [GitHub Issues](https://github.com/datvt243/resume-vuejs-website/issues).
-Các bug ưu tiên cao ban đầu (#1–#5, #34...) đã fix và đóng — bảng dưới chỉ liệt kê vấn đề **thật sự còn mở**:
-
-| Issue | Mô tả |
-|---|---|
-| [#8](https://github.com/datvt243/resume-vuejs-website/issues/8) | JWT lưu ở `localStorage` — cần backend hỗ trợ httpOnly cookie trước khi fix được (blocked) |
+Các bug ưu tiên cao ban đầu (#1–#5, #34...) đã fix và đóng. Issue #8 (JWT lưu ở
+`localStorage`) — từng liệt kê ở đây là "blocked" — cũng đã được xử lý (migrate
+sang httpOnly cookie, xem Roadmap bên dưới). Hiện **không còn bug/technical
+debt nào đang mở**; 2 issue còn mở đều là đề xuất tính năng, xem Roadmap.
 
 ---
 
 ## Roadmap
+
+> Danh sách dưới đây phản ánh trạng thái thật trên GitHub Issues — xem
+> [wiki Roadmap](https://github.com/datvt243/resume-vuejs-website/wiki/Roadmap) để có bản luôn cập nhật.
 
 - [x] Fix critical bugs (#1, #2, #3, #4, #5)
 - [x] Migrate API URL sang environment variables (#6)
 - [x] Setup CI/CD với GitHub Actions (#16, #20)
 - [x] Test coverage với Vitest (#7 — 96%+ coverage cho `stores`/`composables`/`utilities` + `VeeForm.vue`; component còn lại ngoài scope ban đầu)
 - [x] Chuyển toàn bộ JS → TypeScript (#13, phần lõi — vẫn còn vài file `.js` xen kẽ có chủ đích)
-- [ ] Export CV ra PDF (#55)
-- [ ] Public CV link — xem CV qua link chia sẻ, read-only (#56)
-- [ ] Sắp xếp thủ công (drag-and-drop) Education/Experience/Project (#57)
-- [ ] Upload ảnh đại diện (#58)
-- [ ] Thanh tiến độ hoàn thiện hồ sơ trên Dashboard (#59)
-- [ ] Nhân bản (duplicate) một mục dữ liệu (#60)
-- [ ] Quên mật khẩu / Đổi mật khẩu (#61)
-- [ ] Trang cài đặt tài khoản (#63)
+- [x] Dark mode toggle (#62)
+- [x] Export CV ra PDF / trang in (#55)
+- [x] Public CV link — xem CV qua link chia sẻ, read-only (#56)
+- [x] Sắp xếp thủ công (drag-and-drop) Education/Experience/Project (#57)
+- [x] Upload ảnh đại diện (#58)
+- [x] Thanh tiến độ hoàn thiện hồ sơ trên Dashboard (#59)
+- [x] Nhân bản (duplicate) một mục dữ liệu (#60)
+- [x] Quên mật khẩu / Đổi mật khẩu (#61)
+- [x] Trang cài đặt tài khoản (#63)
+- [x] Slug tùy chỉnh cho link public (#117)
+- [x] Chọn theme/template cho PDF export & trang public (#119)
+- [x] QR code cho public share-link (#121)
+- [x] Migrate Bootstrap sang Tailwind CSS (#123)
+- [x] Application tracker — theo dõi nơi đã nộp CV (#118)
+- [x] JWT httpOnly cookie migration, thay thế `localStorage` (#8)
+- [x] Nhiều phiên bản CV (multi-profile) — subset riêng + share-link/PDF export riêng (#116)
+- [ ] Import CV từ file PDF hoặc LinkedIn export (#120) — blocked: backend mới có endpoint parse LinkedIn export ZIP trên `staging` (chưa lên production), phần parse PDF thì chưa có
+- [ ] Gợi ý nội dung CV bằng AI, tối ưu ATS (#122) — cần thảo luận thêm trước khi lên kế hoạch
 
 ---
 

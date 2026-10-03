@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { formatDate, formatDateToInput, getLocalizedText, wrapLocalizedText, getCookie, getCsrfHeader } from './index'
+import { formatDate, formatDateToInput, getLocalizedText, wrapLocalizedText, getCookie, getCsrfHeader, getDownloadCvUrl } from './index'
 
 describe('formatDate', () => {
     it('returns the placeholder for a falsy date', () => {
@@ -106,5 +106,21 @@ describe('wrapLocalizedText', () => {
 
     it('defaults vi to empty string for a falsy new text', () => {
         expect(wrapLocalizedText('', { vi: 'chào', en: 'hello' })).toEqual({ vi: '', en: 'hello' })
+    })
+})
+
+describe('getDownloadCvUrl', () => {
+    const host = 'https://api.example.com/'
+
+    it('defaults to the classic template with no query string (unchanged pre-#159 URL)', () => {
+        expect(getDownloadCvUrl(host)).toBe('https://api.example.com/api/v1/download-pdf')
+    })
+
+    it('omits the query string for an explicit classic template', () => {
+        expect(getDownloadCvUrl(host, 'classic')).toBe('https://api.example.com/api/v1/download-pdf')
+    })
+
+    it('adds template=ats for the ATS-optimized template', () => {
+        expect(getDownloadCvUrl(host, 'ats')).toBe('https://api.example.com/api/v1/download-pdf?template=ats')
     })
 })

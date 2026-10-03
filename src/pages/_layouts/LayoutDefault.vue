@@ -47,6 +47,7 @@ const routers = [
     { text: 'Nhập CV từ LinkedIn', name: 'import-linkedin', to: '/dashboard/import-linkedin' },
     { text: 'Profile CV', name: 'profile', to: '/dashboard/profile' },
     { text: 'Xem trước / Xuất PDF', name: 'preview', to: '/dashboard/preview' },
+    { text: 'Kiểm tra ATS', name: 'ats-check', to: '/dashboard/ats-check' },
     { text: 'Cài đặt tài khoản', name: 'account-settings', to: '/dashboard/account-settings' },
 ]
 </script>

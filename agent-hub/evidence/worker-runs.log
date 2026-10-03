@@ -55,3 +55,5 @@
 2026-09-24T19:43:05Z role=verifier outcome=SEAL node=issue-116-multi-profile-frontend rerun=partial hub_bytes_before=136486 hub_bytes_after=132739
 2026-09-26T15:48:31Z role=implementer outcome=blocked node=issue-120-import-cv-pdf-linkedin-recheck-20260926 hub_bytes_before=147702 verifier_rerun=n/a
 2026-09-26T23:35:44Z role=verifier outcome=SEAL node=docs-readme-roadmap-sync rerun=partial hub_bytes_before=147702 hub_bytes_after=129743
+2026-09-28T17:09:32Z role=verifier outcome=SEAL node=issue-120-linkedin-import rerun=none hub_bytes_before=148884 hub_bytes_after=157570
+2026-10-03T18:55:36Z role=verifier outcome=SEAL node=issue-159-ats-export-self-check rerun=none hub_bytes_before=152891 hub_bytes_after=158170

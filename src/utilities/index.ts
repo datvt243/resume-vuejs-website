@@ -97,3 +97,14 @@ export const getCsrfHeader = (): Record<string, string> => {
     const token = getCookie(CSRF_COOKIE_NAME)
     return token ? { [CSRF_HEADER_NAME]: token } : {}
 }
+
+/**
+ * URL of the server-rendered CV download (`GET api/v1/download-pdf`).
+ * Issue #159: `template=ats` picks the backend's ATS-optimized template;
+ * `classic` is the backend default, so it's left off the URL entirely —
+ * keeps the classic link byte-identical to what it was before #159.
+ */
+export const getDownloadCvUrl = (host: string, template: 'classic' | 'ats' = 'classic'): string => {
+    const url = `${host}api/v1/download-pdf`
+    return template === 'ats' ? `${url}?template=ats` : url
+}

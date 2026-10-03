@@ -86,6 +86,18 @@ const routes = [
                 meta: { requiresAuth: true },
             },
             {
+                path: 'import-linkedin',
+                name: 'import-linkedin',
+                component: () => import('@/pages/dashboard/PageImportLinkedin.vue'),
+                meta: { requiresAuth: true },
+            },
+            {
+                path: 'ats-check',
+                name: 'ats-check',
+                component: () => import('@/pages/dashboard/PageAtsCheck.vue'),
+                meta: { requiresAuth: true },
+            },
+            {
                 path: 'profile',
                 name: 'profile',
                 component: () => import('@/pages/dashboard/PageProfile.vue'),

@@ -84,15 +84,22 @@ instanceAxios.interceptors.response.use(
 
 export const _axios = async props => {
     const { url, method, params, data, customURL = null } = props
+    // FormData (e.g. the LinkedIn-export import upload) must NOT get a
+    // forced 'application/json' Content-Type — axios/the browser need to
+    // set their own 'multipart/form-data; boundary=...' header instead,
+    // which only happens when no Content-Type is set here at all.
+    const isFormData = typeof FormData !== 'undefined' && data instanceof FormData
     return new Promise((resolve, reject) => {
         instanceAxios({
             url: customURL ? customURL : url,
             method,
             params,
             data,
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: isFormData
+                ? undefined
+                : {
+                      'Content-Type': 'application/json',
+                  },
             baseURL: API,
         })
             .then(res => {

@@ -26,6 +26,7 @@ import { authStore } from '@/stores/auth'
 import { useHelper } from '@/composables/useHelper'
 import { useProfileCompletion } from '@/composables/useProfileCompletion'
 import { API } from '@/config/api.config'
+import { getDownloadCvUrl } from '@/utilities/index'
 
 const candidate = candidateStore()
 const auth = authStore()
@@ -70,7 +71,14 @@ const cvViewCount = computed(() => info.value?.visitCount ?? 0)
 const _host = window.location.host === 'localhost' ? 'http://localhost:3001/' : API
 // issue #8: auth is now an httpOnly cookie, sent automatically on this
 // same-browser navigation — no `?token=` to build from JS anymore.
-const downloadCVUrl = computed(() => `${_host}api/v1/download-pdf`)
+// issue #159: chọn template server-side — `classic` (mặc định, giữ
+// nguyên như trước) hoặc `ats` (1 cột, tối ưu cho hệ thống lọc CV/ATS)
+const CV_TEMPLATES = [
+    { value: 'classic', label: 'Classic' },
+    { value: 'ats', label: 'Tối ưu ATS' },
+]
+const cvTemplate = ref('classic')
+const downloadCVUrl = computed(() => getDownloadCvUrl(_host, cvTemplate.value))
 const cvFileName = computed(() => {
     const { firstName = '', lastName = '' } = info.value
     const name = `${firstName}_${lastName}`.replace(/\s+/g, '_').replace(/^_+|_+$/g, '')
@@ -148,6 +156,20 @@ const { percent: profileCompletion, missingSections } = useProfileCompletion()
             <div class="grow">
                 <a class="font-semibold" :href="downloadCVUrl" :download="cvFileName" target="_blank">{{ cvFileName }}</a>
                 <p class="text-sm opacity-50 mb-0">Được tạo tự động từ hồ sơ của bạn — luôn là bản mới nhất</p>
+                <div class="flex flex-wrap items-center gap-[0.5rem] mt-2">
+                    <span class="text-sm opacity-75">Mẫu CV:</span>
+                    <button
+                        v-for="t in CV_TEMPLATES"
+                        :key="t.value"
+                        type="button"
+                        class="btn btn-sm"
+                        :class="cvTemplate === t.value ? 'btn-success' : 'btn-outline-success'"
+                        @click="cvTemplate = t.value"
+                    >
+                        {{ t.label }}
+                    </button>
+                    <RouterLink to="/dashboard/ats-check" class="text-sm font-semibold">Kiểm tra điểm ATS →</RouterLink>
+                </div>
             </div>
             <Button icon="fa-solid fa-paperclip" type="outline-secondary" size="sm" text="Đính kèm file mới" @click="triggerFilePicker" />
             <input ref="fileInput" type="file" accept="application/pdf" class="hidden" @change="handleSelectFile" />

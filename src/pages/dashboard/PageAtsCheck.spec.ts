@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ref } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
+import { setActivePinia, createPinia } from 'pinia'
 import PageAtsCheck from './PageAtsCheck.vue'
 import type { AtsCheckResponse } from '@/types/ats.type'
 
@@ -35,6 +36,7 @@ const response: AtsCheckResponse = {
 }
 
 function mountPage() {
+    setActivePinia(createPinia())
     return mount(PageAtsCheck, { global: { stubs } })
 }
 

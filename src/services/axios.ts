@@ -7,43 +7,36 @@
 import axios from 'axios'
 import { API, subURL } from '@/config/api.config'
 import { authStore } from '@/stores/auth'
-import { getCsrfHeader } from '@/utilities'
-
-const SAFE_METHODS = ['get', 'head', 'options']
 
 /**
- * `withCredentials: true` (issue #8): auth now rides on the backend's
- * httpOnly cookies (`token`/`refreshToken`) instead of a Bearer header
- * built from localStorage — the browser attaches/receives them
- * automatically on every request, cross-site (`SameSite=None`) included.
+ * Auth = `Authorization: Bearer <token>` from the in-memory authStore —
+ * NOT cookies: the API is cross-site from github.io, so its cookies are
+ * third-party and blocked by most browsers (see stores/auth.ts).
  */
 const instanceAxios = axios.create({
     baseURL: API,
-    withCredentials: true,
 })
 
-/**
- * Attach the CSRF double-submit header (issue #8/#134) on every
- * state-changing request — the backend requires it whenever auth comes
- * from the cookie, and this runs on every dispatch (including the
- * post-refresh retry below), so it's never stale.
- */
 instanceAxios.interceptors.request.use(config => {
-    const method = (config.method || 'get').toLowerCase()
-    if (!SAFE_METHODS.includes(method)) {
-        const csrfHeader = getCsrfHeader()
-        Object.keys(csrfHeader).forEach(key => {
-            config.headers[key] = csrfHeader[key]
-        })
-    }
+    const token = authStore().getToken
+    if (token) config.headers.Authorization = `Bearer ${token}`
     return config
 })
 
 /**
- * silent refresh: khi access token hết hạn (401), thử đổi lấy token mới
- * bằng refresh token trước khi force logout.
+ * silent refresh: khi access token hết hạn/chưa có (401 — vd. sau khi
+ * reload trang, access token chỉ nằm trong memory), đổi refresh token
+ * (sessionStorage) lấy cặp token mới trước khi force logout.
  */
 let _refreshPromise = null
+
+const refreshTokens = async () => {
+    const store = authStore()
+    const refreshToken = store.getRefreshToken
+    if (!refreshToken) throw new Error('No refresh token')
+    const res = await axios.post(`${API}${subURL}auth/refresh`, { refreshToken })
+    store.setTokens(res.data?.data ?? {})
+}
 
 instanceAxios.interceptors.response.use(
     res => res,
@@ -55,20 +48,13 @@ instanceAxios.interceptors.response.use(
             try {
                 /**
                  * dedupe: nhiều request 401 cùng lúc chỉ gọi auth/refresh một
-                 * lần, chia sẻ chung 1 promise thay vì mỗi request tự refresh.
-                 * refreshToken tự gửi qua cookie (withCredentials) — không
-                 * còn đọc/truyền tay từ localStorage.
+                 * lần — bắt buộc, vì backend rotate (blacklist) refresh token
+                 * cũ sau mỗi lần refresh.
                  */
                 if (!_refreshPromise) {
-                    _refreshPromise = axios
-                        .post(
-                            `${API}${subURL}auth/refresh`,
-                            {},
-                            { withCredentials: true, headers: getCsrfHeader() },
-                        )
-                        .finally(() => {
-                            _refreshPromise = null
-                        })
+                    _refreshPromise = refreshTokens().finally(() => {
+                        _refreshPromise = null
+                    })
                 }
                 await _refreshPromise
                 return instanceAxios(originalRequest)

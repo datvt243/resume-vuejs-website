@@ -14,6 +14,7 @@ import { useRouter } from 'vue-router'
 import Navbar from '@/components/Navbar.vue'
 
 import { API } from '@/config/api.config'
+import { getDownloadCvUrl } from '@/utilities/index'
 
 const router = useRouter()
 const store = authStore()
@@ -30,9 +31,9 @@ const _settings = {
         return _user?.email ? `${this.host}api/me/${_user.email}` : '#'
     },
     getFile() {
-        // issue #8: auth is now an httpOnly cookie, sent automatically on
-        // this same-browser navigation — no `?token=` to build from JS.
-        return `${this.host}api/v1/download-pdf`
+        // plain link navigation → no Authorization header, pass the
+        // in-memory access token as `?token=` (see stores/auth.ts)
+        return getDownloadCvUrl(this.host, 'classic', store.getToken)
     },
 }
 

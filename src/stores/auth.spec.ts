@@ -12,7 +12,7 @@ import { candidateStore } from './candidate'
 describe('authStore', () => {
     beforeEach(() => {
         localStorage.clear()
-        document.cookie = ''
+        sessionStorage.clear()
         setActivePinia(createPinia())
         vi.mocked(axios.post).mockReset().mockResolvedValue({ data: {} })
     })
@@ -23,15 +23,34 @@ describe('authStore', () => {
         expect(store.getUser).toEqual({})
     })
 
-    it('reads an existing user from localStorage on creation', () => {
+    it('reads an existing user from localStorage and refresh token from sessionStorage on creation', () => {
         localStorage.setItem('user', JSON.stringify({ email: 'dat@example.com' }))
+        sessionStorage.setItem('refreshToken', 'rt')
         const store = authStore()
         expect(store.getUser).toEqual({ email: 'dat@example.com' })
+        expect(store.getRefreshToken).toBe('rt')
+        expect(store.getToken).toBe('')
         expect(store.isAuthenticated).toBe(true)
+    })
+
+    it('a cached user without a refresh token (e.g. a new tab) is not authenticated', () => {
+        localStorage.setItem('user', JSON.stringify({ email: 'dat@example.com' }))
+        const store = authStore()
+        expect(store.isAuthenticated).toBe(false)
+    })
+
+    it('setTokens keeps the access token in memory only and the refresh token in sessionStorage', () => {
+        const store = authStore()
+        store.setTokens({ token: 'at', tokenRefresh: 'rt' })
+        expect(store.getToken).toBe('at')
+        expect(store.getRefreshToken).toBe('rt')
+        expect(sessionStorage.getItem('refreshToken')).toBe('rt')
+        expect(JSON.stringify({ ...localStorage })).not.toContain('at')
     })
 
     it('setUser merges into the reactive user, persists to localStorage, and marks authenticated', () => {
         const store = authStore()
+        store.setTokens({ token: 'at', tokenRefresh: 'rt' })
         store.setUser({ name: 'Dat', email: 'dat@example.com' })
         expect(store.getUser).toEqual({ name: 'Dat', email: 'dat@example.com' })
         expect(JSON.parse(localStorage.getItem('user') as string)).toEqual({ name: 'Dat', email: 'dat@example.com' })
@@ -45,8 +64,9 @@ describe('authStore', () => {
         expect(store.getUser).toEqual({})
     })
 
-    it('logOut calls the backend logout endpoint (issue #8: clears the httpOnly auth cookies server-side)', async () => {
+    it('logOut calls the backend logout endpoint with the Bearer access token', async () => {
         const store = authStore()
+        store.setTokens({ token: 'at', tokenRefresh: 'rt' })
         store.setUser({ email: 'dat@example.com' })
 
         await store.logOut()
@@ -54,7 +74,7 @@ describe('authStore', () => {
         expect(axios.post).toHaveBeenCalledTimes(1)
         const [url, , options] = vi.mocked(axios.post).mock.calls[0]
         expect(url).toContain('auth/logout')
-        expect(options).toMatchObject({ withCredentials: true })
+        expect(options).toMatchObject({ headers: { Authorization: 'Bearer at' } })
     })
 
     it('logOut clears localStorage, resets user, and cleans the candidate store', async () => {
@@ -67,6 +87,8 @@ describe('authStore', () => {
         await store.logOut()
 
         expect(localStorage.getItem('user')).toBeNull()
+        expect(sessionStorage.getItem('refreshToken')).toBeNull()
+        expect(store.getToken).toBe('')
         expect(store.getUser).toEqual({})
         expect(store.isAuthenticated).toBe(false)
         expect(candidate.getCandidate).toEqual({ gender: 0, marital: 0 })

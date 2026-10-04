@@ -1,1 +1,0 @@
-import{o,d as t,f as a,l as r}from"./index-DaOMJ6OY.js";const s={class:"dashboard"},p={__name:"PageDashboard",setup(c){return(n,_)=>{const e=r("router-view");return o(),t("div",s,[a(e)])}}};export{p as default};

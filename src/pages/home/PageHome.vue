@@ -69,8 +69,8 @@ const cvViewCount = computed(() => info.value?.visitCount ?? 0)
  *   server vì backend chưa có endpoint lưu file upload
  */
 const _host = window.location.host === 'localhost' ? 'http://localhost:3001/' : API
-// issue #8: auth is now an httpOnly cookie, sent automatically on this
-// same-browser navigation — no `?token=` to build from JS anymore.
+// plain link navigation → no Authorization header, pass the in-memory
+// access token as `?token=` (see stores/auth.ts)
 // issue #159: chọn template server-side — `classic` (mặc định, giữ
 // nguyên như trước) hoặc `ats` (1 cột, tối ưu cho hệ thống lọc CV/ATS)
 const CV_TEMPLATES = [
@@ -78,7 +78,7 @@ const CV_TEMPLATES = [
     { value: 'ats', label: 'Tối ưu ATS' },
 ]
 const cvTemplate = ref('classic')
-const downloadCVUrl = computed(() => getDownloadCvUrl(_host, cvTemplate.value))
+const downloadCVUrl = computed(() => getDownloadCvUrl(_host, cvTemplate.value, auth.getToken))
 const cvFileName = computed(() => {
     const { firstName = '', lastName = '' } = info.value
     const name = `${firstName}_${lastName}`.replace(/\s+/g, '_').replace(/^_+|_+$/g, '')

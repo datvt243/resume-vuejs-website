@@ -71,13 +71,13 @@ src/
 - Base: `http://localhost:3001/` (dev) or `https://nodejs-resume-api-ts.onrender.com/` (prod)
 - Auth header: `Authorization: Bearer <token>` on every request
 - URL pattern: `api/v1/{collection}/{action}` — e.g. `api/v1/education/update`
-- Token stored in `localStorage` key `"token"`; user in `localStorage` key `"user"`
+- **Bearer auth, not cookies** — API is cross-site from github.io, so its auth cookies are third-party and blocked by most browsers. Access token: memory only (`authStore.getToken`); refresh token: `sessionStorage` key `"refreshToken"`; user: `localStorage` key `"user"`. On 401, `services/axios.ts` refreshes once (deduped — backend rotates refresh tokens) then retries. Download links (`download-pdf`) pass the token as `?token=`.
 
 ## Known Bugs (do not replicate these patterns)
 
 | # | Location | Issue |
 |---|---|---|
-| [#8](https://github.com/datvt243/resume-vuejs-website/issues/8) | `localStorage` key `"token"` (see API section above) | JWT kept in localStorage — readable by any injected script (XSS can exfiltrate it); still open, no fix decided |
+| [#8](https://github.com/datvt243/resume-vuejs-website/issues/8) | `stores/auth.ts` | Tokens readable by JS (access token in memory, refresh token in sessionStorage) — XSS could still read them while the tab is open. The httpOnly-cookie fix was reverted because cross-site cookies broke login; a real fix needs frontend + API on the same site (custom domain) |
 
 > Issues #1, #2, #3, #4, #5, #9, #10 (previously listed here: router history,
 > GET login, VeeForm prop mutation, VeeForm reset typo, Toasts `v-html`,

@@ -38,17 +38,19 @@ export const handleLogin = async (values, props) => {
             bg: 'success',
         })
 
-        const { user } = loginRes.data
+        const { user, token, tokenRefresh } = loginRes.data
 
-        // auth cookies (token/refreshToken/csrfToken) are already set by the
-        // login response itself (withCredentials) — no token to pass along.
+        // Bearer auth (see stores/auth.ts) — tokens must be in the store
+        // before the next request so the axios interceptor can attach them
+        const store = authStore()
+        store.setTokens({ token, tokenRefresh })
         const candidateRes = await _axios({ method: 'get', url: `${subURL}candidate/${email.trim()}` })
         candidateStore().setCandidate({ ...candidateRes.data })
 
-        const store = authStore()
         store.setUser({ ...user })
         router?.push('/dashboard/information')
     } catch (err) {
+        authStore().setTokens()
         toast?.({
             message: 'Đăng nhập thất bại',
             bg: 'danger',

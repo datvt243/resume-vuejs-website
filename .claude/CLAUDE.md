@@ -18,6 +18,7 @@ Vue 3 + Vite 5 · Pinia · Vue Router 4 · VeeValidate 4 + Yup · Axios · Boots
 npm run dev      # http://localhost:5173
 npm run build    # output: dist/
 npm run preview
+npm run test     # vitest run (specs: src/**/*.spec.ts)
 ```
 
 ## Key Architecture Patterns
@@ -35,8 +36,8 @@ Every data section has a `src/models/*.model.ts` file — an array of `modelItem
 - `useHelper()` — injects `spinner` (Ref) and `toast` (fn) provided by `App.vue`
 
 ### 3. Global State (Pinia)
-- `authStore` (`src/stores/auth.js`) — token, user, isAuthenticated; persists to localStorage
-- `candidateStore` (`src/stores/candidate.js`) — full resume object, caches to avoid re-fetching
+- `authStore` (`src/stores/auth.ts`) — token (memory only), user (localStorage), isAuthenticated — see API section
+- `candidateStore` (`src/stores/candidate.ts`) — full resume object, caches to avoid re-fetching
 
 ### 4. Global Components
 All `src/components/global/*.vue` are auto-registered globally via `src/plugins/GlobalComponents.js`. Use without import: `<Heading>`, `<Button>`, `<NoData>`, `<ListTransition>`, `<Box>`, `<Dropdown>`.
@@ -51,7 +52,7 @@ src/
 │   ├── convert/         # convert.js — date/boolean/truncate display components
 │   ├── {education,experience,project}/  # Domain item cards
 │   ├── Modal.vue · Spinner.vue · Toasts.vue
-├── composables/         # useCandidate.ts · useDocument.ts · useHelper.js · useInitTable.ts
+├── composables/         # useCandidate.ts · useDocument.ts · useHelper.ts · useInitTable.ts
 ├── config/              # api.config.js (URL) · regex.config.js
 ├── lib/                 # swal.lib.js (confirmDelete helper)
 ├── models/              # *.model.ts — form field definitions per entity
@@ -60,9 +61,9 @@ src/
 │   ├── auth/            # PageLogin · PageRegister
 │   ├── dashboard/       # PageDashboard + Page{Information,GeneralInformation,Education,...}
 ├── plugins/             # GlobalComponents.js · initFontAwesomeIcon.js
-├── routers/index.js     # Routes + beforeEach auth guard
-├── services/            # axios.js · base.js (handleBase) · auth.js (handleLogin/Register)
-├── stores/              # auth.js · candidate.js
+├── routers/index.ts     # Routes + beforeEach auth guard
+├── services/            # axios.ts · base.ts (handleBase) · auth.ts (handleLogin/Register)
+├── stores/              # auth.ts · candidate.ts
 ├── types/               # api.type.ts · model.type.ts · table.type.ts · ...
 └── utilities/index.ts   # formatDate · formatDateToInput
 ```
@@ -72,30 +73,18 @@ src/
 - Auth header: `Authorization: Bearer <token>` on every request
 - URL pattern: `api/v1/{collection}/{action}` — e.g. `api/v1/education/update`
 - **Bearer auth, not cookies** — API is cross-site from github.io, so its auth cookies are third-party and blocked by most browsers. Access token: memory only (`authStore.getToken`); refresh token: `sessionStorage` key `"refreshToken"`; user: `localStorage` key `"user"`. On 401, `services/axios.ts` refreshes once (deduped — backend rotates refresh tokens) then retries. Download links (`download-pdf`) pass the token as `?token=`.
-
-## Known Bugs (do not replicate these patterns)
-
-| # | Location | Issue |
-|---|---|---|
-| [#8](https://github.com/datvt243/resume-vuejs-website/issues/8) | `stores/auth.ts` | Tokens readable by JS (access token in memory, refresh token in sessionStorage) — XSS could still read them while the tab is open. The httpOnly-cookie fix was reverted because cross-site cookies broke login; a real fix needs frontend + API on the same site (custom domain) |
-
-> Issues #1, #2, #3, #4, #5, #9, #10 (previously listed here: router history,
-> GET login, VeeForm prop mutation, VeeForm reset typo, Toasts `v-html`,
-> non-reactive spinner, GroupTags prop mutation) are fixed and closed —
-> don't re-"fix" them. Full backlog: https://github.com/datvt243/resume-vuejs-website/issues
+- **Tokens are JS-readable** — XSS could read them while the tab is open. An httpOnly-cookie fix was reverted because cross-site cookies broke login; a real fix needs frontend + API on the same site (custom domain). Don't reintroduce `localStorage` for tokens.
+- Issue backlog: https://github.com/datvt243/resume-vuejs-website/issues
 
 ## Gotchas
 
-- **TypeScript is mixed** — `.js` files exist alongside `.ts`. When editing `.js` files, no type checking. Migration tracked in [#13](https://github.com/datvt243/resume-vuejs-website/issues/13).
+- **TypeScript is mixed** — `.js` files exist alongside `.ts`. When editing `.js` files, no type checking.
 - **Pug in LayoutDefault** — `src/pages/_layouts/LayoutDefault.vue` uses `<template lang="pug">`. Other files use standard HTML templates.
 - **`_id` drives create vs update** — `useDocument.updateDoc` sends POST if `_id` is falsy, PUT if truthy. Always ensure `_id` is set correctly before calling.
 - **`useCandidate` collection heuristic** — if `collection` prop omitted, strips trailing `s` from field name (`educations` → `education`). Explicit `collection` is safer.
-- **`subURL = 'api/v1/'`** is hardcoded in both `services/auth.js` and `services/base.js` — DRY violation, tracked in [#17](https://github.com/datvt243/resume-vuejs-website/issues/17).
-- **No tests** — zero test setup. Adding Vitest tracked in [#7](https://github.com/datvt243/resume-vuejs-website/issues/7).
-- **`tokenRefresh`** returned from login API but never stored or used — tracked in [#12](https://github.com/datvt243/resume-vuejs-website/issues/12).
 
 ## Error Handling Convention
-`handleBase(axiosOptions, { loading, toast }, callback)` in `services/base.js` is the standard wrapper — handles spinner, toast success/error, and auto-logout on `invalidToken`. Use this for all API calls except auth (which uses `services/auth.js` directly).
+`handleBase(axiosOptions, { loading, toast }, callback)` in `services/base.ts` is the standard wrapper — handles spinner, toast success/error, and auto-logout on `invalidToken`. Use this for all API calls except auth (which uses `services/auth.ts` directly).
 
 ## Preferred Patterns
 - Prefer `async/await` + `try/catch` over `.then()/.catch()` chains

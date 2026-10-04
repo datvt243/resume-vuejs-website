@@ -14,6 +14,7 @@ import { useHelper } from '@/composables/useHelper'
 import { handleBase } from '@/services/base'
 import { API } from '@/config/api.config'
 import { getDownloadCvUrl } from '@/utilities/index'
+import { authStore } from '@/stores/auth'
 
 const { loading, toast } = useHelper()
 
@@ -36,7 +37,8 @@ const result = ref(null)
 const checkedTemplate = ref('ats')
 
 const _host = window.location.host === 'localhost' ? 'http://localhost:3001/' : API
-const downloadUrl = computed(() => getDownloadCvUrl(_host, template.value))
+const auth = authStore()
+const downloadUrl = computed(() => getDownloadCvUrl(_host, template.value, auth.getToken))
 
 const scoreClass = computed(() => {
     const score = result.value?.score ?? 0

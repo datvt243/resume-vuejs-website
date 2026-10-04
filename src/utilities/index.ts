@@ -73,38 +73,18 @@ export const wrapLocalizedText = (newText: string, original: LocalizedText): { v
     return { vi: newText || '', en }
 }
 
-const CSRF_COOKIE_NAME = 'csrfToken'
-const CSRF_HEADER_NAME = 'x-csrf-token'
-
-/**
- * Read a cookie by name (document.cookie has no native getter). Used for
- * the CSRF double-submit cookie (issue #8/#134) — the auth token cookies
- * themselves are httpOnly and deliberately unreadable from here.
- */
-export const getCookie = (name: string): string => {
-    const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`))
-    return match ? decodeURIComponent(match[1]) : ''
-}
-
-/**
- * Header to attach on state-changing requests once auth moved to httpOnly
- * cookies (issue #8) — the backend's `verifyToken`/`verifyCsrf` middleware
- * requires this to match the `csrfToken` cookie for any cookie-sourced,
- * non-GET request. Empty object (no header) when the cookie isn't set yet
- * (e.g. not logged in) — the backend only checks it for cookie-sourced auth.
- */
-export const getCsrfHeader = (): Record<string, string> => {
-    const token = getCookie(CSRF_COOKIE_NAME)
-    return token ? { [CSRF_HEADER_NAME]: token } : {}
-}
-
 /**
  * URL of the server-rendered CV download (`GET api/v1/download-pdf`).
  * Issue #159: `template=ats` picks the backend's ATS-optimized template;
  * `classic` is the backend default, so it's left off the URL entirely —
  * keeps the classic link byte-identical to what it was before #159.
+ * `token`: this is a plain link navigation, so no Authorization header —
+ * the backend also accepts the access token as `?token=`.
  */
-export const getDownloadCvUrl = (host: string, template: 'classic' | 'ats' = 'classic'): string => {
-    const url = `${host}api/v1/download-pdf`
-    return template === 'ats' ? `${url}?template=ats` : url
+export const getDownloadCvUrl = (host: string, template: 'classic' | 'ats' = 'classic', token = ''): string => {
+    const params = new URLSearchParams()
+    if (template === 'ats') params.set('template', 'ats')
+    if (token) params.set('token', token)
+    const query = params.toString()
+    return `${host}api/v1/download-pdf${query ? `?${query}` : ''}`
 }

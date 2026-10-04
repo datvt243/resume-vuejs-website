@@ -41,7 +41,9 @@ hit a blocker (red build, currently on `main`/`staging`, PR blocked...).
    b. If `git status --short` is non-empty: `git add` exactly the files
       relevant to the current change (don't add unrelated
       junk/artifacts), commit with the given message or an inferred one,
-      ending with `Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>`.
+      ending with a `Co-Authored-By: Claude <model> <noreply@anthropic.com>` line naming
+      the model actually running this session (use the attribution line from
+      the session context if one is given; never hardcode a model name).
    c. `git push -u origin <branch>` (pushing a brand-new/updated feature
       branch is unaffected by `staging`/`main`'s protection — only those
       2 branches reject direct pushes).

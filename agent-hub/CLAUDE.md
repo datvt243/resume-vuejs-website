@@ -26,6 +26,31 @@ task → worker implementer → find/create node on diagram → run exact
      session/step) → SEAL | REOPEN
 ```
 
+**Scoping a multi-phase, measured-by-count initiative** (lint rules, type
+coverage, dependency upgrades, security findings — anything framed as "N
+problems to fix") is a special case of the default loop: before writing
+the first phase description, measure exhaustively (`--format json` or
+equivalent, grouped by rule/category AND file) — never by grep sampling
+or a single un-decomposed total. After the LAST phase, re-run that SAME
+full measurement and diff the before/after counts, instead of trusting
+each phase's own narrower verification command to stand in for the
+initiative's own stated goal. See `doctrine/standards/initiative-scoping.md`.
+
+**Every diff** also: (1) any comment it adds/changes follows
+`doctrine/standards/code-comments.md` (WHY not WHAT, `//` vs `/** */`,
+no `(#N)` refs, plus whatever project opt-ins that file enables);
+(2) if the project has TypeScript, runs the `Typecheck` command from
+`doctrine/MEMORY.md` and cites its output — a clean build/test that
+doesn't type-check is not a typecheck. Missing either in the evidence
+note = `EDIT_UNVERIFIED`.
+
+[vuejs, 2026-10-07] Transitional: `Typecheck` is CANNOT RUN until the
+`add-typecheck-script` initiative lands (no `vue-tsc`; `tsc --noEmit`
+alone already reports 75 errors in `.ts`, `.vue` unchecked). Until then
+the evidence note records `Typecheck: CANNOT RUN — pending
+add-typecheck-script` instead of being `blocked`; remove this paragraph
+when `doctrine/MEMORY.md` gets a real Typecheck command.
+
 ## Forbidden states (Cost = KILL — stop immediately, don't self-continue)
 | State | Meaning |
 |---|---|

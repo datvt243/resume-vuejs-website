@@ -76,14 +76,17 @@ it's not reinvented per hub.
    nested-CLAUDE.md `<system-reminder>` the moment step 2 touches anything
    under `agent-hub/`; reading it again here duplicates that content. Read
    it directly only if it's actually missing from context after step 2.
-4. Check the command in the note matches `doctrine/MEMORY.md` (e.g. `npm
-   run build` from repo root — this project has NO test command, don't
-   REOPEN just because "tests pass" is missing when the note already
-   states this is build-only).
+4. Check the commands in the note match `doctrine/MEMORY.md` — `npm run
+   test` + `npm run build` from repo root, + the `Typecheck` row (while
+   it's CANNOT RUN, the note must say so explicitly per `CLAUDE.md`'s
+   transitional note; silence → REOPEN, `EDIT_UNVERIFIED`). [synced
+   2026-10-07]
 5. Check the output isn't truncated/hidden (`...`, "truncated") → REOPEN
    if it is.
 6. Go through acceptance criteria ONE BY ONE — missing evidence for any
-   one = REOPEN, list it under "missing".
+   one = REOPEN, list it under "missing". Always includes the "comments
+   per code-comments.md" row (see that standard's Enforcement), even if
+   the node's own criteria don't list it.
 7. Scan all 6 forbidden states.
 7b. Check the BRANCH — does the note clearly name a dedicated branch
     (other than `main`) used for the diff? Missing, or the diff was made

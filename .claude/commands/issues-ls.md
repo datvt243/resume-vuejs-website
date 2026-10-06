@@ -17,14 +17,27 @@ a GitHub repo — no writes, no approval gate needed.
    status`. If `gh` isn't installed or isn't authenticated, stop and
    report the exact output plus a one-line hint (`gh auth login`) — don't
    work around it (no calling the GitHub REST API directly with a token).
-3. **List issues.** `gh issue list --state open --limit 50` by default.
-   If `$ARGUMENTS` is given, pass it through verbatim as extra flags to
-   `gh issue list` instead of the defaults (e.g. `/issues-ls --state all`,
-   `/issues-ls --label bug --assignee @me`).
-4. **Display as a table**: issue number, title, labels, state,
-   updated-at, URL — whatever `gh issue list` returns is enough, don't
-   reformat or re-fetch per-issue unless the arguments ask for more detail
-   (e.g. a `--json` variant).
+3. **List issues.** `gh issue list --state open --limit 50 --json
+   number,title,labels,state,updatedAt,url` by default. If `$ARGUMENTS`
+   is given, pass it through verbatim as extra flags to `gh issue list`
+   instead of `--state open --limit 50` (e.g. `/issues-ls --state all`,
+   `/issues-ls --label bug --assignee @me`), still adding the `--json`
+   field list above unless the arguments already include their own
+   `--json`.
+4. **Display as a table**: issue number, title, **Status**, labels,
+   state, updated-at, URL.
+   - **Status** comes from the issue's `status: <value>` label (e.g.
+     `status: pending` → `pending`, `status: waiting-backend` →
+     `waiting-backend`). GitHub's own `state` is only `OPEN`/`CLOSED`, so
+     this label is where the hub records finer-grained status (see
+     `issue-122-ai-cv-suggestions-pending` /
+     `issue-158-import-cv-pdf-waiting-backend` in
+     `agent-hub/haven/diagrams/dev-loop.prime-mermaid.md`). No `status:`
+     label → `—`; more than one → show them all, comma-separated.
+   - Leave the `status: *` labels out of the Labels column so they
+     aren't listed twice.
+   - Don't re-fetch per issue. The one `gh issue list --json` call has
+     everything.
 5. **No writes.** Never close/comment/edit an issue from this command —
    that's a separate manual `gh issue` call (or `/release`'s own
    issue-closing step), out of scope here.

@@ -12,7 +12,7 @@
  * `useCandidate` on the dashboard side.
  */
 import { computed } from 'vue'
-import { formatDate, getLocalizedText } from '@/utilities/index'
+import { formatDate, getLocalizedText, sanitizeHtml } from '@/utilities/index'
 import generalInformationModel from '@/models/generalInformation.model'
 import { resolveTheme } from '@/composables/useCvTheme'
 
@@ -75,7 +75,7 @@ function certDateRange(item) {
                 </li>
                 <li v-if="generalInformation.workLocation"><strong>Địa điểm làm việc:</strong> {{ generalInformation.workLocation }}</li>
             </ul>
-            <p v-if="generalInformation.careerGoal" class="cv-paragraph">{{ getLocalizedText(generalInformation.careerGoal) }}</p>
+            <div v-if="generalInformation.careerGoal" class="cv-paragraph" v-html="sanitizeHtml(getLocalizedText(generalInformation.careerGoal))"></div>
         </section>
 
         <section v-if="data.educations?.length" class="cv-section">
@@ -98,7 +98,7 @@ function certDateRange(item) {
                     <span class="cv-item-date">{{ dateRange(exp) }}</span>
                 </div>
                 <p v-if="exp.position" class="cv-item-sub">{{ exp.position }}</p>
-                <p v-if="exp.description" class="cv-item-desc">{{ getLocalizedText(exp.description) }}</p>
+                <div v-if="exp.description" class="cv-item-desc" v-html="sanitizeHtml(getLocalizedText(exp.description))"></div>
             </div>
         </section>
 
@@ -127,7 +127,7 @@ function certDateRange(item) {
                     <span class="cv-item-date">{{ formatDate(aw.issueDate, 'MM/YYYY') }}</span>
                 </div>
                 <p v-if="aw.organization" class="cv-item-sub">{{ aw.organization }}</p>
-                <p v-if="aw.description" class="cv-item-desc">{{ getLocalizedText(aw.description) }}</p>
+                <div v-if="aw.description" class="cv-item-desc" v-html="sanitizeHtml(getLocalizedText(aw.description))"></div>
             </div>
         </section>
 

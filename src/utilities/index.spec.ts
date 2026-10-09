@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatDate, formatDateToInput, getLocalizedText, wrapLocalizedText, getDownloadCvUrl } from './index'
+import { formatDate, formatDateToInput, getLocalizedText, wrapLocalizedText, getDownloadCvUrl, sanitizeHtml, escapeHtml } from './index'
 
 describe('formatDate', () => {
     it('returns the placeholder for a falsy date', () => {
@@ -91,5 +91,34 @@ describe('getDownloadCvUrl', () => {
     it('appends the access token as ?token= (link navigation sends no Authorization header)', () => {
         expect(getDownloadCvUrl(host, 'classic', 'abc')).toBe('https://api.example.com/api/v1/download-pdf?token=abc')
         expect(getDownloadCvUrl(host, 'ats', 'abc')).toBe('https://api.example.com/api/v1/download-pdf?template=ats&token=abc')
+    })
+})
+
+describe('sanitizeHtml', () => {
+    it('returns an empty string for empty input', () => {
+        expect(sanitizeHtml('')).toBe('')
+        expect(sanitizeHtml(null)).toBe('')
+        expect(sanitizeHtml(undefined)).toBe('')
+    })
+
+    it('keeps CKEditor formatting markup', () => {
+        const html = '<p>Hello <strong>bold</strong></p><ul><li>one</li></ul>'
+        expect(sanitizeHtml(html)).toBe(html)
+    })
+
+    it('strips scripts, event handlers and javascript: URLs', () => {
+        expect(sanitizeHtml('<p>ok</p><script>alert(1)</script>')).toBe('<p>ok</p>')
+        expect(sanitizeHtml('<img src="x" onerror="alert(1)">')).toBe('<img src="x">')
+        expect(sanitizeHtml('<a href="javascript:alert(1)">x</a>')).toBe('<a>x</a>')
+    })
+})
+
+describe('escapeHtml', () => {
+    it('escapes HTML-significant characters', () => {
+        expect(escapeHtml(`<img src=x onerror="a('b')">&`)).toBe('&lt;img src=x onerror=&quot;a(&#39;b&#39;)&quot;&gt;&amp;')
+    })
+
+    it('leaves plain names unchanged', () => {
+        expect(escapeHtml('Đạt Võ')).toBe('Đạt Võ')
     })
 })

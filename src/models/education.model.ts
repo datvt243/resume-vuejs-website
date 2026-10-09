@@ -5,7 +5,7 @@
  */
 
 import type { modelItem } from '@/types/model.type.ts'
-import { defaultId, defaultDateStartEnd, defaultDescription, defaultCheckboxBoolean } from '@/types/model.type'
+import { defaultId, defaultDateStartEnd, defaultDescription, defaultCheckboxBoolean, withEnglish } from '@/types/model.type'
 
 const _mesRequired = 'Vui lòng nhập'
 
@@ -29,7 +29,7 @@ const MODEL: modelItem[] = [
     },
     ...defaultDateStartEnd(true),
     defaultCheckboxBoolean({ name: 'isCurrent', label: 'Đang học tại đây' }),
-    defaultDescription({ name: 'description', label: 'Mô tả', required: false }),
+    ...withEnglish(defaultDescription({ name: 'description', label: 'Mô tả', required: false })),
 ]
 
 export default MODEL

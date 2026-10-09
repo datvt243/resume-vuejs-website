@@ -5,7 +5,7 @@
  */
 
 import type { modelItem } from '@/types/model.type.ts'
-import { defaultCheckboxBoolean } from '@/types/model.type'
+import { defaultCheckboxBoolean, withEnglish } from '@/types/model.type'
 /* import { formatDateToInput } from '@/utilities/index' */
 
 const _mesRequired = 'Vui lòng nhập'
@@ -28,14 +28,14 @@ const MODEL: modelItem[] = [
         valid: yup => yup.string().max(50).trim().required(_mesRequired),
         default: '',
     },
-    {
+    ...withEnglish({
         name: 'career',
         label: 'Ngành nghề',
         type: 'text',
         placeholder: 'Vui lòng nhập Ngành nghề',
         valid: yup => yup.string().max(50).trim().required(_mesRequired),
         default: '',
-    },
+    }),
     {
         name: 'levelCurrent',
         label: 'Cấp bậc hiện tại',
@@ -141,14 +141,14 @@ const MODEL: modelItem[] = [
         placeholder: 'Vui lòng nhập Địa điểm làm việc',
         valid: yup => yup.string().required(_mesRequired),
     },
-    {
+    ...withEnglish({
         name: 'careerGoal',
         label: 'Mục tiêu công việc',
         type: 'ckediter',
         default: '',
         placeholder: 'Vui lòng nhập Mức lương mong muốn',
         valid: yup => yup.string(),
-    },
+    }),
 ]
 
 export default MODEL

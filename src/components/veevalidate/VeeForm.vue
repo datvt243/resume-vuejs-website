@@ -5,7 +5,7 @@
  * Description:
  */
 
-import { defineProps, defineExpose, computed, watch } from 'vue'
+import { defineProps, defineExpose, computed, ref, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 
@@ -56,7 +56,7 @@ const schema = computed(() => {
 /**
  * Khởi tạo From
  */
-const { values, meta, setValues, resetForm } = useForm({
+const { values, meta, errors, setValues, resetForm } = useForm({
     validationSchema: schema,
     /* initialValues: (() => {
         const keys = props.fields.map(e => ({ name: e.name, default: e.default }))
@@ -87,6 +87,18 @@ watch(
 defineExpose({
     reset,
 })
+
+/**
+ * VI | EN toggle — only when the model has localized fields (`lang`, see
+ * `withEnglish`). Hidden-language fields stay mounted (v-show) so their
+ * values and validation are kept; the toggle flags a language with errors.
+ */
+const LANGS = ['vi', 'en']
+const formLang = ref('vi')
+const hasLocalizedFields = computed(() => getFields.value.some(f => f.lang))
+function langHasError(lang) {
+    return getFields.value.some(f => f.lang === lang && errors.value[f.name])
+}
 
 function reset() {
     // reset về default của TỪNG field (model.default), không phải luôn
@@ -128,9 +140,22 @@ const objComponent = {
 
 <template>
     <form class="form">
+        <div v-if="hasLocalizedFields" class="btn-group btn-group-sm mb-[1rem]" role="group" aria-label="Ngôn ngữ nội dung">
+            <button
+                v-for="l in LANGS"
+                :key="l"
+                type="button"
+                class="btn"
+                :class="formLang === l ? 'btn-success' : 'btn-outline-success'"
+                :data-lang="l"
+                @click="formLang = l"
+            >
+                {{ l.toUpperCase() }}<span v-if="langHasError(l)" class="text-danger ms-1">!</span>
+            </button>
+        </div>
         <div class="row">
             <template v-for="el in getFields.filter(f => f.type !== 'hidden')" :key="el.name">
-                <div :class="['col-12', el?.col || 'col-md-12']">
+                <div v-show="!el.lang || el.lang === formLang" :class="['col-12', el?.col || 'col-md-12']">
                     <component :is="objComponent?.[`${el.type}`] || objComponent['default']" :key="el?.name" v-bind="el" />
                 </div>
             </template>

@@ -5,6 +5,7 @@
  */
 
 import type { modelItem } from '@/types/model.type.ts'
+import { withEnglish } from '@/types/model.type'
 
 const _mesRequired = 'Vui lòng nhập'
 
@@ -61,7 +62,7 @@ const MODEL: modelItem[] = [
         col: 'col-md-12',
         default: '',
     }, */
-    {
+    ...withEnglish({
         name: 'description',
         label: 'Mô tả',
         type: 'ckediter',
@@ -69,7 +70,7 @@ const MODEL: modelItem[] = [
         col: 'col-md-12',
         convertTo: 'truncate',
         default: '',
-    },
+    }),
 ]
 
 export default MODEL

@@ -190,12 +190,17 @@ describe('VeeForm', () => {
 
     it('resetAfterSave clears the form back to defaults right after a valid submit', async () => {
         const wrapper = mountForm({ resetAfterSave: true })
-        await wrapper.find('input[type="text"]').setValue('Dat')
+        const textInputs = wrapper.findAll('input[type="text"]')
+        await textInputs[0].setValue('Dat')
+        await textInputs[1].setValue('30')
         await flushPromises()
 
         await wrapper.find('button.btn-success').trigger('click')
         await flushPromises()
 
-        expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe('')
+        // 'age' has a non-empty model default ('n/a') — a bare resetForm()
+        // would empty it instead of restoring that default
+        expect((textInputs[0].element as HTMLInputElement).value).toBe('')
+        expect((textInputs[1].element as HTMLInputElement).value).toBe('n/a')
     })
 })

@@ -14,7 +14,7 @@ import { useRouter } from 'vue-router'
 import Navbar from '@/components/Navbar.vue'
 
 import { API } from '@/config/api.config'
-import { getDownloadCvUrl } from '@/utilities/index'
+import { getDownloadCvUrl, escapeHtml } from '@/utilities/index'
 
 const router = useRouter()
 const store = authStore()
@@ -57,7 +57,8 @@ const mesUser = computed(() => {
         return _name || 'User'
     })(user || {})
 
-    return `<small class="opacity-60">Xin chào</small> <span class="hidden sm:inline">, ${fullName}</span>`
+    // Dropdown renders `text` via v-html — the name is user data, escape it
+    return `<small class="opacity-60">Xin chào</small> <span class="hidden sm:inline">, ${escapeHtml(fullName)}</span>`
 })
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive

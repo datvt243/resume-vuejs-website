@@ -20,10 +20,12 @@ import { candidateStore } from '@/stores/candidate'
 
 import { handleBase } from '@/services/base'
 import { useRouter } from 'vue-router'
+import { useAuthRedirect } from '@/composables/useAuthRedirect'
 
 const store = authStore()
 const candidate = candidateStore()
 const router = useRouter()
+useAuthRedirect()
 
 onMounted(async () => {
     if (store.isAuthenticated) {

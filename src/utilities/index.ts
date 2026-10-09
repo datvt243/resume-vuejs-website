@@ -4,6 +4,8 @@
  * Description:
  */
 
+import DOMPurify from 'dompurify'
+
 type StrDate = number | string
 type formatStringDate = 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'MM/YYYY'
 type Str = 'dd' | 'mm' | 'yyyy'
@@ -88,3 +90,19 @@ export const getDownloadCvUrl = (host: string, template: 'classic' | 'ats' = 'cl
     const query = params.toString()
     return `${host}api/v1/download-pdf${query ? `?${query}` : ''}`
 }
+
+/**
+ * Strip scripts, event handlers and `javascript:` URLs from user-authored
+ * rich text (CKEditor output, imported data) before it reaches `v-html`.
+ * Access/refresh tokens are JS-readable, so any XSS here can read them.
+ */
+export const sanitizeHtml = (html: string | null | undefined): string => {
+    if (!html) return ''
+    return DOMPurify.sanitize(html)
+}
+
+/**
+ * Escape a plain-text value for interpolation into an HTML string.
+ */
+export const escapeHtml = (text: string): string =>
+    text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')

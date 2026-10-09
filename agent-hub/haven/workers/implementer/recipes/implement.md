@@ -23,12 +23,17 @@
    naming/style/idioms in `src/` (e.g. `<script setup>`, composable
    patterns, model-driven forms — see `doctrine/domains/PROJECT.md`).
 3. Smallest diff — change only what the acceptance criteria require.
-   Don't fix another known trap opportunistically.
+   Don't fix another known trap opportunistically. Any comment
+   added/changed follows `doctrine/standards/code-comments.md` (incl. its
+   enabled opt-ins).
 4. SEAL GATE before any outward-facing action (commit, push, merge
    branch → `main`, a real API call) — stop, show the diff + branch name,
    wait for approval.
-5. Run the EXACT `npm run build` from `doctrine/MEMORY.md` — copy it
-   verbatim, run from repo root. (No test command — see `MEMORY.md`.)
+5. Run the EXACT commands from `doctrine/MEMORY.md` — copy verbatim, from
+   repo root: `npm run test` (vitest, exists since 2026-08-25) + `npm run
+   build` + the `Typecheck` row (`vite build` strips types without
+   checking them; while that row is CANNOT RUN, see the transitional
+   note in `CLAUDE.md`). [synced 2026-10-07]
 6. READ THE OUTPUT BACK verbatim — a claim you can't cite = `EDIT_UNVERIFIED`.
 7. If the diff touches UI/routes, also confirm with `npm run dev` +
    manual observation of the relevant screen; state clearly this is
@@ -57,6 +62,7 @@
 |---|---|
 | A needed command is missing from `doctrine/MEMORY.md` | `blocked`, suggest filling the `<<FILL>>` |
 | Failure from missing setup (env, deps) | Report the REAL error, don't route around it |
+| Typecheck reports errors the diff didn't introduce | Don't fix them in this diff (`SmallestDiff`) — prove they pre-exist (same count on the base branch), list under `## Noticed, not done` |
 | `npm run build` fails from a real TypeScript error in a changed `.ts` file | Read the error verbatim, fix that exact error, rebuild — don't loosen `tsconfig.json` to dodge it |
 | Starting on `main` when implementation begins | Checkout a new branch FIRST — never write a diff on `main` (`MAIN_EDIT`) |
 

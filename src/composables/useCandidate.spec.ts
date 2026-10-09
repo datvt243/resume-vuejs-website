@@ -104,6 +104,39 @@ describe('useCandidate', () => {
         expect(candidateStore().getCandidateByField('educations')).toEqual([{ name: 'new one' }])
     })
 
+    it('sorting a cached list does not reorder the array held in candidateStore', async () => {
+        candidateStore().setCandidateByField({
+            educations: [
+                { _id: 'old', startDate: 100 },
+                { _id: 'new', startDate: 300 },
+            ],
+        })
+
+        const { result } = withUseCandidate('educations')
+        await flushPromises()
+
+        expect(result.educations.value.map((e: { _id: string }) => e._id)).toEqual(['new', 'old'])
+        expect(candidateStore().getCandidateByField('educations').map((e: { _id: string }) => e._id)).toEqual(['old', 'new'])
+    })
+
+    it('addRecordToList syncs a record without _id into candidateStore', async () => {
+        candidateStore().setCandidateByField({ educations: [{ _id: '1', startDate: 100 }] })
+        const { result } = withUseCandidate('educations')
+        await flushPromises()
+
+        result.addRecordToList({ name: 'new one' })
+
+        expect(candidateStore().getCandidateByField('educations')).toEqual([{ _id: '1', startDate: 100 }, { name: 'new one' }])
+    })
+
+    it('updateField writes the given values into candidateStore', () => {
+        const { result } = withUseCandidate('generalInformation')
+
+        result.updateField({ field: 'skills', values: ['vue'] })
+
+        expect(candidateStore().getCandidateByField('skills')).toEqual(['vue'])
+    })
+
     it('addRecordToList replaces an existing record in place when the _id matches', async () => {
         handleBaseMock.mockImplementation(async (_opt, _props, cb) =>
             cb({ success: true, message: '', data: [{ _id: '1', name: 'old' }] }),

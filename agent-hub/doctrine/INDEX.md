@@ -11,6 +11,8 @@
 | `domains/PROJECT.md` | Ground truth riêng resume-vuejs-website | Trước khi implement |
 | `standards/edit-verification.md` | Luật không claim thứ chưa quan sát | Trước khi báo "done" |
 | `standards/recipes.md` | Recipe là gì, khi nào viết | Khi lặp lại 1 quy trình lần 2 |
+| `standards/initiative-scoping.md` | Measure exhaustively by rule+file before/after a multi-phase count-based initiative | Before carving up any "clean up X across the codebase" effort into phases |
+| `standards/code-comments.md` | What a source comment may say + its style, plus project opt-ins (file header, object params) | Before writing/changing any comment or function signature |
 
 ## The three kinds of knowledge here
 | Kind | Home | Example |

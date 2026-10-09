@@ -96,7 +96,7 @@ async function handleUpdate(values, action = 'create') {
                 cancelButton: 'btn btn-secondary mx-1',
             },
             inputValidator: value => {
-                if (!value) {
+                if (value !== 'delete') {
                     return 'Vui lòng nhập vào <span class="code">"delete"</span> để xác nhận xoá'
                 }
             },

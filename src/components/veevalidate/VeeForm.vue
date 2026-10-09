@@ -109,7 +109,7 @@ function onSubmit() {
     props?.submitFn?.(values)
 
     if (props.resetAfterSave) {
-        resetForm()
+        reset()
     }
 }
 
@@ -129,7 +129,7 @@ const objComponent = {
 <template>
     <form class="form">
         <div class="row">
-            <template v-for="el in getFields.filter(f => f.type !== 'hidden')" :key="el.nam">
+            <template v-for="el in getFields.filter(f => f.type !== 'hidden')" :key="el.name">
                 <div :class="['col-12', el?.col || 'col-md-12']">
                     <component :is="objComponent?.[`${el.type}`] || objComponent['default']" :key="el?.name" v-bind="el" />
                 </div>

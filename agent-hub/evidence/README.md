@@ -22,12 +22,14 @@ otherwise).
   changing any file (required — see `CLAUDE.md` → Branching rule; missing
   this line = verifier REOPEN with `MAIN_EDIT`)
 - `## Diff` — files | file | why |
-- `## Command` — the exact command from `doctrine/MEMORY.md` (e.g. `npm
-  run build` from repo root — this project has no separate test command)
+- `## Command` — the exact commands from `doctrine/MEMORY.md`: `npm run
+  test` + `npm run build` from repo root + `Typecheck` (or its explicit
+  CANNOT RUN line while transitional)
 - `## Output` — verbatim, no paraphrasing
 - `## Acceptance` — table | Criterion | Evidence | (evidence points to a
   specific output line — never just say "build passed," quote it
-  verbatim, e.g. `✓ built in 3.21s`)
+  verbatim, e.g. `✓ built in 3.21s`); always has a "comments per
+  code-comments.md" row
 - `## Noticed, not done` — things spotted outside scope but not fixed
   (e.g. another trap in `doctrine/domains/PROJECT.md` not part of this
   task)

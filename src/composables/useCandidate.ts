@@ -71,12 +71,7 @@ export const useCandidate = (props: Props) => {
     }
     function addRecordToList(data: { _id: string; [key: string]: any }) {
         const { _id = null } = data
-
-        if (!_id) {
-            result.value.push(data)
-            return
-        }
-        const _findIndex = result.value.findIndex(e => e._id === _id)
+        const _findIndex = _id ? result.value.findIndex(e => e._id === _id) : -1
 
         if (_findIndex > -1) {
             result.value[_findIndex] = data
@@ -92,7 +87,7 @@ export const useCandidate = (props: Props) => {
         const { field, values } = props
         const _f = field
 
-        if (_f === '')
+        if (_f !== '')
             candidate.setCandidateByField({
                 [_f]: values,
             })
@@ -103,7 +98,7 @@ export const useCandidate = (props: Props) => {
 
     function sortData(data: any) {
       if (Array.isArray(data)) {
-        return data.sort((a, b) => b.startDate - a.startDate)
+        return [...data].sort((a, b) => b.startDate - a.startDate)
       }
       return data
     }

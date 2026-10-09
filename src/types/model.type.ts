@@ -5,6 +5,7 @@
  */
 
 import { phoneRegex } from '@/config/regex.config'
+import { EN_FIELD_SUFFIX } from '@/utilities/index'
 
 type inputType =
     | 'text'
@@ -82,6 +83,26 @@ export const defaultDescription = function (props: Part): modelItem {
         result.valid = yup => yup.string().trim()
     }
     return result
+}
+
+/**
+ * Pair a localized (`{ vi, en }` in the backend) field with its English
+ * sibling `<name>_en`. VeeForm shows one or the other via its VI | EN
+ * toggle (`lang`); the English copy keeps the same rules minus `required`.
+ */
+export const withEnglish = function (item: modelItem): modelItem[] {
+    const { valid } = item
+    return [
+        { ...item, lang: 'vi' },
+        {
+            ...item,
+            name: `${item.name}${EN_FIELD_SUFFIX}`,
+            label: `${item.label} (English)`,
+            placeholder: '',
+            lang: 'en',
+            ...(valid && { valid: (yup: any) => valid(yup).notRequired() }),
+        },
+    ]
 }
 
 export const defaultLink = function (props: Part): modelItem {

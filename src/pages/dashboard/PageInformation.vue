@@ -25,7 +25,8 @@ import { useRouter } from 'vue-router'
 import { useDocument, useHelper, useCandidate } from '@/composables'
 import { useCvTheme, DEFAULT_THEME } from '@/composables/useCvTheme'
 import { useActiveProfile } from '@/composables/useActiveProfile'
-import { getLocalizedText, wrapLocalizedText } from '@/utilities/index'
+import { useCvLang } from '@/composables/useCvLang'
+import { localizedToForm, localizedFromForm } from '@/utilities/index'
 
 /* import { useDocument } from '@/composables/useDocument' */
 
@@ -165,12 +166,16 @@ const { profiles } = useCandidate({ field: 'profiles', collection: 'profile' })
 const { activeProfileId, setActiveProfile } = useActiveProfile()
 const activeProfile = computed(() => profiles.value.find(p => p._id === activeProfileId.value) || null)
 
+// Issue #182: CV language as `?lang=en`, omitted for the default vi
+const { selectedLang, setLang, CV_LANGS } = useCvLang()
+
 const publicLink = computed(() => {
     const value = slugDocument.slug || candidate.getCandidate?.email || ''
     if (!value) return ''
     const query = {
         ...(selectedTheme.value !== DEFAULT_THEME ? { theme: selectedTheme.value } : {}),
         ...(activeProfile.value ? { profile: activeProfile.value._id } : {}),
+        ...(selectedLang.value === 'en' ? { lang: 'en' } : {}),
     }
     const resolved = router.resolve({ name: 'public-resume', params: { slug: value }, query })
     return `${window.location.origin}${import.meta.env.BASE_URL}${resolved.href}`
@@ -181,10 +186,6 @@ const publicLink = computed(() => {
  */
 const { document, updateDoc, updatePatchDoc } = useDocument({ collection: 'candidate', fields: formFields.value })
 
-// giữ lại giá trị introduction gốc (có thể là object { vi, en } từ backend)
-// để khi lưu lại không mất phần `en` — xem utilities/index.ts
-const originalIntroduction = ref(null)
-
 onMounted(() => {
     const _candidate = candidate.getCandidate
 
@@ -192,8 +193,7 @@ onMounted(() => {
     for (const k of Object.keys(document)) {
         document[k] = _candidate[k]
     }
-    originalIntroduction.value = _candidate.introduction
-    document.introduction = getLocalizedText(_candidate.introduction)
+    Object.assign(document, localizedToForm(_candidate, ['introduction']))
 
     const { socialMedia = {} } = _candidate
 
@@ -221,9 +221,8 @@ async function handleUpdate(values) {
         val.gender = !!val.gender
         val.marital = !!val.marital
         val.birthday = +new Date(val.birthday)
-        val.introduction = wrapLocalizedText(val.introduction, originalIntroduction.value)
 
-        return val
+        return localizedFromForm(val, ['introduction'])
     })({ ..._newValues })
 
     await updateDoc(data, res => {
@@ -317,6 +316,12 @@ async function handleUpdateSlug(values) {
             <select class="form-select form-select-sm w-auto" :value="activeProfileId" @change="setActiveProfile($event.target.value)">
                 <option value="">Tất cả (mặc định)</option>
                 <option v-for="p in profiles" :key="p._id" :value="p._id">{{ p.name }}</option>
+            </select>
+        </div>
+        <div class="flex items-center gap-[0.5rem] mb-[0.5rem]">
+            <span class="text-sm opacity-75">Ngôn ngữ CV cho link này:</span>
+            <select class="form-select form-select-sm w-auto" :value="selectedLang" @change="setLang($event.target.value)">
+                <option v-for="l in CV_LANGS" :key="l.value" :value="l.value">{{ l.label }}</option>
             </select>
         </div>
         <p v-if="publicLink" class="text-sm opacity-75 mb-0">Link CV của bạn: <strong>{{ publicLink }}</strong></p>

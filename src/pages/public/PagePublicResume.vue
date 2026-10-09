@@ -22,7 +22,8 @@
  * `PageInformation.vue` from their own `useCvTheme` selection) — this is
  * a pure frontend mechanism, no backend field needed, so an anonymous
  * visitor sees the same theme the owner picked without any server-side
- * preference storage.
+ * preference storage. `?lang=en` (issue #182) works the same way and is
+ * also forwarded to the API, which resolves the `{ vi, en }` fields.
  *
  * Deliberately bypasses `_axios`'s caller (`handleBase`)/`useCandidate`/
  * `useDocument` — those assume an authenticated dashboard context
@@ -41,6 +42,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { _axios } from '@/services/axios'
 import { resolveTheme } from '@/composables/useCvTheme'
+import { resolveCvLang } from '@/composables/useCvLang'
 import CvResumeLayout from '@/components/cv/CvResumeLayout.vue'
 
 const route = useRoute()
@@ -50,6 +52,7 @@ const loading = ref(true)
 const notFound = ref(false)
 const data = ref(null)
 const theme = computed(() => resolveTheme(route.query.theme))
+const lang = computed(() => resolveCvLang(route.query.lang))
 
 onMounted(async () => {
     try {
@@ -61,7 +64,10 @@ onMounted(async () => {
         const res = await _axios({
             method: 'get',
             customURL: `api/me/${identifier}`,
-            params: profileId ? { profile: profileId } : undefined,
+            params: {
+                ...(profileId ? { profile: profileId } : {}),
+                ...(lang.value === 'en' ? { lang: 'en' } : {}),
+            },
         })
         if (!res?.success || !res?.data) {
             notFound.value = true
@@ -91,5 +97,5 @@ onMounted(async () => {
         <p class="m-0 p-[1rem]">Hồ sơ không tồn tại hoặc không được chia sẻ công khai.</p>
     </div>
 
-    <CvResumeLayout v-else :data="data" :theme="theme" />
+    <CvResumeLayout v-else :data="data" :theme="theme" :lang="lang" />
 </template>

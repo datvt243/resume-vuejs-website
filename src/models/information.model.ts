@@ -5,7 +5,7 @@
  */
 
 import type { modelItem } from '@/types/model.type.ts'
-import { defaultId, defaultDescription, defaultDate, defaultPhone } from '@/types/model.type'
+import { defaultId, defaultDescription, defaultDate, defaultPhone, withEnglish } from '@/types/model.type'
 
 const _mesRequired = 'Vui lòng nhập'
 
@@ -64,7 +64,7 @@ const modalDefault: modelItem[] = [
     },
 
     defaultPhone({ name: 'phone', label: 'Số điện thoại' }),
-    defaultDescription({ name: 'introduction', label: 'Giới thiệu bản thân' }),
+    ...withEnglish(defaultDescription({ name: 'introduction', label: 'Giới thiệu bản thân' })),
 ]
 
 const modalSocial: modelItem[] = [

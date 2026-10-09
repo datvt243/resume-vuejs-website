@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import VeeForm from './VeeForm.vue'
 import type { modelItem } from '@/types/model.type'
+import { withEnglish } from '@/types/model.type'
 
 // VeeForm.vue imports every Frm* child unconditionally (not just the ones
 // a given `fields` prop actually uses) via the `@/components/veevalidate`
@@ -202,5 +203,55 @@ describe('VeeForm', () => {
         // would empty it instead of restoring that default
         expect((textInputs[0].element as HTMLInputElement).value).toBe('')
         expect((textInputs[1].element as HTMLInputElement).value).toBe('n/a')
+    })
+    describe('VI | EN toggle', () => {
+        const localizedFields = [
+            { name: 'title', label: 'Title', type: 'text', default: '' },
+            ...withEnglish({ name: 'summary', label: 'Summary', type: 'text', default: '', valid: (yup: any) => yup.string().required('required') }),
+        ] as unknown as modelItem[]
+
+        const isVisible = (el: Element) => (el.closest('[class*="col-"]') as HTMLElement).style.display !== 'none'
+
+        it('is not rendered for a form without localized fields', () => {
+            expect(mountForm().find('[data-lang]').exists()).toBe(false)
+        })
+
+        it('shows the VI field by default and swaps to the EN field on toggle, non-localized fields stay visible', async () => {
+            const wrapper = mountForm({ fields: localizedFields })
+            const [title, summaryVi, summaryEn] = wrapper.findAll('input[type="text"]').map(w => w.element)
+
+            expect([isVisible(title), isVisible(summaryVi), isVisible(summaryEn)]).toEqual([true, true, false])
+
+            await wrapper.find('[data-lang="en"]').trigger('click')
+            expect([isVisible(title), isVisible(summaryVi), isVisible(summaryEn)]).toEqual([true, false, true])
+        })
+
+        it('keeps both languages in the submitted values and only requires the VI copy', async () => {
+            const submitFn = vi.fn()
+            const wrapper = mountForm({ fields: localizedFields, submitFn })
+            const inputs = wrapper.findAll('input[type="text"]')
+            await inputs[1].setValue('tóm tắt')
+            await wrapper.find('[data-lang="en"]').trigger('click')
+            await inputs[2].setValue('summary')
+            await flushPromises()
+
+            await wrapper.find('button.btn-success:not([data-lang])').trigger('click')
+            await flushPromises()
+
+            expect(submitFn).toHaveBeenCalledTimes(1)
+            expect(submitFn.mock.calls[0][0]).toMatchObject({ summary: 'tóm tắt', summary_en: 'summary' })
+        })
+
+        it('flags the hidden language that has a validation error', async () => {
+            const wrapper = mountForm({ fields: localizedFields })
+            const inputs = wrapper.findAll('input[type="text"]')
+            await inputs[1].setValue('x')
+            await inputs[1].setValue('')
+            await wrapper.find('[data-lang="en"]').trigger('click')
+            await flushPromises()
+
+            expect(wrapper.find('[data-lang="vi"]').text()).toContain('!')
+            expect(wrapper.find('[data-lang="en"]').text()).not.toContain('!')
+        })
     })
 })

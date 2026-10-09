@@ -27,4 +27,42 @@ describe('CvResumeLayout', () => {
         expect(wrapper.find('script').exists()).toBe(false)
         expect(wrapper.html()).not.toContain('alert(1)')
     })
+    describe('lang', () => {
+        const bilingual = {
+            firstName: 'Dat',
+            introduction: { vi: 'Giới thiệu', en: 'About me' },
+            generalInformation: { career: { vi: 'CNTT', en: 'IT' }, levelCurrent: 'teamLeader', careerGoal: { vi: '<p>Mục tiêu</p>', en: '<p>Goal</p>' } },
+            experiences: [{ _id: 'e1', company: 'ACME', isCurrent: true, description: { vi: '<p>Mô tả</p>', en: '<p>Desc</p>' } }],
+        }
+
+        it('defaults to the Vietnamese text and labels', () => {
+            const wrapper = mount(CvResumeLayout, { props: { data: bilingual } })
+            const text = wrapper.text()
+            expect(text).toContain('Giới thiệu')
+            expect(text).toContain('Ngành nghề: CNTT')
+            expect(text).toContain('Trưởng nhóm')
+            expect(text).toContain('Kinh nghiệm')
+            expect(text).toContain('Hiện tại')
+            expect(wrapper.find('.cv-item-desc').text()).toBe('Mô tả')
+        })
+
+        it('renders the English text, section titles and option labels for lang="en"', () => {
+            const wrapper = mount(CvResumeLayout, { props: { data: bilingual, lang: 'en' } })
+            const text = wrapper.text()
+            expect(text).toContain('About me')
+            expect(text).toContain('Career: IT')
+            expect(text).toContain('Team Leader')
+            expect(text).toContain('Experience')
+            expect(text).toContain('Present')
+            expect(wrapper.find('.cv-paragraph').text()).toBe('Goal')
+            expect(wrapper.find('.cv-item-desc').text()).toBe('Desc')
+            expect(text).not.toContain('Mô tả')
+        })
+
+        it('falls back to the Vietnamese text when the English copy is empty', () => {
+            const data = { firstName: 'Dat', introduction: { vi: 'Giới thiệu', en: '' } }
+            const wrapper = mount(CvResumeLayout, { props: { data, lang: 'en' } })
+            expect(wrapper.find('.cv-introduction').text()).toBe('Giới thiệu')
+        })
+    })
 })

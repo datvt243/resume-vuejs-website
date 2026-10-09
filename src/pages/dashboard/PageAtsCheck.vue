@@ -38,7 +38,7 @@ const checkedTemplate = ref('ats')
 
 const _host = window.location.host === 'localhost' ? 'http://localhost:3001/' : API
 const auth = authStore()
-const downloadUrl = computed(() => getDownloadCvUrl(_host, template.value, auth.getToken))
+const downloadUrl = computed(() => getDownloadCvUrl(_host, template.value, auth.getToken, lang.value))
 
 const scoreClass = computed(() => {
     const score = result.value?.score ?? 0

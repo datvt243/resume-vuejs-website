@@ -16,6 +16,7 @@ import { candidateStore } from '@/stores/candidate'
 import { authStore } from '@/stores/auth'
 import { useCandidate } from '@/composables/useCandidate'
 import { useCvTheme } from '@/composables/useCvTheme'
+import { useCvLang } from '@/composables/useCvLang'
 import { useActiveProfile } from '@/composables/useActiveProfile'
 import CvResumeLayout from '@/components/cv/CvResumeLayout.vue'
 
@@ -62,6 +63,7 @@ const cvData = computed(() => ({
 }))
 
 const { selectedTheme, setTheme, THEMES } = useCvTheme()
+const { selectedLang, setLang, CV_LANGS } = useCvLang()
 
 function handlePrint() {
     window.print()
@@ -92,6 +94,19 @@ onUnmounted(() => document.body.classList.remove('cv-print-mode'))
                 {{ t.label }}
             </button>
         </div>
+        <div class="flex items-center gap-[0.5rem]">
+            <span class="text-sm opacity-75">Ngôn ngữ:</span>
+            <button
+                v-for="l in CV_LANGS"
+                :key="l.value"
+                type="button"
+                class="btn btn-sm"
+                :class="selectedLang === l.value ? 'btn-success' : 'btn-outline-success'"
+                @click="setLang(l.value)"
+            >
+                {{ l.label }}
+            </button>
+        </div>
         <div v-if="profiles.length" class="flex items-center gap-[0.5rem]">
             <span class="text-sm opacity-75">Profile CV:</span>
             <select class="form-select form-select-sm w-auto" :value="activeProfileId" @change="setActiveProfile($event.target.value)">
@@ -102,7 +117,7 @@ onUnmounted(() => document.body.classList.remove('cv-print-mode'))
     </div>
 
     <div id="cv-print-area">
-        <CvResumeLayout :data="cvData" :theme="selectedTheme" />
+        <CvResumeLayout :data="cvData" :theme="selectedTheme" :lang="selectedLang" />
     </div>
 </template>
 

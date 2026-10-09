@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatDate, formatDateToInput, getLocalizedText, wrapLocalizedText, getDownloadCvUrl, sanitizeHtml, escapeHtml } from './index'
+import { formatDate, formatDateToInput, getLocalizedText, splitLocalizedText, localizedToForm, localizedFromForm, getDownloadCvUrl, sanitizeHtml, escapeHtml } from './index'
 
 describe('formatDate', () => {
     it('returns the placeholder for a falsy date', () => {
@@ -55,21 +55,37 @@ describe('getLocalizedText', () => {
     })
 })
 
-describe('wrapLocalizedText', () => {
-    it('wraps a plain new string, preserving the original en value', () => {
-        expect(wrapLocalizedText('chào mới', { vi: 'chào', en: 'hello' })).toEqual({
-            vi: 'chào mới',
-            en: 'hello',
+describe('splitLocalizedText', () => {
+    it('splits a {vi, en} object without falling back across languages', () => {
+        expect(splitLocalizedText({ vi: 'chào', en: 'hello' })).toEqual({ vi: 'chào', en: 'hello' })
+        expect(splitLocalizedText({ en: 'hello' })).toEqual({ vi: '', en: 'hello' })
+    })
+
+    it('treats a plain string as the vi text and a falsy value as empty', () => {
+        expect(splitLocalizedText('chào')).toEqual({ vi: 'chào', en: '' })
+        expect(splitLocalizedText(null)).toEqual({ vi: '', en: '' })
+    })
+})
+
+describe('localizedToForm / localizedFromForm', () => {
+    it('unwraps each named field into <name> (vi) + <name>_en', () => {
+        const doc = { description: { vi: 'mô tả', en: 'desc' }, other: 'x' }
+        expect(localizedToForm(doc, ['description'])).toEqual({ description: 'mô tả', description_en: 'desc' })
+    })
+
+    it('folds <name>_en back into {vi, en}, drops the sibling key and leaves other fields alone', () => {
+        const values = { _id: '1', description: 'mô tả', description_en: 'desc' }
+        expect(localizedFromForm(values, ['description'])).toEqual({ _id: '1', description: { vi: 'mô tả', en: 'desc' } })
+        expect(values).toEqual({ _id: '1', description: 'mô tả', description_en: 'desc' })
+    })
+
+    it('round-trips a record and defaults missing halves to empty strings', () => {
+        const doc = { career: { vi: 'IT' }, careerGoal: 'mục tiêu' }
+        const names = ['career', 'careerGoal']
+        expect(localizedFromForm(localizedToForm(doc, names), names)).toEqual({
+            career: { vi: 'IT', en: '' },
+            careerGoal: { vi: 'mục tiêu', en: '' },
         })
-    })
-
-    it('defaults en to empty string when the original was not an {vi,en} object', () => {
-        expect(wrapLocalizedText('chào mới', 'chào')).toEqual({ vi: 'chào mới', en: '' })
-        expect(wrapLocalizedText('chào mới', null)).toEqual({ vi: 'chào mới', en: '' })
-    })
-
-    it('defaults vi to empty string for a falsy new text', () => {
-        expect(wrapLocalizedText('', { vi: 'chào', en: 'hello' })).toEqual({ vi: '', en: 'hello' })
     })
 })
 
@@ -91,6 +107,11 @@ describe('getDownloadCvUrl', () => {
     it('appends the access token as ?token= (link navigation sends no Authorization header)', () => {
         expect(getDownloadCvUrl(host, 'classic', 'abc')).toBe('https://api.example.com/api/v1/download-pdf?token=abc')
         expect(getDownloadCvUrl(host, 'ats', 'abc')).toBe('https://api.example.com/api/v1/download-pdf?template=ats&token=abc')
+    })
+
+    it('adds lang=en for the English CV and omits the default vi', () => {
+        expect(getDownloadCvUrl(host, 'classic', '', 'vi')).toBe('https://api.example.com/api/v1/download-pdf')
+        expect(getDownloadCvUrl(host, 'ats', 'abc', 'en')).toBe('https://api.example.com/api/v1/download-pdf?template=ats&lang=en&token=abc')
     })
 })
 

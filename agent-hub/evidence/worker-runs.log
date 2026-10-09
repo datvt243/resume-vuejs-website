@@ -59,3 +59,4 @@
 2026-10-03T18:55:36Z role=verifier outcome=SEAL node=issue-159-ats-export-self-check rerun=none hub_bytes_before=152891 hub_bytes_after=158170
 2026-10-09T16:20:43Z role=verifier outcome=SEAL node=issue-176-178-sanitize-html rerun=none hub_bytes_before=169591 hub_bytes_after=170247
 2026-10-09T17:01:16Z role=verifier outcome=SEAL node=issue-177-forced-logout-redirect rerun=none hub_bytes_before=170247 hub_bytes_after=170859
+2026-10-09T17:56:26Z role=verifier outcome=SEAL node=issue-180-usecandidate-cleanup rerun=none hub_bytes_before=170859 hub_bytes_after=171540

@@ -5,7 +5,7 @@
  * Description:
  */
 
-import { defineProps, defineExpose, computed, ref, watch } from 'vue'
+import { defineProps, defineExpose, computed, ref, watch, inject, onBeforeUnmount } from 'vue'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 
@@ -77,12 +77,32 @@ watch(
             _newDoc[k] = doc[k]
         }
         setValues(_newDoc)
+        dirtyBaseline.value = null
         if (!doc._id) {
             reset()
         }
     },
     { deep: true },
 )
+
+/**
+ * Not `meta.dirty`: `setValues` (edit) leaves vee-validate's initial values
+ * empty, so a freshly loaded document already reads as dirty, and CKEditor /
+ * the month picker rewrite their value on mount. Snapshot on the first focus
+ * instead — by then those normalizations have settled.
+ */
+const dirtyBaseline = ref(null)
+function snapshotValues() {
+    return JSON.stringify(getFields.value.map(f => values[f.name] ?? ''))
+}
+function onFocusIn() {
+    if (dirtyBaseline.value === null) dirtyBaseline.value = snapshotValues()
+}
+const isDirty = () => dirtyBaseline.value !== null && dirtyBaseline.value !== snapshotValues()
+
+const modalDirtyGuard = inject('modalDirtyGuard', null)
+modalDirtyGuard?.register(isDirty)
+onBeforeUnmount(() => modalDirtyGuard?.unregister(isDirty))
 
 defineExpose({
     reset,
@@ -107,6 +127,7 @@ function reset() {
     resetForm({
         values: getFields.value.reduce((obj, e) => ({ ...obj, [e.name]: e.default ?? '' }), {}),
     })
+    dirtyBaseline.value = null
 }
 
 function onSubmit() {
@@ -139,7 +160,7 @@ const objComponent = {
 </script>
 
 <template>
-    <form class="form">
+    <form class="form" @focusin="onFocusIn">
         <div v-if="hasLocalizedFields" class="btn-group btn-group-sm mb-[1rem]" role="group" aria-label="Ngôn ngữ nội dung">
             <button
                 v-for="l in LANGS"

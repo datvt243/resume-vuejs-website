@@ -79,7 +79,7 @@ onMounted(async () => {
          * Ghi nhận lượt ghé thăm — fire-and-forget, không chặn hiển thị CV
          * nếu ghi nhận thất bại.
          */
-        _axios({ method: 'post', customURL: `api/me/${identifier}/visit` }).catch(() => {})
+        _axios({ method: 'post', customURL: `api/me/${identifier}/visit`, data: { referrer: document.referrer } }).catch(() => {})
     } catch {
         notFound.value = true
     } finally {

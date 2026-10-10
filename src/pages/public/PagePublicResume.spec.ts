@@ -38,3 +38,39 @@ describe('PagePublicResume — ?lang', () => {
         expect(axiosMock.mock.calls[2][0].params).toEqual({})
     })
 })
+
+describe('PagePublicResume — visit tracking', () => {
+    beforeEach(() => {
+        axiosMock.mockReset()
+        axiosMock.mockImplementation(async ({ method }) => (method === 'get' ? { success: true, data: { firstName: 'Dat' } } : {}))
+    })
+
+    it('records the visit with the page referrer so the backend can attribute the source', async () => {
+        vi.spyOn(document, 'referrer', 'get').mockReturnValue('https://www.linkedin.com/feed/')
+
+        await mountAt('/resume/dat')
+
+        expect(axiosMock).toHaveBeenCalledWith({
+            method: 'post',
+            customURL: 'api/me/dat/visit',
+            data: { referrer: 'https://www.linkedin.com/feed/' },
+        })
+    })
+
+    it('sends an empty referrer for a direct visit', async () => {
+        vi.spyOn(document, 'referrer', 'get').mockReturnValue('')
+
+        await mountAt('/resume/dat')
+
+        const visitCall = axiosMock.mock.calls.find(([opt]) => opt.method === 'post')
+        expect(visitCall?.[0].data).toEqual({ referrer: '' })
+    })
+
+    it('does not record a visit when the profile is not found', async () => {
+        axiosMock.mockImplementation(async () => ({ success: false }))
+
+        await mountAt('/resume/dat')
+
+        expect(axiosMock.mock.calls.some(([opt]) => opt.method === 'post')).toBe(false)
+    })
+})

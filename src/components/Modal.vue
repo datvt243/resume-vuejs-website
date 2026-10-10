@@ -21,7 +21,8 @@
  *   either (instant show/hide), preserved as-is.
  */
 
-import { ref, defineProps, defineExpose, useSlots, onBeforeUnmount, nextTick } from 'vue'
+import { ref, defineProps, defineExpose, useSlots, onBeforeUnmount, nextTick, provide } from 'vue'
+import { confirmDiscardChanges } from '@/lib/swal.lib'
 
 const slots = useSlots()
 
@@ -39,8 +40,36 @@ const visible = ref(false)
 // hide() re-enable body scroll while another instance is still open.
 let openModalCount = 0
 
+/**
+ * Forms inside the modal (VeeForm) register an `isDirty` getter here, so a
+ * user-initiated close can ask before discarding unsaved input. Programmatic
+ * `hide()` (e.g. after a successful save) skips this check.
+ */
+const dirtyGuards = new Set()
+provide('modalDirtyGuard', {
+    register: fn => dirtyGuards.add(fn),
+    unregister: fn => dirtyGuards.delete(fn),
+})
+
+// Swal's own Esc handler runs on window after ours — without this flag the
+// same keypress would re-open the confirm instead of dismissing it.
+let confirming = false
+
+async function requestClose() {
+    if (confirming) return
+    if ([...dirtyGuards].some(isDirty => isDirty())) {
+        confirming = true
+        try {
+            if (!(await confirmDiscardChanges())) return
+        } finally {
+            confirming = false
+        }
+    }
+    hide()
+}
+
 function onKeydown(e) {
-    if (e.key === 'Escape') hide()
+    if (e.key === 'Escape') requestClose()
 }
 
 function show() {
@@ -70,7 +99,19 @@ function hide() {
 // slot) is a real DOM descendant of refModal's root, so bubbling still
 // reaches this listener without any consumer markup changes.
 function onRootClick(e) {
-    if (e.target.closest('[data-bs-dismiss="modal"]')) hide()
+    if (e.target.closest('[data-bs-dismiss="modal"]')) requestClose()
+    else if (e.target === refModal.value && mousedownOnRoot) requestClose()
+}
+
+/**
+ * `.modal` is a full-viewport layer above the teleported backdrop, so an
+ * outside-dialog click lands on this root, not on `.modal-backdrop`. Like
+ * Bootstrap, only count it when the press also started there — a text
+ * selection dragged out of the dialog must not close it.
+ */
+let mousedownOnRoot = false
+function onRootMousedown(e) {
+    mousedownOnRoot = e.target === refModal.value
 }
 
 onBeforeUnmount(() => {
@@ -93,7 +134,7 @@ defineExpose({
         left the modal invisible despite carrying the `show` class.
     -->
     <div class="modal draggable" :class="{ show: visible }" :style="{ display: visible ? 'block' : 'none' }" tabindex="-1"
-        ref="refModal" @click="onRootClick">
+        ref="refModal" @mousedown="onRootMousedown" @click="onRootClick">
         <div class="modal-dialog modal-dialog-scrollable" :class="props.size">
             <div class="modal-content">
                 <div class="modal-header">
@@ -118,6 +159,6 @@ defineExpose({
         </div>
     </div>
     <Teleport to="body">
-        <div v-if="visible" class="modal-backdrop show" @click="hide()"></div>
+        <div v-if="visible" class="modal-backdrop show" @click="requestClose()"></div>
     </Teleport>
 </template>

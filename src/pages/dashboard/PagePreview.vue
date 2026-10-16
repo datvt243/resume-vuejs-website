@@ -19,6 +19,7 @@ import { useCvTheme } from '@/composables/useCvTheme'
 import { useCvLang } from '@/composables/useCvLang'
 import { useActiveProfile } from '@/composables/useActiveProfile'
 import CvResumeLayout from '@/components/cv/CvResumeLayout.vue'
+import { toJsonResume } from '@/utilities/jsonResume'
 
 const candidate = candidateStore()
 const auth = authStore()
@@ -69,6 +70,16 @@ function handlePrint() {
     window.print()
 }
 
+function handleExportJsonResume() {
+    const json = toJsonResume(cvData.value, selectedLang.value, info.value.socialMedia || {})
+    const url = URL.createObjectURL(new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' }))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'resume.json'
+    a.click()
+    URL.revokeObjectURL(url)
+}
+
 // Chỉ bật CSS ẩn header/sidebar/footer khi in TRONG LÚC đang ở trang này
 // (class trên <body>, gỡ lại khi rời trang) — tránh ảnh hưởng in ấn ở các
 // trang khác.
@@ -79,7 +90,10 @@ onUnmounted(() => document.body.classList.remove('cv-print-mode'))
 <template>
     <div class="mb-[1.5rem] no-print flex flex-wrap items-center justify-between gap-[0.75rem]">
         <Heading text="Xem trước CV">
-            <Button text="Xuất PDF / In" icon="fa-solid fa-download" type="outline-success" size="sm" @click="handlePrint()" />
+            <div class="flex flex-wrap gap-2">
+                <Button text="Xuất PDF / In" icon="fa-solid fa-download" type="outline-success" size="sm" @click="handlePrint()" />
+                <Button text="Xuất JSON Resume" icon="fa-solid fa-download" type="outline-success" size="sm" @click="handleExportJsonResume()" />
+            </div>
         </Heading>
         <div class="flex items-center gap-[0.5rem]">
             <span class="text-sm opacity-75">Giao diện:</span>

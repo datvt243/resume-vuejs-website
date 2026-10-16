@@ -3,7 +3,9 @@
  * Author: Đạt Võ - https://github.com/datvt243
  * Date: `--/--`
  * Description: Loading overlay + 30s cold-start countdown (backend chạy
- * trên Render free tier, lần gọi API đầu tiên có thể mất tới 30s).
+ * trên Render free tier, lần gọi API đầu tiên có thể mất tới 30s). Thông báo
+ * cold start chỉ hiện khi request đã chờ quá COLD_START_NOTICE_AFTER giây —
+ * request nhanh chỉ thấy spinner thường, không bị doạ "đợi 30 giây".
  */
 
 import { ref, computed, defineExpose, onBeforeUnmount } from 'vue'
@@ -14,6 +16,7 @@ defineExpose({
 })
 
 const COLD_START_SECONDS = 30
+const COLD_START_NOTICE_AFTER = 3
 
 const isLoading = ref(false)
 const secondsLeft = ref(COLD_START_SECONDS)
@@ -21,6 +24,7 @@ let intervalId = null
 
 const progressPercent = computed(() => ((COLD_START_SECONDS - secondsLeft.value) / COLD_START_SECONDS) * 100)
 const isOvertime = computed(() => secondsLeft.value <= 0)
+const isColdStart = computed(() => COLD_START_SECONDS - secondsLeft.value >= COLD_START_NOTICE_AFTER)
 
 function show() {
     isLoading.value = true
@@ -54,21 +58,24 @@ onBeforeUnmount(stopCountdown)
 
 <template>
     <div v-if="isLoading" class="spinner-container">
-        <div class="countdown-ring" :class="{ overtime: isOvertime }" :style="{ '--percent': `${progressPercent}%` }">
-            <span v-if="!isOvertime" class="countdown-number">{{ secondsLeft }}</span>
-            <span v-else class="spinner-border spinner-border-sm text-success" role="status">
-                <span class="sr-only">Loading...</span>
-            </span>
-        </div>
+        <span v-if="!isColdStart" class="spinner-border text-success" role="status">
+            <span class="sr-only">Loading...</span>
+        </span>
 
-        <div class="mt-[1rem] text-center loading-info">
-            <div class="font-semibold">Đang kết nối tới server...</div>
-            <div class="text-sm opacity-75 mt-1">
-                Server-free nên lần gọi API đầu tiên có thể mất đến
-                {{ COLD_START_SECONDS }} giây để khởi động.
+        <template v-else>
+            <div class="countdown-ring" :class="{ overtime: isOvertime }" :style="{ '--percent': `${progressPercent}%` }">
+                <span v-if="!isOvertime" class="countdown-number">{{ secondsLeft }}</span>
+                <span v-else class="spinner-border spinner-border-sm text-success" role="status">
+                    <span class="sr-only">Loading...</span>
+                </span>
             </div>
-            <div v-if="isOvertime" class="text-sm opacity-75 mt-1">Server khởi động lâu hơn dự kiến, vui lòng đợi thêm chút nữa...</div>
-        </div>
+
+            <div class="mt-[1rem] text-center loading-info" role="status" aria-live="polite">
+                <div class="font-semibold">Server đang khởi động, vui lòng đợi ~{{ COLD_START_SECONDS }} giây</div>
+                <div class="text-sm opacity-75 mt-1">Server chạy gói miễn phí nên tự ngủ khi không dùng, lần gọi đầu tiên cần thời gian để khởi động lại.</div>
+                <div v-if="isOvertime" class="text-sm opacity-75 mt-1">Server khởi động lâu hơn dự kiến, vui lòng đợi thêm chút nữa...</div>
+            </div>
+        </template>
     </div>
 </template>
 

@@ -5,6 +5,7 @@ import App from './App.vue'
 
 import GlobalComponents from '@/plugins/GlobalComponents'
 import initFontAwesomeIcon from '@/plugins/initFontAwesomeIcon'
+import { wakeServer } from '@/services/wakeServer'
 
 /**
  * apply the persisted/preferred theme (data-bs-theme) before the app
@@ -54,3 +55,5 @@ app.use(initFontAwesomeIcon)
 app.use(router)
 app.use(pinia)
 app.mount('#app')
+
+wakeServer()

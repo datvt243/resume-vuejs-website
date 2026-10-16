@@ -64,15 +64,47 @@ export const getLocalizedText = (value: LocalizedText, lang: 'vi' | 'en' = 'vi')
     return value[lang] || value.vi || value.en || ''
 }
 
+/** Suffix of the form-only sibling field that holds a localized field's English text. */
+export const EN_FIELD_SUFFIX = '_en'
+
 /**
- * Inverse of `getLocalizedText`: re-wrap an edited plain string back into
- * the `{ vi, en }` shape the backend expects, preserving whatever `en`
- * value was on the original (pre-edit) value. Use right before sending a
- * field back to the API that was unwrapped for editing with `getLocalizedText`.
+ * Strict per-language split for editing. Unlike `getLocalizedText` there is
+ * no cross-language fallback — an empty `vi` must stay empty in the VI
+ * input instead of showing (and then saving) the `en` text there.
  */
-export const wrapLocalizedText = (newText: string, original: LocalizedText): { vi: string; en: string } => {
-    const en = original && typeof original === 'object' ? original.en || '' : ''
-    return { vi: newText || '', en }
+export const splitLocalizedText = (value: LocalizedText): { vi: string; en: string } => {
+    if (!value) return { vi: '', en: '' }
+    if (typeof value === 'string') return { vi: value, en: '' }
+    return { vi: value.vi || '', en: value.en || '' }
+}
+
+/**
+ * Unwrap each localized field of a record into the form shape: the VI text
+ * under `<name>` and the EN text under `<name>_en`.
+ */
+export const localizedToForm = (doc: Record<string, any> | null | undefined, names: string[]): Record<string, string> => {
+    const result: Record<string, string> = {}
+    for (const name of names) {
+        const { vi, en } = splitLocalizedText(doc?.[name])
+        result[name] = vi
+        result[`${name}${EN_FIELD_SUFFIX}`] = en
+    }
+    return result
+}
+
+/**
+ * Inverse of `localizedToForm`: fold each `<name>_en` back into the
+ * `{ vi, en }` object the backend expects and drop the sibling key (it is
+ * not a backend field). Returns a new object.
+ */
+export const localizedFromForm = <T extends Record<string, any>>(values: T, names: string[]): T => {
+    const result: Record<string, any> = { ...values }
+    for (const name of names) {
+        const enKey = `${name}${EN_FIELD_SUFFIX}`
+        result[name] = { vi: result[name] || '', en: result[enKey] || '' }
+        delete result[enKey]
+    }
+    return result as T
 }
 
 /**
@@ -82,10 +114,13 @@ export const wrapLocalizedText = (newText: string, original: LocalizedText): { v
  * keeps the classic link byte-identical to what it was before #159.
  * `token`: this is a plain link navigation, so no Authorization header —
  * the backend also accepts the access token as `?token=`.
+ * `lang`: which half of the `{ vi, en }` fields the CV is rendered from;
+ * `vi` is the backend default, so it's left off like `classic`.
  */
-export const getDownloadCvUrl = (host: string, template: 'classic' | 'ats' = 'classic', token = ''): string => {
+export const getDownloadCvUrl = (host: string, template: 'classic' | 'ats' = 'classic', token = '', lang: 'vi' | 'en' = 'vi'): string => {
     const params = new URLSearchParams()
     if (template === 'ats') params.set('template', 'ats')
+    if (lang === 'en') params.set('lang', 'en')
     if (token) params.set('token', token)
     const query = params.toString()
     return `${host}api/v1/download-pdf${query ? `?${query}` : ''}`

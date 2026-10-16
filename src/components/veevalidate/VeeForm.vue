@@ -5,7 +5,7 @@
  * Description:
  */
 
-import { defineProps, defineExpose, computed, watch } from 'vue'
+import { defineProps, defineExpose, computed, ref, watch, inject, onBeforeUnmount } from 'vue'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 
@@ -56,7 +56,7 @@ const schema = computed(() => {
 /**
  * Khởi tạo From
  */
-const { values, meta, setValues, resetForm } = useForm({
+const { values, meta, errors, setValues, resetForm } = useForm({
     validationSchema: schema,
     /* initialValues: (() => {
         const keys = props.fields.map(e => ({ name: e.name, default: e.default }))
@@ -77,6 +77,7 @@ watch(
             _newDoc[k] = doc[k]
         }
         setValues(_newDoc)
+        dirtyBaseline.value = null
         if (!doc._id) {
             reset()
         }
@@ -84,9 +85,40 @@ watch(
     { deep: true },
 )
 
+/**
+ * Not `meta.dirty`: `setValues` (edit) leaves vee-validate's initial values
+ * empty, so a freshly loaded document already reads as dirty, and CKEditor /
+ * the month picker rewrite their value on mount. Snapshot on the first focus
+ * instead — by then those normalizations have settled.
+ */
+const dirtyBaseline = ref(null)
+function snapshotValues() {
+    return JSON.stringify(getFields.value.map(f => values[f.name] ?? ''))
+}
+function onFocusIn() {
+    if (dirtyBaseline.value === null) dirtyBaseline.value = snapshotValues()
+}
+const isDirty = () => dirtyBaseline.value !== null && dirtyBaseline.value !== snapshotValues()
+
+const modalDirtyGuard = inject('modalDirtyGuard', null)
+modalDirtyGuard?.register(isDirty)
+onBeforeUnmount(() => modalDirtyGuard?.unregister(isDirty))
+
 defineExpose({
     reset,
 })
+
+/**
+ * VI | EN toggle — only when the model has localized fields (`lang`, see
+ * `withEnglish`). Hidden-language fields stay mounted (v-show) so their
+ * values and validation are kept; the toggle flags a language with errors.
+ */
+const LANGS = ['vi', 'en']
+const formLang = ref('vi')
+const hasLocalizedFields = computed(() => getFields.value.some(f => f.lang))
+function langHasError(lang) {
+    return getFields.value.some(f => f.lang === lang && errors.value[f.name])
+}
 
 function reset() {
     // reset về default của TỪNG field (model.default), không phải luôn
@@ -95,6 +127,7 @@ function reset() {
     resetForm({
         values: getFields.value.reduce((obj, e) => ({ ...obj, [e.name]: e.default ?? '' }), {}),
     })
+    dirtyBaseline.value = null
 }
 
 function onSubmit() {
@@ -127,10 +160,23 @@ const objComponent = {
 </script>
 
 <template>
-    <form class="form">
+    <form class="form" @focusin="onFocusIn">
+        <div v-if="hasLocalizedFields" class="btn-group btn-group-sm mb-[1rem]" role="group" aria-label="Ngôn ngữ nội dung">
+            <button
+                v-for="l in LANGS"
+                :key="l"
+                type="button"
+                class="btn"
+                :class="formLang === l ? 'btn-success' : 'btn-outline-success'"
+                :data-lang="l"
+                @click="formLang = l"
+            >
+                {{ l.toUpperCase() }}<span v-if="langHasError(l)" class="text-danger ms-1">!</span>
+            </button>
+        </div>
         <div class="row">
             <template v-for="el in getFields.filter(f => f.type !== 'hidden')" :key="el.name">
-                <div :class="['col-12', el?.col || 'col-md-12']">
+                <div v-show="!el.lang || el.lang === formLang" :class="['col-12', el?.col || 'col-md-12']">
                     <component :is="objComponent?.[`${el.type}`] || objComponent['default']" :key="el?.name" v-bind="el" />
                 </div>
             </template>

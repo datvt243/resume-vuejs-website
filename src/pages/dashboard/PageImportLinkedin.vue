@@ -20,7 +20,7 @@ import { useCandidate } from '@/composables/useCandidate'
 import { useDocument } from '@/composables/useDocument'
 import { useHelper } from '@/composables/useHelper'
 import { handleBase } from '@/services/base'
-import { wrapLocalizedText } from '@/utilities/index'
+import { localizedFromForm } from '@/utilities/index'
 
 import educationModel from '@/models/education.model'
 import experienceModel from '@/models/experience.model'
@@ -75,12 +75,10 @@ function prefill(doc, fields, item) {
  * Education
  */
 const refModalEdu = ref()
-const eduOriginalDescription = ref(null)
 const activeEduItem = ref(null)
 
 function openEducationModal(item) {
     prefill(educationDoc, educationModel, item)
-    eduOriginalDescription.value = null
     activeEduItem.value = item
     refModalEdu.value?.show()
 }
@@ -90,9 +88,8 @@ async function handleSaveEducation(values) {
         val.startDate = +new Date(val.startDate)
         val.endDate = +new Date(val.endDate)
         !val.isCurrent && (val.isCurrent = false)
-        val.description = wrapLocalizedText(val.description, eduOriginalDescription.value)
         val._id = null
-        return val
+        return localizedFromForm(val, ['description'])
     })({ ...values })
 
     await updateEducationDoc(data, res => {
@@ -106,12 +103,10 @@ async function handleSaveEducation(values) {
  * Experience
  */
 const refModalExp = ref()
-const expOriginalDescription = ref(null)
 const activeExpItem = ref(null)
 
 function openExperienceModal(item) {
     prefill(experienceDoc, experienceModel, item)
-    expOriginalDescription.value = null
     activeExpItem.value = item
     refModalExp.value?.show()
 }
@@ -121,9 +116,8 @@ async function handleSaveExperience(values) {
         val.startDate = +new Date(val.startDate)
         val.endDate = +new Date(val.endDate)
         !val.isCurrent && (val.isCurrent = false)
-        val.description = wrapLocalizedText(val.description, expOriginalDescription.value)
         val._id = null
-        return val
+        return localizedFromForm(val, ['description'])
     })({ ...values })
 
     await updateExperienceDoc(data, res => {

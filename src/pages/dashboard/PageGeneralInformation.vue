@@ -12,7 +12,7 @@ import GroupTags from '@/components/GroupTags.vue'
 import { ref, toRef, shallowRef, onMounted, watch, provide, computed } from 'vue'
 import { useDocument } from '@/composables/useDocument'
 import { useCandidate } from '@/composables/useCandidate'
-import { getLocalizedText, wrapLocalizedText } from '@/utilities/index'
+import { localizedToForm, localizedFromForm } from '@/utilities/index'
 
 /**
  *
@@ -42,12 +42,9 @@ const candidateProvide = computed(() => ({
   _id: candidate.getGeneralInformation?._id || '',
 }))
 provide('candidate', candidateProvide)
-// giữ lại giá trị careerGoal/career gốc (có thể là object { vi, en } từ
-// backend — `career` tuy là field `text` thường nhưng backend cũng yêu
-// cầu dạng object, giống careerGoal) để khi lưu lại không mất phần `en`
-// — xem utilities/index.ts
-const originalCareerGoal = ref(null)
-const originalCareer = ref(null)
+// `career` tuy là field `text` thường nhưng backend cũng lưu dạng
+// object { vi, en }, giống careerGoal
+const LOCALIZED_FIELDS = ['careerGoal', 'career']
 
 onMounted(() => {
   isLoading.value = true
@@ -57,10 +54,7 @@ watch(generalInformation, val => {
   for (const [key, value] of Object.entries(_val)) {
     document[key] = value
   }
-  originalCareerGoal.value = _val.careerGoal
-  document.careerGoal = getLocalizedText(_val.careerGoal)
-  originalCareer.value = _val.career
-  document.career = getLocalizedText(_val.career)
+  Object.assign(document, localizedToForm(_val, LOCALIZED_FIELDS))
 })
 
 /**
@@ -77,9 +71,7 @@ async function handleUpdateGroup(list) {
 }
 
 async function handleUpdate(values) {
-  const document = { ...values }
-  document.careerGoal = wrapLocalizedText(document.careerGoal, originalCareerGoal.value)
-  document.career = wrapLocalizedText(document.career, originalCareer.value)
+  const document = localizedFromForm(values, LOCALIZED_FIELDS)
   await updateDoc(document, res => {
     const { data } = res
     candidate.setCandidateByField({ generalInformation: [data] })

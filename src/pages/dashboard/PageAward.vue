@@ -15,7 +15,7 @@ import { useDocument } from '@/composables/useDocument'
 
 import model from '@/models/award.model.ts'
 
-import { formatDate, getLocalizedText, wrapLocalizedText } from '@/utilities/index'
+import { formatDate, localizedToForm, localizedFromForm } from '@/utilities/index'
 
 const { awards: dataList, removeRecordById, addRecordToList, getData } = useCandidate({ field: 'awards' })
 
@@ -30,10 +30,6 @@ const { document, updateDoc, deleteDoc } = useDocument({ collection: 'award', fi
 const refModal = ref()
 const refVeeForm = ref()
 const formFields = shallowRef(model)
-
-// giữ lại giá trị description gốc (có thể là object { vi, en } từ backend)
-// để khi lưu lại không mất phần `en` — xem utilities/index.ts
-const originalDescription = ref(null)
 
 // Nhân bản (issue #60): giữ `document._id` = id của bản ghi gốc (KHÔNG
 // để rỗng) trong lúc modal mở — VeeForm.vue có watch(document) tự
@@ -53,8 +49,7 @@ async function handleUpdate(values) {
    */
   const data = (val => {
     val.issueDate = +new Date(val.issueDate)
-    val.description = wrapLocalizedText(val.description, originalDescription.value)
-    return val
+    return localizedFromForm(val, ['description'])
   })({ ...values })
 
   if (isDuplicating.value) {
@@ -74,8 +69,7 @@ function showModalEditDoc(doc) {
   for (const f of new Set(['_id', ...fields])) {
     document[f] = doc[f]
   }
-  originalDescription.value = doc.description
-  document.description = getLocalizedText(doc.description)
+  Object.assign(document, localizedToForm(doc, ['description']))
 
   refModal.value?.show()
 }
@@ -85,7 +79,6 @@ function showModalCreateDoc() {
   for (const k of formFields.value) {
     document[k.name] = k.default
   }
-  originalDescription.value = null
   refModal.value?.show()
   refVeeForm.value?.reset()
 }
@@ -96,8 +89,7 @@ function showModalDuplicateDoc(doc) {
   for (const f of new Set(['_id', ...fields])) {
     document[f] = doc[f]
   }
-  originalDescription.value = doc.description
-  document.description = getLocalizedText(doc.description)
+  Object.assign(document, localizedToForm(doc, ['description']))
 
   refModal.value?.show()
 }

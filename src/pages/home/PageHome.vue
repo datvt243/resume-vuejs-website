@@ -27,6 +27,7 @@ import { useHelper } from '@/composables/useHelper'
 import { useProfileCompletion } from '@/composables/useProfileCompletion'
 import { API } from '@/config/api.config'
 import { getDownloadCvUrl } from '@/utilities/index'
+import { useCvLang } from '@/composables/useCvLang'
 
 const candidate = candidateStore()
 const auth = authStore()
@@ -78,7 +79,9 @@ const CV_TEMPLATES = [
     { value: 'ats', label: 'Tối ưu ATS' },
 ]
 const cvTemplate = ref('classic')
-const downloadCVUrl = computed(() => getDownloadCvUrl(_host, cvTemplate.value, auth.getToken))
+// issue #182: ngôn ngữ nội dung CV (dùng chung lựa chọn với trang Xem trước)
+const { selectedLang, setLang, CV_LANGS } = useCvLang()
+const downloadCVUrl = computed(() => getDownloadCvUrl(_host, cvTemplate.value, auth.getToken, selectedLang.value))
 const cvFileName = computed(() => {
     const { firstName = '', lastName = '' } = info.value
     const name = `${firstName}_${lastName}`.replace(/\s+/g, '_').replace(/^_+|_+$/g, '')
@@ -168,6 +171,9 @@ const { percent: profileCompletion, missingSections } = useProfileCompletion()
                     >
                         {{ t.label }}
                     </button>
+                    <select class="form-select form-select-sm w-auto" :value="selectedLang" aria-label="Ngôn ngữ CV" @change="setLang($event.target.value)">
+                        <option v-for="l in CV_LANGS" :key="l.value" :value="l.value">{{ l.label }}</option>
+                    </select>
                     <RouterLink to="/dashboard/ats-check" class="text-sm font-semibold">Kiểm tra điểm ATS →</RouterLink>
                 </div>
             </div>

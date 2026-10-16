@@ -5,12 +5,13 @@ import { setActivePinia, createPinia } from 'pinia'
 import PageImportLinkedin from './PageImportLinkedin.vue'
 
 const handleBaseMock = vi.fn()
+const toastMock = vi.fn()
 vi.mock('@/services/base', () => ({
     handleBase: (...args: unknown[]) => handleBaseMock(...args),
 }))
 
 vi.mock('@/composables/useHelper', () => ({
-    useHelper: () => ({ loading: ref(null), toast: vi.fn() }),
+    useHelper: () => ({ loading: ref(null), toast: toastMock }),
 }))
 
 vi.mock('@/composables/useCandidate', () => ({
@@ -41,6 +42,16 @@ function mountPage() {
     return mount(PageImportLinkedin, { global: { stubs } })
 }
 
+async function selectJson(wrapper: ReturnType<typeof mountPage>, content: string) {
+    const input = wrapper.find('input[accept=".json,application/json"]')
+    const file = new File([content], 'resume.json')
+    // jsdom's File has no .text() (every supported browser does)
+    Object.defineProperty(file, 'text', { value: async () => content })
+    Object.defineProperty(input.element, 'files', { value: [file], configurable: true })
+    await input.trigger('change')
+    await flushPromises()
+}
+
 async function selectFile(wrapper: ReturnType<typeof mountPage>, accept: string, name: string, data: object) {
     handleBaseMock.mockImplementation(async (_opts, _props, cb) => cb({ data }))
     const input = wrapper.find(`input[accept="${accept}"]`)
@@ -52,6 +63,7 @@ async function selectFile(wrapper: ReturnType<typeof mountPage>, accept: string,
 describe('PageImportLinkedin', () => {
     beforeEach(() => {
         handleBaseMock.mockReset()
+        toastMock.mockReset()
     })
 
     it('POSTs the PDF as multipart field `file` to candidate/parse-cv-pdf', async () => {
@@ -94,5 +106,27 @@ describe('PageImportLinkedin', () => {
 
         expect(wrapper.find('details').exists()).toBe(false)
         expect(wrapper.text()).toContain('Nguồn: LinkedIn')
+    })
+
+    it('parses a JSON Resume in the browser (no backend call) and lists work/education for review', async () => {
+        const wrapper = mountPage()
+        await selectJson(wrapper, JSON.stringify({ work: [{ name: 'Acme', position: 'Dev', startDate: '2020-01' }], education: [{ institution: 'HCMUS', area: 'CS' }] }))
+
+        expect(handleBaseMock).not.toHaveBeenCalled()
+        const text = wrapper.text()
+        expect(text).toContain('Acme')
+        expect(text).toContain('HCMUS')
+        expect(text).toContain('Nguồn: JSON Resume')
+        expect(wrapper.find('details').exists()).toBe(false)
+    })
+
+    it('toasts an error for invalid JSON or a non-JSON-Resume file and shows no results', async () => {
+        const wrapper = mountPage()
+        await selectJson(wrapper, '{not json')
+        expect(toastMock).toHaveBeenLastCalledWith({ message: 'File JSON không hợp lệ', bg: 'danger' })
+
+        await selectJson(wrapper, JSON.stringify({ foo: 1 }))
+        expect(toastMock).toHaveBeenLastCalledWith({ message: 'File không phải JSON Resume hợp lệ', bg: 'danger' })
+        expect(wrapper.text()).not.toContain('Nguồn:')
     })
 })

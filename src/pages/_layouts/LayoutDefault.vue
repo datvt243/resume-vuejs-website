@@ -44,7 +44,7 @@ const routers = [
     { text: 'Chứng chỉ', name: 'certificate', to: '/dashboard/certificate' },
     { text: 'Người tham khảo', name: 'reference', to: '/dashboard/reference' },
     { text: 'Ứng tuyển', name: 'application', to: '/dashboard/application' },
-    { text: 'Nhập CV (LinkedIn / PDF)', name: 'import-linkedin', to: '/dashboard/import-linkedin' },
+    { text: 'Nhập CV (LinkedIn / PDF / JSON)', name: 'import-linkedin', to: '/dashboard/import-linkedin' },
     { text: 'Profile CV', name: 'profile', to: '/dashboard/profile' },
     { text: 'Xem trước / Xuất PDF', name: 'preview', to: '/dashboard/preview' },
     { text: 'Kiểm tra ATS', name: 'ats-check', to: '/dashboard/ats-check' },

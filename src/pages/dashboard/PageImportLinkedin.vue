@@ -3,9 +3,10 @@
  * Author: Đạt Võ - https://github.com/datvt243
  * Date: `--/--`
  * Description: Nhập Học vấn/Kinh nghiệm từ file LinkedIn "Data export"
- *   (.zip) hoặc từ PDF CV cũ. Cả 2 endpoint backend
- *   (`POST candidate/parse-linkedin-export`, `POST candidate/parse-cv-pdf`)
- *   chỉ parse và trả về cùng một shape, KHÔNG lưu gì cả — mỗi mục tìm thấy
+ *   (.zip), từ PDF CV cũ, hoặc từ file JSON Resume. LinkedIn/PDF qua 2
+ *   endpoint backend (`POST candidate/parse-linkedin-export`,
+ *   `POST candidate/parse-cv-pdf`), JSON Resume parse ngay trên trình duyệt
+ *   — cả 3 trả về cùng một shape, KHÔNG lưu gì cả — mỗi mục tìm thấy
  *   phải qua đúng form Học vấn/Kinh nghiệm hiện có để người dùng review/sửa
  *   trước khi bấm lưu thật, không tự động lưu thẳng.
  */
@@ -19,6 +20,7 @@ import { useDocument } from '@/composables/useDocument'
 import { useHelper } from '@/composables/useHelper'
 import { handleBase } from '@/services/base'
 import { localizedFromForm } from '@/utilities/index'
+import { fromJsonResume } from '@/utilities/jsonResume'
 
 import educationModel from '@/models/education.model'
 import experienceModel from '@/models/experience.model'
@@ -34,10 +36,12 @@ const { document: experienceDoc, updateDoc: updateExperienceDoc } = useDocument(
 const SOURCES = {
     linkedin: { label: 'LinkedIn', url: 'candidate/parse-linkedin-export' },
     pdf: { label: 'PDF', url: 'candidate/parse-cv-pdf' },
+    jsonresume: { label: 'JSON Resume', url: null },
 }
 
 const fileInput = ref(null)
 const pdfInput = ref(null)
+const jsonInput = ref(null)
 const source = ref('linkedin')
 const hasParsed = ref(false)
 const parsedEducations = ref([])
@@ -52,21 +56,37 @@ function triggerPdfPicker() {
     pdfInput.value?.click()
 }
 
+function triggerJsonPicker() {
+    jsonInput.value?.click()
+}
+
+function applyParsed(sourceKey, data) {
+    source.value = sourceKey
+    parsedEducations.value = (data?.educations || []).map(item => ({ ...item, _imported: false }))
+    parsedExperiences.value = (data?.experiences || []).map(item => ({ ...item, _imported: false }))
+    extractedText.value = data?.extractedText || ''
+    hasParsed.value = true
+}
+
 async function handleSelectFile(e, sourceKey = 'linkedin') {
     const file = e.target?.files?.[0]
     e.target.value = ''
     if (!file) return
 
+    if (sourceKey === 'jsonresume') {
+        try {
+            applyParsed(sourceKey, fromJsonResume(JSON.parse(await file.text())))
+        } catch (err) {
+            toast?.({ message: err instanceof SyntaxError ? 'File JSON không hợp lệ' : err.message, bg: 'danger' })
+        }
+        return
+    }
+
     const formData = new FormData()
     formData.append('file', file)
 
     await handleBase({ method: 'post', url: SOURCES[sourceKey].url, data: formData }, { loading, toast }, res => {
-        const { data } = res
-        source.value = sourceKey
-        parsedEducations.value = (data?.educations || []).map(item => ({ ...item, _imported: false }))
-        parsedExperiences.value = (data?.experiences || []).map(item => ({ ...item, _imported: false }))
-        extractedText.value = data?.extractedText || ''
-        hasParsed.value = true
+        applyParsed(sourceKey, res.data)
     })
 }
 
@@ -142,14 +162,16 @@ async function handleSaveExperience(values) {
 
 <template>
     <div class="mb-[1.5rem]">
-        <Heading text="Nhập CV (LinkedIn / PDF)">
+        <Heading text="Nhập CV (LinkedIn / PDF / JSON Resume)">
             <div class="flex flex-wrap gap-2">
                 <Button icon="fa-solid fa-paperclip" type="outline-success" size="sm" text="Chọn file export (.zip)" @click="triggerFilePicker" />
                 <Button icon="fa-solid fa-paperclip" type="outline-success" size="sm" text="Chọn file PDF CV" @click="triggerPdfPicker" />
+                <Button icon="fa-solid fa-paperclip" type="outline-success" size="sm" text="Chọn file JSON Resume" @click="triggerJsonPicker" />
             </div>
         </Heading>
         <input ref="fileInput" type="file" accept=".zip" class="hidden" @change="handleSelectFile($event, 'linkedin')" />
         <input ref="pdfInput" type="file" accept=".pdf,application/pdf" class="hidden" @change="handleSelectFile($event, 'pdf')" />
+        <input ref="jsonInput" type="file" accept=".json,application/json" class="hidden" @change="handleSelectFile($event, 'jsonresume')" />
 
         <p class="text-sm opacity-75">
             Xuất dữ liệu LinkedIn tại
@@ -159,6 +181,11 @@ async function handleSaveExperience(values) {
         <p class="text-sm opacity-75">
             Hoặc chọn PDF CV cũ (tối đa 5MB). Việc đọc PDF chỉ là phỏng đoán: CV một cột cho kết quả tốt nhất, CV nhiều cột/thiết kế phức tạp có thể sót
             mục, PDF scan (ảnh) không đọc được. Kiểm tra kỹ từng mục trước khi thêm.
+        </p>
+        <p class="text-sm opacity-75">
+            Hoặc chọn file
+            <a href="https://jsonresume.org/schema" target="_blank" rel="noopener">JSON Resume</a>
+            (<code>resume.json</code>, ví dụ file xuất từ trang "Xem trước"): lấy các mục <code>work</code> và <code>education</code>.
         </p>
 
         <template v-if="hasParsed">

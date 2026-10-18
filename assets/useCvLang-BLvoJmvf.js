@@ -1,0 +1,1 @@
+import{r as s,E as r}from"./index-Frj179Yp.js";const c=[{value:"vi",label:"Tiếng Việt"},{value:"en",label:"English"}],o="vi",t="cvLang";function a(e){return e==="en"?"en":o}function u(){const e=s(a(localStorage.getItem(t)));r(e,n=>{localStorage.setItem(t,n)});function l(n){e.value=a(n)}return{selectedLang:e,setLang:l,CV_LANGS:c,DEFAULT_CV_LANG:o}}export{a as r,u};

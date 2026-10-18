@@ -70,3 +70,4 @@
 2026-10-16T10:07:04Z role=verifier outcome=SEAL node=issue-183-cold-start-wakeup rerun=none hub_bytes_before=175022 hub_bytes_after=175519
 2026-10-16T11:17:24Z role=implementer outcome=blocked node=issue-184-application-profile hub_bytes_before=175519 verifier_rerun=n/a
 2026-10-16T11:56:22Z role=verifier outcome=SEAL node=issue-185-json-resume rerun=none hub_bytes_before=176255 hub_bytes_after=176797
+2026-10-18T13:40:50Z role=verifier outcome=SEAL node=issue-184-application-profile-unblocked-20261018 rerun=partial hub_bytes_before=176797 hub_bytes_after=177499

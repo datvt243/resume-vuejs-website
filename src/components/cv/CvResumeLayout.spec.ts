@@ -5,6 +5,10 @@ import CvResumeLayout from './CvResumeLayout.vue'
 const data = {
     firstName: 'Dat',
     lastName: 'Vo',
+    introduction: '<p>I am <strong>Dat</strong></p><script>alert(2)</script>',
+    educations: [{ _id: 'ed1', school: 'HCMUT', description: '<p>Major <strong>CS</strong></p>' }],
+    projects: [{ _id: 'p1', name: 'Resume', description: '<p><strong>Vue</strong></p>' }],
+    certificates: [{ _id: 'c1', name: 'AWS', description: '<p><strong>SAA</strong></p>' }],
     generalInformation: { career: 'IT', careerGoal: '<p>Goal <strong>A</strong></p>' },
     experiences: [{ _id: 'e1', company: 'ACME', description: '<p>Built <em>things</em></p><script>alert(1)</script>' }],
     awards: [{ _id: 'a1', name: 'Award', description: { vi: '<ul><li>Top</li></ul>', en: '' } }],
@@ -18,6 +22,11 @@ describe('CvResumeLayout', () => {
         expect(wrapper.find('.cv-paragraph strong').text()).toBe('A')
         expect(wrapper.find('.cv-item-desc em').text()).toBe('things')
         expect(wrapper.find('.cv-item-desc li').text()).toBe('Top')
+        expect(wrapper.find('.cv-introduction strong').text()).toBe('Dat')
+        const descs = wrapper.findAll('.cv-item-desc').map(d => d.html())
+        expect(descs.some(d => d.includes('<strong>CS</strong>'))).toBe(true)
+        expect(descs.some(d => d.includes('<strong>Vue</strong>'))).toBe(true)
+        expect(descs.some(d => d.includes('<strong>SAA</strong>'))).toBe(true)
         expect(wrapper.text()).not.toContain('<p>')
         expect(html).not.toContain('&lt;p&gt;')
     })
@@ -26,6 +35,7 @@ describe('CvResumeLayout', () => {
         const wrapper = mount(CvResumeLayout, { props: { data } })
         expect(wrapper.find('script').exists()).toBe(false)
         expect(wrapper.html()).not.toContain('alert(1)')
+        expect(wrapper.html()).not.toContain('alert(2)')
     })
     describe('lang', () => {
         const bilingual = {

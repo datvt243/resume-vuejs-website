@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Branch:** `main` → auto-deploys to `gh-pages` via GitHub Actions (`.github/workflows/deploy.yml`) on every push to `main`; CI (`.github/workflows/ci.yml`, lint + build) also runs on push/PR to `main`
 
 ## Stack
-Vue 3 + Vite 5 · Pinia · Vue Router 4 · VeeValidate 4 + Yup · Axios · Bootstrap 5 · CKEditor 5 · FontAwesome 6 · SweetAlert2 · TypeScript (partial — see gotchas)
+Vue 3 + Vite 5 · Pinia · Vue Router 4 · VeeValidate 4 + Yup · Axios · Tailwind CSS 3.4 (Bootstrap removed — legacy class names re-implemented in `src/styles/tailwind.css`) · CKEditor 5 · FontAwesome 6 · SweetAlert2 · TypeScript (partial — see gotchas)
 
 ## Commands
 ```bash
@@ -91,3 +91,6 @@ src/
 - Prefer `computed` over `onMounted` for derived data
 - Never mutate props — copy with spread or destructuring
 - New form sections → create a `models/*.model.ts`, use `useCandidate` + `useDocument` + `VeeForm`
+
+## UI / Design
+Before creating, editing, or reviewing any UI (pages, components, styles), read `DESIGN.md` at the repo root and follow it — tokens, layout templates, components, and the definition-of-done checklist. To restyle an existing page, follow its §0.2 refactor procedure (audit → plan → apply → verify).

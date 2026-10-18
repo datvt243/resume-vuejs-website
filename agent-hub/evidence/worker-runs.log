@@ -72,3 +72,4 @@
 2026-10-16T11:56:22Z role=verifier outcome=SEAL node=issue-185-json-resume rerun=none hub_bytes_before=176255 hub_bytes_after=176797
 2026-10-18T13:40:50Z role=verifier outcome=SEAL node=issue-184-application-profile-unblocked-20261018 rerun=partial hub_bytes_before=176797 hub_bytes_after=177499
 2026-10-18T20:41:43Z role=verifier outcome=SEAL node=issue-212-form-select-dark rerun=none hub_bytes_before=177499 hub_bytes_after=178204
+2026-10-18T20:56:40Z role=verifier outcome=SEAL node=issue-226-dev-port rerun=none hub_bytes_before=178204 hub_bytes_after=179436

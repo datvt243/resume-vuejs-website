@@ -55,6 +55,16 @@ const MODEL: modelItem[] = [
         col: 'col-md-6',
     },
     {
+        // options are filled in at runtime from the candidate's profiles; '' unlinks
+        name: 'profileId',
+        label: 'Profile CV',
+        type: 'select',
+        options: [],
+        default: '',
+        valid: yup => yup.string().nullable(),
+        col: 'col-md-12',
+    },
+    {
         name: 'jobLink',
         label: 'Link tin tuyển dụng',
         type: 'text',

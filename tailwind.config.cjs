@@ -56,6 +56,8 @@ module.exports = {
         'alert-warning',
         // Node `tailwindcss-form-controls`
         'form-control',
+        'form-select',
+        'form-select-sm',
         'form-label',
         'form-text',
         'form-check',

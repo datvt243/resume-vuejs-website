@@ -35,6 +35,7 @@ const { count: cvViewCount } = useVisits()
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 const routers = [
     { text: 'Dashboard', name: 'home', to: '/' },
+    { text: 'Lượt truy cập', name: 'visits', to: '/dashboard/visits' },
     { text: 'Thông tin cơ bản', name: 'personal-information', to: '/dashboard/information' },
     { text: 'Thông tin chung', name: 'general-information', to: '/dashboard/general-information' },
     { text: 'Học vấn', name: 'education', to: '/dashboard/education' },

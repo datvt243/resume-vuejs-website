@@ -32,6 +32,7 @@
  */
 :root,
 [data-bs-theme='light'] {
+    color-scheme: light;
     --bs-body-bg: #fff;
     --bs-body-color: #212529;
     --bs-border-color: #dee2e6;
@@ -60,6 +61,7 @@
     --bs-link-hover-color-rgb: 10, 88, 202;
 }
 [data-bs-theme='dark'] {
+    color-scheme: dark;
     --bs-body-bg: #212529;
     --bs-body-color: #dee2e6;
     --bs-border-color: #495057;
@@ -537,8 +539,8 @@
        reproducing the nested `.form` ancestor selector — confirmed via
        `grep` that `VeeForm.vue`'s root is always `<form class="form">`,
        so `.form-label` never actually appears outside that context in
-       this app. Skipped (confirmed unused via grep): `.form-select`,
-       `.form-switch`, `.is-valid`/`.is-invalid` validation states,
+       this app. Skipped (confirmed unused via grep): `.form-switch`,
+       `.is-valid`/`.is-invalid` validation states,
        indeterminate checkboxes — same "only what's actually used"
        scoping as `tailwindcss-badge-alert`. */
     .form-control {
@@ -589,6 +591,27 @@
         -webkit-text-fill-color: var(--bs-body-color);
         caret-color: var(--bs-body-color);
         transition: background-color 600000s ease-in-out 0s;
+    }
+    /* Keeps the native arrow; `color-scheme` on the theme blocks makes the
+       arrow and the open option list follow the theme. */
+    .form-select {
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: var(--bs-body-color);
+        background-color: var(--bs-body-bg);
+        border: var(--bs-border-width, 1px) solid var(--bs-border-color);
+        border-radius: var(--bs-border-radius, 0.375rem);
+    }
+    .form-select:focus {
+        border-color: #80e8ca;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem #0d6efd40;
+    }
+    .form-select-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        border-radius: var(--bs-border-radius-sm, 0.25rem);
     }
     .form-label {
         margin-bottom: 0.5rem;

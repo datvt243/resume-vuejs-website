@@ -9,9 +9,12 @@ import VeeForm from '@/components/veevalidate/VeeForm.vue'
 import Modal from '@/components/Modal.vue'
 import ItemTemplate from '@/components/global/ItemTemplate.vue'
 
-import { ref, shallowRef } from 'vue'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useCandidate } from '@/composables/useCandidate'
 import { useDocument } from '@/composables/useDocument'
+import { candidateStore } from '@/stores/candidate'
+import { API } from '@/config/api.config'
 
 import model from '@/models/application.model.ts'
 
@@ -29,7 +32,30 @@ const { document, updateDoc, deleteDoc } = useDocument({ collection: 'applicatio
  */
 const refModal = ref()
 const refVeeForm = ref()
-const formFields = shallowRef(model)
+const { profiles } = useCandidate({ field: 'profiles', collection: 'profile' })
+const formFields = computed(() =>
+  model.map(f => (f.name === 'profileId' ? { ...f, options: profiles.value.map(p => ({ text: p.name, value: p._id })) } : f)),
+)
+
+const router = useRouter()
+const candidate = candidateStore()
+const _host = window.location.host === 'localhost' ? 'http://localhost:3001/' : API
+
+/**
+ * Public CV link and PDF for the profile an application was sent with.
+ * shortcut: both go through the public endpoints, so they only work while the CV is public;
+ * the owner's `download-pdf` ignores `?profile=` — switch the PDF to it once the backend supports that.
+ */
+function getProfileLinks(item) {
+  const profile = profiles.value.find(p => p._id === item.profileId)
+  const identifier = candidate.getCandidate?.slug || candidate.getCandidate?.email || ''
+  if (!profile || !identifier) return null
+  return {
+    name: profile.name,
+    publicLink: router.resolve({ name: 'public-resume', params: { slug: identifier }, query: { profile: profile._id } }).href,
+    pdfLink: `${_host}api/me/${encodeURIComponent(identifier)}/download-pdf?template=ats&profile=${profile._id}`,
+  }
+}
 
 // Nhân bản: giữ `document._id` = id của bản ghi gốc (KHÔNG để rỗng) trong
 // lúc modal mở — VeeForm.vue có watch(document) tự reset() form về default
@@ -57,6 +83,11 @@ async function handleUpdate(values) {
     val.appliedDate = +new Date(val.appliedDate)
     return val
   })({ ...values })
+
+  // A since-deleted profile would 400; omitting the field makes the backend keep the stored link.
+  if (data.profileId && !profiles.value.some(p => p._id === data.profileId)) {
+    delete data.profileId
+  }
 
   if (isDuplicating.value) {
     data._id = null
@@ -117,6 +148,15 @@ function showModalDuplicateDoc(doc) {
           }" icon="fa-briefcase">
             <div class="flex items-center gap-[0.5rem]">
               <span class="badge rounded-pill" :class="getStatusMeta(item.status).badge">{{ getStatusMeta(item.status).text }}</span>
+              <template v-if="getProfileLinks(item)">
+                <span class="badge rounded-pill text-bg-info">{{ getProfileLinks(item).name }}</span>
+                <a class="btn btn-sm btn-outline-secondary icon" :href="getProfileLinks(item).publicLink" target="_blank" rel="noopener" title="Xem CV public theo profile">
+                  <FontAwesomeIcon icon="fa-solid fa-eye"></FontAwesomeIcon>
+                </a>
+                <a class="btn btn-sm btn-outline-secondary icon" :href="getProfileLinks(item).pdfLink" target="_blank" rel="noopener" title="Tải PDF (ATS) theo profile">
+                  <FontAwesomeIcon icon="fa-solid fa-download"></FontAwesomeIcon>
+                </a>
+              </template>
               <a v-if="item.jobLink" class="btn btn-sm btn-outline-secondary icon" :href="item.jobLink" target="_blank" rel="noopener">
                 <FontAwesomeIcon icon="fa-solid fa-arrow-up-right-from-square"></FontAwesomeIcon>
               </a>

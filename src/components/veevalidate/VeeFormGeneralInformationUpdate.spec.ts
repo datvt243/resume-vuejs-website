@@ -3,6 +3,8 @@ import { defineComponent, h, ref } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import VeeFormGeneralInformationUpdate from './VeeFormGeneralInformationUpdate.vue'
+import Button from '@/components/global/Button.vue'
+import FormSection from '@/components/global/FormSection.vue'
 
 const swalFire = vi.fn()
 vi.mock('sweetalert2', () => ({ default: { fire: (...args: unknown[]) => swalFire(...args) } }))
@@ -27,7 +29,8 @@ function mountComponent() {
         props: { fieldKey: 'personalSkills', modelValue: { personalSkills: [{ name: 'a' }] } },
         global: {
             provide: { candidate: ref({ _id: 'c1' }) },
-            stubs: { TableDefault: TableStub, Heading: true, Modal: true, FontAwesomeIcon: true },
+            components: { Button, FormSection },
+            stubs: { TableDefault: TableStub, Modal: true, FontAwesomeIcon: true },
         },
     })
 }
@@ -43,7 +46,7 @@ describe('VeeFormGeneralInformationUpdate — delete confirmation', () => {
         swalFire.mockResolvedValue({ value: undefined })
         const wrapper = mountComponent()
 
-        await wrapper.find('a.dropdown-item').trigger('click')
+        await wrapper.find('button[aria-label^="Xóa"]').trigger('click')
         await flushPromises()
 
         const { inputValidator } = swalFire.mock.calls[0][0]
@@ -57,7 +60,7 @@ describe('VeeFormGeneralInformationUpdate — delete confirmation', () => {
         swalFire.mockResolvedValue({ value: 'delete' })
         const wrapper = mountComponent()
 
-        await wrapper.find('a.dropdown-item').trigger('click')
+        await wrapper.find('button[aria-label^="Xóa"]').trigger('click')
         await flushPromises()
 
         expect(updatePatchDoc).toHaveBeenCalledTimes(1)

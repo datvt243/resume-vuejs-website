@@ -185,6 +185,7 @@ export const defaultPhone = function (props: Part): modelItem {
         name: props.name,
         label: props.label,
         type: 'text',
+        inputmode: 'tel',
         valid: yup =>
             yup
                 .string()

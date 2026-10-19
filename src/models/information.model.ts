@@ -16,6 +16,7 @@ const modalDefault: modelItem[] = [
         label: 'Họ',
         type: 'text',
         placeholder: 'Vui lòng nhập Họ',
+        autocomplete: 'family-name',
         valid: yup => yup.string().min(0).max(10, 'Tối đa 10 ký tự').required(_mesRequired),
         default: '',
         col: 'col-md-6',
@@ -25,6 +26,7 @@ const modalDefault: modelItem[] = [
         label: 'Tên',
         type: 'text',
         placeholder: 'Vui lòng nhập Tên',
+        autocomplete: 'given-name',
         valid: yup => yup.string().min(0).max(30, 'Tối đa 30 ký tự').required(_mesRequired),
         default: '',
         col: 'col-md-6',
@@ -58,12 +60,13 @@ const modalDefault: modelItem[] = [
         name: 'address',
         label: 'Địa chỉ',
         type: 'text',
+        autocomplete: 'street-address',
         valid: yup => yup.string().required(_mesRequired),
         default: '',
         col: 'col-md-12',
     },
 
-    defaultPhone({ name: 'phone', label: 'Số điện thoại' }),
+    { ...defaultPhone({ name: 'phone', label: 'Số điện thoại' }), autocomplete: 'tel' },
     ...withEnglish(defaultDescription({ name: 'introduction', label: 'Giới thiệu bản thân' })),
 ]
 

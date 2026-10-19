@@ -32,7 +32,7 @@ const getPlaceholder = computed(() => {
 </script>
 
 <template>
-    <div class="mb-[1rem]">
+    <div class="mb-4">
         <label v-if="props.label && !props.icon" :for="props.name" class="form-label">{{ props.label }}</label>
         <div :class="props.icon ? 'input-group' : null">
             <span v-if="props.icon" class="input-group-text">
@@ -44,14 +44,18 @@ const getPlaceholder = computed(() => {
                 :type="props.type"
                 :id="props.name"
                 :placeholder="getPlaceholder"
-                :class="[props.size]"
+                :class="[props.size, { 'border-danger': errorMessage }]"
+                :aria-invalid="errorMessage ? 'true' : undefined"
+                :aria-describedby="errorMessage ? `${props.name}-error` : undefined"
                 v-bind="attrs"
                 @input="handleChange"
                 @blur="handleBlur"
             />
         </div>
 
-        <p v-if="errorMessage" class="text-danger text-sm my-1">{{ errorMessage }}</p>
+        <p v-if="errorMessage" :id="`${props.name}-error`" class="mb-0 mt-1 flex items-center gap-1 text-xs text-danger">
+            <FontAwesomeIcon icon="fa-solid fa-circle-exclamation" aria-hidden="true" />{{ errorMessage }}
+        </p>
         <p v-if="props.text" class="form-text mb-0">{{ props.text }}</p>
     </div>
 </template>

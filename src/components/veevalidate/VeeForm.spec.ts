@@ -68,7 +68,7 @@ describe('VeeForm', () => {
         const wrapper = mountForm()
         await flushPromises()
 
-        expect(wrapper.find('button.btn-success').attributes('disabled')).toBeUndefined()
+        expect(wrapper.find('button[data-submit]').attributes('disabled')).toBeUndefined()
     })
 
     it('BUG (real, verified — not asserting correctness): typing then clearing a required field does NOT disable submit', async () => {
@@ -90,7 +90,7 @@ describe('VeeForm', () => {
         await wrapper.find('input[type="text"]').trigger('blur')
         await flushPromises()
 
-        expect(wrapper.find('button.btn-success').attributes('disabled')).toBeUndefined()
+        expect(wrapper.find('button[data-submit]').attributes('disabled')).toBeUndefined()
     })
 
     it('typing a value into a required field enables the submit button', async () => {
@@ -98,7 +98,7 @@ describe('VeeForm', () => {
         await wrapper.find('input[type="text"]').setValue('Dat')
         await flushPromises()
 
-        expect(wrapper.find('button.btn-success').attributes('disabled')).toBeUndefined()
+        expect(wrapper.find('button[data-submit]').attributes('disabled')).toBeUndefined()
     })
 
     it('clicking submit while valid calls submitFn with the current form values', async () => {
@@ -107,7 +107,7 @@ describe('VeeForm', () => {
         await wrapper.find('input[type="text"]').setValue('Dat')
         await flushPromises()
 
-        await wrapper.find('button.btn-success').trigger('click')
+        await wrapper.find('button[data-submit]').trigger('click')
 
         expect(submitFn).toHaveBeenCalledTimes(1)
         expect(submitFn.mock.calls[0][0]).toMatchObject({ name: 'Dat' })
@@ -123,7 +123,7 @@ describe('VeeForm', () => {
         const wrapper = mountForm({ submitFn })
         await flushPromises()
 
-        await wrapper.find('button.btn-success').trigger('click')
+        await wrapper.find('button[data-submit]').trigger('click')
 
         expect(submitFn).toHaveBeenCalledTimes(1)
     })
@@ -140,7 +140,7 @@ describe('VeeForm', () => {
         await wrapper.find('input[type="text"]').trigger('blur')
         await flushPromises()
 
-        await wrapper.find('button.btn-success').trigger('click')
+        await wrapper.find('button[data-submit]').trigger('click')
 
         expect(submitFn).toHaveBeenCalledTimes(1)
     })
@@ -196,7 +196,7 @@ describe('VeeForm', () => {
         await textInputs[1].setValue('30')
         await flushPromises()
 
-        await wrapper.find('button.btn-success').trigger('click')
+        await wrapper.find('button[data-submit]').trigger('click')
         await flushPromises()
 
         // 'age' has a non-empty model default ('n/a') — a bare resetForm()
@@ -204,6 +204,40 @@ describe('VeeForm', () => {
         expect((textInputs[0].element as HTMLInputElement).value).toBe('')
         expect((textInputs[1].element as HTMLInputElement).value).toBe('n/a')
     })
+
+    it('"Hủy" only shows when cancelable, and puts edited fields back to the loaded document', async () => {
+        expect(mountForm().text()).not.toContain('Hủy')
+
+        const wrapper = mountForm({ cancelable: true, document: {} })
+        await wrapper.setProps({ document: { _id: 'e1', name: 'Dat', age: '30' } })
+        await flushPromises()
+        const textInputs = wrapper.findAll('input[type="text"]')
+        await textInputs[0].setValue('changed')
+
+        const cancel = wrapper.findAll('button').find(b => b.text() === 'Hủy')!
+        await cancel.trigger('click')
+        await flushPromises()
+
+        expect((textInputs[0].element as HTMLInputElement).value).toBe('Dat')
+    })
+
+    it('disables submit and shows a spinner while submitFn is pending', async () => {
+        let resolve!: () => void
+        const submitFn = vi.fn(() => new Promise<void>(r => (resolve = r)))
+        const wrapper = mountForm({ submitFn })
+        await wrapper.find('input[type="text"]').setValue('Dat')
+        await flushPromises()
+
+        await wrapper.find('button[data-submit]').trigger('click')
+        expect(wrapper.find('button[data-submit]').attributes('disabled')).toBeDefined()
+        expect(wrapper.find('button[data-submit]').attributes('aria-busy')).toBe('true')
+
+        resolve()
+        await flushPromises()
+        expect(wrapper.find('button[data-submit]').attributes('disabled')).toBeUndefined()
+        expect(wrapper.find('button[data-submit]').attributes('aria-busy')).toBeUndefined()
+    })
+
     describe('VI | EN toggle', () => {
         const localizedFields = [
             { name: 'title', label: 'Title', type: 'text', default: '' },
@@ -235,7 +269,7 @@ describe('VeeForm', () => {
             await inputs[2].setValue('summary')
             await flushPromises()
 
-            await wrapper.find('button.btn-success:not([data-lang])').trigger('click')
+            await wrapper.find('button[data-submit]').trigger('click')
             await flushPromises()
 
             expect(submitFn).toHaveBeenCalledTimes(1)

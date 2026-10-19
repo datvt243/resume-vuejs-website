@@ -41,10 +41,10 @@ async function removeTag(_tag, index) {
 </script>
 
 <template>
-    <div class="clearfix">
-        <div class="flex items-center mb-4">
-            <p class="h6 m-0">{{ props.title }}</p>
-            <div class="ps-6 m-0">
+    <div>
+        <div class="mb-3 flex flex-wrap items-center gap-3">
+            <p class="m-0 text-sm font-medium text-fg">{{ props.title }}</p>
+            <div class="m-0">
                 <div class="input-group input-group-sm mb-0">
                     <input type="text" class="form-control" placeholder="Thêm mới" v-model="tag" />
                     <button class="btn btn-outline-success" type="button" aria-label="Thêm thẻ" @click="addTag()">
@@ -69,12 +69,6 @@ async function removeTag(_tag, index) {
 
 <style scoped>
 .tag-list {
-    padding: 0;
-    margin: 0;
-    display: inline-flex;
-    list-style: none;
-}
-.tag-list li {
-    margin: 0 10px 10px 0;
+    @apply m-0 flex list-none flex-wrap gap-2 p-0;
 }
 </style>

@@ -8,6 +8,7 @@
 import { defineProps, defineExpose, computed, ref, watch, inject, onBeforeUnmount } from 'vue'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
+import { buttonClass } from '@/lib/button.lib'
 
 import {
     FrmInput,
@@ -23,8 +24,10 @@ import {
 const props = defineProps({
     fields: { type: Array, default: () => [] },
     submitFn: { type: Function, default: () => {} },
-    submitText: { type: String, default: 'Submit' },
+    submitText: { type: String, default: 'Lưu' },
     buttonPosition: { type: String, default: 'start' },
+    // shows "Hủy", which puts the fields back to `document`
+    cancelable: { type: Boolean, default: false },
 
     // document
     document: { type: Object, default: () => ({}) },
@@ -68,22 +71,19 @@ const { values, meta, errors, setValues, resetForm } = useForm({
         return _newDoc
     })(), */
 })
-watch(
-    () => props.document,
-    doc => {
-        const keys = getFields.value.map(e => e.name)
-        const _newDoc = {}
-        for (const k of keys) {
-            _newDoc[k] = doc[k]
-        }
-        setValues(_newDoc)
-        dirtyBaseline.value = null
-        if (!doc._id) {
-            reset()
-        }
-    },
-    { deep: true },
-)
+function loadDocument(doc) {
+    const keys = getFields.value.map(e => e.name)
+    const _newDoc = {}
+    for (const k of keys) {
+        _newDoc[k] = doc[k]
+    }
+    setValues(_newDoc)
+    dirtyBaseline.value = null
+    if (!doc._id) {
+        reset()
+    }
+}
+watch(() => props.document, loadDocument, { deep: true })
 
 /**
  * Not `meta.dirty`: `setValues` (edit) leaves vee-validate's initial values
@@ -130,21 +130,30 @@ function reset() {
     dirtyBaseline.value = null
 }
 
-function onSubmit() {
-    /**
-     * callback
-     */
-
+const submitting = ref(false)
+async function onSubmit() {
     if (!meta.value.valid) {
         return false
     }
 
-    props?.submitFn?.(values)
+    const result = props?.submitFn?.(values)
 
     if (props.resetAfterSave) {
         reset()
     }
+
+    // spinner only — the reset above still runs right after submitFn, as before
+    submitting.value = true
+    try {
+        await result
+    } finally {
+        submitting.value = false
+    }
 }
+
+const submitClass = buttonClass({ variant: 'primary' })
+const cancelClass = buttonClass({ variant: 'ghost' })
+const justify = { start: 'justify-start', center: 'justify-center', end: 'justify-end', between: 'justify-between' }
 
 const objComponent = {
     checkbox: FrmCheckbox,
@@ -161,17 +170,19 @@ const objComponent = {
 
 <template>
     <form class="form" @focusin="onFocusIn">
-        <div v-if="hasLocalizedFields" class="btn-group btn-group-sm mb-[1rem]" role="group" aria-label="Ngôn ngữ nội dung">
+        <div v-if="hasLocalizedFields" class="mb-4 inline-flex rounded bg-surface-2 p-0.5" role="radiogroup" aria-label="Ngôn ngữ nội dung">
             <button
                 v-for="l in LANGS"
                 :key="l"
                 type="button"
-                class="btn"
-                :class="formLang === l ? 'btn-success' : 'btn-outline-success'"
+                role="radio"
+                :aria-checked="formLang === l ? 'true' : 'false'"
+                class="inline-flex h-7 items-center gap-1 rounded-sm px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                :class="formLang === l ? 'bg-surface text-fg shadow-sm' : 'text-fg-2 hover:text-fg'"
                 :data-lang="l"
                 @click="formLang = l"
             >
-                {{ l.toUpperCase() }}<span v-if="langHasError(l)" class="text-danger ms-1">!</span>
+                {{ l.toUpperCase() }}<span v-if="langHasError(l)" class="text-danger" title="Có lỗi cần sửa">!</span>
             </button>
         </div>
         <div class="row">
@@ -182,8 +193,12 @@ const objComponent = {
             </template>
         </div>
         <FrmInput v-if="getFieldId" key="_id" v-bind="getFieldId" type="hidden" label="" class="mb-0" />
-        <div class="footer flex my-[1rem]" :class="[`justify-${props.buttonPosition}`]">
-            <button type="button" class="btn btn-success" @click="onSubmit" :disabled="!meta.valid">{{ submitText }}</button>
+        <div class="sticky bottom-0 z-10 flex flex-wrap items-center gap-2 border-t border-line bg-surface py-3" :class="justify[props.buttonPosition] || 'justify-start'">
+            <button v-if="props.cancelable" type="button" :class="cancelClass" :disabled="submitting" @click="loadDocument(props.document)">Hủy</button>
+            <button type="button" data-submit :class="submitClass" :disabled="!meta.valid || submitting" :aria-busy="submitting ? 'true' : undefined" @click="onSubmit">
+                <FontAwesomeIcon v-if="submitting" icon="fa-solid fa-spinner" spin aria-hidden="true" />
+                {{ submitText }}
+            </button>
             <slot name="button"></slot>
         </div>
     </form>

@@ -2,85 +2,81 @@
 /**
  * Author: Đạt Võ - https://github.com/datvt243
  * Date: `--/--`
- * Description: Trang tổng quan (route '/', mở khi click logo "Resume
- * API"). Bố cục 4 section được thiết kế lại theo tham khảo thực tế từ
- * https://itviec.com/profile-dashboard (operator cung cấp, xem screenshot
- * trong evidence note) — cùng cấu trúc thông tin, giữ màu accent riêng
- * của app ($green #00d095) thay vì chép màu thương hiệu của itviec.
- * Section 1 + tình trạng open-to-work là dữ liệu thật từ candidateStore.
- * Section 2 (lượt xem CV) giờ là dữ liệu thật (candidate/visits API, xem
- * useVisits.ts) — LayoutDefault.vue (ancestor bọc mọi trang dashboard,
- * gồm cả trang này) đã fetch và cache vào candidateStore, ở đây chỉ đọc
- * lại giá trị cache, không fetch riêng. Section 4 (% hoàn thành hồ sơ)
- * — issue #59 — giờ là số liệu thật, tính qua `useProfileCompletion`
- * (dựa trên field `required` khai báo sẵn trong từng model, so với dữ
- * liệu thật trong candidateStore). Section 3 (đính kèm CV): phần tải CV hiện tại là thật (dùng lại
- * endpoint download-pdf có sẵn, PDF được generate live từ dữ liệu hồ sơ
- * — không phải file đã "upload" như itviec); nút "Đính kèm file mới" chỉ
- * là UI, backend chưa có endpoint lưu file upload.
+ * Description: Overview page (route '/'), DESIGN.md §4.1 — profile strip →
+ * KPI row → visits chart + completion checklist → CV card. Only real data:
+ * the view count is cached by LayoutDefault (useVisits), the chart reads
+ * useVisitStats, completion comes from useProfileCompletion and the
+ * application count from useCandidate.
  */
 
 import { computed, ref } from 'vue'
 import { candidateStore } from '@/stores/candidate'
 import { authStore } from '@/stores/auth'
-import { useHelper } from '@/composables/useHelper'
 import { useProfileCompletion } from '@/composables/useProfileCompletion'
+import { useCandidate } from '@/composables/useCandidate'
+import { useVisitStats } from '@/composables/useVisitStats'
+import { useCvLang } from '@/composables/useCvLang'
 import { API } from '@/config/api.config'
 import { getDownloadCvUrl } from '@/utilities/index'
-import { useCvLang } from '@/composables/useCvLang'
+import { buttonClass } from '@/lib/button.lib'
+import VisitChart from '@/components/visits/VisitChart.vue'
 
 const candidate = candidateStore()
 const auth = authStore()
-const { toast } = useHelper()
+const numberFormat = new Intl.NumberFormat('vi-VN')
 
-/**
- * section 1: thông tin cơ bản
- */
+/* profile strip */
 const info = computed(() => candidate.getCandidate)
 const generalInfo = computed(() => candidate.getGeneralInformation)
-
 const fullName = computed(() => {
     const { firstName = '', lastName = '' } = info.value
-    return `${firstName} ${lastName}`.trim() || 'Chưa cập nhật'
+    return `${firstName} ${lastName}`.trim() || 'Chưa cập nhật tên'
 })
 const initials = computed(() => {
     const { firstName = '', lastName = '' } = info.value
     return (`${firstName?.[0] || ''}${lastName?.[0] || ''}` || 'U').toUpperCase()
 })
-// backend candidate chưa có field avatar — component vẫn kiểm tra "nếu
-// có" để không phải sửa lại khi backend bổ sung field này sau
+// backend has no avatar field yet; render it once it exists
 const avatarUrl = computed(() => info.value?.avatar || '')
-const email = computed(() => info.value?.email || auth.getUser?.email || '')
-const position = computed(() => generalInfo.value?.positionDesired || 'Chưa cập nhật')
+const position = computed(() => generalInfo.value?.positionDesired || '')
 const isOpenToWork = computed(() => !!generalInfo.value?.openToWork)
 
-/**
- * section 2: lượt xem CV — đọc lại giá trị đã fetch/cache bởi
- * LayoutDefault.vue (useVisits), không fetch riêng ở đây
- */
-const cvViewCount = computed(() => info.value?.visitCount ?? 0)
+/* KPIs */
+const { percent: profileCompletion, sections, missingSections } = useProfileCompletion()
+const { applications } = useCandidate({ field: 'applications', collection: 'application' })
+const kpis = computed(() => [
+    {
+        label: 'Lượt xem hồ sơ',
+        value: numberFormat.format(info.value?.visitCount ?? 0),
+        hint: 'Tổng số lần hồ sơ công khai được mở',
+        to: '/dashboard/visits',
+    },
+    {
+        label: 'Hoàn thành hồ sơ',
+        value: `${profileCompletion.value}%`,
+        hint: `${sections.value.length - missingSections.value.length}/${sections.value.length} mục đã đủ`,
+        to: missingSections.value[0]?.to || '/dashboard/information',
+    },
+    {
+        label: 'Đơn ứng tuyển',
+        value: numberFormat.format(applications.value?.length ?? 0),
+        hint: 'Đang theo dõi',
+        to: '/dashboard/application',
+    },
+])
 
-/**
- * section 3: đính kèm CV
- * - tải CV hiện tại: dùng lại endpoint có sẵn (giống Header.vue). Đặt
- *   attribute `download` để trình duyệt lưu đúng tên file thật (không
- *   phải tên bịa) — CV được server generate live từ dữ liệu hồ sơ hiện
- *   tại, không phải file tĩnh đã "upload" từ trước như itviec.
- * - "đính kèm file mới": chỉ chọn file + hiển thị tên, CHƯA gửi lên
- *   server vì backend chưa có endpoint lưu file upload
- */
+/* visits chart (default interval: day, last 30 days) */
+const { stats } = useVisitStats()
+
+/* CV card — the PDF is generated server-side from the profile on download */
 const _host = window.location.host === 'localhost' ? 'http://localhost:3001/' : API
-// plain link navigation → no Authorization header, pass the in-memory
-// access token as `?token=` (see stores/auth.ts)
-// issue #159: chọn template server-side — `classic` (mặc định, giữ
-// nguyên như trước) hoặc `ats` (1 cột, tối ưu cho hệ thống lọc CV/ATS)
 const CV_TEMPLATES = [
     { value: 'classic', label: 'Classic' },
     { value: 'ats', label: 'Tối ưu ATS' },
 ]
 const cvTemplate = ref('classic')
-// issue #182: ngôn ngữ nội dung CV (dùng chung lựa chọn với trang Xem trước)
 const { selectedLang, setLang, CV_LANGS } = useCvLang()
+// plain link navigation → no Authorization header, pass the in-memory access token as `?token=`
 const downloadCVUrl = computed(() => getDownloadCvUrl(_host, cvTemplate.value, auth.getToken, selectedLang.value))
 const cvFileName = computed(() => {
     const { firstName = '', lastName = '' } = info.value
@@ -88,264 +84,144 @@ const cvFileName = computed(() => {
     return `${name || 'CV'}.pdf`
 })
 
-const fileInput = ref(null)
-const selectedFileName = ref('')
-function triggerFilePicker() {
-    fileInput.value?.click()
-}
-function handleSelectFile(e) {
-    const file = e.target?.files?.[0]
-    e.target.value = ''
-    if (!file) return
-
-    selectedFileName.value = file.name
-    toast?.({
-        message: `Đã chọn "${file.name}" — tính năng lưu file lên server đang chờ backend cập nhật, file chưa được gửi lên.`,
-        bg: 'info',
-    })
-}
-
-/**
- * section 4: % hoàn thành hồ sơ — issue #59, số liệu thật
- */
-const { percent: profileCompletion, missingSections } = useProfileCompletion()
+const btnSecondary = buttonClass({ variant: 'secondary' })
+const btnPrimary = buttonClass({ variant: 'primary' })
+const btnGhost = buttonClass({ variant: 'ghost', size: 'sm' })
 </script>
 
 <template>
-    <div class="profile-card mb-[3rem]">
-        <RouterLink to="/dashboard/information" class="profile-card-edit-link">Cập nhật hồ sơ →</RouterLink>
-        <div class="flex flex-col sm:flex-row sm:items-center gap-[1rem]">
-            <div class="home-avatar">
-                <img v-if="avatarUrl" :src="avatarUrl" alt="avatar" />
-                <span v-else>{{ initials }}</span>
+    <h1 class="sr-only">Tổng quan</h1>
+    <div class="space-y-6">
+        <!-- Profile strip -->
+        <section class="flex flex-wrap items-center gap-4 rounded-md border border-line bg-surface p-4" aria-label="Hồ sơ">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent-subtle text-sm font-semibold text-accent">
+                <img v-if="avatarUrl" :src="avatarUrl" alt="" class="h-full w-full object-cover" />
+                <span v-else aria-hidden="true">{{ initials }}</span>
             </div>
-            <div class="grow">
-                <p class="h4 mb-2">{{ fullName }}</p>
-                <p class="mb-1 opacity-75">
-                    <FontAwesomeIcon icon="fa-solid fa-briefcase" class="me-2 opacity-50" />{{ position }}
-                </p>
-                <p class="mb-2 opacity-75">
-                    <FontAwesomeIcon icon="fa-solid fa-envelope" class="me-2 opacity-50" />{{ email || 'Chưa cập nhật' }}
-                </p>
-                <span class="badge rounded-pill" :class="isOpenToWork ? 'text-bg-success' : 'text-bg-secondary'">
-                    <FontAwesomeIcon :icon="isOpenToWork ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark'" class="me-1" />
-                    {{ isOpenToWork ? 'Đang mở tìm việc' : 'Không tìm việc' }}
-                </span>
+            <div class="min-w-0 flex-1">
+                <p class="m-0 truncate text-md font-semibold text-fg">{{ fullName }}</p>
+                <p class="m-0 truncate text-sm text-fg-2">{{ position || 'Chưa có vị trí mong muốn' }}</p>
             </div>
-        </div>
-    </div>
+            <span
+                class="inline-flex h-5 items-center gap-1.5 rounded-sm px-2 text-xs font-medium"
+                :class="isOpenToWork ? 'bg-success-subtle text-success' : 'bg-surface-2 text-fg-2'"
+            >
+                <span class="h-1.5 w-1.5 rounded-full" :class="isOpenToWork ? 'bg-success' : 'bg-fg-3'" aria-hidden="true"></span>
+                {{ isOpenToWork ? 'Đang mở tìm việc' : 'Không tìm việc' }}
+            </span>
+            <RouterLink to="/dashboard/information" :class="btnSecondary">Cập nhật hồ sơ</RouterLink>
+        </section>
 
-    <div class="stat-highlight mb-[3rem]">
-        <div class="stat-highlight-number">
-            {{ cvViewCount }}
-            <span>lượt xem</span>
-        </div>
-        <div class="grow">
-            <div class="flex items-center gap-2 mb-1">
-                <p class="font-semibold mb-0">Lượt truy cập hồ sơ của bạn</p>
-                <span class="badge text-bg-success-subtle">Mới</span>
-            </div>
-            <p class="text-sm opacity-75 mb-1">Số lần trang hồ sơ công khai của bạn được xem (IP + vị trí, ghi nhận qua API thật). Số này sẽ không tăng qua app hiện tại — trang xem hồ sơ công khai qua link chia sẻ chưa được xây dựng ở frontend, chưa có nơi nào ở đây gọi API ghi nhận lượt xem.</p>
-            <RouterLink to="/dashboard/visits" class="text-sm font-semibold">Xem chi tiết từng lượt truy cập →</RouterLink>
-        </div>
-    </div>
+        <!-- KPI row -->
+        <section class="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:gap-6" aria-label="Chỉ số">
+            <RouterLink
+                v-for="k in kpis"
+                :key="k.label"
+                :to="k.to"
+                class="block rounded-md border border-line bg-surface p-4 text-fg no-underline hover:bg-surface-2 hover:text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+                <p class="m-0 text-sm text-fg-2">{{ k.label }}</p>
+                <p class="m-0 mt-1 text-xl font-semibold tracking-tight">{{ k.value }}</p>
+                <p class="m-0 mt-1 text-xs text-fg-3">{{ k.hint }}</p>
+            </RouterLink>
+        </section>
 
-    <div class="block-container mb-[3rem]">
-        <Heading text="Đính kèm CV" />
-        <div class="attach-row">
-            <div class="attach-icon">
-                <FontAwesomeIcon icon="fa-solid fa-file-lines" />
-            </div>
-            <div class="grow">
-                <a class="font-semibold" :href="downloadCVUrl" :download="cvFileName" target="_blank">{{ cvFileName }}</a>
-                <p class="text-sm opacity-50 mb-0">Được tạo tự động từ hồ sơ của bạn — luôn là bản mới nhất</p>
-                <div class="flex flex-wrap items-center gap-[0.5rem] mt-2">
-                    <span class="text-sm opacity-75">Mẫu CV:</span>
-                    <button
-                        v-for="t in CV_TEMPLATES"
-                        :key="t.value"
-                        type="button"
-                        class="btn btn-sm"
-                        :class="cvTemplate === t.value ? 'btn-success' : 'btn-outline-success'"
-                        @click="cvTemplate = t.value"
-                    >
-                        {{ t.label }}
-                    </button>
+        <!-- Main row -->
+        <div class="grid gap-6 lg:grid-cols-3">
+            <section class="min-w-0 rounded-md border border-line bg-surface lg:col-span-2" aria-labelledby="home-visits-title">
+                <header class="flex h-12 items-center justify-between border-b border-line px-4">
+                    <h2 id="home-visits-title" class="m-0 text-md font-semibold">Lượt xem 30 ngày</h2>
+                    <RouterLink to="/dashboard/visits" class="text-sm font-medium text-accent no-underline hover:text-accent-hover hover:underline">Xem chi tiết</RouterLink>
+                </header>
+                <div class="p-4">
+                    <template v-if="stats">
+                        <p class="m-0 mb-2 text-sm text-fg-2">
+                            <span class="text-base font-semibold text-fg">{{ numberFormat.format(stats.total) }}</span> lượt xem
+                        </p>
+                        <VisitChart :series="stats.series" :interval="stats.interval" />
+                    </template>
+                    <div v-else class="h-56 rounded bg-surface-2 motion-safe:animate-pulse" aria-hidden="true"></div>
+                </div>
+            </section>
+
+            <section class="rounded-md border border-line bg-surface" aria-labelledby="home-completion-title">
+                <header class="flex h-12 items-center border-b border-line px-4">
+                    <h2 id="home-completion-title" class="m-0 text-md font-semibold">Hoàn thiện hồ sơ</h2>
+                </header>
+                <div class="p-4">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2"
+                            role="progressbar"
+                            aria-label="Mức hoàn thành hồ sơ"
+                            :aria-valuenow="profileCompletion"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        >
+                            <div class="h-full rounded-full bg-brand" :style="{ width: `${profileCompletion}%` }"></div>
+                        </div>
+                        <span class="text-sm font-medium">{{ profileCompletion }}%</span>
+                    </div>
+                    <template v-if="missingSections.length">
+                        <p class="m-0 mt-4 text-sm text-fg-2">Còn thiếu {{ missingSections.length }} mục</p>
+                        <ul class="m-0 mt-2 list-none space-y-1 p-0">
+                            <li v-for="section in missingSections" :key="section.to">
+                                <RouterLink :to="section.to" class="text-sm text-accent no-underline hover:text-accent-hover hover:underline">{{ section.label }}</RouterLink>
+                            </li>
+                        </ul>
+                    </template>
+                    <p v-else class="m-0 mt-4 text-sm text-fg-2">Hồ sơ đã đủ các mục bắt buộc.</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- CV card -->
+        <section class="rounded-md border border-line bg-surface" aria-labelledby="home-cv-title">
+            <header class="flex h-12 items-center justify-between border-b border-line px-4">
+                <h2 id="home-cv-title" class="m-0 text-md font-semibold">CV của bạn</h2>
+                <RouterLink to="/dashboard/ats-check" :class="btnGhost">Kiểm tra điểm ATS</RouterLink>
+            </header>
+            <div class="flex flex-wrap items-center gap-4 p-4">
+                <div class="flex min-w-0 flex-1 items-center gap-3">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-surface-2 text-fg-2" aria-hidden="true">
+                        <FontAwesomeIcon icon="fa-solid fa-file-lines" />
+                    </div>
+                    <div class="min-w-0">
+                        <p class="m-0 truncate text-sm font-medium text-fg">{{ cvFileName }}</p>
+                        <p class="m-0 text-xs text-fg-3">Tạo tự động từ hồ sơ, luôn là bản mới nhất</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="inline-flex rounded bg-surface-2 p-0.5" role="radiogroup" aria-label="Mẫu CV">
+                        <button
+                            v-for="t in CV_TEMPLATES"
+                            :key="t.value"
+                            type="button"
+                            role="radio"
+                            :aria-checked="cvTemplate === t.value ? 'true' : 'false'"
+                            class="h-7 rounded-sm px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                            :class="cvTemplate === t.value ? 'bg-surface text-fg shadow-sm' : 'text-fg-2 hover:text-fg'"
+                            @click="cvTemplate = t.value"
+                        >
+                            {{ t.label }}
+                        </button>
+                    </div>
                     <select class="form-select form-select-sm w-auto" :value="selectedLang" aria-label="Ngôn ngữ CV" @change="setLang($event.target.value)">
                         <option v-for="l in CV_LANGS" :key="l.value" :value="l.value">{{ l.label }}</option>
                     </select>
-                    <RouterLink to="/dashboard/ats-check" class="text-sm font-semibold">Kiểm tra điểm ATS →</RouterLink>
+                    <span title="Sắp ra mắt">
+                        <button type="button" :class="btnSecondary" disabled aria-describedby="home-attach-soon">
+                            <FontAwesomeIcon icon="fa-solid fa-paperclip" />
+                            <span>Đính kèm file</span>
+                        </button>
+                        <span id="home-attach-soon" class="sr-only">Sắp ra mắt</span>
+                    </span>
+                    <a :href="downloadCVUrl" :download="cvFileName" target="_blank" :class="btnPrimary">
+                        <FontAwesomeIcon icon="fa-solid fa-download" />
+                        <span>Tải CV</span>
+                    </a>
                 </div>
             </div>
-            <Button icon="fa-solid fa-paperclip" text="Đính kèm file mới" @click="triggerFilePicker" />
-            <input ref="fileInput" type="file" accept="application/pdf" class="hidden" @change="handleSelectFile" />
-        </div>
-        <p v-if="selectedFileName" class="text-sm opacity-75 mt-2 mb-0">Đã chọn: {{ selectedFileName }}</p>
-        <p class="text-sm opacity-50 mt-2 mb-0">Tính năng lưu file đính kèm đang chờ backend cập nhật, file chọn ở trên chưa được gửi lên server.</p>
-    </div>
-
-    <div class="block-container">
-        <Heading text="Profile Information" />
-        <div class="flex items-center gap-[1.5rem] flex-wrap">
-            <div class="completion-ring" :style="{ '--percent': `${profileCompletion}%` }">
-                <span class="completion-ring-value">{{ profileCompletion }}%</span>
-                <span class="completion-ring-caption">hoàn thành</span>
-            </div>
-            <div class="grow" style="min-width: 220px">
-                <template v-if="missingSections.length">
-                    <p class="mb-2">Hồ sơ còn thiếu {{ missingSections.length }} mục:</p>
-                    <ul class="missing-sections-list mb-0">
-                        <li v-for="section in missingSections" :key="section.to">
-                            <RouterLink :to="section.to">{{ section.label }} →</RouterLink>
-                        </li>
-                    </ul>
-                </template>
-                <template v-else>
-                    <p class="mb-2">Hồ sơ của bạn đã điền đầy đủ các mục bắt buộc — sẵn sàng để tạo CV.</p>
-                    <RouterLink to="/dashboard/information" class="font-semibold">Xem hồ sơ →</RouterLink>
-                </template>
-            </div>
-        </div>
+        </section>
     </div>
 </template>
-
-<style scoped lang="scss">
-.profile-card,
-.stat-highlight {
-    position: relative;
-    background-color: var(--bs-tertiary-bg);
-    border: 1px solid var(--bs-border-color-translucent);
-    border-radius: 0.75rem;
-    padding: 1.25rem;
-}
-
-.profile-card-edit-link {
-    position: absolute;
-    top: 1.25rem;
-    right: 1.25rem;
-    font-size: 0.875rem;
-}
-
-.home-avatar {
-    width: 72px;
-    height: 72px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 1.35rem;
-    background-color: var(--bs-green);
-    color: #fff;
-    overflow: hidden;
-
-    img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-}
-
-.stat-highlight {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    border-left: 4px solid var(--bs-green);
-    background-color: rgba(0, 208, 149, 0.08);
-}
-
-.stat-highlight-number {
-    flex-shrink: 0;
-    width: 84px;
-    height: 84px;
-    border-radius: 0.75rem;
-    background-color: rgba(0, 208, 149, 0.15);
-    color: var(--bs-green);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.75rem;
-    font-weight: 700;
-    line-height: 1;
-
-    span {
-        font-size: 0.7rem;
-        font-weight: 500;
-        margin-top: 0.25rem;
-    }
-}
-
-.attach-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.attach-icon {
-    width: 48px;
-    height: 48px;
-    flex-shrink: 0;
-    border-radius: 0.6rem;
-    background-color: rgba(0, 208, 149, 0.12);
-    color: var(--bs-green);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-}
-
-.completion-ring {
-    --percent: 0%;
-
-    width: 96px;
-    height: 96px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: conic-gradient(var(--bs-green) var(--percent), var(--bs-border-color-translucent) 0);
-    position: relative;
-
-    &::before {
-        content: '';
-        position: absolute;
-        inset: 8px;
-        border-radius: 50%;
-        background-color: var(--bs-tertiary-bg);
-    }
-}
-
-.completion-ring-value,
-.completion-ring-caption {
-    position: relative;
-    z-index: 1;
-}
-
-.completion-ring-value {
-    font-weight: 700;
-    font-size: 1.15rem;
-}
-
-.completion-ring-caption {
-    font-size: 0.7rem;
-    opacity: 0.6;
-}
-
-.missing-sections-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
-
-    li {
-        font-size: 0.9rem;
-    }
-}
-</style>

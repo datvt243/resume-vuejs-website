@@ -6,9 +6,10 @@
 
 import { h } from 'vue'
 
-const ConvertToText = (props) => {
+const ConvertToText = props => {
     const { modelValue: value } = props
-    return h('span', value)
+    const empty = value === undefined || value === null || value === ''
+    return h('span', { class: 'block max-w-xs truncate', title: empty ? undefined : String(value) }, empty ? '—' : value)
 }
 
 ConvertToText.slots = ['default']

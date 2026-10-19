@@ -6,11 +6,9 @@
 
 import { h } from 'vue'
 
-const ConvertToTruncate = (props) => {
+const ConvertToTruncate = props => {
     const { modelValue: value } = props
-
-    const _newVal = value.length > 25 ? value.slice(0, 25) + '...' : value
-    return h('span', _newVal)
+    return h('span', { class: 'block max-w-xs truncate', title: value || undefined }, value || '—')
 }
 
 ConvertToTruncate.slots = ['default']

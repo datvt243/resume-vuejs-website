@@ -91,7 +91,7 @@
     --bs-info: var(--color-info);
     --bs-border-radius: 6px;
     --bs-border-radius-sm: 4px;
-    /* Not in DESIGN.md's bridge, but still read by .btn-secondary, .alert-warning, .table */
+    /* Not in DESIGN.md's bridge, but still read by .btn-secondary, .alert-warning */
     --bs-border-width: 1px;
     --bs-secondary: var(--color-fg-2);
     --bs-warning-text-emphasis: var(--color-warning);
@@ -1224,62 +1224,6 @@
         padding: 0.25rem 0.5rem;
         font-size: 0.875rem;
         border-radius: var(--bs-border-radius-sm);
-    }
-
-    /* .table / .table-hover / .table-bordered / .table-responsive —
-       confirmed sole consumer: `table/part/Table.js` + `TableDefault.vue`
-       (a JS `h()` render-prop file — `class: ['table table-hover', ...]`
-       — invisible to any `class="..."`-anchored survey, the same blind
-       spot class found in node 10, caught this time by extending the
-       token scan to `.js`/`.ts` files too). Includes the cell
-       `border-style`/`border-color`/`border-width` reset that in real
-       Bootstrap comes from Reboot's global `thead,tbody,tfoot,tr,td,th`
-       rule (not a `.table`-specific rule) — scoped here to `.table`
-       descendants specifically rather than reproduced as a bare global
-       element selector, since this app has exactly one table system and
-       a narrower selector is safer/more predictable than a sitewide
-       reset. */
-    .table {
-        width: 100%;
-        margin-bottom: 1rem;
-        vertical-align: top;
-        border-color: var(--bs-border-color);
-    }
-    .table thead,
-    .table tbody,
-    .table tfoot,
-    .table tr,
-    .table td,
-    .table th {
-        border-color: inherit;
-        border-style: solid;
-        border-width: 0;
-    }
-    .table > :not(caption) > * > * {
-        padding: 0.5rem 0.5rem;
-        color: var(--bs-emphasis-color);
-        background-color: var(--bs-body-bg);
-        border-bottom-width: var(--bs-border-width);
-    }
-    .table > tbody {
-        vertical-align: inherit;
-    }
-    .table > thead {
-        vertical-align: bottom;
-    }
-    .table-hover > tbody > tr:hover > * {
-        color: var(--bs-emphasis-color);
-        background-color: rgba(var(--bs-emphasis-color-rgb), 0.075);
-    }
-    .table-bordered > :not(caption) > * {
-        border-width: var(--bs-border-width) 0;
-    }
-    .table-bordered > :not(caption) > * > * {
-        border-width: 0 var(--bs-border-width);
-    }
-    .table-responsive {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
     }
 
     /* Toasts.vue: above the modal (1055) and its backdrop (1050); only the toast itself takes clicks */

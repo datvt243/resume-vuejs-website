@@ -46,11 +46,5 @@ const item = computed(() => ({
 
 <template lang="pug">
 ItemTemplate(:model-value="item")
-    .btn-group
-        a.btn.btn-sm.btn-outline-danger.icon(href="javascript:void(0)" @click="emits('onDelete', {...model})")
-            FontAwesomeIcon(icon="fa-solid fa-trash")
-        a.btn.btn-sm.btn-outline-warning.icon(href="javascript:void(0)" @click="emits('onEdit', {...model})")
-            FontAwesomeIcon(icon="fa-solid fa-square-pen")
-        a.btn.btn-sm.btn-outline-primary.icon(href="javascript:void(0)" @click="emits('onDuplicate', {...model})")
-            FontAwesomeIcon(icon="fa-solid fa-copy")
+    ItemActions(:label="item.title" @edit="emits('onEdit', {...model})" @duplicate="emits('onDuplicate', {...model})" @delete="emits('onDelete', {...model})")
 </template>

@@ -19,8 +19,9 @@ import { API } from '@/config/api.config'
 import model from '@/models/application.model.ts'
 
 import { formatDate } from '@/utilities/index'
+import { buttonClass } from '@/lib/button.lib'
 
-const { applications: dataList, removeRecordById, addRecordToList, getData } = useCandidate({
+const { applications: dataList, removeRecordById, addRecordToList } = useCandidate({
     field: 'applications',
     collection: 'application',
 })
@@ -64,12 +65,15 @@ function getProfileLinks(item) {
 // gọi updateDoc để tạo bản ghi MỚI (POST) thay vì ghi đè bản ghi gốc (PUT).
 const isDuplicating = ref(false)
 
+// DESIGN.md §5.6 badges
+const badgeBase = 'inline-flex h-5 items-center gap-1.5 rounded-sm px-2 text-xs font-medium'
 const statusMeta = {
-  applied: { text: 'Đã nộp', badge: 'text-bg-secondary' },
-  interview: { text: 'Phỏng vấn', badge: 'text-bg-warning' },
-  offer: { text: 'Offer', badge: 'text-bg-success' },
-  rejected: { text: 'Từ chối', badge: 'text-bg-danger' },
+  applied: { text: 'Đã nộp', badge: 'bg-surface-2 text-fg-2', dot: 'bg-fg-3' },
+  interview: { text: 'Phỏng vấn', badge: 'bg-warning-subtle text-warning', dot: 'bg-warning' },
+  offer: { text: 'Offer', badge: 'bg-success-subtle text-success', dot: 'bg-success' },
+  rejected: { text: 'Từ chối', badge: 'bg-danger-subtle text-danger', dot: 'bg-danger' },
 }
+const linkBtn = buttonClass({ variant: 'ghost', iconOnly: true })
 function getStatusMeta(status) {
   return statusMeta[status] || statusMeta.applied
 }
@@ -129,16 +133,13 @@ function showModalDuplicateDoc(doc) {
 </script>
 
 <template>
-  <div class="mb-[1.5rem]">
+  <div>
     <Heading :level="1" text="Ứng tuyển">
-      <div class="btn-group">
-        <Button @click="showModalCreateDoc()" icon="fa-solid fa-plus" type="primary" aria-label="Thêm mới" />
-        <Button @click="getData?.()" icon="fa-solid fa-repeat" type="ghost" aria-label="Tải lại" />
-      </div>
+      <Button type="primary" icon="fa-solid fa-plus" text="Thêm đơn ứng tuyển" @click="showModalCreateDoc()" />
     </Heading>
 
-    <div v-if="dataList.length" class="clearfix">
-      <ListTransition>
+    <div v-if="dataList.length">
+      <ListTransition class="m-0 list-none divide-y divide-line rounded-md border border-line bg-surface p-0">
         <li v-for="item in dataList" :key="item._id">
           <ItemTemplate :model-value="{
             title: item.company,
@@ -146,56 +147,47 @@ function showModalDuplicateDoc(doc) {
             date: () => formatDate(item.appliedDate, 'DD/MM/YYYY'),
             description: item.note,
           }" icon="fa-briefcase">
-            <div class="flex items-center gap-[0.5rem]">
-              <span class="badge rounded-pill" :class="getStatusMeta(item.status).badge">{{ getStatusMeta(item.status).text }}</span>
+            <div class="flex flex-wrap items-center gap-1">
+              <span :class="[badgeBase, getStatusMeta(item.status).badge]">
+                <span class="h-1.5 w-1.5 rounded-full" :class="getStatusMeta(item.status).dot" aria-hidden="true"></span>
+                {{ getStatusMeta(item.status).text }}
+              </span>
               <template v-if="getProfileLinks(item)">
-                <span class="badge rounded-pill text-bg-info">{{ getProfileLinks(item).name }}</span>
-                <a class="btn btn-sm btn-outline-secondary icon" :href="getProfileLinks(item).publicLink" target="_blank" rel="noopener" title="Xem CV public theo profile">
-                  <FontAwesomeIcon icon="fa-solid fa-eye"></FontAwesomeIcon>
+                <span :class="[badgeBase, 'bg-surface-2 text-fg-2']">
+                  <FontAwesomeIcon icon="fa-solid fa-layer-group" aria-hidden="true" />{{ getProfileLinks(item).name }}
+                </span>
+                <a :class="linkBtn" :href="getProfileLinks(item).publicLink" target="_blank" rel="noopener" aria-label="Xem CV công khai theo profile" title="Xem CV công khai">
+                  <FontAwesomeIcon icon="fa-solid fa-eye" aria-hidden="true" />
                 </a>
-                <a class="btn btn-sm btn-outline-secondary icon" :href="getProfileLinks(item).pdfLink" target="_blank" rel="noopener" title="Tải PDF (ATS) theo profile">
-                  <FontAwesomeIcon icon="fa-solid fa-download"></FontAwesomeIcon>
+                <a :class="linkBtn" :href="getProfileLinks(item).pdfLink" target="_blank" rel="noopener" aria-label="Tải PDF theo profile" title="Tải PDF">
+                  <FontAwesomeIcon icon="fa-solid fa-download" aria-hidden="true" />
                 </a>
               </template>
-              <a v-if="item.jobLink" class="btn btn-sm btn-outline-secondary icon" :href="item.jobLink" target="_blank" rel="noopener">
-                <FontAwesomeIcon icon="fa-solid fa-arrow-up-right-from-square"></FontAwesomeIcon>
+              <a v-if="item.jobLink" :class="linkBtn" :href="item.jobLink" target="_blank" rel="noopener" aria-label="Mở tin tuyển dụng" title="Mở tin tuyển dụng">
+                <FontAwesomeIcon icon="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />
               </a>
-              <div class="btn-group">
-                <a class="btn btn-sm btn-outline-danger icon" href="javascript:void(0)" @click="
-                  () => {
-                    deleteDoc({ ...item }, 'company', res => {
-                      const { data } = res
-                      removeRecordById(data._id)
-                    })
-                  }
-                ">
-                  <FontAwesomeIcon icon="fa-solid fa-trash"></FontAwesomeIcon>
-                </a>
-                <a class="btn btn-sm btn-outline-warning icon" href="javascript:void(0)"
-                  @click="showModalEditDoc({ ...item })">
-                  <FontAwesomeIcon icon="fa-solid fa-square-pen"></FontAwesomeIcon>
-                </a>
-                <a class="btn btn-sm btn-outline-primary icon" href="javascript:void(0)"
-                  @click="showModalDuplicateDoc({ ...item })">
-                  <FontAwesomeIcon icon="fa-solid fa-copy"></FontAwesomeIcon>
-                </a>
-              </div>
+              <ItemActions :label="item.company" @edit="showModalEditDoc({ ...item })" @duplicate="showModalDuplicateDoc({ ...item })"
+                @delete="deleteDoc({ ...item }, 'company', res => removeRecordById(res.data._id))" />
             </div>
           </ItemTemplate>
         </li>
       </ListTransition>
     </div>
-    <NoData v-else />
+    <div v-else class="rounded-md border border-line bg-surface">
+      <NoData title="Chưa có đơn ứng tuyển nào" description="Ghi lại công ty và vị trí bạn đã nộp để theo dõi tiến độ.">
+        <Button icon="fa-solid fa-plus" text="Thêm đơn ứng tuyển" @click="showModalCreateDoc()" />
+      </NoData>
+    </div>
   </div>
 
   <Modal ref="refModal"
-    :title="isDuplicating ? `Nhân bản: ${document.company}` : document._id ? `Chỉnh sửa: ${document.company}` : 'Thêm mới Ứng tuyển'"
+    :title="isDuplicating ? `Nhân bản: ${document.company}` : document._id ? `Chỉnh sửa: ${document.company}` : 'Thêm đơn ứng tuyển'"
     is-hidden-footer>
     <div class="block-container">
       <VeeForm ref="refVeeForm" :fields="formFields" :document="document" :submit-fn="handleUpdate"
-        :submit-text="isDuplicating ? 'Nhân bản' : document._id ? 'Cập nhật' : 'Thêm mới'" buttonPosition="end">
-        <template #button>
-          <button type="button" class="btn btn-secondary mx-[1rem]" data-bs-dismiss="modal">Đóng</button>
+        submit-text="Lưu" button-position="end">
+        <template #cancel>
+          <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
         </template>
       </VeeForm>
     </div>

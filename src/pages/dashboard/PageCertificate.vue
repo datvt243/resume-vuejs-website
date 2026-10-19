@@ -18,7 +18,7 @@ import model from '@/models/certificate.model.ts'
 
 import { formatDate, localizedToForm, localizedFromForm } from '@/utilities/index'
 
-const { certificates: dataList, removeRecordById, addRecordToList, getData } = useCandidate({ field: 'certificates' })
+const { certificates: dataList, removeRecordById, addRecordToList } = useCandidate({ field: 'certificates' })
 
 /**
  *
@@ -101,16 +101,13 @@ function showModalDuplicateDoc(doc) {
 </script>
 
 <template>
-    <div class="mb-[1.5rem]">
+    <div>
         <Heading :level="1" text="Chứng chỉ">
-            <div class="btn-group">
-                <Button @click="showModalCreateDoc()" icon="fa-solid fa-plus" type="primary" aria-label="Thêm mới" />
-                <Button @click="getData?.()" icon="fa-solid fa-repeat" type="ghost" aria-label="Tải lại" />
-            </div>
+          <Button type="primary" icon="fa-solid fa-plus" text="Thêm chứng chỉ" @click="showModalCreateDoc()" />
         </Heading>
 
-        <div v-if="dataList.length" class="clearfix">
-            <ListTransition>
+        <div v-if="dataList.length">
+            <ListTransition class="m-0 list-none divide-y divide-line rounded-md border border-line bg-surface p-0">
                 <li v-for="item in dataList" :key="item._id">
                     <ItemTemplate
                         :model-value="{
@@ -126,47 +123,23 @@ function showModalDuplicateDoc(doc) {
                         }"
                         icon="fa-certificate"
                     >
-                        <div class="btn-group">
-                            <a
-                                class="btn btn-sm btn-outline-danger icon"
-                                href="javascript:void(0)"
-                                @click="
-                                    () => {
-                                        deleteDoc({ ...item }, 'name', res => {
-                                            const { data } = res
-                                            removeRecordById(data._id)
-                                        })
-                                    }
-                                "
-                            >
-                                <FontAwesomeIcon icon="fa-solid fa-trash"></FontAwesomeIcon>
-                            </a>
-                            <a
-                                class="btn btn-sm btn-outline-warning icon"
-                                href="javascript:void(0)"
-                                @click="showModalEditDoc({ ...item })"
-                            >
-                                <FontAwesomeIcon icon="fa-solid fa-square-pen"></FontAwesomeIcon>
-                            </a>
-                            <a
-                                class="btn btn-sm btn-outline-primary icon"
-                                href="javascript:void(0)"
-                                @click="showModalDuplicateDoc({ ...item })"
-                            >
-                                <FontAwesomeIcon icon="fa-solid fa-copy"></FontAwesomeIcon>
-                            </a>
-                        </div>
+                        <ItemActions :label="item.name" @edit="showModalEditDoc({ ...item })" @duplicate="showModalDuplicateDoc({ ...item })"
+                @delete="deleteDoc({ ...item }, 'name', res => removeRecordById(res.data._id))" />
                     </ItemTemplate>
                 </li>
             </ListTransition>
         </div>
-        <NoData v-else />
+        <div v-else class="rounded-md border border-line bg-surface">
+            <NoData title="Chưa có chứng chỉ nào">
+                <Button icon="fa-solid fa-plus" text="Thêm chứng chỉ" @click="showModalCreateDoc()" />
+            </NoData>
+        </div>
     </div>
 
     <Modal
         ref="refModal"
         :title="
-            isDuplicating ? `Nhân bản: ${document.name}` : document._id ? `Chỉnh sửa: ${document.name}` : 'Thêm mới Chứng chỉ'
+            isDuplicating ? `Nhân bản: ${document.name}` : document._id ? `Chỉnh sửa: ${document.name}` : 'Thêm chứng chỉ'
         "
         is-hidden-footer
     >
@@ -176,11 +149,11 @@ function showModalDuplicateDoc(doc) {
                 :fields="formFields"
                 :document="document"
                 :submit-fn="handleUpdate"
-                :submit-text="isDuplicating ? 'Nhân bản' : document._id ? 'Cập nhật' : 'Thêm mới'"
-                buttonPosition="end"
+                submit-text="Lưu"
+                button-position="end"
             >
-                <template #button>
-                    <button type="button" class="btn btn-secondary mx-[1rem]" data-bs-dismiss="modal">Đóng</button>
+                <template #cancel>
+                    <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
                 </template>
             </VeeForm>
         </div>

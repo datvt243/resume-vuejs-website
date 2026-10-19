@@ -25,7 +25,6 @@ const formFields = [
         name: 'password',
         label: 'Mật khẩu mới',
         type: 'password',
-        icon: 'fa-solid fa-lock',
         text: 'Tối thiểu 12 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.',
         valid: yup =>
             yup
@@ -39,9 +38,8 @@ const formFields = [
     },
     {
         name: 'repassword',
-        label: 'Nhập lại Mật khẩu',
+        label: 'Nhập lại mật khẩu',
         type: 'password',
-        icon: 'fa-solid fa-lock',
         valid: yup =>
             yup
                 .string()
@@ -56,29 +54,14 @@ async function _handleResetPassword(values) {
 </script>
 
 <template>
-    <div class="reset-password-page flex items-center justify-center">
-        <div class="auth-card">
+    <div class="flex justify-center py-12">
+        <div class="w-full max-w-md rounded-md border border-line bg-surface p-6">
             <Heading :level="1" text="Đặt lại mật khẩu" />
             <p v-if="!route.query.token" class="text-sm text-danger">
-                Thiếu token đặt lại mật khẩu — vui lòng dùng đúng liên kết đã nhận.
+                Liên kết đặt lại mật khẩu không hợp lệ. Mở lại đúng liên kết trong email.
             </p>
             <VeeForm :fields="formFields" :submit-fn="_handleResetPassword" :submit-text="'Đặt lại mật khẩu'" />
         </div>
     </div>
 </template>
 
-<style scoped lang="scss">
-.reset-password-page {
-    min-height: 70vh;
-}
-
-.auth-card {
-    width: 100%;
-    max-width: 440px;
-    padding: 2rem 2.25rem;
-    border-radius: 1rem;
-    background-color: var(--bs-tertiary-bg);
-    border: 1px solid var(--bs-border-color-translucent);
-    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.25);
-}
-</style>

@@ -40,11 +40,13 @@ const { value, errorMessage, handleChange, handleBlur } = useField(() => props.n
 </script>
 
 <template>
-    <div class="mb-[1rem]">
+    <div class="mb-4">
         <label :for="props.name" class="form-label">{{ props.label }}</label>
         <select
             :id="props.name"
-            :class="['form-control', props.size]"
+            :class="['form-control', props.size, { 'border-danger': errorMessage }]"
+            :aria-invalid="errorMessage ? 'true' : undefined"
+            :aria-describedby="errorMessage ? `${props.name}-error` : undefined"
             :value="value"
             v-bind="attrs"
             :data-value="value"
@@ -55,7 +57,9 @@ const { value, errorMessage, handleChange, handleBlur } = useField(() => props.n
             <option v-for="el of options" :key="`opt_${el.value}`" :value="el.value">{{ el.text }}</option>
         </select>
 
-        <p v-if="errorMessage" class="text-danger text-sm my-1">{{ errorMessage }}</p>
+        <p v-if="errorMessage" :id="`${props.name}-error`" class="mb-0 mt-1 flex items-center gap-1 text-xs text-danger">
+            <FontAwesomeIcon icon="fa-solid fa-circle-exclamation" aria-hidden="true" />{{ errorMessage }}
+        </p>
         <p v-if="props.text" class="form-text mb-0">{{ props.text }}</p>
     </div>
 </template>

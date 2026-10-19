@@ -19,6 +19,7 @@ const candidate = inject('candidate')
 
 const props = defineProps({
     heading: { type: String, default: '' },
+    description: { type: String, default: '' },
     fieldKey: { type: String, default: '' },
     fields: { type: Array, default: () => [] },
     hasButtonAdd: { type: Boolean, default: false },
@@ -136,44 +137,37 @@ async function handleUpdate(values, action = 'create') {
 </script>
 
 <template>
-    <div class="block-container mb-[3rem]">
-        <Heading :text="props.heading">
-            <template v-if="props.hasButtonAdd">
-                <button class="btn btn-sm btn-success" @click="showModalCreateDoc()">
-                    <FontAwesomeIcon icon="fa-solid fa-plus" />
-                </button>
-            </template>
-        </Heading>
+    <FormSection :title="props.heading" :description="props.description" :card="false">
+        <template v-if="props.hasButtonAdd" #actions>
+            <Button icon="fa-solid fa-plus" text="Thêm" size="sm" @click="showModalCreateDoc()" />
+        </template>
 
-        <div v-if="$slots.group" class="clearfix mb-[1rem]">
+        <div class="space-y-4">
             <slot name="group"></slot>
-        </div>
 
-        <!--  -->
-        <TableDefault
-            :model-value="generalInformationField"
-            :settings="props.fields"
-            :cols-hidden="[]"
-            col-control="fullName"
-            :height-auto="true"
-        >
-            <template #theadMore>
-                <td style="width: 100px" class="text-end">Action</td>
-            </template>
-            <template #tbodyMore="{ doc }">
-                <td style="width: 100px" class="text-end">
-                    <a class="dropdown-item" href="#" @click="handleUpdate({ ...doc }, 'delete')">
-                        <span class="text-danger pe-2"><FontAwesomeIcon icon="fa-solid fa-trash" /></span>
-                    </a>
-                </td>
-            </template>
-        </TableDefault>
-    </div>
+            <TableDefault
+                :model-value="generalInformationField"
+                :settings="props.fields"
+                :cols-hidden="[]"
+                col-control="fullName"
+                :height-auto="true"
+            >
+                <template #theadMore>
+                    <th scope="col" class="w-12"><span class="sr-only">Thao tác</span></th>
+                </template>
+                <template #tbodyMore="{ doc }">
+                    <td class="w-12 text-right">
+                        <Button icon="fa-solid fa-trash" type="ghost" size="sm" :aria-label="`Xóa ${doc.name || doc.language || ''}`.trim()" @click="handleUpdate({ ...doc }, 'delete')" />
+                    </td>
+                </template>
+            </TableDefault>
+        </div>
+    </FormSection>
 
     <template v-if="props.hasButtonAdd">
         <Modal
             ref="refModal02"
-            :title="document._id ? `Chỉnh sửa: ${props.heading}` : `Thêm mới ${props.heading}`"
+            :title="document._id ? `Sửa: ${props.heading.toLowerCase()}` : `Thêm ${props.heading.toLowerCase()}`"
             is-hidden-footer
         >
             <div class="block-container">
@@ -182,12 +176,12 @@ async function handleUpdate(values, action = 'create') {
                     :fields="props.fields"
                     :document="document"
                     :submit-fn="handleUpdate"
-                    :submit-text="document._id ? 'Cập nhật' : 'Thêm mới'"
+                    submit-text="Lưu"
                     buttonPosition="end"
                     reset-after-save
                 >
-                    <template #button>
-                        <button type="button" class="btn btn-secondary mx-[1rem]" data-bs-dismiss="modal">Đóng</button>
+                    <template #cancel>
+                        <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
                     </template>
                 </VeeForm>
             </div>

@@ -140,39 +140,42 @@ const professionalSkillFields = computed(() => {
 </script>
 
 <template>
-  <div class="block-container mb-[3rem]">
+  <div class="max-w-4xl space-y-6">
     <Heading :level="1" text="Thông tin chung">
-      <div class="btn-group">
-        <Button @click="getData?.()" icon="fa-solid fa-repeat" type="ghost" aria-label="Tải lại" />
-      </div>
+      <Button @click="getData?.()" icon="fa-solid fa-repeat" type="ghost" aria-label="Tải lại" />
     </Heading>
-    <VeeForm :fields="formFields" :document="document" :submit-fn="handleUpdate" :submit-text="'Cập nhật'" />
+
+    <FormSection title="Mong muốn công việc" description="Vị trí, mức lương và nơi làm việc bạn đang tìm.">
+      <LoadingGate variant="form">
+        <VeeForm :fields="formFields" :document="document" :submit-fn="handleUpdate" submit-text="Lưu thay đổi"
+          button-position="end" cancelable />
+      </LoadingGate>
+    </FormSection>
+
+    <template v-if="isLoading">
+      <VeeFormGeneralInformationUpdate key="professionalSkills" :model-value="generalInformation"
+        heading="Kỹ năng chuyên môn" description="Công nghệ và công cụ, gom theo nhóm." :field-key="'professionalSkills'"
+        :has-button-add="true" :fields="professionalSkillFields">
+        <template #group>
+          <GroupTags title="Nhóm kỹ năng" v-model="skillsGroup" :handle-action="handleUpdateGroup" />
+        </template>
+      </VeeFormGeneralInformationUpdate>
+
+      <VeeFormGeneralInformationUpdate key="personalSkills" :model-value="generalInformation" heading="Kỹ năng cá nhân"
+        description="Kỹ năng mềm bạn muốn nhà tuyển dụng thấy." :field-key="'personalSkills'" :has-button-add="true" :fields="[
+          {
+            name: 'name',
+            label: 'Kỹ năng',
+            type: 'text',
+            placeholder: 'Vui lòng nhập kỹ năng',
+            valid: yup => yup.string().trim().max(100, 'Tối đa 100 ký tự').required(_mesRequired),
+            default: '',
+          },
+        ]" />
+
+      <VeeFormGeneralInformationUpdate key="foreignLanguages" :model-value="generalInformation" heading="Ngoại ngữ"
+        description="Ngôn ngữ và trình độ của bạn." :field-key="'foreignLanguages'" :has-button-add="true"
+        :fields="foreignLanguageFields" />
+    </template>
   </div>
-
-  <template v-if="isLoading">
-    <hr class="border-success mb-[3rem]" />
-
-    <VeeFormGeneralInformationUpdate key="professionalSkills" :model-value="generalInformation"
-      :heading="'Kỹ năng chuyên môn'" :field-key="'professionalSkills'" :has-button-add="true"
-      :fields="professionalSkillFields">
-      <template #group>
-        <GroupTags title="Danh sách nhóm" v-model="skillsGroup" :handle-action="handleUpdateGroup" />
-      </template>
-    </VeeFormGeneralInformationUpdate>
-
-    <VeeFormGeneralInformationUpdate key="personalSkills" :model-value="generalInformation" :heading="'Kỹ năng cá nhân'"
-      :field-key="'personalSkills'" :has-button-add="true" :fields="[
-        {
-          name: 'name',
-          label: 'Kỹ năng',
-          type: 'text',
-          placeholder: 'Vui lòng nhập kỹ năng',
-          valid: yup => yup.string().trim().max(100, 'Tối đa 100 ký tự').required(_mesRequired),
-          default: '',
-        },
-      ]" />
-
-    <VeeFormGeneralInformationUpdate key="foreignLanguages" :model-value="generalInformation" :heading="'Ngoại ngữ'"
-      :field-key="'foreignLanguages'" :has-button-add="true" :fields="foreignLanguageFields" />
-  </template>
 </template>

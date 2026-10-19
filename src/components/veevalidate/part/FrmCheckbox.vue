@@ -36,7 +36,7 @@ const vbind = computed(() => {
 </script>
 
 <template>
-    <div class="mb-[1rem]">
+    <div class="mb-4">
         <div class="form-check">
             <input
                 :id="getId"

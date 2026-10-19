@@ -17,7 +17,7 @@ import model from '@/models/award.model.ts'
 
 import { formatDate, localizedToForm, localizedFromForm } from '@/utilities/index'
 
-const { awards: dataList, removeRecordById, addRecordToList, getData } = useCandidate({ field: 'awards' })
+const { awards: dataList, removeRecordById, addRecordToList } = useCandidate({ field: 'awards' })
 
 /**
  *
@@ -96,16 +96,13 @@ function showModalDuplicateDoc(doc) {
 </script>
 
 <template>
-  <div class="mb-[1.5rem]">
+  <div>
     <Heading :level="1" text="Giải thưởng">
-      <div class="btn-group">
-        <Button @click="showModalCreateDoc()" icon="fa-solid fa-plus" type="primary" aria-label="Thêm mới" />
-        <Button @click="getData?.()" icon="fa-solid fa-repeat" type="ghost" aria-label="Tải lại" />
-      </div>
+      <Button type="primary" icon="fa-solid fa-plus" text="Thêm giải thưởng" @click="showModalCreateDoc()" />
     </Heading>
 
-    <div v-if="dataList.length" class="clearfix">
-      <ListTransition>
+    <div v-if="dataList.length">
+      <ListTransition class="m-0 list-none divide-y divide-line rounded-md border border-line bg-surface p-0">
         <li v-for="item in dataList" :key="item._id">
           <ItemTemplate :model-value="{
             title: item.name,
@@ -117,41 +114,29 @@ function showModalDuplicateDoc(doc) {
             },
             description: item.description,
           }" icon="fa-award">
-            <div class="btn-group">
-              <a class="btn btn-sm btn-outline-danger icon" href="javascript:void(0)" @click="
-                () => {
-                  deleteDoc({ ...item }, 'name', res => {
-                    const { data } = res
-                    removeRecordById(data._id)
-                  })
-                }
-              ">
-                <FontAwesomeIcon icon="fa-solid fa-trash"></FontAwesomeIcon>
-              </a>
-              <a class="btn btn-sm btn-outline-warning icon" href="javascript:void(0)"
-                @click="showModalEditDoc({ ...item })">
-                <FontAwesomeIcon icon="fa-solid fa-square-pen"></FontAwesomeIcon>
-              </a>
-              <a class="btn btn-sm btn-outline-primary icon" href="javascript:void(0)"
-                @click="showModalDuplicateDoc({ ...item })">
-                <FontAwesomeIcon icon="fa-solid fa-copy"></FontAwesomeIcon>
-              </a>
-            </div>
+            <ItemActions :label="item.name" @edit="showModalEditDoc({ ...item })" @duplicate="showModalDuplicateDoc({ ...item })"
+                @delete="deleteDoc({ ...item }, 'name', res => removeRecordById(res.data._id))" />
           </ItemTemplate>
         </li>
       </ListTransition>
     </div>
-    <NoData v-else />
+    <LoadingGate v-else>
+      <div class="rounded-md border border-line bg-surface">
+        <NoData title="Chưa có giải thưởng nào">
+          <Button icon="fa-solid fa-plus" text="Thêm giải thưởng" @click="showModalCreateDoc()" />
+        </NoData>
+      </div>
+    </LoadingGate>
   </div>
 
   <Modal ref="refModal"
-    :title="isDuplicating ? `Nhân bản: ${document.name}` : document._id ? `Chỉnh sửa: ${document.name}` : 'Thêm mới Giải thưởng'"
+    :title="isDuplicating ? `Nhân bản: ${document.name}` : document._id ? `Chỉnh sửa: ${document.name}` : 'Thêm giải thưởng'"
     is-hidden-footer>
     <div class="block-container">
       <VeeForm ref="refVeeForm" :fields="formFields" :document="document" :submit-fn="handleUpdate"
-        :submit-text="isDuplicating ? 'Nhân bản' : document._id ? 'Cập nhật' : 'Thêm mới'" buttonPosition="end">
-        <template #button>
-          <button type="button" class="btn btn-secondary mx-[1rem]" data-bs-dismiss="modal">Đóng</button>
+        submit-text="Lưu" button-position="end">
+        <template #cancel>
+          <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
         </template>
       </VeeForm>
     </div>

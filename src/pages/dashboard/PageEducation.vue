@@ -21,7 +21,6 @@ const {
     educations: dataList,
     removeRecordById,
     addRecordToList,
-    getData,
 } = useCandidate({ field: 'educations', collection: 'education' })
 
 // Sắp xếp thủ công (issue #57) — chỉ lưu ở trình duyệt (localStorage),
@@ -130,28 +129,25 @@ function showModalDuplicateDoc(doc) {
 </script>
 
 <template>
-    <div class="mb-[1.5rem]">
+    <div>
         <Heading :level="1" text="Học vấn">
-            <div class="btn-group">
-                <Button @click="showModalCreateDoc()" icon="fa-solid fa-plus" type="primary" aria-label="Thêm mới" />
-                <Button @click="getData?.()" icon="fa-solid fa-repeat" type="ghost" aria-label="Tải lại" />
-            </div>
+            <Button type="primary" icon="fa-solid fa-plus" text="Thêm học vấn" @click="showModalCreateDoc()" />
         </Heading>
 
-        <div v-if="dataList.length" class="clearfix">
-            <p class="text-sm opacity-50 mb-2">Kéo-thả để sắp xếp thứ tự hiển thị (chỉ lưu trên trình duyệt này).</p>
-            <ListTransition>
+        <div v-if="dataList.length">
+            <p class="mb-2 mt-0 text-xs text-fg-3">Kéo thả để sắp xếp. Thứ tự chỉ lưu trên trình duyệt này.</p>
+            <ListTransition class="m-0 list-none divide-y divide-line rounded-md border border-line bg-surface p-0">
                 <li
                     v-for="edu in orderedItems"
                     :key="edu._id"
-                    class="draggable-item flex items-start gap-2"
+                    class="draggable-item flex items-start gap-1 ps-2"
                     draggable="true"
                     @dragstart="onDragStart(edu._id)"
                     @dragover.prevent
                     @drop="onDrop(edu._id)"
                 >
-                    <span class="drag-handle"><FontAwesomeIcon icon="fa-solid fa-grip-vertical" /></span>
-                    <div class="grow">
+                    <span class="drag-handle" aria-hidden="true"><FontAwesomeIcon icon="fa-solid fa-grip-vertical" /></span>
+                    <div class="min-w-0 grow">
                         <EducationItem
                             :model-value="edu"
                             icon="fa-graduation-cap"
@@ -163,12 +159,18 @@ function showModalDuplicateDoc(doc) {
                 </li>
             </ListTransition>
         </div>
-        <NoData v-else />
+        <LoadingGate v-else>
+            <div class="rounded-md border border-line bg-surface">
+                <NoData title="Chưa có học vấn nào" description="Thêm trường học để nhà tuyển dụng thấy nền tảng của bạn.">
+                    <Button icon="fa-solid fa-plus" text="Thêm học vấn" @click="showModalCreateDoc()" />
+                </NoData>
+            </div>
+        </LoadingGate>
     </div>
 
     <Modal
         ref="refModal"
-        :title="isDuplicating ? `Nhân bản: ${document.school}` : document._id ? `Chỉnh sửa: ${document.school}` : 'Thêm mới Học vấn'"
+        :title="isDuplicating ? `Nhân bản: ${document.school}` : document._id ? `Chỉnh sửa: ${document.school}` : 'Thêm học vấn'"
         is-hidden-footer
     >
         <div class="block-container">
@@ -177,11 +179,11 @@ function showModalDuplicateDoc(doc) {
                 :fields="formFields"
                 :document="document"
                 :submit-fn="handleUpdate"
-                :submit-text="isDuplicating ? 'Nhân bản' : document._id ? 'Cập nhật' : 'Thêm mới'"
-                buttonPosition="end"
+                submit-text="Lưu"
+                button-position="end"
             >
-                <template #button>
-                    <button type="button" class="btn btn-secondary mx-[1rem]" data-bs-dismiss="modal">Đóng</button>
+                <template #cancel>
+                    <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
                 </template>
             </VeeForm>
         </div>
@@ -196,7 +198,10 @@ function showModalDuplicateDoc(doc) {
     cursor: grabbing;
 }
 .drag-handle {
-    padding-top: 1.25rem;
-    opacity: 0.4;
+    @apply flex h-14 w-6 shrink-0 items-center justify-center text-fg-3;
+}
+/* the handle already gives the row its left inset */
+.draggable-item :deep(.item) {
+    @apply ps-0;
 }
 </style>

@@ -93,6 +93,7 @@ const MODEL: modelItem[] = [
         label: 'Số năm kinh nghiệm',
         type: 'number',
         placeholder: 'Vui lòng nhập Số năm kinh nghiệm',
+        inputmode: 'numeric',
         valid: yup =>
             yup
                 .number('Vui lòng nhập vào số')

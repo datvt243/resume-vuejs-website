@@ -25,7 +25,7 @@ import { useDocument } from '@/composables/useDocument'
 
 import model from '@/models/profile.model'
 
-const { profiles: dataList, removeRecordById, addRecordToList, getData } = useCandidate({
+const { profiles: dataList, removeRecordById, addRecordToList } = useCandidate({
     field: 'profiles',
     collection: 'profile',
 })
@@ -154,21 +154,13 @@ function showModalDuplicateDoc(doc) {
 </script>
 
 <template>
-    <div class="mb-[1.5rem]">
-        <Heading :level="1" text="Profile CV">
-            <div class="btn-group">
-                <Button @click="showModalCreateDoc()" icon="fa-solid fa-plus" type="primary" aria-label="Thêm mới" />
-                <Button @click="getData?.()" icon="fa-solid fa-repeat" type="ghost" aria-label="Tải lại" />
-            </div>
+    <div>
+        <Heading :level="1" text="Profile CV" description="Mỗi profile chọn một phần dữ liệu để tạo CV cho từng vị trí ứng tuyển.">
+          <Button type="primary" icon="fa-solid fa-plus" text="Thêm profile" @click="showModalCreateDoc()" />
         </Heading>
-        <p class="text-sm opacity-75 mb-[1rem]">
-            Mỗi profile là một tập con dữ liệu (không nhân bản dữ liệu gốc) — dùng để tạo CV theo từng vị trí ứng tuyển
-            (VD: "CV Frontend", "CV Backend"). Chọn profile đang dùng cho link công khai/xuất PDF ở trang "Thông tin cơ
-            bản" hoặc "Xem trước / Xuất PDF".
-        </p>
 
-        <div v-if="dataList.length" class="clearfix">
-            <ListTransition>
+        <div v-if="dataList.length">
+            <ListTransition class="m-0 list-none divide-y divide-line rounded-md border border-line bg-surface p-0">
                 <li v-for="item in dataList" :key="item._id">
                     <ItemTemplate :model-value="{
                         title: item.name,
@@ -176,35 +168,23 @@ function showModalDuplicateDoc(doc) {
                         date: () => '',
                         description: summarize(item),
                     }" icon="fa-layer-group">
-                        <div class="btn-group">
-                            <a class="btn btn-sm btn-outline-danger icon" href="javascript:void(0)" @click="
-                                () => {
-                                    deleteDoc({ ...item }, 'name', res => {
-                                        const { data } = res
-                                        removeRecordById(data._id)
-                                    })
-                                }
-                            ">
-                                <FontAwesomeIcon icon="fa-solid fa-trash"></FontAwesomeIcon>
-                            </a>
-                            <a class="btn btn-sm btn-outline-warning icon" href="javascript:void(0)"
-                                @click="showModalEditDoc({ ...item })">
-                                <FontAwesomeIcon icon="fa-solid fa-square-pen"></FontAwesomeIcon>
-                            </a>
-                            <a class="btn btn-sm btn-outline-primary icon" href="javascript:void(0)"
-                                @click="showModalDuplicateDoc({ ...item })">
-                                <FontAwesomeIcon icon="fa-solid fa-copy"></FontAwesomeIcon>
-                            </a>
-                        </div>
+                        <ItemActions :label="item.name" @edit="showModalEditDoc({ ...item })" @duplicate="showModalDuplicateDoc({ ...item })"
+                @delete="deleteDoc({ ...item }, 'name', res => removeRecordById(res.data._id))" />
                     </ItemTemplate>
                 </li>
             </ListTransition>
         </div>
-        <NoData v-else />
+        <LoadingGate v-else>
+            <div class="rounded-md border border-line bg-surface">
+                <NoData title="Chưa có profile nào" description="Tạo profile để có CV riêng cho từng vị trí ứng tuyển.">
+                    <Button icon="fa-solid fa-plus" text="Thêm profile" @click="showModalCreateDoc()" />
+                </NoData>
+            </div>
+        </LoadingGate>
     </div>
 
     <Modal ref="refModal" size="modal-xl"
-        :title="isDuplicating ? `Nhân bản: ${document.name}` : document._id ? `Chỉnh sửa: ${document.name}` : 'Thêm mới profile'"
+        :title="isDuplicating ? `Nhân bản: ${document.name}` : document._id ? `Chỉnh sửa: ${document.name}` : 'Thêm profile'"
         is-hidden-footer>
         <div class="block-container">
             <!--
@@ -216,31 +196,33 @@ function showModalDuplicateDoc(doc) {
                 `name`; `handleUpdate` (VeeForm's submit-fn) merges both
                 before calling updateDoc.
             -->
-            <div v-for="s in sections" :key="s.key" class="profile-section mb-[1rem]">
-                <div class="flex items-center justify-between mb-[0.5rem]">
-                    <h6 class="text-uppercase opacity-75 m-0">{{ s.label }} ({{ selectedIds[s.key].length }}/{{ s.items.length }})</h6>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-outline-secondary" @click="selectAll(s.key)">Chọn tất cả</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" @click="clearAll(s.key)">Bỏ chọn</button>
+            <div v-for="s in sections" :key="s.key" class="profile-section mb-4">
+                <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+                    <p class="m-0 text-sm font-medium text-fg">
+                        {{ s.label }} <span class="tabular-nums text-fg-3">{{ selectedIds[s.key].length }}/{{ s.items.length }}</span>
+                    </p>
+                    <div class="flex gap-1">
+                        <Button text="Chọn tất cả" type="ghost" size="sm" @click="selectAll(s.key)" />
+                        <Button text="Bỏ chọn" type="ghost" size="sm" @click="clearAll(s.key)" />
                     </div>
                 </div>
-                <NoData v-if="!s.items.length" />
+                <p v-if="!s.items.length" class="m-0 text-sm text-fg-3">Chưa có mục nào.</p>
                 <div v-else class="profile-checklist">
                     <label v-for="opt in s.items" :key="opt._id" class="form-check profile-checklist-item">
                         <input class="form-check-input" type="checkbox" :checked="selectedIds[s.key].includes(opt._id)"
                             @change="toggleId(s.key, opt._id)" />
                         <span class="form-check-label">
                             {{ s.title(opt) }}
-                            <span v-if="s.subTitle(opt)" class="opacity-60"> — {{ s.subTitle(opt) }}</span>
+                            <span v-if="s.subTitle(opt)" class="text-fg-3"> — {{ s.subTitle(opt) }}</span>
                         </span>
                     </label>
                 </div>
             </div>
 
             <VeeForm ref="refVeeForm" :fields="formFields" :document="document" :submit-fn="handleUpdate"
-                :submit-text="isDuplicating ? 'Nhân bản' : document._id ? 'Cập nhật' : 'Thêm mới'" buttonPosition="end">
-                <template #button>
-                    <button type="button" class="btn btn-secondary mx-[1rem]" data-bs-dismiss="modal">Đóng</button>
+                submit-text="Lưu" button-position="end">
+                <template #cancel>
+                    <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
                 </template>
             </VeeForm>
         </div>

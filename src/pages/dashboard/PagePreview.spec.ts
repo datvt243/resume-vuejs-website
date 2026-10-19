@@ -24,6 +24,7 @@ vi.mock('@/composables/useCandidate', () => ({
 }))
 
 const stubs = {
+    SegmentedControl: true,
     Heading: { props: ['text'], template: '<div><h2>{{ text }}</h2><slot /></div>' },
     Button: { props: ['text'], emits: ['click'], template: '<button class="stub-btn" @click="$emit(\'click\')">{{ text }}</button>' },
     CvResumeLayout: true,

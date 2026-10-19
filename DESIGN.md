@@ -270,6 +270,7 @@ Read top to bottom: **status → numbers → trend → to-dos**.
 - Stripe-style sections: at `lg` and up, use a `grid lg:grid-cols-3 gap-6`. Column 1 holds the section title plus a one-line description; columns 2–3 hold a card with the fields.
 - Fields use two columns at `md` and up only when they're related (first name and last name). Otherwise use one column.
 - A sticky action bar at the bottom of the card holds Cancel (ghost) and Save (primary). Save stays enabled until the request starts, then shows a spinner inside the button.
+- Build each section with the global `<FormSection title description>` (`:card="false"` when the content is already a card, such as `TableDefault`). `VeeForm` renders the action bar; pass `cancelable` for "Hủy".
 
 ### 4.4 List / CRUD (Học vấn, Kinh nghiệm, Dự án, …), max width `max-w-5xl`
 - Page header with the primary action "Thêm …" (for example "Thêm học vấn").

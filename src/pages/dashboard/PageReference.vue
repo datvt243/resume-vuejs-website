@@ -16,7 +16,7 @@ import { useDocument } from '@/composables/useDocument' */
 
 import model from '@/models/reference.model.ts'
 /** */
-const { references: dataList, removeRecordById, addRecordToList, getData } = useCandidate({ field: 'references' })
+const { references: dataList, removeRecordById, addRecordToList } = useCandidate({ field: 'references' })
 const colHidden = ['_id']
 
 /**
@@ -84,52 +84,39 @@ function showModalDuplicateDoc(doc) {
 </script>
 
 <template>
-    <div class="mb-[1.5rem]">
+    <div>
         <Heading :level="1" text="Người tham khảo">
-            <div class="btn-group">
-                <Button @click="showModalCreateDoc()" icon="fa-solid fa-plus" type="primary" aria-label="Thêm mới" />
-                <Button @click="getData?.()" icon="fa-solid fa-repeat" type="ghost" aria-label="Tải lại" />
-            </div>
+            <Button type="primary" icon="fa-solid fa-plus" text="Thêm người tham khảo" @click="showModalCreateDoc()" />
         </Heading>
 
         <!--  -->
-        <TableDefault :model-value="dataList" :settings="formFields" :cols-hidden="colHidden" col-control="fullName">
+        <TableDefault
+            v-if="dataList.length"
+            :model-value="dataList"
+            :settings="formFields"
+            :cols-hidden="colHidden"
+            col-control="fullName"
+            height-auto
+        >
             <template #control="{ doc }">
-                <Dropdown text="" variant="outline-success border-0" split>
-                    <li>
-                        <a class="dropdown-item" href="#" @click="showModalEditDoc({ ...doc })">
-                            <span class="text-warning pe-2"><FontAwesomeIcon icon="fa-solid fa-square-pen" /></span>
-                            <span>Sửa</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="#" @click="showModalDuplicateDoc({ ...doc })">
-                            <span class="text-primary pe-2"><FontAwesomeIcon icon="fa-solid fa-copy" /></span>
-                            <span>Nhân bản</span>
-                        </a>
-                    </li>
-                    <li><hr class="dropdown-divider" /></li>
-                    <li>
-                        <a
-                            class="dropdown-item"
-                            href="#"
-                            :class="{ disabled: !doc._id }"
-                            @click="
-                                () => {
-                                    deleteDoc({ ...doc }, 'fullName', res => {
-                                        const { data } = res
-                                        removeRecordById(data._id)
-                                    })
-                                }
-                            "
-                        >
-                            <span class="text-danger pe-2"><FontAwesomeIcon icon="fa-solid fa-trash" /></span>
-                            <span>Xoá</span>
-                        </a>
-                    </li>
-                </Dropdown>
+                <div class="flex items-center gap-1">
+                    <ItemActions
+                        :label="doc.fullName"
+                        :delete-disabled="!doc._id"
+                        @edit="showModalEditDoc({ ...doc })"
+                        @duplicate="showModalDuplicateDoc({ ...doc })"
+                        @delete="deleteDoc({ ...doc }, 'fullName', res => removeRecordById(res.data._id))"
+                    />
+                </div>
             </template>
         </TableDefault>
+        <LoadingGate v-else>
+            <div class="rounded-md border border-line bg-surface">
+                <NoData title="Chưa có người tham khảo nào" description="Thêm người có thể xác nhận kinh nghiệm của bạn.">
+                    <Button icon="fa-solid fa-plus" text="Thêm người tham khảo" @click="showModalCreateDoc()" />
+                </NoData>
+            </div>
+        </LoadingGate>
     </div>
 
     <Modal
@@ -139,7 +126,7 @@ function showModalDuplicateDoc(doc) {
                 ? `Nhân bản: ${document.fullName}`
                 : document._id
                   ? `Chỉnh sửa: ${document.fullName}`
-                  : 'Thêm mới Người tham khảo'
+                  : 'Thêm người tham khảo'
         "
         is-hidden-footer
     >
@@ -149,11 +136,11 @@ function showModalDuplicateDoc(doc) {
                 :fields="formFields"
                 :document="document"
                 :submit-fn="handleUpdate"
-                :submit-text="isDuplicating ? 'Nhân bản' : document._id ? 'Cập nhật' : 'Thêm mới'"
-                buttonPosition="end"
+                submit-text="Lưu"
+                button-position="end"
             >
-                <template #button>
-                    <button type="button" class="btn btn-secondary mx-[1rem]" data-bs-dismiss="modal">Đóng</button>
+                <template #cancel>
+                    <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
                 </template>
             </VeeForm>
         </div>

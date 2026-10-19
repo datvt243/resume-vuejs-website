@@ -5,20 +5,19 @@
  */
 
 import { h } from 'vue'
-import { formatDate } from '@/utilities/index.ts'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-const ConvertToDate = (props) => {
-    const { modelValue: value } = props
-    return h('span', [
-        h('span', { class: 'pe-2 opacity-50' }, h(FontAwesomeIcon, { icon: 'fa-solid fa-calendar' })),
-        h('span', { class: '' }, formatDate(value)),
-    ])
+const dateFormat = new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
+
+const ConvertToDate = props => {
+    const d = props.modelValue ? new Date(props.modelValue) : null
+    const valid = d && !Number.isNaN(d.getTime())
+    return h('span', { class: 'tabular-nums' }, valid ? dateFormat.format(d) : '—')
 }
 
 ConvertToDate.slots = ['default']
 ConvertToDate.props = {
-    modelValue: { type: [Number, null], default: null },
+    // ms timestamps (FrmDatePicker) or ISO strings (createdAt-style fields)
+    modelValue: { type: [Number, String, null], default: null },
 }
 
 export default ConvertToDate

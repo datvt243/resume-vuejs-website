@@ -51,6 +51,9 @@ import {
     faFolderOpen,
     faCircleInfo,
     faTriangleExclamation,
+    faSort,
+    faSortUp,
+    faSortDown,
 } from '@fortawesome/free-solid-svg-icons'
 
 export default {
@@ -103,6 +106,9 @@ export default {
             faFolderOpen,
             faCircleInfo,
             faTriangleExclamation,
+            faSort,
+            faSortUp,
+            faSortDown,
         )
 
         app.component('FontAwesomeIcon', FontAwesomeIcon)

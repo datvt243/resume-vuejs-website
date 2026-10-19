@@ -12,7 +12,10 @@ const ConvertToBoolean = (props) => {
     return h(
         'span',
         { class: value ? 'text-success' : 'text-danger' },
-        value ? h(FontAwesomeIcon, { icon: 'fa-solid fa-check' }) : h(FontAwesomeIcon, { icon: 'fa-solid fa-xmark' }),
+        [
+            h(FontAwesomeIcon, { icon: value ? 'fa-solid fa-check' : 'fa-solid fa-xmark', 'aria-hidden': 'true' }),
+            h('span', { class: 'sr-only' }, value ? 'Có' : 'Không'),
+        ],
     )
 }
 

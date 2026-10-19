@@ -82,3 +82,4 @@
 2026-10-19T10:09:37Z role=verifier outcome=SEAL node=fix-header-user-menu-style-prop rerun=none hub_bytes_before=183018 hub_bytes_after=185171
 2026-10-19T10:26:34Z role=verifier outcome=SEAL node=issue-219-home-overview rerun=none hub_bytes_before=185347 hub_bytes_after=186302
 2026-10-19T10:31:21Z role=verifier outcome=SEAL node=issue-220-visits-analytics rerun=none hub_bytes_before=186478 hub_bytes_after=187442
+2026-10-19T14:43:43Z role=verifier outcome=SEAL node=issue-221-table-default rerun=none hub_bytes_before=185601 hub_bytes_after=188952

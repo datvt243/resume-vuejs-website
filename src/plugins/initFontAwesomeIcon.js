@@ -48,6 +48,9 @@ import {
     faFileImport,
     faGear,
     faBars,
+    faFolderOpen,
+    faCircleInfo,
+    faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons'
 
 export default {
@@ -97,6 +100,9 @@ export default {
             faFileImport,
             faGear,
             faBars,
+            faFolderOpen,
+            faCircleInfo,
+            faTriangleExclamation,
         )
 
         app.component('FontAwesomeIcon', FontAwesomeIcon)

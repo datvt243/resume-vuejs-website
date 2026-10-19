@@ -35,7 +35,7 @@ async function _handleForgotPassword(values) {
 <template>
     <div class="forgot-password-page flex items-center justify-center">
         <div class="auth-card">
-            <Heading text="Quên mật khẩu" />
+            <Heading :level="1" text="Quên mật khẩu" />
             <p class="text-sm opacity-75">
                 Nhập email đã đăng ký, hệ thống sẽ tạo một liên kết đặt lại mật khẩu.
             </p>

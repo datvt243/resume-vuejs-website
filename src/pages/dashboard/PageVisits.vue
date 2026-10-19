@@ -57,7 +57,7 @@ const settings = [
 
 <template>
     <div class="mb-[1.5rem]">
-        <Heading text="Lượt truy cập hồ sơ" />
+        <Heading :level="1" text="Lượt truy cập hồ sơ" />
         <p class="text-sm opacity-75">
             Mỗi lần trang hồ sơ công khai của bạn được xem (qua link chia sẻ) sẽ ghi một dòng ở đây — thời gian, vị trí
             (suy ra từ IP) và địa chỉ IP.

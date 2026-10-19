@@ -42,12 +42,12 @@ async function removeTag(_tag, index) {
 
 <template>
     <div class="clearfix">
-        <div class="flex items-center mb-[1rem]">
+        <div class="flex items-center mb-4">
             <p class="h6 m-0">{{ props.title }}</p>
-            <div class="ps-[1.5rem] m-0">
+            <div class="ps-6 m-0">
                 <div class="input-group input-group-sm mb-0">
                     <input type="text" class="form-control" placeholder="Thêm mới" v-model="tag" />
-                    <button class="btn btn-outline-success" type="button" @click="addTag()">
+                    <button class="btn btn-outline-success" type="button" aria-label="Thêm thẻ" @click="addTag()">
                         <FontAwesomeIcon icon="fa-solid fa-plus" />
                     </button>
                 </div>
@@ -55,11 +55,12 @@ async function removeTag(_tag, index) {
         </div>
         <ul class="tag-list">
             <li v-for="(tag, i) in tags" :key="`tag${i}`">
-                <span class="badge text-bg-secondary">
+                <span class="badge text-bg-secondary inline-flex items-center gap-1">
                     {{ tag }}
-                    <span class="text-danger pointer" @click="removeTag(tag, i)"
-                        ><FontAwesomeIcon icon="fa-solid fa-times"
-                    /></span>
+                    <button type="button" class="inline-flex items-center rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                        :aria-label="`Xóa thẻ ${tag}`" @click="removeTag(tag, i)">
+                        <FontAwesomeIcon icon="fa-solid fa-times" />
+                    </button>
                 </span>
             </li>
         </ul>

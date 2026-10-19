@@ -35,6 +35,14 @@ describe('Dropdown', () => {
         document.body.innerHTML = ''
     })
 
+    it('builds the button classes from the `variant` prop (split: text button + caret)', () => {
+        const wrapper = mountDropdown({ text: 'Menu', variant: 'outline-success border-0', split: true })
+        const [main, caret] = wrapper.findAll('.dropdown > button')
+        expect(main.classes()).toEqual(expect.arrayContaining(['btn', 'btn-outline-success', 'border-0']))
+        expect(caret.classes()).toEqual(expect.arrayContaining(['dropdown-toggle-split', 'btn-outline-success', 'border-0']))
+        expect(wrapper.find('.dropdown').attributes('style')).toBeUndefined()
+    })
+
     it('starts closed', () => {
         const wrapper = mountDropdown()
         expect(wrapper.find('.dropdown').classes()).not.toContain('show')

@@ -2,10 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import Toasts from './Toasts.vue'
 
-// Vue-native rewrite (node `tailwindcss-dropdown-toast-navbar`) dropped
-// Bootstrap's `Toast` JS class (which handled show/hide + the 5s
-// autohide timer internally) — these are the first real tests this
-// component has ever had.
+// DESIGN.md §5.9: auto-dismiss after 4s, polite live region, real close button.
 
 function mountToasts(props: Record<string, unknown> = {}) {
     return mount(Toasts, {
@@ -36,24 +33,24 @@ describe('Toasts', () => {
         expect(wrapper.find('.toast-body').text()).toBe('hello')
     })
 
-    it('auto-hides after 5000ms (Bootstrap Toast default delay)', async () => {
+    it('auto-hides after 4000ms', async () => {
         const wrapper = mountToasts()
         ;(wrapper.vm as unknown as { show: () => void }).show()
         await wrapper.vm.$nextTick()
         expect(wrapper.find('.toast').classes()).toContain('show')
 
-        vi.advanceTimersByTime(5000)
+        vi.advanceTimersByTime(4000)
         await wrapper.vm.$nextTick()
 
         expect(wrapper.find('.toast').classes()).not.toContain('show')
     })
 
-    it('does not hide before the 5000ms delay elapses', async () => {
+    it('does not hide before the 4000ms delay elapses', async () => {
         const wrapper = mountToasts()
         ;(wrapper.vm as unknown as { show: () => void }).show()
         await wrapper.vm.$nextTick()
 
-        vi.advanceTimersByTime(4999)
+        vi.advanceTimersByTime(3999)
         await wrapper.vm.$nextTick()
 
         expect(wrapper.find('.toast').classes()).toContain('show')
@@ -65,15 +62,15 @@ describe('Toasts', () => {
         vm.show()
         await wrapper.vm.$nextTick()
 
-        vi.advanceTimersByTime(3000) // 3s into the first 5s window
+        vi.advanceTimersByTime(3000) // 3s into the first 4s window
         vm.show() // new message arrives — should restart the countdown
         await wrapper.vm.$nextTick()
 
-        vi.advanceTimersByTime(4000) // 7s total elapsed, but only 4s since the reset
+        vi.advanceTimersByTime(3000) // 6s total elapsed, but only 3s since the reset
         await wrapper.vm.$nextTick()
         expect(wrapper.find('.toast').classes()).toContain('show') // would be hidden already if the timer hadn't reset
 
-        vi.advanceTimersByTime(1000) // now 5s since the reset
+        vi.advanceTimersByTime(1000) // now 4s since the reset
         await wrapper.vm.$nextTick()
         expect(wrapper.find('.toast').classes()).not.toContain('show')
     })
@@ -84,9 +81,16 @@ describe('Toasts', () => {
         await wrapper.vm.$nextTick()
         expect(wrapper.find('.toast').classes()).toContain('show')
 
-        await wrapper.find('[data-bs-dismiss="toast"]').trigger('click')
+        await wrapper.find('button[aria-label="Đóng thông báo"]').trigger('click')
 
         expect(wrapper.find('.toast').classes()).not.toContain('show')
+    })
+
+    it('announces politely from a live region that stays mounted', () => {
+        const wrapper = mountToasts()
+        const region = wrapper.find('[aria-live]')
+        expect(region.attributes('aria-live')).toBe('polite')
+        expect(region.attributes('role')).toBe('status')
     })
 
     it('unmounting while visible does not throw (clears its pending timer)', async () => {

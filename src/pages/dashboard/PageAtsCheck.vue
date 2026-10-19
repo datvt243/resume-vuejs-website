@@ -63,8 +63,8 @@ async function handleCheck() {
 
 <template>
     <div class="mb-[1.5rem]">
-        <Heading text="Kiểm tra CV theo ATS">
-            <Button icon="fa-solid fa-gauge" type="outline-success" size="sm" text="Kiểm tra" @click="handleCheck" />
+        <Heading :level="1" text="Kiểm tra CV theo ATS">
+            <Button icon="fa-solid fa-gauge" type="primary" text="Kiểm tra" @click="handleCheck" />
         </Heading>
         <p class="text-sm opacity-75">
             ATS (Applicant Tracking System) là hệ thống nhiều công ty dùng để tự động đọc và lọc CV. Server sẽ tạo CV từ hồ sơ hiện tại, đọc lại

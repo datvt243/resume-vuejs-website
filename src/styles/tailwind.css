@@ -1282,53 +1282,13 @@
         -webkit-overflow-scrolling: touch;
     }
 
-    /* .toast / .toast-container / .toast-header / .toast-body —
-       confirmed sole consumer: `Toasts.vue` (JS-rewritten in node
-       `tailwindcss-dropdown-toast-navbar`, CSS never rebuilt until now).
-       `.toast-container`'s own real `position: absolute` is overridden
-       today (and will remain overridden after removal) by the SAME
-       element's own `fixed`/`top-0`/`end-0` Tailwind utility classes,
-       already present since an earlier node — reproduced faithfully
-       anyway for fidelity on the properties that AREN'T overridden
-       (`z-index`, `width: max-content`, `pointer-events: none`); the
-       `position` property specifically never actually takes effect
-       either before or after this change, not a regression introduced
-       here. `.toast:not(.show){display:none}` intentionally omitted —
-       `Toasts.vue` already drives that via its own inline `:style`
-       binding (`display: visible ? 'block' : 'none'`), same pattern as
-       `Modal.vue`. */
-    .toast {
-        width: 350px;
-        max-width: 100%;
-        font-size: 0.875rem;
-        color: var(--bs-body-color);
-        pointer-events: auto;
-        background-color: var(--bs-body-bg);
-        background-clip: padding-box;
-        border: var(--bs-border-width) solid var(--bs-border-color-translucent);
-        border-radius: var(--bs-border-radius);
-    }
+    /* Toasts.vue: above the modal (1055) and its backdrop (1050); only the toast itself takes clicks */
     .toast-container {
-        position: absolute;
         z-index: 1090;
-        width: max-content;
-        max-width: 100%;
         pointer-events: none;
     }
-    .toast-header {
-        display: flex;
-        align-items: center;
-        padding: 0.5rem 0.75rem;
-        color: var(--bs-secondary-color);
-        background-color: var(--bs-body-bg);
-        background-clip: padding-box;
-        border-bottom: var(--bs-border-width) solid var(--bs-border-color-translucent);
-        border-top-left-radius: calc(var(--bs-border-radius) - var(--bs-border-width));
-        border-top-right-radius: calc(var(--bs-border-radius) - var(--bs-border-width));
-    }
-    .toast-body {
-        padding: 0.75rem;
-        word-wrap: break-word;
+    .toast {
+        pointer-events: auto;
     }
 
     /* .modal / .modal-dialog / .modal-dialog-scrollable / .modal-content
@@ -1403,19 +1363,16 @@
         display: flex;
         flex-direction: column;
         width: 100%;
-        color: var(--bs-body-color);
         pointer-events: auto;
-        background-color: var(--bs-body-bg);
         background-clip: padding-box;
-        border: var(--bs-border-width) solid var(--bs-border-color-translucent);
-        border-radius: var(--bs-border-radius-sm);
         outline: 0;
+        @apply rounded-lg border border-line bg-surface text-fg shadow-float;
     }
     .modal-header {
         display: flex;
         flex-shrink: 0;
         align-items: center;
-        padding: 1rem;
+        padding: 0.75rem 1rem;
         border-bottom: var(--bs-border-width) solid var(--bs-border-color);
     }
     .modal-title {
@@ -1464,22 +1421,6 @@
        never a real Bootstrap token to begin with.
        ========================================================== */
 
-    /* `.heading`'s green color/border was already fully live via this
-       exact rule (loaded from `bootstrap.scss`, unlayered, `!important`
-       on border-color) for the entire session — meaning node
-       `tailwindcss-remaining-utilities-sweep`'s `border-[var(--bs-border-
-       color)]` fix on `Heading.vue`'s root div has been silently
-       overridden by THIS rule the whole time, not a regression
-       introduced now. Preserving the actual current visual (green
-       border) rather than the gray `--bs-border-color` that node 10
-       intended but which never actually took effect — changing it now
-       would be the real regression. `!important` kept for the same
-       reason: removing it would let the arbitrary-value utility class
-       win instead, changing the live appearance. */
-    .heading {
-        color: #00d095;
-        border-color: #00d095 !important;
-    }
     .pointer {
         cursor: pointer;
     }
@@ -1498,12 +1439,6 @@
     }
     .list > li {
         margin-bottom: 1.5rem;
-    }
-    /* Overrides the base `.modal-title` rule above — must stay AFTER it
-       in source order (same specificity, last declared wins). */
-    .modal-title {
-        color: #00d095;
-        text-transform: uppercase;
     }
     .modal-footer .btn {
         min-width: 100px;

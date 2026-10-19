@@ -41,6 +41,13 @@ import {
     faCamera,
     faArrowUpRightFromSquare,
     faLayerGroup,
+    faChartLine,
+    faIdCard,
+    faAddressBook,
+    faPaperPlane,
+    faFileImport,
+    faGear,
+    faBars,
 } from '@fortawesome/free-solid-svg-icons'
 
 export default {
@@ -83,6 +90,13 @@ export default {
             faCamera,
             faArrowUpRightFromSquare,
             faLayerGroup,
+            faChartLine,
+            faIdCard,
+            faAddressBook,
+            faPaperPlane,
+            faFileImport,
+            faGear,
+            faBars,
         )
 
         app.component('FontAwesomeIcon', FontAwesomeIcon)

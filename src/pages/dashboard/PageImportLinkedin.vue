@@ -162,11 +162,11 @@ async function handleSaveExperience(values) {
 
 <template>
     <div class="mb-[1.5rem]">
-        <Heading text="Nhập CV (LinkedIn / PDF / JSON Resume)">
+        <Heading :level="1" text="Nhập CV (LinkedIn / PDF / JSON Resume)">
             <div class="flex flex-wrap gap-2">
-                <Button icon="fa-solid fa-paperclip" type="outline-success" size="sm" text="Chọn file export (.zip)" @click="triggerFilePicker" />
-                <Button icon="fa-solid fa-paperclip" type="outline-success" size="sm" text="Chọn file PDF CV" @click="triggerPdfPicker" />
-                <Button icon="fa-solid fa-paperclip" type="outline-success" size="sm" text="Chọn file JSON Resume" @click="triggerJsonPicker" />
+                <Button icon="fa-solid fa-paperclip" text="Chọn file export (.zip)" @click="triggerFilePicker" />
+                <Button icon="fa-solid fa-paperclip" text="Chọn file PDF CV" @click="triggerPdfPicker" />
+                <Button icon="fa-solid fa-paperclip" text="Chọn file JSON Resume" @click="triggerJsonPicker" />
             </div>
         </Heading>
         <input ref="fileInput" type="file" accept=".zip" class="hidden" @change="handleSelectFile($event, 'linkedin')" />
@@ -199,7 +199,7 @@ async function handleSaveExperience(values) {
                             <strong>{{ item.school || '(Không rõ tên trường)' }}</strong>
                             <span v-if="item.major" class="opacity-75"> — {{ item.major }}</span>
                         </div>
-                        <Button v-if="!item._imported" icon="fa-solid fa-plus" type="outline-success" size="sm" text="Thêm" @click="openEducationModal(item)" />
+                        <Button v-if="!item._imported" icon="fa-solid fa-plus" text="Thêm" @click="openEducationModal(item)" />
                         <span v-else class="text-success"><FontAwesomeIcon icon="fa-solid fa-circle-check" /> Đã thêm</span>
                     </li>
                 </ul>
@@ -214,7 +214,7 @@ async function handleSaveExperience(values) {
                             <strong>{{ item.company || '(Không rõ tên công ty)' }}</strong>
                             <span v-if="item.position" class="opacity-75"> — {{ item.position }}</span>
                         </div>
-                        <Button v-if="!item._imported" icon="fa-solid fa-plus" type="outline-success" size="sm" text="Thêm" @click="openExperienceModal(item)" />
+                        <Button v-if="!item._imported" icon="fa-solid fa-plus" text="Thêm" @click="openExperienceModal(item)" />
                         <span v-else class="text-success"><FontAwesomeIcon icon="fa-solid fa-circle-check" /> Đã thêm</span>
                     </li>
                 </ul>

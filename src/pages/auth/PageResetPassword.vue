@@ -58,7 +58,7 @@ async function _handleResetPassword(values) {
 <template>
     <div class="reset-password-page flex items-center justify-center">
         <div class="auth-card">
-            <Heading text="Đặt lại mật khẩu" />
+            <Heading :level="1" text="Đặt lại mật khẩu" />
             <p v-if="!route.query.token" class="text-sm text-danger">
                 Thiếu token đặt lại mật khẩu — vui lòng dùng đúng liên kết đã nhận.
             </p>

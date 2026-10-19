@@ -133,8 +133,6 @@ module.exports = {
         'table-responsive',
         'toast',
         'toast-container',
-        'toast-header',
-        'toast-body',
         'modal',
         'modal-dialog',
         'modal-dialog-scrollable',
@@ -146,7 +144,6 @@ module.exports = {
         'modal-footer',
         'modal-backdrop',
         // Genuine custom app CSS, extracted from bootstrap.scss's tail
-        'heading',
         'pointer',
         'footer',
         'item',

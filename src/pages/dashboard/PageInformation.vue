@@ -265,7 +265,7 @@ async function handleUpdateSlug(values) {
                 <span v-else>{{ initials }}</span>
             </div>
             <div class="grow">
-                <Button icon="fa-solid fa-camera" type="outline-secondary" size="sm" text="Chọn ảnh" @click="triggerAvatarPicker" />
+                <Button icon="fa-solid fa-camera" text="Chọn ảnh" @click="triggerAvatarPicker" />
                 <input ref="avatarInput" type="file" accept="image/*" class="hidden" @change="handleSelectAvatar" />
                 <p v-if="avatarFileName" class="text-sm opacity-75 mt-2 mb-0">Đã chọn: {{ avatarFileName }}</p>
                 <p class="text-sm opacity-50 mt-2 mb-0">

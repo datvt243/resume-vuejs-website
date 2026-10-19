@@ -223,3 +223,46 @@ describe('Modal unsaved-changes guard', () => {
         expect(isOpen(wrapper)).toBe(false)
     })
 })
+
+// `attachTo` trips over this @vue/test-utils + Vue 3.4 pair; focus() needs the
+// nodes in the document, so move the mount container in by hand.
+function mountAttached() {
+    const wrapper = mountModalWithForm()
+    document.body.appendChild(wrapper.find('.modal').element.parentElement as HTMLElement)
+    return wrapper
+}
+
+describe('Modal focus management', () => {
+    it('returns focus to the element that opened it', async () => {
+        const trigger = document.createElement('button')
+        document.body.appendChild(trigger)
+        trigger.focus()
+
+        const wrapper = mountAttached()
+        await open(wrapper)
+        expect(document.activeElement).not.toBe(trigger)
+
+        await wrapper.find('[data-bs-dismiss="modal"]').trigger('click')
+        await flushPromises()
+
+        expect(document.activeElement).toBe(trigger)
+        trigger.remove()
+    })
+
+    it('wraps Tab from the last focusable element back to the first, and Shift+Tab the other way', async () => {
+        const wrapper = mountAttached()
+        await open(wrapper)
+
+        const close = wrapper.find('[aria-label="Đóng"]').element as HTMLElement
+        const focusables = [...wrapper.element.querySelectorAll('button, input')] as HTMLElement[]
+        const last = focusables[focusables.length - 1]
+
+        last.focus()
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', cancelable: true }))
+        expect(document.activeElement).toBe(close)
+
+        close.focus()
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, cancelable: true }))
+        expect(document.activeElement).toBe(last)
+    })
+})

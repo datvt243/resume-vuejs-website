@@ -177,7 +177,7 @@ const { percent: profileCompletion, missingSections } = useProfileCompletion()
                     <RouterLink to="/dashboard/ats-check" class="text-sm font-semibold">Kiểm tra điểm ATS →</RouterLink>
                 </div>
             </div>
-            <Button icon="fa-solid fa-paperclip" type="outline-secondary" size="sm" text="Đính kèm file mới" @click="triggerFilePicker" />
+            <Button icon="fa-solid fa-paperclip" text="Đính kèm file mới" @click="triggerFilePicker" />
             <input ref="fileInput" type="file" accept="application/pdf" class="hidden" @change="handleSelectFile" />
         </div>
         <p v-if="selectedFileName" class="text-sm opacity-75 mt-2 mb-0">Đã chọn: {{ selectedFileName }}</p>

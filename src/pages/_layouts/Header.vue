@@ -117,7 +117,7 @@ header.sticky.top-0.z-20.flex.h-14.shrink-0.items-center.gap-2.border-b.border-l
             a(:href="_settings.getFile()" target="_blank" :class="secondaryBtn" aria-label="Tải CV")
                 FontAwesomeIcon(icon="fa-solid fa-download")
                 span.hidden(class="md:inline") Tải CV
-            Dropdown.user-menu(:text="mesUser" style="outline-secondary" split is-sm)
+            Dropdown.user-menu(:text="mesUser" variant="outline-secondary" split is-sm)
                 li
                     a.dropdown-item(:href="_settings.getMe()" target="_blank")
                         FontAwesomeIcon.me-2.text-fg-3(icon="fa-solid fa-code")

@@ -89,10 +89,10 @@ onUnmounted(() => document.body.classList.remove('cv-print-mode'))
 
 <template>
     <div class="mb-[1.5rem] no-print flex flex-wrap items-center justify-between gap-[0.75rem]">
-        <Heading text="Xem trước CV">
+        <Heading :level="1" text="Xem trước CV">
             <div class="flex flex-wrap gap-2">
-                <Button text="Xuất PDF / In" icon="fa-solid fa-download" type="outline-success" size="sm" @click="handlePrint()" />
-                <Button text="Xuất JSON Resume" icon="fa-solid fa-download" type="outline-success" size="sm" @click="handleExportJsonResume()" />
+                <Button text="Xuất PDF / In" icon="fa-solid fa-download" type="primary" @click="handlePrint()" />
+                <Button text="Xuất JSON Resume" icon="fa-solid fa-download" @click="handleExportJsonResume()" />
             </div>
         </Heading>
         <div class="flex items-center gap-[0.5rem]">

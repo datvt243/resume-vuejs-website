@@ -77,3 +77,6 @@
 2026-10-18T21:12:21Z role=verifier outcome=SEAL node=issue-214-sidebar-visits rerun=none hub_bytes_before=179436 hub_bytes_after=180022
 2026-10-19T09:47:36Z role=verifier outcome=SEAL node=issue-216-ui-tokens rerun=none hub_bytes_before=181149 hub_bytes_after=181901
 2026-10-19T09:54:31Z role=verifier outcome=SEAL node=issue-217-app-shell rerun=none hub_bytes_before=182077 hub_bytes_after=182842
+2026-10-19T10:07:37Z role=verifier outcome=SEAL node=issue-218-global-components rerun=none hub_bytes_before=183018 hub_bytes_after=184841
+2026-10-19T10:07:37Z role=verifier outcome=REOPEN node=fix-header-user-menu-style-prop rerun=none hub_bytes_before=183018 hub_bytes_after=184841
+2026-10-19T10:09:37Z role=verifier outcome=SEAL node=fix-header-user-menu-style-prop rerun=none hub_bytes_before=183018 hub_bytes_after=185171

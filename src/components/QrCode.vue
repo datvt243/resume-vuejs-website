@@ -51,8 +51,8 @@ async function downloadSvg() {
     <div v-if="value" class="qr-code-block">
         <canvas ref="canvasRef"></canvas>
         <div class="qr-code-actions">
-            <Button icon="fa-solid fa-download" type="outline-secondary" size="sm" text="Tải PNG" @click="downloadPng" />
-            <Button icon="fa-solid fa-download" type="outline-secondary" size="sm" text="Tải SVG" @click="downloadSvg" />
+            <Button icon="fa-solid fa-download" text="Tải PNG" @click="downloadPng" />
+            <Button icon="fa-solid fa-download" text="Tải SVG" @click="downloadSvg" />
         </div>
     </div>
 </template>

@@ -141,9 +141,9 @@ const professionalSkillFields = computed(() => {
 
 <template>
   <div class="block-container mb-[3rem]">
-    <Heading text="Thông tin chung">
+    <Heading :level="1" text="Thông tin chung">
       <div class="btn-group">
-        <Button @click="getData?.()" icon="fa-solid fa-repeat" type="outline-info" size="sm"></Button>
+        <Button @click="getData?.()" icon="fa-solid fa-repeat" type="ghost" aria-label="Tải lại" />
       </div>
     </Heading>
     <VeeForm :fields="formFields" :document="document" :submit-fn="handleUpdate" :submit-text="'Cập nhật'" />

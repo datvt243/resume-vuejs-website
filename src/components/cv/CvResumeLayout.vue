@@ -126,7 +126,7 @@ function certDateRange(item) {
                 <span v-if="data.address"> · {{ data.address }}</span>
                 <span v-if="data.email"> · {{ data.email }}</span>
             </p>
-            <p v-if="data.introduction" class="cv-introduction">{{ text(data.introduction) }}</p>
+            <div v-if="data.introduction" class="cv-introduction" v-html="sanitizeHtml(text(data.introduction))"></div>
         </header>
 
         <section v-if="generalInformation.career || generalInformation.careerGoal" class="cv-section">
@@ -158,7 +158,7 @@ function certDateRange(item) {
                     <span class="cv-item-date">{{ dateRange(edu) }}</span>
                 </div>
                 <p v-if="edu.major" class="cv-item-sub">{{ edu.major }}</p>
-                <p v-if="edu.description" class="cv-item-desc">{{ text(edu.description) }}</p>
+                <div v-if="edu.description" class="cv-item-desc" v-html="sanitizeHtml(text(edu.description))"></div>
             </div>
         </section>
 
@@ -187,7 +187,7 @@ function certDateRange(item) {
                     <span v-if="pj.technology">{{ pj.technology }}</span>
                 </p>
                 <p v-if="pj.link" class="cv-item-link">{{ pj.link }}</p>
-                <p v-if="pj.description" class="cv-item-desc">{{ text(pj.description) }}</p>
+                <div v-if="pj.description" class="cv-item-desc" v-html="sanitizeHtml(text(pj.description))"></div>
             </div>
         </section>
 
@@ -211,7 +211,7 @@ function certDateRange(item) {
                     <span class="cv-item-date">{{ certDateRange(ce) }}</span>
                 </div>
                 <p v-if="ce.organization" class="cv-item-sub">{{ ce.organization }}</p>
-                <p v-if="ce.description" class="cv-item-desc">{{ text(ce.description) }}</p>
+                <div v-if="ce.description" class="cv-item-desc" v-html="sanitizeHtml(text(ce.description))"></div>
             </div>
         </section>
 

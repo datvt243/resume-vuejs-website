@@ -12,13 +12,17 @@ TransitionGroup(name="list" class="list" tag="ul")
 </template>
 
 <style scoped lang="scss">
-.list-enter-active,
-.list-leave-active {
-    transition: all 0.5s ease;
-}
-.list-enter-from,
-.list-leave-to {
-    opacity: 0;
-    transform: translateX(30px);
+@media (prefers-reduced-motion: no-preference) {
+    .list-enter-active,
+    .list-leave-active {
+        transition:
+            opacity 200ms ease-out,
+            transform 200ms ease-out;
+    }
+    .list-enter-from,
+    .list-leave-to {
+        opacity: 0;
+        transform: translateX(8px);
+    }
 }
 </style>

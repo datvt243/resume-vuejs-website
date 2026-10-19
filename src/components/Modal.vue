@@ -1,3 +1,8 @@
+<script>
+// Real module scope (unlike top-level `let` in <script setup>, which is per instance)
+let modalSeq = 0
+</script>
+
 <script setup>
 /**
  * Author: Đạt Võ - https://github.com/datvt243
@@ -14,8 +19,10 @@
  * footer), same exposed `show()`/`hide()` API — zero consumer files
  * changed by this rewrite.
  *
+ * Focus is trapped inside while open (Tab/Shift+Tab wrap) and returns to
+ * the element that opened it on close (DESIGN.md §5.9).
+ *
  * Disclosed simplifications vs Bootstrap's Modal JS (operator-approved):
- * - No Tab/Shift+Tab focus-trap — focuses the panel on open, ESC closes.
  * - No scrollbar-width padding-right compensation on `body.modal-open`.
  * - No fade/slide transition — the previous version had no `fade` class
  *   either (instant show/hide), preserved as-is.
@@ -23,6 +30,7 @@
 
 import { ref, defineProps, defineExpose, useSlots, onBeforeUnmount, nextTick, provide } from 'vue'
 import { confirmDiscardChanges } from '@/lib/swal.lib'
+import { buttonClass } from '@/lib/button.lib'
 
 const slots = useSlots()
 
@@ -34,6 +42,28 @@ const props = defineProps({
 
 const refModal = ref(null)
 const visible = ref(false)
+// eslint-disable-next-line no-unused-vars -- used in the template
+const titleId = `modal-title-${++modalSeq}`
+// eslint-disable-next-line no-unused-vars -- used in the template
+const closeBtnClass = buttonClass({ variant: 'secondary' })
+let returnFocusTo = null
+
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]), [contenteditable="true"]'
+
+function trapTab(e) {
+    const items = [...refModal.value.querySelectorAll(FOCUSABLE)].filter(el => !el.closest('[hidden], [style*="display: none"]'))
+    if (!items.length) return e.preventDefault()
+    const first = items[0]
+    const last = items[items.length - 1]
+    const inside = refModal.value.contains(document.activeElement)
+    if (e.shiftKey && (document.activeElement === first || !inside)) {
+        e.preventDefault()
+        last.focus()
+    } else if (!e.shiftKey && (document.activeElement === last || !inside)) {
+        e.preventDefault()
+        first.focus()
+    }
+}
 
 // Module-scope so >1 simultaneously-mounted <Modal> instance (e.g.
 // PageGeneralInformation.vue mounts 3) doesn't have one instance's
@@ -70,10 +100,12 @@ async function requestClose() {
 
 function onKeydown(e) {
     if (e.key === 'Escape') requestClose()
+    else if (e.key === 'Tab') trapTab(e)
 }
 
 function show() {
     if (visible.value) return
+    returnFocusTo = document.activeElement
     visible.value = true
     if (openModalCount === 0) {
         document.body.classList.add('modal-open')
@@ -91,6 +123,8 @@ function hide() {
         document.body.classList.remove('modal-open')
     }
     document.removeEventListener('keydown', onKeydown)
+    returnFocusTo?.focus?.()
+    returnFocusTo = null
 }
 
 // Replaces Bootstrap's global delegated `[data-bs-dismiss="modal"]`
@@ -134,16 +168,16 @@ defineExpose({
         left the modal invisible despite carrying the `show` class.
     -->
     <div class="modal draggable" :class="{ show: visible }" :style="{ display: visible ? 'block' : 'none' }" tabindex="-1"
+        role="dialog" aria-modal="true" :aria-labelledby="titleId"
         ref="refModal" @mousedown="onRootMousedown" @click="onRootClick">
         <div class="modal-dialog modal-dialog-scrollable" :class="props.size">
             <div class="modal-content">
                 <div class="modal-header">
-                    <p class="modal-title h5 m-0">{{ props.title }}</p>
-                    <span class="ms-auto">
-                        <span class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal" aria-label="Close">
-                            <FontAwesomeIcon icon="fa-solid fa-xmark" />
-                        </span>
-                    </span>
+                    <h2 :id="titleId" class="modal-title m-0 text-md font-semibold">{{ props.title }}</h2>
+                    <button type="button" data-bs-dismiss="modal" aria-label="Đóng"
+                        class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded text-fg-2 hover:bg-surface-2 hover:text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent">
+                        <FontAwesomeIcon icon="fa-solid fa-xmark" />
+                    </button>
                 </div>
                 <div class="modal-body">
                     <template v-if="slots?.default">
@@ -152,7 +186,7 @@ defineExpose({
                     <p v-else>Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam, facilis!</p>
                 </div>
                 <div class="modal-footer" v-if="!isHiddenFooter">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" :class="closeBtnClass" data-bs-dismiss="modal">Đóng</button>
                     <template v-if="slots?.footer"><slot name="footer"></slot></template>
                 </div>
             </div>

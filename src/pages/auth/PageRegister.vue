@@ -86,7 +86,7 @@ const formFields = [
 <template>
     <div class="register-page flex items-center justify-center">
         <div class="auth-card">
-            <Heading text="Đăng ký" />
+            <Heading :level="1" text="Đăng ký" />
             <VeeForm
                 :fields="formFields"
                 :submit-fn="

@@ -20,7 +20,8 @@
 import { ref, defineProps, computed, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
-    style: { type: String, default: 'primary' },
+    // not `style`: Vue parses a static or literal `style` into an object before it reaches the prop
+    variant: { type: String, default: 'primary' },
     text: { type: String, default: 'Dropdown button' },
     href: { type: String, default: '' },
     split: { type: Boolean, default: false },
@@ -59,7 +60,7 @@ function onKeydown(e) {
 onBeforeUnmount(() => close())
 
 const attrBtnToggle = computed(() => {
-    const className = `btn btn-${props.style} ${!props.split ? 'dropdown-toggle' : ''} ${props.btnSize}`
+    const className = `btn btn-${props.variant} ${!props.split ? 'dropdown-toggle' : ''} ${props.btnSize}`
     return {
         class: className,
         'aria-expanded': isOpen.value ? 'true' : 'false',
@@ -75,11 +76,11 @@ const attrBtnToggle = computed(() => {
             </a>
         </template>
         <template v-else>
-            <button v-if="text" type="button" :class="['btn', `btn-${props.style}`]" v-html="props.text"
+            <button v-if="text" type="button" :class="['btn', `btn-${props.variant}`]" v-html="props.text"
                 @click="toggle"></button>
         </template>
         <template v-if="props.split">
-            <button type="button" :class="['btn dropdown-toggle dropdown-toggle-split', `btn-${props.style}`]"
+            <button type="button" :class="['btn dropdown-toggle dropdown-toggle-split', `btn-${props.variant}`]"
                 :aria-expanded="isOpen ? 'true' : 'false'" @click="toggle">
                 <span class="sr-only">{{ props.text }}</span>
             </button>

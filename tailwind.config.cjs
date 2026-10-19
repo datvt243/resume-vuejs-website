@@ -56,6 +56,8 @@ module.exports = {
         'alert-warning',
         // Node `tailwindcss-form-controls`
         'form-control',
+        'form-select',
+        'form-select-sm',
         'form-label',
         'form-text',
         'form-check',
@@ -131,8 +133,6 @@ module.exports = {
         'table-responsive',
         'toast',
         'toast-container',
-        'toast-header',
-        'toast-body',
         'modal',
         'modal-dialog',
         'modal-dialog-scrollable',
@@ -144,7 +144,6 @@ module.exports = {
         'modal-footer',
         'modal-backdrop',
         // Genuine custom app CSS, extracted from bootstrap.scss's tail
-        'heading',
         'pointer',
         'footer',
         'item',
@@ -156,8 +155,46 @@ module.exports = {
         // first pass wrongly declared dead (Pug-syntax grep miss).
         'list',
     ],
+    // Tokens are CSS variables in src/styles/tailwind.css — see DESIGN.md §2.
+    darkMode: ['selector', '[data-bs-theme="dark"]'],
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                bg: 'var(--color-bg)',
+                surface: 'var(--color-surface)',
+                'surface-2': 'var(--color-surface-2)',
+                line: 'var(--color-line)',
+                'line-strong': 'var(--color-line-strong)',
+                fg: 'var(--color-fg)',
+                'fg-2': 'var(--color-fg-2)',
+                'fg-3': 'var(--color-fg-3)',
+                brand: 'var(--color-brand)',
+                accent: {
+                    DEFAULT: 'var(--color-accent)',
+                    hover: 'var(--color-accent-hover)',
+                    fg: 'var(--color-accent-fg)',
+                    subtle: 'var(--color-accent-subtle)',
+                },
+                success: { DEFAULT: 'var(--color-success)', subtle: 'var(--color-success-subtle)' },
+                warning: { DEFAULT: 'var(--color-warning)', subtle: 'var(--color-warning-subtle)' },
+                danger: { DEFAULT: 'var(--color-danger)', subtle: 'var(--color-danger-subtle)' },
+                info: { DEFAULT: 'var(--color-info)', subtle: 'var(--color-info-subtle)' },
+            },
+            fontFamily: {
+                sans: ['Geist', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+                mono: ['Geist Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+            },
+            fontSize: {
+                xs: ['12px', '16px'],
+                sm: ['13px', '20px'],
+                base: ['14px', '22px'],
+                md: ['16px', '24px'],
+                lg: ['20px', '28px'],
+                xl: ['28px', '34px'],
+            },
+            borderRadius: { sm: '4px', DEFAULT: '6px', md: '8px', lg: '12px' },
+            boxShadow: { float: 'var(--shadow-float)' },
+        },
     },
     plugins: [],
 }

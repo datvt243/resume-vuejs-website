@@ -130,10 +130,10 @@ function showModalDuplicateDoc(doc) {
 
 <template>
   <div class="mb-[1.5rem]">
-    <Heading text="Ứng tuyển">
+    <Heading :level="1" text="Ứng tuyển">
       <div class="btn-group">
-        <Button @click="showModalCreateDoc()" icon="fa-solid fa-plus" type="outline-success" size="sm"></Button>
-        <Button @click="getData?.()" icon="fa-solid fa-repeat" type="outline-info" size="sm"></Button>
+        <Button @click="showModalCreateDoc()" icon="fa-solid fa-plus" type="primary" aria-label="Thêm mới" />
+        <Button @click="getData?.()" icon="fa-solid fa-repeat" type="ghost" aria-label="Tải lại" />
       </div>
     </Heading>
 

@@ -2,29 +2,19 @@
 /**
  * Author: Đạt Võ - https://github.com/datvt243
  * Date: `--/--`
- * Description: Read-only list of profile-visit records (candidate/visits
- * API — ip/location/timestamp per visit). Analytics data, not a
- * candidate-editable CV section, so no *.model.ts/VeeForm/useDocument
- * wiring like the other dashboard pages — just a plain `settings` array
- * for TableDefault's column rendering, no create/edit/delete actions
- * (no `#control` slot passed to TableDefault).
- *
- * Above the table: per-day/week/month chart + source/country breakdowns
- * from `useVisitStats` (aggregated server-side, fetched per interval).
- *
- * Reads the cache `LayoutDefault.vue` already populated (`useVisits()`,
- * which fetches once and caches both `visitCount` + `visits` on
- * candidateStore) via a `computed`, instead of calling `useVisits()`
- * again here — a second call would init its own local `ref` snapshot at
- * component-mount time, which wouldn't reactively pick up an
- * in-flight fetch started by the parent (same reasoning already applied
- * to PageHome.vue's `cvViewCount`).
+ * Description: Analytics page for profile visits (DESIGN.md §4.2) —
+ * range control → KPIs → chart → source/country breakdowns → paginated
+ * detail table. Read-only: stats come from `useVisitStats` (aggregated
+ * server-side per interval), the detail rows from the cache
+ * `LayoutDefault.vue` already filled via `useVisits()`. Reading that cache
+ * through a `computed` (instead of calling `useVisits()` again) keeps it
+ * reactive to the parent's in-flight fetch.
  */
-import { computed } from 'vue'
-import TableDefault from '@/components/table/TableDefault.vue'
+import { computed, ref, watch } from 'vue'
 import VisitChart from '@/components/visits/VisitChart.vue'
 import { candidateStore } from '@/stores/candidate'
 import { useVisitStats, INTERVAL_LABELS } from '@/composables/useVisitStats'
+import { buttonClass } from '@/lib/button.lib'
 
 const candidate = candidateStore()
 const dataList = computed(() => candidate.getCandidate?.visits || [])
@@ -37,86 +27,172 @@ const INTERVAL_OPTIONS = [
 ]
 const rangeText = computed(() => INTERVAL_OPTIONS.find(o => o.value === interval.value)?.range)
 
+const numberFormat = new Intl.NumberFormat('vi-VN')
+
 // null = no referrer recorded (direct visit, or recorded before referrer tracking) / no geo match.
 const breakdowns = computed(() => {
     const total = stats.value?.total || 0
     const toRows = (rows, key, nullLabel) =>
-        (rows || []).map(r => ({ label: r[key] ?? nullLabel, count: r.count, share: total ? (r.count / total) * 100 : 0 }))
+        [...(rows || [])]
+            .sort((a, b) => b.count - a.count)
+            .map(r => ({ label: r[key] ?? nullLabel, count: r.count, share: total ? (r.count / total) * 100 : 0 }))
     return [
         { title: 'Nguồn truy cập', rows: toRows(stats.value?.sources, 'source', 'Trực tiếp / không rõ') },
         { title: 'Quốc gia', rows: toRows(stats.value?.countries, 'country', 'Không rõ') },
     ]
 })
 
-const settings = [
-    { name: 'createdAt', label: 'Thời gian', type: 'date', default: null, convertTo: 'date' },
-    { name: 'location', label: 'Vị trí', type: 'text', default: '' },
-    { name: 'ip', label: 'Địa chỉ IP', type: 'text', default: '' },
-]
+const kpis = computed(() => {
+    const [sources, countries] = breakdowns.value
+    const top = rows => (rows[0] ? { value: rows[0].label, hint: `${Math.round(rows[0].share)}% lượt xem` } : { value: '—', hint: 'Chưa có dữ liệu' })
+    return [
+        { label: `Lượt xem · ${rangeText.value}`, value: numberFormat.format(stats.value?.total ?? 0), hint: `Tổng ${numberFormat.format(dataList.value.length)} lượt từ trước tới nay` },
+        { label: `Nguồn hàng đầu · ${rangeText.value}`, ...top(sources.rows) },
+        { label: `Quốc gia hàng đầu · ${rangeText.value}`, ...top(countries.rows) },
+    ]
+})
+
+/* detail table — DESIGN.md §5.4: paginate past 100 rows */
+const PAGE_SIZE = 25
+const page = ref(1)
+const pageCount = computed(() => Math.max(1, Math.ceil(dataList.value.length / PAGE_SIZE)))
+const pageRows = computed(() => dataList.value.slice((page.value - 1) * PAGE_SIZE, page.value * PAGE_SIZE))
+const rangeLabel = computed(() => {
+    const total = dataList.value.length
+    if (!total) return ''
+    const from = (page.value - 1) * PAGE_SIZE + 1
+    const to = Math.min(page.value * PAGE_SIZE, total)
+    return `${numberFormat.format(from)}–${numberFormat.format(to)} trong ${numberFormat.format(total)}`
+})
+watch(pageCount, n => {
+    if (page.value > n) page.value = n
+})
+
+const dateFormat = new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
+const timeFormat = new Intl.DateTimeFormat('vi-VN', { hour: '2-digit', minute: '2-digit' })
+function formatVisitTime(value) {
+    const d = new Date(value)
+    return Number.isNaN(d.getTime()) ? '—' : `${dateFormat.format(d)} ${timeFormat.format(d)}`
+}
+
+const pagerBtn = buttonClass({ variant: 'secondary', size: 'sm' })
 </script>
 
 <template>
-    <div class="mb-[1.5rem]">
-        <Heading text="Lượt truy cập hồ sơ" />
-        <p class="text-sm opacity-75">
-            Mỗi lần trang hồ sơ công khai của bạn được xem (qua link chia sẻ) sẽ ghi một dòng ở đây — thời gian, vị trí
-            (suy ra từ IP) và địa chỉ IP.
-        </p>
+    <Heading :level="1" text="Lượt truy cập hồ sơ" description="Mỗi lần ai đó mở hồ sơ công khai qua link chia sẻ.">
+        <div class="inline-flex rounded bg-surface-2 p-0.5" role="radiogroup" aria-label="Khoảng thời gian">
+            <button
+                v-for="o in INTERVAL_OPTIONS"
+                :key="o.value"
+                type="button"
+                role="radio"
+                :aria-checked="interval === o.value ? 'true' : 'false'"
+                :data-interval="o.value"
+                class="h-7 rounded-sm px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                :class="interval === o.value ? 'bg-surface text-fg shadow-sm' : 'text-fg-2 hover:text-fg'"
+                @click="interval = o.value"
+            >
+                Theo {{ INTERVAL_LABELS[o.value] }}
+            </button>
+        </div>
+    </Heading>
 
-        <div class="flex flex-wrap items-center gap-[1rem] my-[1rem]">
-            <div class="btn-group btn-group-sm" role="group" aria-label="Khoảng thời gian">
-                <button
-                    v-for="o in INTERVAL_OPTIONS"
-                    :key="o.value"
-                    type="button"
-                    class="btn"
-                    :class="interval === o.value ? 'btn-primary' : 'btn-outline-primary'"
-                    :data-interval="o.value"
-                    @click="interval = o.value"
-                >
-                    Theo {{ INTERVAL_LABELS[o.value] }}
-                </button>
+    <div class="space-y-6">
+        <section class="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:gap-6" aria-label="Chỉ số">
+            <div v-for="k in kpis" :key="k.label" class="min-w-0 rounded-md border border-line bg-surface p-4">
+                <p class="m-0 text-sm text-fg-2">{{ k.label }}</p>
+                <p class="m-0 mt-1 truncate text-xl font-semibold tracking-tight" :title="k.value">{{ k.value }}</p>
+                <p class="m-0 mt-1 text-xs text-fg-3">{{ k.hint }}</p>
             </div>
-            <p v-if="stats" class="m-0 text-sm">
-                <strong class="text-lg">{{ stats.total }}</strong> lượt xem trong {{ rangeText }} gần nhất
-            </p>
+        </section>
+
+        <section class="rounded-md border border-line bg-surface" aria-labelledby="visits-chart-title">
+            <header class="flex h-12 items-center border-b border-line px-4">
+                <h2 id="visits-chart-title" class="m-0 text-md font-semibold">Lượt xem theo {{ INTERVAL_LABELS[interval] }} · {{ rangeText }}</h2>
+            </header>
+            <div class="p-4">
+                <VisitChart v-if="stats" :series="stats.series" :interval="stats.interval" />
+                <div v-else class="h-56 rounded bg-surface-2 motion-safe:animate-pulse" aria-hidden="true"></div>
+            </div>
+        </section>
+
+        <div v-if="stats" class="grid gap-6 md:grid-cols-2">
+            <section v-for="b in breakdowns" :key="b.title" class="rounded-md border border-line bg-surface">
+                <header class="flex h-12 items-center border-b border-line px-4">
+                    <h2 class="m-0 text-md font-semibold">{{ b.title }}</h2>
+                </header>
+                <ul v-if="b.rows.length" class="m-0 list-none space-y-3 p-4">
+                    <li v-for="r in b.rows" :key="r.label" class="text-sm">
+                        <div class="flex justify-between gap-4">
+                            <span class="min-w-0 truncate" :title="r.label">{{ r.label }}</span>
+                            <span class="shrink-0 tabular-nums">{{ numberFormat.format(r.count) }} <span class="text-fg-3">({{ Math.round(r.share) }}%)</span></span>
+                        </div>
+                        <div class="mt-1 h-1 overflow-hidden rounded-full bg-surface-2">
+                            <div class="share-fill h-full rounded-full" :style="{ width: `${r.share}%` }"></div>
+                        </div>
+                    </li>
+                </ul>
+                <p v-else class="m-0 p-4 text-sm text-fg-2">Chưa có lượt xem trong khoảng này.</p>
+            </section>
         </div>
 
-        <template v-if="stats">
-            <VisitChart :series="stats.series" :interval="stats.interval" />
-
-            <div class="row mt-[1.5rem]">
-                <div v-for="b in breakdowns" :key="b.title" class="col-12 col-md-6 mb-[1rem]">
-                    <p class="h6">{{ b.title }}</p>
-                    <ul v-if="b.rows.length" class="list-unstyled m-0">
-                        <li v-for="r in b.rows" :key="r.label" class="mb-[0.5rem] text-sm">
-                            <div class="flex justify-between">
-                                <span>{{ r.label }}</span>
-                                <span>{{ r.count }} <span class="opacity-75">({{ Math.round(r.share) }}%)</span></span>
-                            </div>
-                            <div class="share-track"><div class="share-fill" :style="{ width: `${r.share}%` }"></div></div>
-                        </li>
-                    </ul>
-                    <p v-else class="text-sm opacity-75 m-0">Chưa có lượt xem trong khoảng này.</p>
-                </div>
+        <section class="rounded-md border border-line bg-surface" aria-labelledby="visits-table-title">
+            <header class="flex h-12 items-center justify-between gap-4 border-b border-line px-4">
+                <h2 id="visits-table-title" class="m-0 text-md font-semibold">Chi tiết từng lượt</h2>
+                <span v-if="rangeLabel" class="text-xs text-fg-3 tabular-nums">{{ rangeLabel }}</span>
+            </header>
+            <div class="overflow-x-auto">
+                <table class="visits-table w-full text-sm">
+                    <thead>
+                        <tr>
+                            <th scope="col">Thời gian</th>
+                            <th scope="col">Vị trí</th>
+                            <th scope="col">Địa chỉ IP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="v in pageRows" :key="v._id">
+                            <td class="whitespace-nowrap tabular-nums">{{ formatVisitTime(v.createdAt) }}</td>
+                            <td class="max-w-xs truncate" :title="v.location || ''">{{ v.location || '—' }}</td>
+                            <td class="whitespace-nowrap font-mono text-fg-2">{{ v.ip || '—' }}</td>
+                        </tr>
+                        <tr v-if="!pageRows.length">
+                            <td colspan="3" class="empty">
+                                <NoData title="Chưa có lượt truy cập" description="Chia sẻ link hồ sơ công khai để bắt đầu ghi nhận." />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        </template>
-
-        <p class="h6 mt-[1rem]">Chi tiết từng lượt</p>
-        <TableDefault :model-value="dataList" :settings="settings" />
+            <footer v-if="pageCount > 1" class="flex items-center justify-between gap-4 border-t border-line px-4 py-3">
+                <span class="text-xs text-fg-3 tabular-nums">Trang {{ page }} / {{ pageCount }}</span>
+                <div class="flex gap-2">
+                    <button type="button" :class="pagerBtn" :disabled="page <= 1" @click="page--">Trước</button>
+                    <button type="button" :class="pagerBtn" :disabled="page >= pageCount" @click="page++">Sau</button>
+                </div>
+            </footer>
+        </section>
     </div>
 </template>
 
 <style scoped>
-.share-track {
-    height: 4px;
-    border-radius: 2px;
-    background: var(--bs-tertiary-bg);
-    margin-top: 2px;
+.visits-table th {
+    @apply sticky top-0 h-9 whitespace-nowrap border-b border-line bg-surface px-4 text-left text-xs font-medium text-fg-3;
 }
+.visits-table td {
+    @apply h-10 border-b border-line px-4;
+}
+.visits-table tbody tr:last-child td {
+    @apply border-b-0;
+}
+.visits-table tbody tr:hover td:not(.empty) {
+    @apply bg-surface-2;
+}
+.visits-table td.empty {
+    height: auto;
+}
+/* Single series → chart slot 1 (DESIGN.md §6.1) */
 .share-fill {
-    height: 100%;
-    border-radius: 2px;
-    background: var(--bs-primary);
+    background: var(--chart-1);
 }
 </style>

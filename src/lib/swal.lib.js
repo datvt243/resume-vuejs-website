@@ -1,21 +1,29 @@
 import Swal from 'sweetalert2'
+import { buttonClass } from '@/lib/button.lib'
 
+const actionClasses = {
+    confirmButton: buttonClass({ variant: 'danger' }),
+    cancelButton: buttonClass({ variant: 'secondary' }),
+}
+
+/**
+ * Delete confirm (DESIGN.md §4.4): a specific question, "Xóa" / "Hủy".
+ * `getHtml` is shown as plain text — it often carries user-entered names.
+ */
 export const confirmDelete = (props = {}) => {
-    const { getHtml = null, callback = () => {} } = props
+    const { title = 'Xóa mục này?', getHtml = null, callback = () => {} } = props
     Swal.fire({
-        title: 'Bạn có chắc là muốn xoá?',
-        icon: 'question',
+        title,
+        icon: 'warning',
         showCloseButton: true,
         showCancelButton: true,
-        cancelButtonText: 'Huỷ',
-        confirmButtonText: 'Xoá',
+        reverseButtons: true,
+        cancelButtonText: 'Hủy',
+        confirmButtonText: 'Xóa',
         allowOutsideClick: false,
-        customClass: {
-            confirmButton: 'btn btn-danger mx-1',
-            cancelButton: 'btn btn-secondary mx-1',
-        },
+        customClass: actionClasses,
         buttonsStyling: false,
-        html: getHtml ? getHtml?.() : '',
+        text: getHtml ? getHtml?.() : '',
     }).then(async (result) => {
         if (result.isConfirmed) {
             await callback?.()
@@ -28,12 +36,10 @@ export const confirmDiscardChanges = async () => {
         title: 'Bạn có thay đổi chưa lưu, vẫn đóng?',
         icon: 'warning',
         showCancelButton: true,
+        reverseButtons: true,
         cancelButtonText: 'Ở lại',
         confirmButtonText: 'Vẫn đóng',
-        customClass: {
-            confirmButton: 'btn btn-danger mx-1',
-            cancelButton: 'btn btn-secondary mx-1',
-        },
+        customClass: actionClasses,
         buttonsStyling: false,
     })
     return result.isConfirmed

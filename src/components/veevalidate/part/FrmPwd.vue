@@ -44,7 +44,7 @@ const { value, errorMessage, handleChange, handleBlur } = useField(() => props.n
 </script>
 
 <template>
-    <div class="mb-[1rem]">
+    <div class="mb-4">
         <label v-if="!props.icon" :for="props.name" class="form-label">{{ props.label }}</label>
         <div class="input-group">
             <span v-if="props.icon" class="input-group-text">
@@ -56,27 +56,27 @@ const { value, errorMessage, handleChange, handleBlur } = useField(() => props.n
                 :type="isShow ? 'text' : 'password'"
                 :id="props.name"
                 :placeholder="getPlaceholder"
-                :class="[props.size]"
+                :class="[props.size, { 'border-danger': errorMessage }]"
+                :aria-invalid="errorMessage ? 'true' : undefined"
+                :aria-describedby="errorMessage ? `${props.name}-error` : undefined"
                 v-bind="attrs"
                 @input="handleChange"
                 @blur="handleBlur"
             />
-            <span class="input-group-text" id="inputGroup-sizing-sm">
-                <span
-                    class="inline-block text-center text-success"
-                    style="width: 24px"
-                    @click="
-                        () => {
-                            isShow = !isShow
-                        }
-                    "
-                >
-                    <FontAwesomeIcon :icon="`fa-solid ${isShow ? 'fa-eye' : 'fa-eye-slash'}`" />
-                </span>
-            </span>
+            <button
+                type="button"
+                class="input-group-text text-fg-2 hover:text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                aria-label="Hiện mật khẩu"
+                :aria-pressed="isShow ? 'true' : 'false'"
+                @click="isShow = !isShow"
+            >
+                <FontAwesomeIcon :icon="`fa-solid ${isShow ? 'fa-eye' : 'fa-eye-slash'}`" aria-hidden="true" />
+            </button>
         </div>
 
-        <p v-if="errorMessage" class="text-danger text-sm my-1">{{ errorMessage }}</p>
+        <p v-if="errorMessage" :id="`${props.name}-error`" class="mb-0 mt-1 flex items-center gap-1 text-xs text-danger">
+            <FontAwesomeIcon icon="fa-solid fa-circle-exclamation" aria-hidden="true" />{{ errorMessage }}
+        </p>
         <p v-if="props.text" class="form-text mb-0">{{ props.text }}</p>
     </div>
 </template>

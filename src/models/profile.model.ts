@@ -22,7 +22,7 @@ const MODEL: modelItem[] = [
         name: 'name',
         label: 'Tên profile',
         type: 'text',
-        placeholder: 'VD: CV Frontend, CV Backend...',
+        placeholder: 'VD: CV Frontend, CV Backend…',
         valid: yup => yup.string().trim().min(1, 'Tên profile không được trống').max(100, 'Tối đa 100 ký tự').required('Vui lòng nhập tên profile'),
         default: '',
         col: 'col-md-12',

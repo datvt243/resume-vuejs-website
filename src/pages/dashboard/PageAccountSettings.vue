@@ -25,7 +25,7 @@ const { loading, toast } = useHelper()
 function handleDeleteAccount() {
     confirmDelete({
         title: 'Xóa tài khoản này?',
-        getHtml: () => 'Toàn bộ dữ liệu hồ sơ (học vấn, kinh nghiệm, dự án...) và file CV đã upload sẽ bị xoá vĩnh viễn. Hành động này không thể hoàn tác.',
+        getHtml: () => 'Toàn bộ dữ liệu hồ sơ (học vấn, kinh nghiệm, dự án…) và file CV đã upload sẽ bị xoá vĩnh viễn. Hành động này không thể hoàn tác.',
         callback: async () => {
             await handleBase({ method: 'delete', url: 'candidate' }, { loading, toast }, () => {
                 auth.logOut({ router })

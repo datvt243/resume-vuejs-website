@@ -110,11 +110,13 @@ function showModalDuplicateDoc(doc) {
                 </div>
             </template>
         </TableDefault>
-        <div v-else class="rounded-md border border-line bg-surface">
-            <NoData title="Chưa có người tham khảo nào" description="Thêm người có thể xác nhận kinh nghiệm của bạn.">
-                <Button icon="fa-solid fa-plus" text="Thêm người tham khảo" @click="showModalCreateDoc()" />
-            </NoData>
-        </div>
+        <LoadingGate v-else>
+            <div class="rounded-md border border-line bg-surface">
+                <NoData title="Chưa có người tham khảo nào" description="Thêm người có thể xác nhận kinh nghiệm của bạn.">
+                    <Button icon="fa-solid fa-plus" text="Thêm người tham khảo" @click="showModalCreateDoc()" />
+                </NoData>
+            </div>
+        </LoadingGate>
     </div>
 
     <Modal

@@ -25,8 +25,6 @@ const formFields = [
         name: 'email',
         label: 'Email',
         type: 'email',
-        icon: 'fa-solid fa-envelope',
-        text: "We'll never share your email with anyone else.",
         placeholder: 'Vui lòng nhập Email',
         autocomplete: 'username',
         /* value: 'david@gmail.com', */
@@ -36,7 +34,6 @@ const formFields = [
         name: 'password',
         label: 'Mật khẩu',
         type: 'password',
-        icon: 'fa-solid fa-lock',
         autocomplete: 'current-password',
         /* value: 'david243', */
         valid: yup => yup.string().required('Mật khẩu là bắt buộc'),
@@ -54,30 +51,15 @@ async function _handleLogin(values) {
 </script>
 
 <template>
-    <div class="login-page flex items-center justify-center">
-        <div class="auth-card">
+    <div class="flex justify-center py-12">
+        <div class="w-full max-w-md rounded-md border border-line bg-surface p-6">
             <Heading :level="1" text="Đăng nhập" />
-            <VeeForm :fields="formFields" :submit-fn="_handleLogin" :submit-text="'Login'">
+            <VeeForm :fields="formFields" :submit-fn="_handleLogin" submit-text="Đăng nhập">
                 <template #button>
-                    <RouterLink to="/forgot-password" class="ms-auto self-center text-sm">Quên mật khẩu?</RouterLink>
+                    <RouterLink to="/forgot-password" class="ms-auto self-center whitespace-nowrap text-sm">Quên mật khẩu?</RouterLink>
                 </template>
             </VeeForm>
         </div>
     </div>
 </template>
 
-<style scoped lang="scss">
-.login-page {
-    min-height: 70vh;
-}
-
-.auth-card {
-    width: 100%;
-    max-width: 440px;
-    padding: 2rem 2.25rem;
-    border-radius: 1rem;
-    background-color: var(--bs-tertiary-bg);
-    border: 1px solid var(--bs-border-color-translucent);
-    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.25);
-}
-</style>

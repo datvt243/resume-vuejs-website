@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ref } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
+import SegmentedControl from '@/components/global/SegmentedControl.vue'
 import PageAtsCheck from './PageAtsCheck.vue'
 import type { AtsCheckResponse } from '@/types/ats.type'
 
@@ -37,7 +38,7 @@ const response: AtsCheckResponse = {
 
 function mountPage() {
     setActivePinia(createPinia())
-    return mount(PageAtsCheck, { global: { stubs } })
+    return mount(PageAtsCheck, { global: { stubs, components: { SegmentedControl } } })
 }
 
 async function runCheck(wrapper: ReturnType<typeof mountPage>, data: AtsCheckResponse = response) {
@@ -83,11 +84,11 @@ describe('PageAtsCheck (issue #159)', () => {
         expect(text).toContain('2 trang')
         expect(text).toContain('2 tiêu chí chưa đạt')
         expect(text).toContain('PDF metadata missing')
-        expect(wrapper.findAll('.badge.text-bg-danger').map(b => b.text())).toEqual(['Lỗi'])
-        expect(wrapper.findAll('.badge.text-bg-warning').map(b => b.text())).toEqual(['Cảnh báo'])
+        expect(wrapper.findAll('[data-badge="danger"]').map(b => b.text())).toEqual(['Lỗi'])
+        expect(wrapper.findAll('[data-badge="warning"]').map(b => b.text())).toEqual(['Cảnh báo'])
         expect(text).toContain('50%')
-        expect(wrapper.findAll('.badge.text-bg-success').map(b => b.text())).toEqual(['typescript'])
-        expect(wrapper.findAll('.badge.text-bg-secondary').map(b => b.text())).toEqual(['vitest'])
+        expect(wrapper.findAll('[data-badge="success"]').map(b => b.text())).toEqual(['typescript'])
+        expect(wrapper.findAll('[data-badge="neutral"]').map(b => b.text())).toEqual(['vitest'])
         expect(text).toContain('Jane Doe — Frontend Developer')
     })
 

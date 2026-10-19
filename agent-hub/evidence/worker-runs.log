@@ -85,3 +85,6 @@
 2026-10-19T14:43:43Z role=verifier outcome=SEAL node=issue-221-table-default rerun=none hub_bytes_before=185601 hub_bytes_after=188952
 2026-10-19T15:20:08Z role=verifier outcome=SEAL node=issue-222-forms rerun=none hub_bytes_before=188574 hub_bytes_after=190882
 2026-10-19T15:40:17Z role=verifier outcome=SEAL node=issue-223-crud-lists rerun=none hub_bytes_before=191562 hub_bytes_after=193971
+2026-10-19T16:01:30Z role=verifier outcome=REOPEN node=issue-224-remaining-pages rerun=none hub_bytes_before=193466 hub_bytes_after=195307
+2026-10-19T16:04:24Z role=verifier outcome=REOPEN node=issue-224-remaining-pages rerun=none hub_bytes_before=193466 hub_bytes_after=195307
+2026-10-19T16:10:09Z role=verifier outcome=SEAL node=issue-224-remaining-pages rerun=none hub_bytes_before=193466 hub_bytes_after=195918

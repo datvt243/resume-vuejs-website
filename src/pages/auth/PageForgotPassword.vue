@@ -21,7 +21,6 @@ const formFields = [
         name: 'email',
         label: 'Email',
         type: 'email',
-        icon: 'fa-solid fa-envelope',
         placeholder: 'Vui lòng nhập Email',
         valid: yup => yup.string().email('Email sai định dạng').required('Email là bắt buộc'),
     },
@@ -33,33 +32,15 @@ async function _handleForgotPassword(values) {
 </script>
 
 <template>
-    <div class="forgot-password-page flex items-center justify-center">
-        <div class="auth-card">
-            <Heading :level="1" text="Quên mật khẩu" />
-            <p class="text-sm opacity-75">
-                Nhập email đã đăng ký, hệ thống sẽ tạo một liên kết đặt lại mật khẩu.
-            </p>
+    <div class="flex justify-center py-12">
+        <div class="w-full max-w-md rounded-md border border-line bg-surface p-6">
+            <Heading :level="1" text="Quên mật khẩu" description="Nhập email đã đăng ký để nhận liên kết đặt lại mật khẩu." />
             <VeeForm :fields="formFields" :submit-fn="_handleForgotPassword" :submit-text="'Gửi yêu cầu'">
                 <template #button>
-                    <RouterLink to="/login" class="ms-auto self-center text-xs">Quay lại đăng nhập</RouterLink>
+                    <RouterLink to="/login" class="ms-auto self-center whitespace-nowrap text-sm">Quay lại đăng nhập</RouterLink>
                 </template>
             </VeeForm>
         </div>
     </div>
 </template>
 
-<style scoped lang="scss">
-.forgot-password-page {
-    min-height: 70vh;
-}
-
-.auth-card {
-    width: 100%;
-    max-width: 440px;
-    padding: 2rem 2.25rem;
-    border-radius: 1rem;
-    background-color: var(--bs-tertiary-bg);
-    border: 1px solid var(--bs-border-color-translucent);
-    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.25);
-}
-</style>

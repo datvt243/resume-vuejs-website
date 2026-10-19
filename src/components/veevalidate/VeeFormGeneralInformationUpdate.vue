@@ -167,7 +167,7 @@ async function handleUpdate(values, action = 'create') {
     <template v-if="props.hasButtonAdd">
         <Modal
             ref="refModal02"
-            :title="document._id ? `Chỉnh sửa: ${props.heading}` : `Thêm mới ${props.heading}`"
+            :title="document._id ? `Sửa: ${props.heading.toLowerCase()}` : `Thêm ${props.heading.toLowerCase()}`"
             is-hidden-footer
         >
             <div class="block-container">
@@ -176,12 +176,12 @@ async function handleUpdate(values, action = 'create') {
                     :fields="props.fields"
                     :document="document"
                     :submit-fn="handleUpdate"
-                    :submit-text="document._id ? 'Cập nhật' : 'Thêm mới'"
+                    submit-text="Lưu"
                     buttonPosition="end"
                     reset-after-save
                 >
-                    <template #button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <template #cancel>
+                        <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
                     </template>
                 </VeeForm>
             </div>

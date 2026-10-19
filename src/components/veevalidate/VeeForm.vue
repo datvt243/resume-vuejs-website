@@ -194,6 +194,7 @@ const objComponent = {
         </div>
         <FrmInput v-if="getFieldId" key="_id" v-bind="getFieldId" type="hidden" label="" class="mb-0" />
         <div class="sticky bottom-0 z-10 flex flex-wrap items-center gap-2 border-t border-line bg-surface py-3" :class="justify[props.buttonPosition] || 'justify-start'">
+            <slot name="cancel"></slot>
             <button v-if="props.cancelable" type="button" :class="cancelClass" :disabled="submitting" @click="loadDocument(props.document)">Hủy</button>
             <button type="button" data-submit :class="submitClass" :disabled="!meta.valid || submitting" :aria-busy="submitting ? 'true' : undefined" @click="onSubmit">
                 <FontAwesomeIcon v-if="submitting" icon="fa-solid fa-spinner" spin aria-hidden="true" />

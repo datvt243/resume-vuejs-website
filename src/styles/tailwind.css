@@ -1361,28 +1361,6 @@
     .form .footer .btn {
         min-width: 160px;
     }
-    .item .image {
-        width: 120px;
-        display: block;
-        margin: 0;
-        font-size: 3rem;
-    }
-    .item-title {
-        font-size: 1.5rem;
-        text-transform: capitalize;
-        color: #00d095;
-        margin-bottom: 0.5em;
-        margin: 0;
-    }
-    .item-note {
-        opacity: 0.75;
-        font-size: 1rem;
-        font-style: italic;
-        margin-bottom: 0.5rem;
-    }
-    .item:not(:last-child) {
-        margin-bottom: 1.5rem;
-    }
     /* `.post-content` renders user-authored rich-text HTML (`v-html`) —
        education/experience/project/award/certificate/reference item
        descriptions, via `ItemTemplate.vue` (global component). */

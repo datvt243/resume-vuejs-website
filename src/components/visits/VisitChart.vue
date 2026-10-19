@@ -130,7 +130,7 @@ const tooltip = computed(() => {
             :style="{ left: `${tooltip.left}%`, top: `${tooltip.top}%` }"
             role="status"
         >
-            <div class="opacity-75">{{ tooltip.label }}</div>
+            <div class="text-fg-2">{{ tooltip.label }}</div>
             <strong>{{ tooltip.count }}</strong> lượt xem
         </div>
     </div>
@@ -138,42 +138,42 @@ const tooltip = computed(() => {
 
 <style scoped>
 .bar {
-    fill: var(--bs-primary);
-    transition: opacity 0.15s;
+    fill: var(--chart-1);
 }
 .bar.dim {
     opacity: 0.45;
 }
+@media (prefers-reduced-motion: no-preference) {
+    .bar {
+        transition: opacity 150ms ease-out;
+    }
+}
 .gridline {
-    stroke: var(--bs-border-color);
+    stroke: var(--chart-grid);
     stroke-width: 1;
-    stroke-dasharray: 2 3;
 }
 .baseline {
-    stroke: var(--bs-secondary-color);
+    stroke: var(--chart-axis);
     stroke-width: 1;
 }
 .axis-label {
-    fill: var(--bs-secondary-color);
+    fill: var(--chart-axis);
     font-size: 11px;
+    font-variant-numeric: tabular-nums;
 }
-rect:focus {
+/* Mouse focus stays quiet; keyboard focus gets the ring */
+rect:focus:not(:focus-visible) {
     outline: none;
 }
 rect:focus-visible {
-    outline: 2px solid var(--bs-primary);
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
 }
 .chart-tooltip {
     position: absolute;
     transform: translate(-50%, calc(-100% - 8px));
     pointer-events: none;
     white-space: nowrap;
-    padding: 4px 8px;
-    font-size: 12px;
-    border-radius: 4px;
-    background: var(--bs-body-bg);
-    color: var(--bs-body-color);
-    border: 1px solid var(--bs-border-color);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    @apply rounded border border-line bg-surface p-2 text-xs text-fg shadow-float;
 }
 </style>

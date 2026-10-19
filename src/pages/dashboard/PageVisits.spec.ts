@@ -3,6 +3,8 @@ import { ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import PageVisits from './PageVisits.vue'
+import Heading from '@/components/global/Heading.vue'
+import { candidateStore } from '@/stores/candidate'
 
 const interval = ref('day')
 const stats = ref<any>(null)
@@ -13,7 +15,8 @@ vi.mock('@/composables/useVisitStats', () => ({
 
 function mountPage() {
     return mount(PageVisits, {
-        global: { stubs: { TableDefault: true, VisitChart: true, Heading: true } },
+        // Heading renders for real: the interval control lives in its actions slot
+        global: { components: { Heading }, stubs: { VisitChart: true, NoData: true } },
     })
 }
 
@@ -28,7 +31,8 @@ describe('PageVisits', () => {
         const wrapper = mountPage()
 
         expect(wrapper.findComponent({ name: 'VisitChart' }).exists()).toBe(false)
-        expect(wrapper.findComponent({ name: 'TableDefault' }).exists()).toBe(true)
+        expect(wrapper.find('table').exists()).toBe(true)
+        expect(wrapper.findAll('th').map(th => th.text())).toEqual(['Thời gian', 'Vị trí', 'Địa chỉ IP'])
     })
 
     it('shows the total and labels null source/country instead of leaving them blank', () => {
@@ -45,7 +49,8 @@ describe('PageVisits', () => {
         const wrapper = mountPage()
         const text = wrapper.text()
 
-        expect(text).toContain('4 lượt xem trong 30 ngày gần nhất')
+        expect(text).toContain('Lượt xem · 30 ngày')
+        expect(text).toContain('Nguồn hàng đầu · 30 ngày')
         expect(text).toContain('linkedin.com')
         expect(text).toContain('(75%)')
         expect(text).toContain('Trực tiếp / không rõ')
@@ -66,6 +71,29 @@ describe('PageVisits', () => {
         await wrapper.find('[data-interval="week"]').trigger('click')
 
         expect(interval.value).toBe('week')
-        expect(wrapper.find('[data-interval="week"]').classes()).toContain('btn-primary')
+        expect(wrapper.find('[data-interval="week"]').attributes('aria-checked')).toBe('true')
+        expect(wrapper.find('[data-interval="day"]').attributes('aria-checked')).toBe('false')
+    })
+
+    it('paginates the detail table 25 rows at a time and shows "—" for missing values', async () => {
+        const visits = Array.from({ length: 30 }, (_, i) => ({
+            _id: `v${i}`,
+            createdAt: '2026-10-19T10:00:00.000Z',
+            location: i === 0 ? '' : 'Hà Nội',
+            ip: '1.2.3.4',
+        }))
+        candidateStore().setCandidateByField({ visits })
+        const wrapper = mountPage()
+
+        expect(wrapper.findAll('tbody tr')).toHaveLength(25)
+        expect(wrapper.find('tbody tr').findAll('td')[1].text()).toBe('—')
+        expect(wrapper.text()).toContain('1–25 trong 30')
+
+        const next = wrapper.findAll('button').find(b => b.text() === 'Sau')!
+        await next.trigger('click')
+
+        expect(wrapper.findAll('tbody tr')).toHaveLength(5)
+        expect(wrapper.text()).toContain('26–30 trong 30')
+        expect(next.attributes('disabled')).toBeDefined()
     })
 })

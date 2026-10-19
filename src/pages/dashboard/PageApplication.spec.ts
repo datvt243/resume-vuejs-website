@@ -31,6 +31,7 @@ const stubs = {
     Heading: { template: '<div><slot /></div>' },
     Button: true,
     ItemActions: true,
+    LoadingGate: { template: '<div><slot /></div>' },
     NoData: true,
     ListTransition: { template: '<ul><slot /></ul>' },
     ItemTemplate: { template: '<div class="item"><slot /></div>' },

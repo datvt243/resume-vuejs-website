@@ -11,6 +11,6 @@ const yearNow = new Date().getFullYear()
 
 <template lang="pug">
 footer.py-2.border-t(class="border-[var(--bs-border-color)]")
-    .container.text-end.opacity-50
+    .container.text-end.text-fg-3
         small.text-sm copyright by <a href="https://github.com/datvt243" target="_blank">me</a> &copy; {{ yearNow }}
 </template>

@@ -88,45 +88,27 @@ onUnmounted(() => document.body.classList.remove('cv-print-mode'))
 </script>
 
 <template>
-    <div class="mb-[1.5rem] no-print flex flex-wrap items-center justify-between gap-[0.75rem]">
+    <div class="no-print mb-6">
         <Heading :level="1" text="Xem trước CV">
-            <div class="flex flex-wrap gap-2">
-                <Button text="Xuất PDF / In" icon="fa-solid fa-download" type="primary" @click="handlePrint()" />
-                <Button text="Xuất JSON Resume" icon="fa-solid fa-download" @click="handleExportJsonResume()" />
-            </div>
+            <Button text="Xuất JSON Resume" icon="fa-solid fa-download" @click="handleExportJsonResume()" />
+            <Button text="Xuất PDF / In" icon="fa-solid fa-download" type="primary" @click="handlePrint()" />
         </Heading>
-        <div class="flex items-center gap-[0.5rem]">
-            <span class="text-sm opacity-75">Giao diện:</span>
-            <button
-                v-for="t in THEMES"
-                :key="t.value"
-                type="button"
-                class="btn btn-sm"
-                :class="selectedTheme === t.value ? 'btn-success' : 'btn-outline-success'"
-                @click="setTheme(t.value)"
-            >
-                {{ t.label }}
-            </button>
-        </div>
-        <div class="flex items-center gap-[0.5rem]">
-            <span class="text-sm opacity-75">Ngôn ngữ:</span>
-            <button
-                v-for="l in CV_LANGS"
-                :key="l.value"
-                type="button"
-                class="btn btn-sm"
-                :class="selectedLang === l.value ? 'btn-success' : 'btn-outline-success'"
-                @click="setLang(l.value)"
-            >
-                {{ l.label }}
-            </button>
-        </div>
-        <div v-if="profiles.length" class="flex items-center gap-[0.5rem]">
-            <span class="text-sm opacity-75">Profile CV:</span>
-            <select class="form-select form-select-sm w-auto" :value="activeProfileId" @change="setActiveProfile($event.target.value)">
-                <option value="">Tất cả (mặc định)</option>
-                <option v-for="p in profiles" :key="p._id" :value="p._id">{{ p.name }}</option>
-            </select>
+        <div class="flex flex-wrap items-end gap-4 rounded-md border border-line bg-surface p-4">
+            <div>
+                <p class="form-label block">Giao diện</p>
+                <SegmentedControl :model-value="selectedTheme" :options="THEMES" aria-label="Giao diện CV" @update:model-value="setTheme" />
+            </div>
+            <div>
+                <p class="form-label block">Ngôn ngữ</p>
+                <SegmentedControl :model-value="selectedLang" :options="CV_LANGS" aria-label="Ngôn ngữ CV" @update:model-value="setLang" />
+            </div>
+            <div v-if="profiles.length">
+                <label for="preview-profile" class="form-label">Profile CV</label>
+                <select id="preview-profile" class="form-select block" :value="activeProfileId" @change="setActiveProfile($event.target.value)">
+                    <option value="">Tất cả (mặc định)</option>
+                    <option v-for="p in profiles" :key="p._id" :value="p._id">{{ p.name }}</option>
+                </select>
+            </div>
         </div>
     </div>
 

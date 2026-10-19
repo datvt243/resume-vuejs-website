@@ -12,7 +12,7 @@ async function mountAt(path: string) {
         routes: [{ path: '/resume/:slug', name: 'public-resume', component: PagePublicResume }],
     })
     await router.push(path)
-    const wrapper = mount(PagePublicResume, { global: { plugins: [router] } })
+    const wrapper = mount(PagePublicResume, { global: { plugins: [router], stubs: { NoData: true } } })
     await flushPromises()
     return wrapper
 }

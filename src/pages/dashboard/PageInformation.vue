@@ -245,37 +245,43 @@ async function handleUpdateSlug(values) {
         </FormSection>
 
         <FormSection title="Thông tin cá nhân" description="Họ tên, liên hệ và phần giới thiệu trên CV.">
-            <VeeForm
-                :key="'frm-basic-info'"
-                :fields="formFields"
-                :document="document"
-                :submit-fn="handleUpdate"
-                submit-text="Lưu thay đổi"
-                button-position="end"
-                cancelable
-            />
+            <LoadingGate variant="form">
+                <VeeForm
+                    :key="'frm-basic-info'"
+                    :fields="formFields"
+                    :document="document"
+                    :submit-fn="handleUpdate"
+                    submit-text="Lưu thay đổi"
+                    button-position="end"
+                    cancelable
+                />
+            </LoadingGate>
         </FormSection>
 
         <FormSection title="Mạng xã hội" description="Hiện ở phần liên hệ trên CV.">
-            <VeeForm
-                :key="'frm-social-media'"
-                :fields="socialMediaFields"
-                :submit-fn="handleUpdateSocialNetwork"
-                submit-text="Lưu thay đổi"
-                button-position="end"
-            />
+            <LoadingGate variant="form">
+                <VeeForm
+                    :key="'frm-social-media'"
+                    :fields="socialMediaFields"
+                    :submit-fn="handleUpdateSocialNetwork"
+                    submit-text="Lưu thay đổi"
+                    button-position="end"
+                />
+            </LoadingGate>
         </FormSection>
 
         <FormSection title="Link CV công khai" description="Địa chỉ dễ đọc thay cho email trên URL.">
-            <VeeForm
-                :key="'frm-slug'"
-                :fields="slugFields"
-                :document="slugDocument"
-                :submit-fn="handleUpdateSlug"
-                submit-text="Lưu thay đổi"
-                button-position="end"
-                cancelable
-            />
+            <LoadingGate variant="form">
+                <VeeForm
+                    :key="'frm-slug'"
+                    :fields="slugFields"
+                    :document="slugDocument"
+                    :submit-fn="handleUpdateSlug"
+                    submit-text="Lưu thay đổi"
+                    button-position="end"
+                    cancelable
+                />
+            </LoadingGate>
         </FormSection>
 
         <FormSection title="Chia sẻ CV" description="Chọn profile và ngôn ngữ cho link, rồi gửi link hoặc mã QR.">

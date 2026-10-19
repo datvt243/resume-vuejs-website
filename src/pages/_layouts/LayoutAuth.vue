@@ -14,7 +14,7 @@ import Footer from '@/pages/_layouts/Footer.vue'
 <template lang="pug">
 .body-container 
     Header
-    main.main-container(class="py-[1.5rem]")
+    main.main-container.py-6
         #reload
         .container
             slot

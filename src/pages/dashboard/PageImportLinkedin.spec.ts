@@ -24,6 +24,7 @@ vi.mock('@/composables/useDocument', () => ({
 
 const stubs = {
     Heading: { props: ['text'], template: '<div><h2>{{ text }}</h2><slot /></div>' },
+    SegmentedControl: true,
     Button: { props: ['text'], emits: ['click'], template: '<button class="stub-btn" @click="$emit(\'click\')">{{ text }}</button>' },
     Modal: { props: ['title'], template: '<div class="stub-modal">{{ title }}<slot /></div>' },
     VeeForm: true,

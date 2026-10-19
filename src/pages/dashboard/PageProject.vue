@@ -167,11 +167,13 @@ function showModalDuplicateDoc(doc) {
                 </li>
             </ListTransition>
         </div>
-        <div v-else class="rounded-md border border-line bg-surface">
-            <NoData title="Chưa có dự án nào" description="Thêm dự án để cho thấy bạn đã làm được gì.">
-                <Button icon="fa-solid fa-plus" text="Thêm dự án" @click="showModalCreateDoc()" />
-            </NoData>
-        </div>
+        <LoadingGate v-else>
+            <div class="rounded-md border border-line bg-surface">
+                <NoData title="Chưa có dự án nào" description="Thêm dự án để cho thấy bạn đã làm được gì.">
+                    <Button icon="fa-solid fa-plus" text="Thêm dự án" @click="showModalCreateDoc()" />
+                </NoData>
+            </div>
+        </LoadingGate>
     </div>
 
     <Modal

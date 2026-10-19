@@ -89,13 +89,19 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div v-if="loading" class="text-center py-[3rem]">
-        <p class="opacity-75">Đang tải hồ sơ...</p>
+    <div v-if="loading" class="mx-auto max-w-3xl space-y-3 px-4 py-12" aria-busy="true">
+        <span class="sr-only">Đang tải hồ sơ…</span>
+        <div class="h-8 w-1/2 rounded bg-surface-2 motion-safe:animate-pulse"></div>
+        <div class="h-4 w-1/3 rounded bg-surface-2 motion-safe:animate-pulse"></div>
+        <div class="h-32 rounded bg-surface-2 motion-safe:animate-pulse"></div>
     </div>
 
-    <div v-else-if="notFound" class="alert alert-warning text-center mx-auto" style="max-width: 500px">
-        <p class="m-0 p-[1rem]">Hồ sơ không tồn tại hoặc không được chia sẻ công khai.</p>
-    </div>
+    <NoData
+        v-else-if="notFound"
+        icon="fa-solid fa-circle-info"
+        title="Không tìm thấy hồ sơ"
+        description="Hồ sơ không tồn tại hoặc chưa được chia sẻ công khai."
+    />
 
     <CvResumeLayout v-else :data="data" :theme="theme" :lang="lang" />
 </template>

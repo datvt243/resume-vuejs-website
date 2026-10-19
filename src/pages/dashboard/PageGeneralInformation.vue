@@ -146,8 +146,10 @@ const professionalSkillFields = computed(() => {
     </Heading>
 
     <FormSection title="Mong muốn công việc" description="Vị trí, mức lương và nơi làm việc bạn đang tìm.">
-      <VeeForm :fields="formFields" :document="document" :submit-fn="handleUpdate" submit-text="Lưu thay đổi"
-        button-position="end" cancelable />
+      <LoadingGate variant="form">
+        <VeeForm :fields="formFields" :document="document" :submit-fn="handleUpdate" submit-text="Lưu thay đổi"
+          button-position="end" cancelable />
+      </LoadingGate>
     </FormSection>
 
     <template v-if="isLoading">

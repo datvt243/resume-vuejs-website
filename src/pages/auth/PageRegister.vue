@@ -42,8 +42,6 @@ const formFields = [
         name: 'email',
         label: 'Email',
         type: 'email',
-        icon: 'fa-solid fa-envelope',
-        text: "We'll never share your email with anyone else.",
         placeholder: 'Vui lòng nhập Email',
         autocomplete: 'email',
         valid: yup => yup.string().email().required(),
@@ -52,7 +50,6 @@ const formFields = [
         name: 'password',
         label: 'Mật khẩu',
         type: 'password',
-        icon: 'fa-solid fa-lock',
         autocomplete: 'new-password',
         text: 'Tối thiểu 12 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.',
         // khớp với format backend yêu cầu (verified qua API: tối thiểu 12
@@ -70,9 +67,8 @@ const formFields = [
     },
     {
         name: 'repassword',
-        label: 'Nhập lại Mật khẩu',
+        label: 'Nhập lại mật khẩu',
         type: 'password',
-        icon: 'fa-solid fa-lock',
         autocomplete: 'new-password',
         valid: yup =>
             yup
@@ -84,8 +80,8 @@ const formFields = [
 </script>
 
 <template>
-    <div class="register-page flex items-center justify-center">
-        <div class="auth-card">
+    <div class="flex justify-center py-12">
+        <div class="w-full max-w-md rounded-md border border-line bg-surface p-6">
             <Heading :level="1" text="Đăng ký" />
             <VeeForm
                 :fields="formFields"
@@ -94,24 +90,9 @@ const formFields = [
                         handleRegister(values, { toast: refToast, loading: refSpinner })
                     }
                 "
-                :submit-text="'Register'"
+                submit-text="Tạo tài khoản"
             />
         </div>
     </div>
 </template>
 
-<style scoped lang="scss">
-.register-page {
-    min-height: 70vh;
-}
-
-.auth-card {
-    width: 100%;
-    max-width: 440px;
-    padding: 2rem 2.25rem;
-    border-radius: 1rem;
-    background-color: var(--bs-tertiary-bg);
-    border: 1px solid var(--bs-border-color-translucent);
-    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.25);
-}
-</style>

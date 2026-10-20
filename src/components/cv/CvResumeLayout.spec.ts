@@ -75,4 +75,11 @@ describe('CvResumeLayout', () => {
             expect(wrapper.find('.cv-introduction').text()).toBe('Giới thiệu')
         })
     })
+
+    it('titles a career break by its type in the CV language', () => {
+        const withBreak = { ...data, experiences: [{ _id: 'e2', isCareerBreak: true, careerBreakType: 'travel', company: '', position: '' }] }
+        const titles = (lang: string) => mount(CvResumeLayout, { props: { data: withBreak, lang } }).findAll('.cv-item-title').map(t => t.text())
+        expect(titles('vi')).toContain('Nghỉ việc tạm thời — Du lịch')
+        expect(titles('en')).toContain('Career break — Travel')
+    })
 })

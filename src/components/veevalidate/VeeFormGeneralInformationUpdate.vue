@@ -13,6 +13,7 @@ import { ref, defineProps, computed, onBeforeMount, reactive, watch, inject } fr
 
 import { useDocument } from '@/composables/useDocument'
 import Swal from 'sweetalert2'
+import { buttonClass } from '@/lib/button.lib'
 import { candidateStore } from '@/stores/candidate'
 
 const candidate = inject('candidate')
@@ -88,14 +89,16 @@ async function handleUpdate(values, action = 'create') {
             input: 'text',
             html: 'Vui lòng nhập vào <code class="code">"delete"</code> để xác nhận xoá',
             inputValue: '',
-            inputPlaceholder: 'Enter "delete" to delete',
+            inputPlaceholder: 'Nhập "delete"',
             showCancelButton: true,
-            cancelButtonText: 'Huỷ',
-            confirmButtonText: 'Xoá',
+            reverseButtons: true,
+            cancelButtonText: 'Hủy',
+            confirmButtonText: 'Xóa',
             customClass: {
-                confirmButton: 'btn btn-danger mx-1 bg-danger',
-                cancelButton: 'btn btn-secondary mx-1',
+                confirmButton: buttonClass({ variant: 'danger' }),
+                cancelButton: buttonClass({ variant: 'secondary' }),
             },
+            buttonsStyling: false,
             inputValidator: value => {
                 if (value !== 'delete') {
                     return 'Vui lòng nhập vào <span class="code">"delete"</span> để xác nhận xoá'

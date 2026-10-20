@@ -24,6 +24,7 @@ import { useCandidate } from '@/composables/useCandidate'
 import { useDocument } from '@/composables/useDocument'
 
 import model from '@/models/profile.model'
+import { experienceTitle } from '@/models/experience.model'
 
 const { profiles: dataList, removeRecordById, addRecordToList } = useCandidate({
     field: 'profiles',
@@ -41,7 +42,7 @@ const { references } = useCandidate({ field: 'references' })
 
 const sections = computed(() => [
     { key: 'educationIds', label: 'Học vấn', items: educations.value, title: i => i.school, subTitle: i => i.major },
-    { key: 'experienceIds', label: 'Kinh nghiệm', items: experiences.value, title: i => i.company, subTitle: i => i.position },
+    { key: 'experienceIds', label: 'Kinh nghiệm', items: experiences.value, title: i => experienceTitle(i), subTitle: i => i.position },
     { key: 'projectIds', label: 'Dự án', items: projects.value, title: i => i.name, subTitle: i => i.position },
     { key: 'certificateIds', label: 'Chứng chỉ', items: certificates.value, title: i => i.name, subTitle: i => i.organization },
     { key: 'awardIds', label: 'Giải thưởng', items: awards.value, title: i => i.name, subTitle: i => i.organization },

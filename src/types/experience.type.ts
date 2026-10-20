@@ -12,6 +12,8 @@ export interface Experience {
     endDate: number
     isCurrent: boolean
     description: string
+    isCareerBreak?: boolean
+    careerBreakType?: string
     image?: ''
     website?: ''
 }

@@ -24,7 +24,7 @@ const INTERVAL_OPTIONS = [
     { value: 'day', range: '30 ngày' },
     { value: 'week', range: '12 tuần' },
     { value: 'month', range: '12 tháng' },
-]
+].map(o => ({ ...o, label: `Theo ${INTERVAL_LABELS[o.value]}` }))
 const rangeText = computed(() => INTERVAL_OPTIONS.find(o => o.value === interval.value)?.range)
 
 const numberFormat = new Intl.NumberFormat('vi-VN')
@@ -80,21 +80,7 @@ const pagerBtn = buttonClass({ variant: 'secondary', size: 'sm' })
 
 <template>
     <Heading :level="1" text="Lượt truy cập hồ sơ" description="Mỗi lần ai đó mở hồ sơ công khai qua link chia sẻ.">
-        <div class="inline-flex rounded bg-surface-2 p-0.5" role="radiogroup" aria-label="Khoảng thời gian">
-            <button
-                v-for="o in INTERVAL_OPTIONS"
-                :key="o.value"
-                type="button"
-                role="radio"
-                :aria-checked="interval === o.value ? 'true' : 'false'"
-                :data-interval="o.value"
-                class="h-7 rounded-sm px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-                :class="interval === o.value ? 'bg-surface text-fg shadow-sm' : 'text-fg-2 hover:text-fg'"
-                @click="interval = o.value"
-            >
-                Theo {{ INTERVAL_LABELS[o.value] }}
-            </button>
-        </div>
+        <SegmentedControl v-model="interval" :options="INTERVAL_OPTIONS" aria-label="Khoảng thời gian" />
     </Heading>
 
     <div class="space-y-6">

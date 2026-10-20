@@ -125,3 +125,28 @@
     /* min-height: 200px; */
     overflow-y: auto;
 }
+/* Tailwind preflight strips list padding, so the markers sat outside the editor and got clipped */
+.ck-content ul,
+.ck-content ol {
+    padding-left: 1.5rem;
+    margin: 0 0 0.75rem;
+}
+.ck-content ul {
+    list-style: disc;
+}
+.ck-content ol {
+    list-style: decimal;
+}
+.ck-content li ul {
+    list-style: circle;
+    margin: 0.25rem 0 0;
+}
+.ck-content li ol {
+    margin: 0.25rem 0 0;
+}
+.ck-content li + li {
+    margin-top: 0.25rem;
+}
+.ck-content li::marker {
+    color: var(--color-fg-3);
+}

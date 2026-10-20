@@ -88,3 +88,5 @@
 2026-10-19T16:01:30Z role=verifier outcome=REOPEN node=issue-224-remaining-pages rerun=none hub_bytes_before=193466 hub_bytes_after=195307
 2026-10-19T16:04:24Z role=verifier outcome=REOPEN node=issue-224-remaining-pages rerun=none hub_bytes_before=193466 hub_bytes_after=195307
 2026-10-19T16:10:09Z role=verifier outcome=SEAL node=issue-224-remaining-pages rerun=none hub_bytes_before=193466 hub_bytes_after=195918
+2026-10-19T16:32:59Z role=verifier outcome=REOPEN node=issue-235-career-break rerun=partial hub_bytes_before=195918 hub_bytes_after=196699
+2026-10-20T10:53:24Z role=verifier outcome=SEAL node=issue-235-career-break rerun=partial hub_bytes_before=195918 hub_bytes_after=196770

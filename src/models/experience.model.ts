@@ -16,23 +16,92 @@ const _mesRequired = 'Vui lòng nhập'
 const _defaultEndDate = new Date()
 _defaultEndDate.setMonth(_defaultEndDate.getMonth() + 1)
 
+// LinkedIn's career break types, labels from the backend `cv.careerBreakTypes`
+export const CAREER_BREAK_TYPES: Record<string, { vi: string; en: string }> = {
+    careerTransition: { vi: 'Chuyển đổi nghề nghiệp', en: 'Career transition' },
+    caregiving: { vi: 'Chăm sóc người thân', en: 'Caregiving' },
+    fullTimeParenting: { vi: 'Chăm sóc con toàn thời gian', en: 'Full-time parenting' },
+    gapYear: { vi: 'Năm nghỉ (gap year)', en: 'Gap year' },
+    healthAndWellbeing: { vi: 'Sức khoẻ', en: 'Health and well-being' },
+    layoff: { vi: 'Bị cắt giảm nhân sự', en: 'Layoff or position eliminated' },
+    personalGoal: { vi: 'Theo đuổi mục tiêu cá nhân', en: 'Personal goal pursuit' },
+    professionalDevelopment: { vi: 'Phát triển chuyên môn', en: 'Professional development' },
+    relocation: { vi: 'Chuyển nơi ở', en: 'Relocation' },
+    retirement: { vi: 'Nghỉ hưu', en: 'Retirement' },
+    travel: { vi: 'Du lịch', en: 'Travel' },
+    voluntaryWork: { vi: 'Hoạt động tình nguyện', en: 'Voluntary work' },
+}
+const CAREER_BREAK_LABEL = { vi: 'Nghỉ việc tạm thời', en: 'Career break' }
+
+export function experienceTitle(exp: { isCareerBreak?: boolean; careerBreakType?: string; company?: string }, lang: 'vi' | 'en' = 'vi'): string {
+    if (!exp?.isCareerBreak) return exp?.company || ''
+    const type = CAREER_BREAK_TYPES[exp.careerBreakType || '']?.[lang]
+    return type ? `${CAREER_BREAK_LABEL[lang]} — ${type}` : CAREER_BREAK_LABEL[lang]
+}
+
+// a career break has no company/position and a normal entry no break type —
+// clearing them stops a toggled entry from sending a stale value
+export function careerBreakPayload<T extends Record<string, any>>(values: T): T {
+    const isCareerBreak = !!values.isCareerBreak
+    return isCareerBreak
+        ? { ...values, isCareerBreak, company: '', position: '' }
+        : { ...values, isCareerBreak, careerBreakType: '' }
+}
+
+const isCareerBreak = (values: Record<string, any>) => !!values.isCareerBreak
+
 const MODEL: modelItem[] = [
     defaultId,
+    {
+        name: 'isCareerBreak',
+        label: 'Nghỉ việc tạm thời (career break)',
+        type: 'checkbox',
+        placeholder: '',
+        default: false,
+        valid: yup => yup.boolean(),
+        col: 'col-md-12',
+        convertTo: 'boolean',
+        checkedValue: false,
+    },
+    {
+        name: 'careerBreakType',
+        label: 'Loại nghỉ việc',
+        type: 'select',
+        options: Object.entries(CAREER_BREAK_TYPES).map(([value, { vi }]) => ({ value, text: vi })),
+        valid: yup =>
+            yup.string().when('isCareerBreak', {
+                is: true,
+                then: (s: any) => s.oneOf(Object.keys(CAREER_BREAK_TYPES), 'Loại nghỉ việc không hợp lệ').required('Vui lòng chọn'),
+                otherwise: (s: any) => s.nullable(),
+            }),
+        default: '',
+        showIf: isCareerBreak,
+    },
     {
         name: 'company',
         label: 'Tên công ty',
         type: 'text',
         placeholder: 'Vui lòng nhập Tên công ty',
-        valid: yup => yup.string().max(100, 'Tối đa 100 ký tự').required(_mesRequired),
+        valid: yup =>
+            yup
+                .string()
+                .max(100, 'Tối đa 100 ký tự')
+                .when('isCareerBreak', { is: true, otherwise: (s: any) => s.required(_mesRequired) }),
         default: '',
+        showIf: (values: Record<string, any>) => !isCareerBreak(values),
     },
     {
         name: 'position',
         label: 'Vị trí',
         type: 'text',
         placeholder: 'Vui lòng nhập Vị trí',
-        valid: yup => yup.string().max(50, 'Tối đa 50 ký tự').required(_mesRequired),
+        valid: yup =>
+            yup
+                .string()
+                .max(50, 'Tối đa 50 ký tự')
+                .when('isCareerBreak', { is: true, otherwise: (s: any) => s.required(_mesRequired) }),
         default: '',
+        showIf: (values: Record<string, any>) => !isCareerBreak(values),
     },
     {
         name: 'startDate',

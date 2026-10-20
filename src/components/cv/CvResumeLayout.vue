@@ -16,6 +16,7 @@
 import { computed } from 'vue'
 import { formatDate, getLocalizedText, sanitizeHtml } from '@/utilities/index'
 import generalInformationModel from '@/models/generalInformation.model'
+import { experienceTitle } from '@/models/experience.model'
 import { resolveTheme } from '@/composables/useCvTheme'
 
 const props = defineProps({
@@ -166,7 +167,7 @@ function certDateRange(item) {
             <h3 class="cv-section-title">{{ t.experiences }}</h3>
             <div v-for="exp in data.experiences" :key="exp._id" class="cv-item">
                 <div class="cv-item-head">
-                    <span class="cv-item-title">{{ exp.company }}</span>
+                    <span class="cv-item-title">{{ experienceTitle(exp, isEn ? 'en' : 'vi') }}</span>
                     <span class="cv-item-date">{{ dateRange(exp) }}</span>
                 </div>
                 <p v-if="exp.position" class="cv-item-sub">{{ exp.position }}</p>

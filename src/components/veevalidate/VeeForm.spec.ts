@@ -288,4 +288,20 @@ describe('VeeForm', () => {
             expect(wrapper.find('[data-lang="en"]').text()).not.toContain('!')
         })
     })
+
+    it('hides a field while its showIf returns false, keeping it mounted', async () => {
+        const conditional = [
+            { name: 'active', label: 'Active', type: 'checkbox', default: false, checkedValue: false },
+            { name: 'reason', label: 'Reason', type: 'text', default: '', showIf: (v: any) => !!v.active },
+        ] as unknown as modelItem[]
+        const wrapper = mountForm({ fields: conditional })
+        await flushPromises()
+        const reason = () => wrapper.find('input[name="reason"], input#reason').element.closest('.col-12') as HTMLElement
+        expect(reason().style.display).toBe('none')
+
+        await wrapper.find('input[type="checkbox"]').setValue(true)
+        await flushPromises()
+        expect(reason().style.display).toBe('')
+        expect(wrapper.find('input#reason').attributes('showif')).toBeUndefined()
+    })
 })

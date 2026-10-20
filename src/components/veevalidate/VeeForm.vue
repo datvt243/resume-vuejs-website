@@ -36,7 +36,7 @@ const props = defineProps({
 
 const getFields = computed(() => {
     return props.fields.map(e => {
-        const { valid: _valid, ...rest } = e
+        const { valid: _valid, showIf: _showIf, ...rest } = e
         return rest
     })
 })
@@ -116,6 +116,7 @@ defineExpose({
 const LANGS = ['vi', 'en']
 const formLang = ref('vi')
 const hasLocalizedFields = computed(() => getFields.value.some(f => f.lang))
+const hiddenByCondition = computed(() => new Set(props.fields.filter(f => f.showIf && !f.showIf(values)).map(f => f.name)))
 function langHasError(lang) {
     return getFields.value.some(f => f.lang === lang && errors.value[f.name])
 }
@@ -187,7 +188,7 @@ const objComponent = {
         </div>
         <div class="row">
             <template v-for="el in getFields.filter(f => f.type !== 'hidden')" :key="el.name">
-                <div v-show="!el.lang || el.lang === formLang" :class="['col-12', el?.col || 'col-md-12']">
+                <div v-show="(!el.lang || el.lang === formLang) && !hiddenByCondition.has(el.name)" :class="['col-12', el?.col || 'col-md-12']">
                     <component :is="objComponent?.[`${el.type}`] || objComponent['default']" :key="el?.name" v-bind="el" />
                 </div>
             </template>

@@ -15,7 +15,7 @@ import { useDocument } from '@/composables/useDocument'
 import { useManualOrder } from '@/composables/useManualOrder'
 import { localizedToForm, localizedFromForm } from '@/utilities/index'
 
-import model from '@/models/experience.model.ts'
+import model, { experienceTitle, careerBreakPayload } from '@/models/experience.model.ts'
 
 const { experiences: dataList, removeRecordById, addRecordToList } = useCandidate({ field: 'experiences' })
 
@@ -72,7 +72,7 @@ async function handleUpdate(values) {
         val.startDate = +new Date(val.startDate)
         val.endDate = +new Date(val.endDate)
         !val.isCurrent && (val.isCurrent = false)
-        return localizedFromForm(val, ['description'])
+        return localizedFromForm(careerBreakPayload(val), ['description'])
     })({ ...values })
 
     if (isDuplicating.value) {
@@ -87,7 +87,7 @@ async function handleUpdate(values) {
 }
 
 async function handleDelete(doc) {
-    deleteDoc({ ...doc }, 'company', res => {
+    deleteDoc({ ...doc, company: experienceTitle(doc) }, 'company', res => {
         const { data } = res
         removeRecordById(data._id)
     })
@@ -169,9 +169,9 @@ function showModalDuplicateDoc(doc) {
         ref="refModal"
         :title="
             isDuplicating
-                ? `Nhân bản: ${document.company}`
+                ? `Nhân bản: ${experienceTitle(document)}`
                 : document._id
-                  ? `Chỉnh sửa: ${document.company}`
+                  ? `Chỉnh sửa: ${experienceTitle(document)}`
                   : 'Thêm kinh nghiệm'
         "
         is-hidden-footer

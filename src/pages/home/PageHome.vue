@@ -75,7 +75,7 @@ const CV_TEMPLATES = [
     { value: 'ats', label: 'Tối ưu ATS' },
 ]
 const cvTemplate = ref('classic')
-const { selectedLang, setLang, CV_LANGS } = useCvLang()
+const { selectedLang } = useCvLang()
 // plain link navigation → no Authorization header, pass the in-memory access token as `?token=`
 const downloadCVUrl = computed(() => getDownloadCvUrl(_host, cvTemplate.value, auth.getToken, selectedLang.value))
 const cvFileName = computed(() => {
@@ -193,9 +193,6 @@ const btnGhost = buttonClass({ variant: 'ghost', size: 'sm' })
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <SegmentedControl v-model="cvTemplate" :options="CV_TEMPLATES" aria-label="Mẫu CV" />
-                    <select class="form-select form-select-sm w-auto" :value="selectedLang" aria-label="Ngôn ngữ CV" @change="setLang($event.target.value)">
-                        <option v-for="l in CV_LANGS" :key="l.value" :value="l.value">{{ l.label }}</option>
-                    </select>
                     <span title="Sắp ra mắt">
                         <button type="button" :class="btnSecondary" disabled aria-describedby="home-attach-soon">
                             <FontAwesomeIcon icon="fa-solid fa-paperclip" />

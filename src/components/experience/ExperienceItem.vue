@@ -9,6 +9,7 @@ import { defineProps, defineEmits, computed } from 'vue'
 import type { PropType } from 'vue'
 import type { Experience } from '@/types/experience.type'
 import { formatDate } from '@/utilities/index'
+import { experienceTitle } from '@/models/experience.model'
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 const emits = defineEmits(['onEdit', 'onDelete', 'onDuplicate'])
@@ -38,7 +39,7 @@ const getDate = computed(() => {
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 const item = computed(() => ({
-    title: model.value.company,
+    title: experienceTitle(model.value),
     subTitle: model.value.position,
     date: getDate.value,
     description: model.value.description,

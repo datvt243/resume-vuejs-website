@@ -53,6 +53,8 @@ export interface modelItem {
     checkedValue?: boolean
     options?: Options[]
     cellClass?: string
+    // VeeForm hides the field while this returns false (values and validation stay)
+    showIf?: (_values: Record<string, any>) => boolean
     [key: string]: any
 }
 

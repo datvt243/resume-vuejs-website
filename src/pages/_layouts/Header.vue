@@ -10,6 +10,10 @@ import { authStore } from '@/stores/auth'
 import { candidateStore } from '@/stores/candidate'
 import { useTheme } from '@/composables/useTheme'
 import { useRouter } from 'vue-router'
+// eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
+import LangSwitch from '@/pages/_layouts/LangSwitch.vue'
+import { useI18n } from 'vue-i18n'
+import { useCvLang } from '@/composables/useCvLang'
 import { API } from '@/config/api.config'
 import { getDownloadCvUrl, escapeHtml } from '@/utilities/index'
 
@@ -21,6 +25,8 @@ const store = authStore()
 const candidate = candidateStore()
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 const { theme, toggleTheme } = useTheme()
+const { selectedLang } = useCvLang()
+const { t } = useI18n()
 
 const _user = store.getUser
 
@@ -33,7 +39,7 @@ const _settings = {
     getFile() {
         // plain link navigation → no Authorization header, pass the
         // in-memory access token as `?token=` (see stores/auth.ts)
-        return getDownloadCvUrl(this.host, 'classic', store.getToken)
+        return getDownloadCvUrl(this.host, 'classic', store.getToken, selectedLang.value)
     },
 }
 
@@ -43,8 +49,8 @@ const API_DOWNLOAD_PDF = `${HOST}api/v1/download-pdf?token=${_token}` */
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 const authRouter = [
-    { text: 'Đăng nhập', to: '/login' },
-    { text: 'Đăng ký', to: '/register' },
+    { key: 'header.login', to: '/login' },
+    { key: 'header.register', to: '/register' },
 ]
 
 // DESIGN.md §5.3 — shared by the header's icon-only and secondary buttons
@@ -54,15 +60,15 @@ const iconBtn = `inline-flex h-10 w-10 shrink-0 items-center justify-center roun
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 const secondaryBtn = `inline-flex h-10 shrink-0 items-center gap-2 rounded border border-line-strong bg-surface px-3 text-sm font-medium text-fg no-underline hover:bg-surface-2 hover:text-fg lg:h-8 ${focusRing}`
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
-const ghostLink = `inline-flex h-10 items-center rounded px-3 text-sm text-fg-2 no-underline hover:bg-surface-2 hover:text-fg lg:h-8 ${focusRing}`
+const ghostLink = `inline-flex h-10 items-center whitespace-nowrap rounded px-3 text-sm text-fg-2 no-underline hover:bg-surface-2 hover:text-fg lg:h-8 ${focusRing}`
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 const mesUser = computed(() => {
     const { firstName = '', lastName = '' } = candidate.getCandidate || {}
-    const name = `${firstName} ${lastName}`.trim() || store.getUser?.email || 'Tài khoản'
+    const name = `${firstName} ${lastName}`.trim() || store.getUser?.email || t('header.account')
 
     // Dropdown renders `text` via v-html — the name is user data, escape it
-    return `<span class="block max-w-32 truncate">${escapeHtml(name)}</span>`
+    return `<span class="block max-w-16 truncate sm:max-w-32">${escapeHtml(name)}</span>`
 })
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
@@ -77,19 +83,20 @@ header.sticky.top-0.z-20.flex.h-14.shrink-0.items-center.gap-2.border-b.border-l
     template(v-if="!store.isAuthenticated")
         RouterLink.flex.items-center.gap-2.text-fg.no-underline(to="/login" class="hover:text-fg")
             FontAwesomeIcon.text-brand(icon="fa-solid fa-file-lines")
-            span.text-md.font-semibold Resume API
-        nav.ms-auto.flex.items-center.gap-1(aria-label="Tài khoản")
+            span.hidden.text-md.font-semibold(class="sm:inline") Resume API
+        LangSwitch
+        nav.ms-auto.flex.items-center.gap-1(:aria-label="$t('header.account')")
             RouterLink(
                 v-for="r in authRouter"
                 :key="r.to"
                 :to="r.to"
                 :class="[ghostLink, { 'bg-surface-2 font-medium text-fg': r.to === $route.path }]"
                 :aria-current="r.to === $route.path ? 'page' : undefined"
-            ) {{ r.text }}
+            ) {{ $t(r.key) }}
             button(
                 type="button"
                 :class="iconBtn"
-                :aria-label="theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'"
+                :aria-label="$t(theme === 'dark' ? 'header.themeLight' : 'header.themeDark')"
                 @click="toggleTheme"
             )
                 FontAwesomeIcon(:icon="theme === 'dark' ? 'fa fa-sun' : 'fa fa-moon'")
@@ -97,7 +104,7 @@ header.sticky.top-0.z-20.flex.h-14.shrink-0.items-center.gap-2.border-b.border-l
         button(
             type="button"
             :class="[iconBtn, 'lg:hidden']"
-            aria-label="Mở menu điều hướng"
+            :aria-label="$t('header.openNav')"
             aria-controls="app-sidebar"
             :aria-expanded="navOpen ? 'true' : 'false'"
             @click="$emit('toggle-nav')"
@@ -106,27 +113,28 @@ header.sticky.top-0.z-20.flex.h-14.shrink-0.items-center.gap-2.border-b.border-l
         RouterLink.flex.items-center.gap-2.text-fg.no-underline(to="/" class="hover:text-fg lg:hidden")
             FontAwesomeIcon.text-brand(icon="fa-solid fa-file-lines")
             span.hidden.text-md.font-semibold(class="sm:inline") Resume API
-        .ms-auto.flex.min-w-0.items-center.gap-2
+        LangSwitch
+        .ms-auto.flex.min-w-0.items-center.gap-1(class="sm:gap-2")
             button(
                 type="button"
                 :class="iconBtn"
-                :aria-label="theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'"
+                :aria-label="$t(theme === 'dark' ? 'header.themeLight' : 'header.themeDark')"
                 @click="toggleTheme"
             )
                 FontAwesomeIcon(:icon="theme === 'dark' ? 'fa fa-sun' : 'fa fa-moon'")
-            a(:href="_settings.getFile()" target="_blank" :class="secondaryBtn" aria-label="Tải CV")
+            a(:href="_settings.getFile()" target="_blank" :class="[secondaryBtn, 'hidden sm:inline-flex']" :aria-label="$t('header.downloadCv')")
                 FontAwesomeIcon(icon="fa-solid fa-download")
-                span.hidden(class="md:inline") Tải CV
+                span.hidden(class="md:inline") {{ $t('header.downloadCv') }}
             Dropdown.user-menu(:text="mesUser" variant="secondary" split is-sm)
                 li
                     a.dropdown-item(:href="_settings.getMe()" target="_blank")
                         FontAwesomeIcon.me-2.text-fg-3(icon="fa-solid fa-code")
-                        | Xem API
+                        | {{ $t('header.viewApi') }}
                 li.dropdown-divider
                 li
                     button.dropdown-item(type="button" @click="_handelLogout")
                         FontAwesomeIcon.me-2.text-danger(icon="fa-solid fa-arrow-right-from-bracket")
-                        | Đăng xuất
+                        | {{ $t('header.logout') }}
 </template>
 
 <style scoped>

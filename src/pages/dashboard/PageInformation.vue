@@ -137,7 +137,7 @@ const { activeProfileId, setActiveProfile } = useActiveProfile()
 const activeProfile = computed(() => profiles.value.find(p => p._id === activeProfileId.value) || null)
 
 // Issue #182: CV language as `?lang=en`, omitted for the default vi
-const { selectedLang, setLang, CV_LANGS } = useCvLang()
+const { selectedLang } = useCvLang()
 
 const publicLink = computed(() => {
     const value = slugDocument.slug || candidate.getCandidate?.email || ''
@@ -284,7 +284,7 @@ async function handleUpdateSlug(values) {
             </LoadingGate>
         </FormSection>
 
-        <FormSection title="Chia sẻ CV" description="Chọn profile và ngôn ngữ cho link, rồi gửi link hoặc mã QR.">
+        <FormSection title="Chia sẻ CV" description="Chọn profile cho link, rồi gửi link hoặc mã QR. Ngôn ngữ của link theo bộ chọn VI | EN trên thanh trên cùng.">
             <div class="space-y-4 pb-4">
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div v-if="profiles.length">
@@ -292,12 +292,6 @@ async function handleUpdateSlug(values) {
                         <select id="share-profile" class="form-select w-full" :value="activeProfileId" @change="setActiveProfile($event.target.value)">
                             <option value="">Tất cả (mặc định)</option>
                             <option v-for="p in profiles" :key="p._id" :value="p._id">{{ p.name }}</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="share-lang" class="form-label">Ngôn ngữ CV</label>
-                        <select id="share-lang" class="form-select w-full" :value="selectedLang" @change="setLang($event.target.value)">
-                            <option v-for="l in CV_LANGS" :key="l.value" :value="l.value">{{ l.label }}</option>
                         </select>
                     </div>
                 </div>

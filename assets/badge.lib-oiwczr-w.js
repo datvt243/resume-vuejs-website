@@ -1,0 +1,1 @@
+const n="inline-flex h-5 items-center gap-1.5 rounded-sm px-2 text-xs font-medium",e={neutral:"bg-surface-2 text-fg-2",success:"bg-success-subtle text-success",warning:"bg-warning-subtle text-warning",danger:"bg-danger-subtle text-danger",info:"bg-info-subtle text-info"};function s(t="neutral"){return`${n} ${e[t]||e.neutral}`}export{s as b};

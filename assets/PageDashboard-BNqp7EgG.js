@@ -1,1 +1,0 @@
-import{o,e as t,i as a,l as r}from"./index-HZsZotP9.js";const s={class:"dashboard"},d={__name:"PageDashboard",setup(c){return(n,_)=>{const e=r("router-view");return o(),t("div",s,[a(e)])}}};export{d as default};

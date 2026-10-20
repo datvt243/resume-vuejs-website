@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import PageVisits from './PageVisits.vue'
 import Heading from '@/components/global/Heading.vue'
+import SegmentedControl from '@/components/global/SegmentedControl.vue'
 import { candidateStore } from '@/stores/candidate'
 
 const interval = ref('day')
@@ -16,7 +17,7 @@ vi.mock('@/composables/useVisitStats', () => ({
 function mountPage() {
     return mount(PageVisits, {
         // Heading renders for real: the interval control lives in its actions slot
-        global: { components: { Heading }, stubs: { VisitChart: true, NoData: true } },
+        global: { components: { Heading, SegmentedControl }, stubs: { VisitChart: true, NoData: true } },
     })
 }
 
@@ -68,11 +69,12 @@ describe('PageVisits', () => {
     it('switches interval from the toggle', async () => {
         const wrapper = mountPage()
 
-        await wrapper.find('[data-interval="week"]').trigger('click')
+        const radio = (label: string) => wrapper.findAll('[role="radio"]').find(b => b.text() === label)!
+        await radio('Theo tuần').trigger('click')
 
         expect(interval.value).toBe('week')
-        expect(wrapper.find('[data-interval="week"]').attributes('aria-checked')).toBe('true')
-        expect(wrapper.find('[data-interval="day"]').attributes('aria-checked')).toBe('false')
+        expect(radio('Theo tuần').attributes('aria-checked')).toBe('true')
+        expect(radio('Theo ngày').attributes('aria-checked')).toBe('false')
     })
 
     it('paginates the detail table 25 rows at a time and shows "—" for missing values', async () => {

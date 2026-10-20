@@ -20,26 +20,6 @@ module.exports = {
     // incidental usage elsewhere is fragile — safelisting every class this
     // component system defines, explicitly, regardless of current usage.
     safelist: [
-        'btn',
-        'btn-sm',
-        'btn-primary',
-        'btn-secondary',
-        'btn-success',
-        'btn-danger',
-        'btn-warning',
-        'btn-info',
-        'btn-light',
-        'btn-dark',
-        'btn-outline-primary',
-        'btn-outline-secondary',
-        'btn-outline-success',
-        'btn-outline-danger',
-        'btn-outline-warning',
-        'btn-outline-info',
-        'btn-outline-light',
-        'btn-outline-dark',
-        'btn-group',
-        'btn-group-sm',
         'dropdown-toggle',
         'dropdown-toggle-split',
         // Node `tailwindcss-dropdown-menu-styling`
@@ -47,13 +27,6 @@ module.exports = {
         'dropdown-item',
         'dropdown-divider',
         'disabled',
-        // Node `tailwindcss-badge-alert`
-        'badge',
-        'rounded-pill',
-        'text-bg-success',
-        'text-bg-secondary',
-        'alert',
-        'alert-warning',
         // Node `tailwindcss-form-controls`
         'form-control',
         'form-select',

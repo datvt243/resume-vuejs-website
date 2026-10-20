@@ -6,6 +6,12 @@
  */
 
 import { ref, defineEmits, defineProps, watch } from 'vue'
+import { buttonClass } from '@/lib/button.lib'
+import { badgeClass } from '@/lib/badge.lib'
+
+// raised on focus so the positioned input doesn't paint over its focus ring
+const addClass = `${buttonClass({ variant: 'secondary', iconOnly: true })} relative focus-visible:z-10`
+const tagClass = badgeClass()
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -47,7 +53,7 @@ async function removeTag(_tag, index) {
             <div class="m-0">
                 <div class="input-group input-group-sm mb-0">
                     <input type="text" class="form-control" placeholder="Thêm mới" v-model="tag" />
-                    <button class="btn btn-outline-success" type="button" aria-label="Thêm thẻ" @click="addTag()">
+                    <button :class="addClass" type="button" aria-label="Thêm thẻ" @click="addTag()">
                         <FontAwesomeIcon icon="fa-solid fa-plus" />
                     </button>
                 </div>
@@ -55,7 +61,7 @@ async function removeTag(_tag, index) {
         </div>
         <ul class="tag-list">
             <li v-for="(tag, i) in tags" :key="`tag${i}`">
-                <span class="badge text-bg-secondary inline-flex items-center gap-1">
+                <span :class="tagClass">
                     {{ tag }}
                     <button type="button" class="inline-flex items-center rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
                         :aria-label="`Xóa thẻ ${tag}`" @click="removeTag(tag, i)">

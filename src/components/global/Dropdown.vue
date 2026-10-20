@@ -18,9 +18,11 @@
  */
 
 import { ref, defineProps, computed, onBeforeUnmount } from 'vue'
+import { buttonClass } from '@/lib/button.lib'
 
 const props = defineProps({
     // not `style`: Vue parses a static or literal `style` into an object before it reaches the prop
+    // DESIGN.md §5.3 variant: primary | secondary | ghost | danger
     variant: { type: String, default: 'primary' },
     text: { type: String, default: 'Dropdown button' },
     href: { type: String, default: '' },
@@ -59,8 +61,11 @@ function onKeydown(e) {
 
 onBeforeUnmount(() => close())
 
+const btnClass = computed(() => buttonClass({ variant: props.variant, size: props.isSm ? 'sm' : 'md' }))
+const caretClass = computed(() => buttonClass({ variant: props.variant, size: props.isSm ? 'sm' : 'md', iconOnly: true }))
+
 const attrBtnToggle = computed(() => {
-    const className = `btn btn-${props.variant} ${!props.split ? 'dropdown-toggle' : ''} ${props.btnSize}`
+    const className = `${btnClass.value} ${!props.split ? 'dropdown-toggle' : ''} ${props.btnSize}`
     return {
         class: className,
         'aria-expanded': isOpen.value ? 'true' : 'false',
@@ -69,18 +74,18 @@ const attrBtnToggle = computed(() => {
 </script>
 
 <template>
-    <div ref="refRoot" :class="['dropdown', { show: isOpen }, { 'btn-group': props.split, 'btn-group-sm': props.isSm }]">
+    <div ref="refRoot" :class="['dropdown', { show: isOpen }, { 'inline-flex': props.split }]">
         <template v-if="props.href">
             <a v-if="text" :href="props.href" role="button" v-bind="attrBtnToggle" @click.prevent="toggle">
                 {{ props.text }}
             </a>
         </template>
         <template v-else>
-            <button v-if="text" type="button" :class="['btn', `btn-${props.variant}`]" v-html="props.text"
+            <button v-if="text" type="button" :class="[btnClass, { 'rounded-e-none': props.split }]" v-html="props.text"
                 @click="toggle"></button>
         </template>
         <template v-if="props.split">
-            <button type="button" :class="['btn dropdown-toggle dropdown-toggle-split', `btn-${props.variant}`]"
+            <button type="button" :class="['dropdown-toggle dropdown-toggle-split -ml-px rounded-s-none', caretClass]"
                 :aria-expanded="isOpen ? 'true' : 'false'" @click="toggle">
                 <span class="sr-only">{{ props.text }}</span>
             </button>

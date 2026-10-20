@@ -35,11 +35,12 @@ describe('Dropdown', () => {
         document.body.innerHTML = ''
     })
 
-    it('builds the button classes from the `variant` prop (split: text button + caret)', () => {
-        const wrapper = mountDropdown({ text: 'Menu', variant: 'outline-success border-0', split: true })
+    it('builds DESIGN.md §5.3 button classes from the `variant` prop (split: text button + caret)', () => {
+        const wrapper = mountDropdown({ text: 'Menu', variant: 'secondary', split: true, isSm: true })
         const [main, caret] = wrapper.findAll('.dropdown > button')
-        expect(main.classes()).toEqual(expect.arrayContaining(['btn', 'btn-outline-success', 'border-0']))
-        expect(caret.classes()).toEqual(expect.arrayContaining(['dropdown-toggle-split', 'btn-outline-success', 'border-0']))
+        expect(main.classes()).toEqual(expect.arrayContaining(['border-line-strong', 'h-7', 'rounded-e-none']))
+        expect(main.classes()).not.toContain('btn')
+        expect(caret.classes()).toEqual(expect.arrayContaining(['dropdown-toggle-split', 'border-line-strong', 'w-7', 'rounded-s-none']))
         expect(wrapper.find('.dropdown').attributes('style')).toBeUndefined()
     })
 

@@ -17,6 +17,7 @@ import { getDownloadCvUrl } from '@/utilities/index'
 import { authStore } from '@/stores/auth'
 import { buttonClass } from '@/lib/button.lib'
 import { badgeClass } from '@/lib/badge.lib'
+import { useCvLang } from '@/composables/useCvLang'
 
 const { loading, toast } = useHelper()
 
@@ -24,13 +25,10 @@ const TEMPLATES = [
     { value: 'ats', label: 'Tối ưu ATS' },
     { value: 'classic', label: 'Classic' },
 ]
-const LANGS = [
-    { value: 'vi', label: 'Tiếng Việt' },
-    { value: 'en', label: 'English' },
-]
 
 const template = ref('ats')
-const lang = ref('vi')
+// CV language comes from the header VI | EN switch
+const { selectedLang: lang } = useCvLang()
 const jobDescription = ref('')
 
 /** @type {import('vue').Ref<import('@/types/ats.type').AtsCheckResponse | null>} */
@@ -77,12 +75,6 @@ async function handleCheck() {
                 <div>
                     <p class="form-label block">Mẫu CV</p>
                     <SegmentedControl v-model="template" :options="TEMPLATES" aria-label="Mẫu CV" />
-                </div>
-                <div>
-                    <label for="ats-lang" class="form-label">Ngôn ngữ</label>
-                    <select id="ats-lang" v-model="lang" class="form-select block">
-                        <option v-for="l in LANGS" :key="l.value" :value="l.value">{{ l.label }}</option>
-                    </select>
                 </div>
                 <a :class="downloadBtn" :href="downloadUrl" target="_blank" rel="noopener">
                     <FontAwesomeIcon icon="fa-solid fa-download" aria-hidden="true" />Tải CV mẫu này

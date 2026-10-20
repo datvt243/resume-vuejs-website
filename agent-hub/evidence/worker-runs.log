@@ -96,3 +96,5 @@
 2026-10-20T11:49:23Z role=verifier outcome=SEAL node=issue-251-header-language-switch rerun=none hub_bytes_before=198915 hub_bytes_after=199605
 2026-10-20T17:40:39Z role=verifier outcome=SEAL node=issue-251-lang-switch-left-tooltip rerun=partial hub_bytes_before=199605 hub_bytes_after=200289
 2026-10-20T17:52:11Z role=verifier outcome=SEAL node=issue-251-ci-lockfile rerun=partial hub_bytes_before=200289 hub_bytes_after=200908
+2026-10-20T18:23:51Z role=verifier outcome=SEAL node=issue-260-texteditor-list-style rerun=none hub_bytes_before=200908 hub_bytes_after=201533
+2026-10-20T18:32:14Z role=verifier outcome=SEAL node=issue-262-cv-lang-cleanup rerun=none hub_bytes_before=201533 hub_bytes_after=202237

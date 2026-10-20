@@ -12,11 +12,6 @@ import { ref, watch } from 'vue'
 
 export type CvLang = 'vi' | 'en'
 
-export const CV_LANGS: { value: CvLang; label: string }[] = [
-    { value: 'vi', label: 'Tiếng Việt' },
-    { value: 'en', label: 'English' },
-]
-
 export const DEFAULT_CV_LANG: CvLang = 'vi'
 
 const STORAGE_KEY = 'cvLang'
@@ -37,5 +32,5 @@ function setLang(value: unknown) {
 }
 
 export function useCvLang() {
-    return { selectedLang, setLang, CV_LANGS, DEFAULT_CV_LANG }
+    return { selectedLang, setLang, DEFAULT_CV_LANG }
 }

@@ -23,3 +23,5 @@ dist-ssr
 *.sw?
 
 .env
+# UI screenshots for evidence notes show personal profile data — keep them local
+agent-hub/evidence/**/*-shots/

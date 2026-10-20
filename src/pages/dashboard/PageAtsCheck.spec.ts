@@ -4,6 +4,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import SegmentedControl from '@/components/global/SegmentedControl.vue'
 import PageAtsCheck from './PageAtsCheck.vue'
+import { useCvLang } from '@/composables/useCvLang'
 import type { AtsCheckResponse } from '@/types/ats.type'
 
 const handleBaseMock = vi.fn()
@@ -52,6 +53,7 @@ describe('PageAtsCheck (issue #159)', () => {
     // vitest as a cleanup hook — `mockReset()` returns the mock itself
     beforeEach(() => {
         handleBaseMock.mockReset()
+        useCvLang().setLang('vi')
     })
 
     it('POSTs cv/ats-check with the default ats template + vi lang, and no jobDescription when empty', async () => {
@@ -62,10 +64,10 @@ describe('PageAtsCheck (issue #159)', () => {
         expect(opts).toEqual({ method: 'post', url: 'cv/ats-check', data: { template: 'ats', lang: 'vi' } })
     })
 
-    it('sends the trimmed jobDescription, chosen template and lang', async () => {
+    it('sends the trimmed jobDescription, chosen template and the header CV language', async () => {
         const wrapper = mountPage()
         await wrapper.find('textarea').setValue('  TypeScript, Vitest  ')
-        await wrapper.find('select').setValue('en')
+        useCvLang().setLang('en')
         await wrapper.findAll('button').find(b => b.text() === 'Classic')!.trigger('click')
         await runCheck(wrapper)
 
@@ -107,5 +109,9 @@ describe('PageAtsCheck (issue #159)', () => {
         expect(link()).toMatch(/api\/v1\/download-pdf\?template=ats$/)
         await wrapper.findAll('button').find(b => b.text() === 'Classic')!.trigger('click')
         expect(link()).toMatch(/api\/v1\/download-pdf$/)
+
+        useCvLang().setLang('en')
+        await flushPromises()
+        expect(link()).toMatch(/api\/v1\/download-pdf\?lang=en$/)
     })
 })

@@ -99,6 +99,10 @@ function onFocusIn() {
     if (dirtyBaseline.value === null) dirtyBaseline.value = snapshotValues()
 }
 const isDirty = () => dirtyBaseline.value !== null && dirtyBaseline.value !== snapshotValues()
+// call from the page's save-success callback — submitFn also resolves on a failed save
+function markSaved() {
+    dirtyBaseline.value = snapshotValues()
+}
 
 const modalDirtyGuard = inject('modalDirtyGuard', null)
 modalDirtyGuard?.register(isDirty)
@@ -106,6 +110,7 @@ onBeforeUnmount(() => modalDirtyGuard?.unregister(isDirty))
 
 defineExpose({
     reset,
+    markSaved,
 })
 
 /**

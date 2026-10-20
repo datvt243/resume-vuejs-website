@@ -41,38 +41,38 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown))
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 const navGroups = [
     {
-        label: 'Tổng quan',
+        label: 'nav.overview',
         items: [
-            { text: 'Dashboard', to: '/', icon: 'fa-solid fa-gauge' },
-            { text: 'Lượt truy cập', to: '/dashboard/visits', icon: 'fa-solid fa-chart-line' },
+            { key: 'nav.dashboard', to: '/', icon: 'fa-solid fa-gauge' },
+            { key: 'nav.visits', to: '/dashboard/visits', icon: 'fa-solid fa-chart-line' },
         ],
     },
     {
-        label: 'Hồ sơ',
+        label: 'nav.profile',
         items: [
-            { text: 'Thông tin cơ bản', to: '/dashboard/information', icon: 'fa-solid fa-user' },
-            { text: 'Thông tin chung', to: '/dashboard/general-information', icon: 'fa-solid fa-id-card' },
-            { text: 'Học vấn', to: '/dashboard/education', icon: 'fa-solid fa-graduation-cap' },
-            { text: 'Kinh nghiệm', to: '/dashboard/experience', icon: 'fa-solid fa-briefcase' },
-            { text: 'Dự án', to: '/dashboard/project', icon: 'fa-solid fa-layer-group' },
-            { text: 'Giải thưởng', to: '/dashboard/award', icon: 'fa-solid fa-award' },
-            { text: 'Chứng chỉ', to: '/dashboard/certificate', icon: 'fa-solid fa-certificate' },
-            { text: 'Người tham khảo', to: '/dashboard/reference', icon: 'fa-solid fa-address-book' },
+            { key: 'nav.information', to: '/dashboard/information', icon: 'fa-solid fa-user' },
+            { key: 'nav.generalInformation', to: '/dashboard/general-information', icon: 'fa-solid fa-id-card' },
+            { key: 'nav.education', to: '/dashboard/education', icon: 'fa-solid fa-graduation-cap' },
+            { key: 'nav.experience', to: '/dashboard/experience', icon: 'fa-solid fa-briefcase' },
+            { key: 'nav.project', to: '/dashboard/project', icon: 'fa-solid fa-layer-group' },
+            { key: 'nav.award', to: '/dashboard/award', icon: 'fa-solid fa-award' },
+            { key: 'nav.certificate', to: '/dashboard/certificate', icon: 'fa-solid fa-certificate' },
+            { key: 'nav.reference', to: '/dashboard/reference', icon: 'fa-solid fa-address-book' },
         ],
     },
     {
-        label: 'Công cụ',
+        label: 'nav.tools',
         items: [
-            { text: 'Ứng tuyển', to: '/dashboard/application', icon: 'fa-solid fa-paper-plane' },
-            { text: 'Nhập CV', to: '/dashboard/import-linkedin', icon: 'fa-solid fa-file-import' },
-            { text: 'Kiểm tra ATS', to: '/dashboard/ats-check', icon: 'fa-solid fa-circle-check' },
-            { text: 'Profile CV', to: '/dashboard/profile', icon: 'fa-solid fa-file-lines' },
-            { text: 'Xem trước / Xuất PDF', to: '/dashboard/preview', icon: 'fa-solid fa-eye' },
+            { key: 'nav.application', to: '/dashboard/application', icon: 'fa-solid fa-paper-plane' },
+            { key: 'nav.importCv', to: '/dashboard/import-linkedin', icon: 'fa-solid fa-file-import' },
+            { key: 'nav.atsCheck', to: '/dashboard/ats-check', icon: 'fa-solid fa-circle-check' },
+            { key: 'nav.cvProfile', to: '/dashboard/profile', icon: 'fa-solid fa-file-lines' },
+            { key: 'nav.preview', to: '/dashboard/preview', icon: 'fa-solid fa-eye' },
         ],
     },
 ]
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
-const settingsItem = { text: 'Cài đặt tài khoản', to: '/dashboard/account-settings', icon: 'fa-solid fa-gear' }
+const settingsItem = { key: 'nav.accountSettings', to: '/dashboard/account-settings', icon: 'fa-solid fa-gear' }
 </script>
 
 <template lang="pug">
@@ -86,20 +86,20 @@ const settingsItem = { text: 'Cài đặt tài khoản', to: '/dashboard/account
         RouterLink.flex.h-14.shrink-0.items-center.gap-2.border-b.border-line.px-4.text-fg.no-underline(to="/" class="hover:text-fg")
             FontAwesomeIcon.text-brand(icon="fa-solid fa-file-lines")
             span.text-md.font-semibold Resume API
-        nav.flex-1.space-y-6.overflow-y-auto.px-3.py-4(aria-label="Điều hướng chính")
+        nav.flex-1.space-y-6.overflow-y-auto.px-3.py-4(:aria-label="$t('nav.main')")
             div(v-for="g in navGroups" :key="g.label")
-                p.mb-1.px-2.text-xs.text-fg-3 {{ g.label }}
+                p.mb-1.px-2.text-xs.text-fg-3 {{ $t(g.label) }}
                 ul.space-y-1
                     li(v-for="r in g.items" :key="r.to")
                         RouterLink.nav-item(:to="r.to" :class="{ active: r.to === $route.path }" :aria-current="r.to === $route.path ? 'page' : undefined")
                             span.nav-item-icon
                                 FontAwesomeIcon(:icon="r.icon")
-                            span.truncate {{ r.text }}
+                            span.truncate {{ $t(r.key) }}
         .border-t.border-line.px-3.py-3
             RouterLink.nav-item(:to="settingsItem.to" :class="{ active: settingsItem.to === $route.path }" :aria-current="settingsItem.to === $route.path ? 'page' : undefined")
                 span.nav-item-icon
                     FontAwesomeIcon(:icon="settingsItem.icon")
-                span.truncate {{ settingsItem.text }}
+                span.truncate {{ $t(settingsItem.key) }}
 
     .flex.min-h-screen.min-w-0.flex-col(class="lg:pl-60")
         Header(:nav-open="navOpen" @toggle-nav="navOpen = !navOpen")

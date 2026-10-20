@@ -289,6 +289,26 @@ describe('VeeForm', () => {
         })
     })
 
+    it('markSaved() makes the modal dirty guard read clean until the next edit',async () => {
+        let isDirty!: () => boolean
+        const wrapper = mount(VeeForm, {
+            props: { fields },
+            global: { stubs: { FontAwesomeIcon: true }, provide: { modalDirtyGuard: { register: (fn: () => boolean) => (isDirty = fn), unregister: () => {} } } },
+        })
+        const input = wrapper.find('input[type="text"]')
+        await wrapper.find('form').trigger('focusin')
+        await input.setValue('Dat')
+        await flushPromises()
+        expect(isDirty()).toBe(true)
+
+        ;(wrapper.vm as unknown as { markSaved: () => void }).markSaved()
+        expect(isDirty()).toBe(false)
+
+        await input.setValue('Dat 2')
+        await flushPromises()
+        expect(isDirty()).toBe(true)
+    })
+
     it('hides a field while its showIf returns false, keeping it mounted', async () => {
         const conditional = [
             { name: 'active', label: 'Active', type: 'checkbox', default: false, checkedValue: false },

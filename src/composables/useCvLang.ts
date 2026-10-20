@@ -25,16 +25,17 @@ export function resolveCvLang(value: unknown): CvLang {
     return value === 'en' ? 'en' : DEFAULT_CV_LANG
 }
 
+// module scope: the header switch and every page share one value (it also drives the UI locale, see src/i18n)
+const selectedLang = ref<CvLang>(resolveCvLang(localStorage.getItem(STORAGE_KEY)))
+
+watch(selectedLang, value => {
+    localStorage.setItem(STORAGE_KEY, value)
+})
+
+function setLang(value: unknown) {
+    selectedLang.value = resolveCvLang(value)
+}
+
 export function useCvLang() {
-    const selectedLang = ref<CvLang>(resolveCvLang(localStorage.getItem(STORAGE_KEY)))
-
-    watch(selectedLang, value => {
-        localStorage.setItem(STORAGE_KEY, value)
-    })
-
-    function setLang(value: unknown) {
-        selectedLang.value = resolveCvLang(value)
-    }
-
     return { selectedLang, setLang, CV_LANGS, DEFAULT_CV_LANG }
 }

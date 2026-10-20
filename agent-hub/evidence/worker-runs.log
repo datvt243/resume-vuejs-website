@@ -92,3 +92,6 @@
 2026-10-20T10:53:24Z role=verifier outcome=SEAL node=issue-235-career-break rerun=partial hub_bytes_before=195918 hub_bytes_after=196770
 2026-10-20T11:10:10Z role=verifier outcome=REOPEN node=issue-211-epic-review rerun=full hub_bytes_before=196770 hub_bytes_after=197881
 2026-10-20T11:23:00Z role=verifier outcome=SEAL node=issue-211-epic-review rerun=full hub_bytes_before=196770 hub_bytes_after=198298
+2026-10-20T11:36:44Z role=verifier outcome=SEAL node=issue-249-experience-unsaved-warning rerun=none hub_bytes_before=188717 hub_bytes_after=198915
+2026-10-20T11:49:23Z role=verifier outcome=SEAL node=issue-251-header-language-switch rerun=none hub_bytes_before=198915 hub_bytes_after=199605
+2026-10-20T17:40:39Z role=verifier outcome=SEAL node=issue-251-lang-switch-left-tooltip rerun=partial hub_bytes_before=199605 hub_bytes_after=200289

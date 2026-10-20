@@ -64,7 +64,7 @@ const cvData = computed(() => ({
 }))
 
 const { selectedTheme, setTheme, THEMES } = useCvTheme()
-const { selectedLang, setLang, CV_LANGS } = useCvLang()
+const { selectedLang } = useCvLang()
 
 function handlePrint() {
     window.print()
@@ -97,10 +97,6 @@ onUnmounted(() => document.body.classList.remove('cv-print-mode'))
             <div>
                 <p class="form-label block">Giao diện</p>
                 <SegmentedControl :model-value="selectedTheme" :options="THEMES" aria-label="Giao diện CV" @update:model-value="setTheme" />
-            </div>
-            <div>
-                <p class="form-label block">Ngôn ngữ</p>
-                <SegmentedControl :model-value="selectedLang" :options="CV_LANGS" aria-label="Ngôn ngữ CV" @update:model-value="setLang" />
             </div>
             <div v-if="profiles.length">
                 <label for="preview-profile" class="form-label">Profile CV</label>

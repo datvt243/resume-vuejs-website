@@ -192,20 +192,7 @@ const btnGhost = buttonClass({ variant: 'ghost', size: 'sm' })
                     </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                    <div class="inline-flex rounded bg-surface-2 p-0.5" role="radiogroup" aria-label="Mẫu CV">
-                        <button
-                            v-for="t in CV_TEMPLATES"
-                            :key="t.value"
-                            type="button"
-                            role="radio"
-                            :aria-checked="cvTemplate === t.value ? 'true' : 'false'"
-                            class="h-7 rounded-sm px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-                            :class="cvTemplate === t.value ? 'bg-surface text-fg shadow-sm' : 'text-fg-2 hover:text-fg'"
-                            @click="cvTemplate = t.value"
-                        >
-                            {{ t.label }}
-                        </button>
-                    </div>
+                    <SegmentedControl v-model="cvTemplate" :options="CV_TEMPLATES" aria-label="Mẫu CV" />
                     <select class="form-select form-select-sm w-auto" :value="selectedLang" aria-label="Ngôn ngữ CV" @change="setLang($event.target.value)">
                         <option v-for="l in CV_LANGS" :key="l.value" :value="l.value">{{ l.label }}</option>
                     </select>

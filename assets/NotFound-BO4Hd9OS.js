@@ -1,0 +1,1 @@
+import{e as t,f as e,p as o}from"./index-R_cn8evw.js";const s={class:"auth-container m-auto",style:{"max-width":"500px"}},a=e("p",null,"404!!! Page not Found",-1),n=[a],p={__name:"NotFound",setup(c){return(_,r)=>(o(),t("div",s,n))}};export{p as default};

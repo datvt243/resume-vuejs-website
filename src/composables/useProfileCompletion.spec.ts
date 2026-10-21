@@ -81,13 +81,13 @@ describe('useProfileCompletion', () => {
         const { result } = withUseProfileCompletion()
         await flushPromises()
 
-        const section = result.sections.value.find(s => s.label === 'Thông tin cơ bản')
+        const section = result.sections.value.find(s => s.label === 'nav.information')
         expect(section?.complete).toBe(true)
 
         // Remove one real required field (`address`, per information.model.ts）-> must flip back to incomplete
         candidateStore().setCandidate({ ...FULL_INFORMATION, address: '' })
         await flushPromises()
-        const section2 = result.sections.value.find(s => s.label === 'Thông tin cơ bản')
+        const section2 = result.sections.value.find(s => s.label === 'nav.information')
         expect(section2?.complete).toBe(false)
     })
 
@@ -96,7 +96,7 @@ describe('useProfileCompletion', () => {
         const { result } = withUseProfileCompletion()
         await flushPromises()
 
-        const section = result.sections.value.find(s => s.label === 'Thông tin chung')
+        const section = result.sections.value.find(s => s.label === 'nav.generalInformation')
         expect(section?.complete).toBe(true)
     })
 
@@ -105,7 +105,7 @@ describe('useProfileCompletion', () => {
         const { result } = withUseProfileCompletion()
         await flushPromises()
 
-        const section = result.sections.value.find(s => s.label === 'Học vấn')
+        const section = result.sections.value.find(s => s.label === 'nav.education')
         expect(section?.complete).toBe(true)
         expect(result.missingSections.value).toHaveLength(7)
     })
@@ -148,14 +148,14 @@ describe('useProfileCompletion', () => {
 
         const byLabel = Object.fromEntries(result.sections.value.map(s => [s.label, s.to]))
         expect(byLabel).toEqual({
-            'Thông tin cơ bản': '/dashboard/information',
-            'Thông tin chung': '/dashboard/general-information',
-            'Học vấn': '/dashboard/education',
-            'Kinh nghiệm làm việc': '/dashboard/experience',
-            'Dự án': '/dashboard/project',
-            'Giải thưởng': '/dashboard/award',
-            'Chứng chỉ': '/dashboard/certificate',
-            'Người tham khảo': '/dashboard/reference',
+            'nav.information': '/dashboard/information',
+            'nav.generalInformation': '/dashboard/general-information',
+            'nav.education': '/dashboard/education',
+            'nav.experience': '/dashboard/experience',
+            'nav.project': '/dashboard/project',
+            'nav.award': '/dashboard/award',
+            'nav.certificate': '/dashboard/certificate',
+            'nav.reference': '/dashboard/reference',
         })
     })
 

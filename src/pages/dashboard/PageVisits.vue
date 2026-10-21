@@ -13,19 +13,16 @@
 import { computed, ref, watch } from 'vue'
 import VisitChart from '@/components/visits/VisitChart.vue'
 import { candidateStore } from '@/stores/candidate'
-import { useVisitStats, INTERVAL_LABELS } from '@/composables/useVisitStats'
+import { useVisitStats } from '@/composables/useVisitStats'
+import { t } from '@/i18n'
 import { buttonClass } from '@/lib/button.lib'
 
 const candidate = candidateStore()
 const dataList = computed(() => candidate.getCandidate?.visits || [])
 
 const { interval, stats } = useVisitStats()
-const INTERVAL_OPTIONS = [
-    { value: 'day', range: '30 ngày' },
-    { value: 'week', range: '12 tuần' },
-    { value: 'month', range: '12 tháng' },
-].map(o => ({ ...o, label: `Theo ${INTERVAL_LABELS[o.value]}` }))
-const rangeText = computed(() => INTERVAL_OPTIONS.find(o => o.value === interval.value)?.range)
+const INTERVAL_OPTIONS = computed(() => ['day', 'week', 'month'].map(value => ({ value, label: t(`visits.interval.${value}`) })))
+const rangeText = computed(() => t(`visits.range.${interval.value}`))
 
 const numberFormat = new Intl.NumberFormat('vi-VN')
 
@@ -37,18 +34,18 @@ const breakdowns = computed(() => {
             .sort((a, b) => b.count - a.count)
             .map(r => ({ label: r[key] ?? nullLabel, count: r.count, share: total ? (r.count / total) * 100 : 0 }))
     return [
-        { title: 'Nguồn truy cập', rows: toRows(stats.value?.sources, 'source', 'Trực tiếp / không rõ') },
-        { title: 'Quốc gia', rows: toRows(stats.value?.countries, 'country', 'Không rõ') },
+        { title: t('visits.sources'), rows: toRows(stats.value?.sources, 'source', t('visits.directOrUnknown')) },
+        { title: t('visits.countries'), rows: toRows(stats.value?.countries, 'country', t('visits.unknown')) },
     ]
 })
 
 const kpis = computed(() => {
     const [sources, countries] = breakdowns.value
-    const top = rows => (rows[0] ? { value: rows[0].label, hint: `${Math.round(rows[0].share)}% lượt xem` } : { value: '—', hint: 'Chưa có dữ liệu' })
+    const top = rows => (rows[0] ? { value: rows[0].label, hint: t('visits.shareOfViews', { share: Math.round(rows[0].share) }) } : { value: '—', hint: t('common.noData') })
     return [
-        { label: `Lượt xem · ${rangeText.value}`, value: numberFormat.format(stats.value?.total ?? 0), hint: `Tổng ${numberFormat.format(dataList.value.length)} lượt từ trước tới nay` },
-        { label: `Nguồn hàng đầu · ${rangeText.value}`, ...top(sources.rows) },
-        { label: `Quốc gia hàng đầu · ${rangeText.value}`, ...top(countries.rows) },
+        { label: t('visits.kpiViews', { range: rangeText.value }), value: numberFormat.format(stats.value?.total ?? 0), hint: t('visits.kpiViewsHint', { total: numberFormat.format(dataList.value.length) }) },
+        { label: t('visits.kpiTopSource', { range: rangeText.value }), ...top(sources.rows) },
+        { label: t('visits.kpiTopCountry', { range: rangeText.value }), ...top(countries.rows) },
     ]
 })
 
@@ -62,7 +59,7 @@ const rangeLabel = computed(() => {
     if (!total) return ''
     const from = (page.value - 1) * PAGE_SIZE + 1
     const to = Math.min(page.value * PAGE_SIZE, total)
-    return `${numberFormat.format(from)}–${numberFormat.format(to)} trong ${numberFormat.format(total)}`
+    return t('common.rowRange', { from: numberFormat.format(from), to: numberFormat.format(to), total: numberFormat.format(total) })
 })
 watch(pageCount, n => {
     if (page.value > n) page.value = n
@@ -79,12 +76,12 @@ const pagerBtn = buttonClass({ variant: 'secondary', size: 'sm' })
 </script>
 
 <template>
-    <Heading :level="1" text="Lượt truy cập hồ sơ" description="Mỗi lần ai đó mở hồ sơ công khai qua link chia sẻ.">
-        <SegmentedControl v-model="interval" :options="INTERVAL_OPTIONS" aria-label="Khoảng thời gian" />
+    <Heading :level="1" :text="t('visits.title')" :description="t('visits.description')">
+        <SegmentedControl v-model="interval" :options="INTERVAL_OPTIONS" :aria-label="t('visits.timeRange')" />
     </Heading>
 
     <div class="space-y-6">
-        <section class="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:gap-6" aria-label="Chỉ số">
+        <section class="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:gap-6" :aria-label="t('visits.kpis')">
             <div v-for="k in kpis" :key="k.label" class="min-w-0 rounded-md border border-line bg-surface p-4">
                 <p class="m-0 text-sm text-fg-2">{{ k.label }}</p>
                 <p class="m-0 mt-1 truncate text-xl font-semibold tracking-tight" :title="k.value">{{ k.value }}</p>
@@ -94,7 +91,7 @@ const pagerBtn = buttonClass({ variant: 'secondary', size: 'sm' })
 
         <section class="rounded-md border border-line bg-surface" aria-labelledby="visits-chart-title">
             <header class="flex h-12 items-center border-b border-line px-4">
-                <h2 id="visits-chart-title" class="m-0 text-md font-semibold">Lượt xem theo {{ INTERVAL_LABELS[interval] }} · {{ rangeText }}</h2>
+                <h2 id="visits-chart-title" class="m-0 text-md font-semibold">{{ t(`visits.chartTitle.${interval}`) }} · {{ rangeText }}</h2>
             </header>
             <div class="p-4">
                 <VisitChart v-if="stats" :series="stats.series" :interval="stats.interval" />
@@ -118,22 +115,22 @@ const pagerBtn = buttonClass({ variant: 'secondary', size: 'sm' })
                         </div>
                     </li>
                 </ul>
-                <p v-else class="m-0 p-4 text-sm text-fg-2">Chưa có lượt xem trong khoảng này.</p>
+                <p v-else class="m-0 p-4 text-sm text-fg-2">{{ t('visits.noViewsInRange') }}</p>
             </section>
         </div>
 
         <section class="rounded-md border border-line bg-surface" aria-labelledby="visits-table-title">
             <header class="flex h-12 items-center justify-between gap-4 border-b border-line px-4">
-                <h2 id="visits-table-title" class="m-0 text-md font-semibold">Chi tiết từng lượt</h2>
+                <h2 id="visits-table-title" class="m-0 text-md font-semibold">{{ t('visits.details') }}</h2>
                 <span v-if="rangeLabel" class="text-xs text-fg-3 tabular-nums">{{ rangeLabel }}</span>
             </header>
             <div class="overflow-x-auto">
                 <table class="visits-table w-full text-sm">
                     <thead>
                         <tr>
-                            <th scope="col">Thời gian</th>
-                            <th scope="col">Vị trí</th>
-                            <th scope="col">Địa chỉ IP</th>
+                            <th scope="col">{{ t('visits.time') }}</th>
+                            <th scope="col">{{ t('visits.location') }}</th>
+                            <th scope="col">{{ t('visits.ip') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -144,17 +141,17 @@ const pagerBtn = buttonClass({ variant: 'secondary', size: 'sm' })
                         </tr>
                         <tr v-if="!pageRows.length">
                             <td colspan="3" class="empty">
-                                <NoData title="Chưa có lượt truy cập" description="Chia sẻ link hồ sơ công khai để bắt đầu ghi nhận." />
+                                <NoData :title="t('visits.empty')" :description="t('visits.emptyDescription')" />
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <footer v-if="pageCount > 1" class="flex items-center justify-between gap-4 border-t border-line px-4 py-3">
-                <span class="text-xs text-fg-3 tabular-nums">Trang {{ page }} / {{ pageCount }}</span>
+                <span class="text-xs text-fg-3 tabular-nums">{{ t('common.pageOf', { page, pageCount }) }}</span>
                 <div class="flex gap-2">
-                    <button type="button" :class="pagerBtn" :disabled="page <= 1" @click="page--">Trước</button>
-                    <button type="button" :class="pagerBtn" :disabled="page >= pageCount" @click="page++">Sau</button>
+                    <button type="button" :class="pagerBtn" :disabled="page <= 1" @click="page--">{{ t('common.prev') }}</button>
+                    <button type="button" :class="pagerBtn" :disabled="page >= pageCount" @click="page++">{{ t('common.next') }}</button>
                 </div>
             </footer>
         </section>

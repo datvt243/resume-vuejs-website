@@ -5,9 +5,10 @@
  */
 
 import type { modelItem } from '@/types/model.type.ts'
+import { i18n, withParams } from '@/i18n'
 import { defaultId, withEnglish } from '@/types/model.type'
 
-const _mesRequired = 'Vui lòng nhập'
+const _mesRequired = 'validation.required'
 
 // endDate mặc định phải SAU startDate — trước đây cả 2 cùng dùng
 // `+new Date()`, ở monthPicker mode 2 giá trị luôn bị làm tròn về cùng
@@ -33,7 +34,7 @@ export const CAREER_BREAK_TYPES: Record<string, { vi: string; en: string }> = {
 }
 const CAREER_BREAK_LABEL = { vi: 'Nghỉ việc tạm thời', en: 'Career break' }
 
-export function experienceTitle(exp: { isCareerBreak?: boolean; careerBreakType?: string; company?: string }, lang: 'vi' | 'en' = 'vi'): string {
+export function experienceTitle(exp: { isCareerBreak?: boolean; careerBreakType?: string; company?: string }, lang = i18n.global.locale.value as 'vi' | 'en'): string {
     if (!exp?.isCareerBreak) return exp?.company || ''
     const type = CAREER_BREAK_TYPES[exp.careerBreakType || '']?.[lang]
     return type ? `${CAREER_BREAK_LABEL[lang]} — ${type}` : CAREER_BREAK_LABEL[lang]
@@ -54,7 +55,7 @@ const MODEL: modelItem[] = [
     defaultId,
     {
         name: 'isCareerBreak',
-        label: 'Nghỉ việc tạm thời (career break)',
+        label: 'field.isCareerBreak',
         type: 'checkbox',
         placeholder: '',
         default: false,
@@ -65,13 +66,19 @@ const MODEL: modelItem[] = [
     },
     {
         name: 'careerBreakType',
-        label: 'Loại nghỉ việc',
+        label: 'field.careerBreakType',
         type: 'select',
-        options: Object.entries(CAREER_BREAK_TYPES).map(([value, { vi }]) => ({ value, text: vi })),
+        // getter: the backend sends both labels, so pick the one for the current UI language at render time
+        options: Object.entries(CAREER_BREAK_TYPES).map(([value, labels]) => ({
+            value,
+            get text() {
+                return labels[i18n.global.locale.value as 'vi' | 'en']
+            },
+        })),
         valid: yup =>
             yup.string().when('isCareerBreak', {
                 is: true,
-                then: (s: any) => s.oneOf(Object.keys(CAREER_BREAK_TYPES), 'Loại nghỉ việc không hợp lệ').required('Vui lòng chọn'),
+                then: (s: any) => s.oneOf(Object.keys(CAREER_BREAK_TYPES), 'validation.careerBreakTypeInvalid').required('validation.selectRequired'),
                 otherwise: (s: any) => s.nullable(),
             }),
         default: '',
@@ -79,35 +86,32 @@ const MODEL: modelItem[] = [
     },
     {
         name: 'company',
-        label: 'Tên công ty',
+        label: 'field.companyName',
         type: 'text',
-        placeholder: 'Vui lòng nhập Tên công ty',
         valid: yup =>
             yup
                 .string()
-                .max(100, 'Tối đa 100 ký tự')
+                .max(100, withParams('validation.maxChars', { max: 100 }))
                 .when('isCareerBreak', { is: true, otherwise: (s: any) => s.required(_mesRequired) }),
         default: '',
         showIf: (values: Record<string, any>) => !isCareerBreak(values),
     },
     {
         name: 'position',
-        label: 'Vị trí',
+        label: 'field.position',
         type: 'text',
-        placeholder: 'Vui lòng nhập Vị trí',
         valid: yup =>
             yup
                 .string()
-                .max(50, 'Tối đa 50 ký tự')
+                .max(50, withParams('validation.maxChars', { max: 50 }))
                 .when('isCareerBreak', { is: true, otherwise: (s: any) => s.required(_mesRequired) }),
         default: '',
         showIf: (values: Record<string, any>) => !isCareerBreak(values),
     },
     {
         name: 'startDate',
-        label: 'Ngày bắt đầu',
+        label: 'field.startDate',
         type: 'date',
-        placeholder: 'Vui lòng nhập Ngày bắt đầu',
         valid: yup => yup.number().required(_mesRequired),
         col: 'col-md-6',
         convertTo: 'date',
@@ -116,9 +120,8 @@ const MODEL: modelItem[] = [
     },
     {
         name: 'endDate',
-        label: 'Ngày Kết thúc',
+        label: 'field.endDate',
         type: 'date',
-        placeholder: 'Vui lòng nhập Ngày Kết thúc',
         valid: yup => yup.number().nullable(),
         col: 'col-md-6',
         convertTo: 'date',
@@ -127,7 +130,7 @@ const MODEL: modelItem[] = [
     },
     {
         name: 'isCurrent',
-        label: 'Đang làm việc tại đây',
+        label: 'field.isWorking',
         type: 'checkbox',
         placeholder: '',
         default: false,
@@ -139,7 +142,7 @@ const MODEL: modelItem[] = [
     },
     ...withEnglish({
         name: 'description',
-        label: 'Mô tả',
+        label: 'field.description',
         type: 'ckediter',
         valid: yup => yup.string().required(_mesRequired),
         col: 'col-md-12',

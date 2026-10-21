@@ -5,39 +5,38 @@
  */
 
 import type { modelItem } from '@/types/model.type.ts'
+import { withParams } from '@/i18n'
 import { defaultId, defaultDescription, defaultDate, defaultPhone, withEnglish } from '@/types/model.type'
 
-const _mesRequired = 'Vui lòng nhập'
+const _mesRequired = 'validation.required'
 
 const modalDefault: modelItem[] = [
     defaultId,
     {
         name: 'firstName',
-        label: 'Họ',
+        label: 'field.familyName',
         type: 'text',
-        placeholder: 'Vui lòng nhập Họ',
         autocomplete: 'family-name',
-        valid: yup => yup.string().min(0).max(10, 'Tối đa 10 ký tự').required(_mesRequired),
+        valid: yup => yup.string().min(0).max(10, withParams('validation.maxChars', { max: 10 })).required(_mesRequired),
         default: '',
         col: 'col-md-6',
     },
     {
         name: 'lastName',
-        label: 'Tên',
+        label: 'field.givenName',
         type: 'text',
-        placeholder: 'Vui lòng nhập Tên',
         autocomplete: 'given-name',
-        valid: yup => yup.string().min(0).max(30, 'Tối đa 30 ký tự').required(_mesRequired),
+        valid: yup => yup.string().min(0).max(30, withParams('validation.maxChars', { max: 30 })).required(_mesRequired),
         default: '',
         col: 'col-md-6',
     },
     {
         name: 'gender',
-        label: 'Giới tính',
+        label: 'field.gender',
         type: 'select',
         options: [
-            { value: 0, text: 'Nữ' },
-            { value: 1, text: 'Nam' },
+            { value: 0, text: 'option.gender.female' },
+            { value: 1, text: 'option.gender.male' },
         ],
         valid: yup => yup.string().required(_mesRequired),
         default: 0,
@@ -45,20 +44,20 @@ const modalDefault: modelItem[] = [
     },
     {
         name: 'marital',
-        label: 'Tình trạng hôn nhân',
+        label: 'field.marital',
         type: 'select',
         options: [
-            { value: 0, text: 'Độc thân' },
-            { value: 1, text: 'Đã kết hôn' },
+            { value: 0, text: 'option.marital.single' },
+            { value: 1, text: 'option.marital.married' },
         ],
         valid: yup => yup.string().required(_mesRequired),
         default: 0,
         col: 'col-md-6',
     },
-    defaultDate({ name: 'birthday', label: 'Ngày sinh' }),
+    defaultDate({ name: 'birthday', label: 'field.birthday' }),
     {
         name: 'address',
-        label: 'Địa chỉ',
+        label: 'field.address',
         type: 'text',
         autocomplete: 'street-address',
         valid: yup => yup.string().required(_mesRequired),
@@ -66,8 +65,8 @@ const modalDefault: modelItem[] = [
         col: 'col-md-12',
     },
 
-    { ...defaultPhone({ name: 'phone', label: 'Số điện thoại' }), autocomplete: 'tel' },
-    ...withEnglish(defaultDescription({ name: 'introduction', label: 'Giới thiệu bản thân' })),
+    { ...defaultPhone({ name: 'phone', label: 'field.phone' }), autocomplete: 'tel' },
+    ...withEnglish(defaultDescription({ name: 'introduction', label: 'field.introduction' })),
 ]
 
 const modalSocial: modelItem[] = [

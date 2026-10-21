@@ -9,6 +9,7 @@ import { defineProps, defineEmits, computed } from 'vue'
 import type { PropType } from 'vue'
 import type { Experience } from '@/types/experience.type'
 import { formatDate } from '@/utilities/index'
+import { t } from '@/i18n'
 import { experienceTitle } from '@/models/experience.model'
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
@@ -33,7 +34,7 @@ const model = computed(() => props.modelValue)
 const getDate = computed(() => {
     const { startDate, endDate, isCurrent } = props.modelValue
     const _start = formatDate(startDate, 'MM/YYYY')
-    const _end = isCurrent ? 'Hiện tại' : formatDate(endDate, 'MM/YYYY')
+    const _end = isCurrent ? t('common.present') : formatDate(endDate, 'MM/YYYY')
     return `${_start} - ${_end}`
 })
 

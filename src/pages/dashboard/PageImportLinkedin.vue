@@ -21,6 +21,7 @@ import { useHelper } from '@/composables/useHelper'
 import { handleBase } from '@/services/base'
 import { localizedFromForm } from '@/utilities/index'
 import { fromJsonResume } from '@/utilities/jsonResume'
+import { t } from '@/i18n'
 
 import educationModel from '@/models/education.model'
 import experienceModel from '@/models/experience.model'
@@ -62,12 +63,12 @@ function triggerJsonPicker() {
 
 // which source the user is about to pick (UI only); `source` is what was actually parsed
 const picker = ref('linkedin')
-const PICKERS = [
-    { value: 'linkedin', label: 'LinkedIn', button: 'Chọn file .zip', open: triggerFilePicker },
-    { value: 'pdf', label: 'PDF', button: 'Chọn file PDF', open: triggerPdfPicker },
-    { value: 'jsonresume', label: 'JSON Resume', button: 'Chọn file JSON', open: triggerJsonPicker },
-]
-const activePicker = computed(() => PICKERS.find(p => p.value === picker.value))
+const PICKERS = computed(() => [
+    { value: 'linkedin', label: 'LinkedIn', button: t('importCv.chooseZip'), open: triggerFilePicker },
+    { value: 'pdf', label: 'PDF', button: t('importCv.choosePdf'), open: triggerPdfPicker },
+    { value: 'jsonresume', label: 'JSON Resume', button: t('importCv.chooseJson'), open: triggerJsonPicker },
+])
+const activePicker = computed(() => PICKERS.value.find(p => p.value === picker.value))
 
 function applyParsed(sourceKey, data) {
     source.value = sourceKey
@@ -86,7 +87,7 @@ async function handleSelectFile(e, sourceKey = 'linkedin') {
         try {
             applyParsed(sourceKey, fromJsonResume(JSON.parse(await file.text())))
         } catch (err) {
-            toast?.({ message: err instanceof SyntaxError ? 'File JSON không hợp lệ' : err.message, bg: 'danger' })
+            toast?.({ message: err instanceof SyntaxError ? t('importCv.invalidJson') : err.message, bg: 'danger' })
         }
         return
     }
@@ -171,75 +172,76 @@ async function handleSaveExperience(values) {
 
 <template>
     <div class="space-y-6">
-        <Heading :level="1" text="Nhập CV" description="Lấy học vấn và kinh nghiệm từ file có sẵn, rồi duyệt từng mục trước khi thêm." />
+        <Heading :level="1" :text="t('nav.importCv')" :description="t('importCv.description')" />
         <input ref="fileInput" type="file" accept=".zip" class="hidden" @change="handleSelectFile($event, 'linkedin')" />
         <input ref="pdfInput" type="file" accept=".pdf,application/pdf" class="hidden" @change="handleSelectFile($event, 'pdf')" />
         <input ref="jsonInput" type="file" accept=".json,application/json" class="hidden" @change="handleSelectFile($event, 'jsonresume')" />
 
         <section class="space-y-4 rounded-md border border-line bg-surface p-4">
             <div>
-                <p class="form-label block">Nguồn dữ liệu</p>
-                <SegmentedControl v-model="picker" :options="PICKERS" aria-label="Nguồn dữ liệu" />
+                <p class="form-label block">{{ t('importCv.source') }}</p>
+                <SegmentedControl v-model="picker" :options="PICKERS" :aria-label="t('importCv.source')" />
             </div>
             <p class="m-0 text-sm text-fg-2">
-                <template v-if="picker === 'linkedin'">
-                    Tải file .zip ở
-                    <a href="https://www.linkedin.com/mypreferences/d/download-my-data" target="_blank" rel="noopener">LinkedIn Data export</a>
-                    (chọn Positions và Education).
-                </template>
-                <template v-else-if="picker === 'pdf'">CV PDF một cột, tối đa 5MB. PDF dạng ảnh scan không đọc được.</template>
-                <template v-else>
-                    File <a href="https://jsonresume.org/schema" target="_blank" rel="noopener">JSON Resume</a> (<code>resume.json</code>), ví dụ file xuất từ trang Xem trước.
-                </template>
+                <i18n-t v-if="picker === 'linkedin'" keypath="importCv.linkedinHint" scope="global">
+                    <template #link>
+                        <a href="https://www.linkedin.com/mypreferences/d/download-my-data" target="_blank" rel="noopener">LinkedIn Data export</a>
+                    </template>
+                </i18n-t>
+                <template v-else-if="picker === 'pdf'">{{ t('importCv.pdfHint') }}</template>
+                <i18n-t v-else keypath="importCv.jsonHint" scope="global">
+                    <template #link><a href="https://jsonresume.org/schema" target="_blank" rel="noopener">JSON Resume</a></template>
+                    <template #file><code>resume.json</code></template>
+                </i18n-t>
             </p>
             <Button type="primary" icon="fa-solid fa-paperclip" :text="activePicker.button" @click="activePicker.open()" />
         </section>
 
         <template v-if="hasParsed">
-            <p class="m-0 text-sm text-fg-2">Nguồn: {{ SOURCES[source].label }}<span v-if="source === 'pdf'"> · Đọc PDF chỉ là ước đoán, kiểm tra kỹ từng mục trước khi thêm.</span></p>
+            <p class="m-0 text-sm text-fg-2">{{ t('importCv.sourceIs', { source: SOURCES[source].label }) }}<span v-if="source === 'pdf'"> · {{ t('importCv.pdfGuess') }}</span></p>
 
             <section v-for="group in [
-                { key: 'edu', title: 'Học vấn tìm thấy', items: parsedEducations, name: i => i.school || '(Không rõ tên trường)', sub: i => i.major, open: openEducationModal },
-                { key: 'exp', title: 'Kinh nghiệm tìm thấy', items: parsedExperiences, name: i => i.company || '(Không rõ tên công ty)', sub: i => i.position, open: openExperienceModal },
+                { key: 'edu', title: t('importCv.foundEducation'), items: parsedEducations, name: i => i.school || t('importCv.unknownSchool'), sub: i => i.major, open: openEducationModal },
+                { key: 'exp', title: t('importCv.foundExperience'), items: parsedExperiences, name: i => i.company || t('importCv.unknownCompany'), sub: i => i.position, open: openExperienceModal },
             ]" :key="group.key" class="rounded-md border border-line bg-surface">
                 <h2 class="m-0 flex h-12 items-center border-b border-line px-4 text-md font-semibold">
                     {{ group.title }} <span class="ms-1 font-normal tabular-nums text-fg-3">({{ group.items.length }})</span>
                 </h2>
-                <NoData v-if="!group.items.length" title="Không tìm thấy mục nào" />
+                <NoData v-if="!group.items.length" :title="t('importCv.nothingFound')" />
                 <ul v-else class="m-0 list-none divide-y divide-line p-0">
                     <li v-for="(item, idx) in group.items" :key="idx" class="flex flex-wrap items-center justify-between gap-2 px-4 py-2">
                         <div class="min-w-0">
                             <p class="m-0 break-words text-sm font-medium text-fg">{{ group.name(item) }}</p>
                             <p v-if="group.sub(item)" class="m-0 text-xs text-fg-2">{{ group.sub(item) }}</p>
                         </div>
-                        <Button v-if="!item._imported" icon="fa-solid fa-plus" text="Thêm" size="sm" @click="group.open(item)" />
-                        <span v-else class="inline-flex items-center gap-1 text-sm text-success"><FontAwesomeIcon icon="fa-solid fa-circle-check" aria-hidden="true" />Đã thêm</span>
+                        <Button v-if="!item._imported" icon="fa-solid fa-plus" :text="t('common.add')" size="sm" @click="group.open(item)" />
+                        <span v-else class="inline-flex items-center gap-1 text-sm text-success"><FontAwesomeIcon icon="fa-solid fa-circle-check" aria-hidden="true" />{{ t('importCv.added') }}</span>
                     </li>
                 </ul>
             </section>
 
             <details v-if="extractedText" class="rounded-md border border-line bg-surface p-4">
-                <summary class="cursor-pointer text-sm font-medium">Văn bản đọc được từ PDF (để chép phần bị sót)</summary>
+                <summary class="cursor-pointer text-sm font-medium">{{ t('importCv.extractedText') }}</summary>
                 <pre class="mb-0 mt-2 whitespace-pre-wrap break-words text-sm text-fg-2">{{ extractedText }}</pre>
             </details>
         </template>
     </div>
 
-    <Modal ref="refModalEdu" :title="`Thêm học vấn (từ ${SOURCES[source].label})`" is-hidden-footer>
+    <Modal ref="refModalEdu" :title="t('importCv.addEducationFrom', { source: SOURCES[source].label })" is-hidden-footer>
         <div class="block-container">
-            <VeeForm :fields="educationModel" :document="educationDoc" :submit-fn="handleSaveEducation" submit-text="Lưu" button-position="end">
+            <VeeForm :fields="educationModel" :document="educationDoc" :submit-fn="handleSaveEducation" button-position="end">
                 <template #cancel>
-                    <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
+                    <Button :text="t('common.cancel')" type="ghost" data-bs-dismiss="modal" />
                 </template>
             </VeeForm>
         </div>
     </Modal>
 
-    <Modal ref="refModalExp" :title="`Thêm kinh nghiệm (từ ${SOURCES[source].label})`" is-hidden-footer>
+    <Modal ref="refModalExp" :title="t('importCv.addExperienceFrom', { source: SOURCES[source].label })" is-hidden-footer>
         <div class="block-container">
-            <VeeForm :fields="experienceModel" :document="experienceDoc" :submit-fn="handleSaveExperience" submit-text="Lưu" button-position="end">
+            <VeeForm :fields="experienceModel" :document="experienceDoc" :submit-fn="handleSaveExperience" button-position="end">
                 <template #cancel>
-                    <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
+                    <Button :text="t('common.cancel')" type="ghost" data-bs-dismiss="modal" />
                 </template>
             </VeeForm>
         </div>

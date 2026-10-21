@@ -5,30 +5,29 @@
  */
 
 import type { modelItem } from '@/types/model.type.ts'
+import { withParams } from '@/i18n'
 import { defaultId, defaultDescription, defaultDateStartEnd, defaultCheckboxBoolean, withEnglish } from '@/types/model.type'
 
-const _mesRequired = 'Vui lòng nhập'
+const _mesRequired = 'validation.required'
 
 const MODEL: modelItem[] = [
     defaultId,
     {
         name: 'name',
-        label: 'Tên Chứng chỉ',
+        label: 'field.certificateName',
         type: 'text',
-        placeholder: 'Vui lòng nhập Tên Chứng chỉ',
-        valid: yup => yup.string().trim().max(100, 'Tối đa 100 ký tự').required(_mesRequired),
+        valid: yup => yup.string().trim().max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
         default: '',
     },
     {
         name: 'organization',
-        label: 'Tên tổ chức',
+        label: 'field.organization',
         type: 'text',
-        placeholder: 'Vui lòng nhập Tên tổ chức',
-        valid: yup => yup.string().trim().max(100, 'Tối đa 100 ký tự').required(_mesRequired),
+        valid: yup => yup.string().trim().max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
         default: '',
     },
     ...defaultDateStartEnd(true),
-    defaultCheckboxBoolean({ name: 'isNoExpiration', label: 'Không thời hạn' }),
+    defaultCheckboxBoolean({ name: 'isNoExpiration', label: 'field.noExpiration' }),
     /* defaultLink({ name: 'link', label: 'Link' }), */
     /* {
         name: 'images',
@@ -38,7 +37,7 @@ const MODEL: modelItem[] = [
         col: 'col-md-12',
         default: '',
     }, */
-    ...withEnglish(defaultDescription({ name: 'description', label: 'Mô tả', required: false })),
+    ...withEnglish(defaultDescription({ name: 'description', label: 'field.description', required: false })),
 ]
 
 export default MODEL

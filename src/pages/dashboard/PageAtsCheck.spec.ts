@@ -104,7 +104,7 @@ describe('PageAtsCheck (issue #159)', () => {
 
     it('points the download link at the selected template', async () => {
         const wrapper = mountPage()
-        const link = () => wrapper.findAll('a').find(a => a.text().includes('Tải CV mẫu này'))!.attributes('href')
+        const link = () => wrapper.find('a[href*="download-pdf"]').attributes('href')
 
         expect(link()).toMatch(/api\/v1\/download-pdf\?template=ats$/)
         await wrapper.findAll('button').find(b => b.text() === 'Classic')!.trigger('click')

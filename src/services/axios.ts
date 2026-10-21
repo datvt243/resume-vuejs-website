@@ -39,12 +39,21 @@ const refreshTokens = async () => {
     store.setTokens(res.data?.data ?? {})
 }
 
+/** 401 codes that mean "access token missing/bad" — the only ones worth a refresh (API-STANDARD C3) */
+export const TOKEN_ERROR_CODES = ['NO_TOKEN', 'INVALID_TOKEN', 'TOKEN_EXPIRED', 'TOKEN_REVOKED']
+
+/** new envelope `error.code`, legacy `errorCode` (API-STANDARD C6) */
+export const errorCodeOf = body => body?.error?.code ?? body?.errorCode
+
 instanceAxios.interceptors.response.use(
     res => res,
     async err => {
         const originalRequest = err.config
+        const code = errorCodeOf(err.response?.data)
+        // no code = legacy body that may still be a token error, keep refreshing; any other code (INVALID_CREDENTIALS, VALIDATION_ERROR…) is not
+        const isTokenError = !code || TOKEN_ERROR_CODES.includes(code)
 
-        if (err.response?.status === 401 && !originalRequest?._retry) {
+        if (err.response?.status === 401 && isTokenError && !originalRequest?._retry) {
             originalRequest._retry = true
             try {
                 /**
@@ -93,7 +102,7 @@ export const _axios = async props => {
                 resolve(res.data)
             })
             .catch(err => {
-                reject(err.response?.data ?? { message: t('error.network'), errors: {}, invalidToken: false })
+                reject(err.response?.data ?? { success: false, error: { code: 'NETWORK_ERROR', message: t('error.network') } })
             })
     })
 }

@@ -100,3 +100,4 @@
 2026-10-20T18:32:14Z role=verifier outcome=SEAL node=issue-262-cv-lang-cleanup rerun=none hub_bytes_before=201533 hub_bytes_after=202237
 2026-10-21T12:01:58Z role=verifier outcome=SEAL node=issue-266-i18n-phase1-shared-auth rerun=none hub_bytes_before=198075 hub_bytes_after=203019
 2026-10-21T13:00:58Z role=verifier outcome=SEAL node=issue-271-cold-start-overlay rerun=none hub_bytes_before=198836 hub_bytes_after=203521
+2026-10-21T13:16:54Z role=verifier outcome=SEAL node=issue-252-api-response-standard rerun=none hub_bytes_before=199404 hub_bytes_after=199399

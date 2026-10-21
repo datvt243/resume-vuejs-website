@@ -4,7 +4,7 @@ import { authStore } from '@/stores/auth'
 
 /**
  * Send the user to /login whenever auth is lost while on a protected route.
- * Forced logouts (refresh failure in services/axios.ts, `invalidToken` in
+ * Forced logouts (refresh failure in services/axios.ts, a token error code in
  * services/base.ts) clear the store without a router, and the beforeEach
  * guard only runs on navigation — without this the dashboard page stays
  * mounted inside LayoutAuth and keeps firing 401ing requests.

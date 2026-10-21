@@ -5,9 +5,9 @@
  */
 
 import { toValue } from 'vue'
-import { _axios } from '@/services/axios'
 import { authStore } from '@/stores/auth'
 import { subURL } from '@/config/api.config'
+import { _axios, TOKEN_ERROR_CODES, errorCodeOf } from '@/services/axios'
 
 export const handleBase = async (axiosOptions, props, callback) => {
     /**
@@ -29,6 +29,8 @@ export const handleBase = async (axiosOptions, props, callback) => {
         const __helper = _helper({ toast })
         await _axios(_props)
             .then(res => {
+                // some endpoints answer 2xx with success:false (API-STANDARD C1)
+                if (res?.success === false) return __helper.error(res)
                 callback?.(res)
                 __helper.success(res)
             })
@@ -71,7 +73,9 @@ const _helper = props => {
             })
         },
         error: err => {
-            const { message = '', errors = {}, invalidToken = false } = err
+            // read both the new `error` envelope and the legacy flat body (API-STANDARD C6)
+            const message = err?.error?.message ?? err?.message ?? ''
+            const errors = err?.error?.details ?? err?.errors ?? {}
 
             /**
              * báo lỗi
@@ -88,7 +92,8 @@ const _helper = props => {
              */
             if (errors && Object.keys(errors).length) {
                 for (const [, mess] of Object.entries(errors)) {
-                    _message.push(`- ${mess} `)
+                    // new details are `{ field, message }`, legacy ones plain strings
+                    _message.push(`- ${mess?.message ?? mess} `)
                 }
             }
 
@@ -102,9 +107,9 @@ const _helper = props => {
                 })
 
             /**
-             * lỗi trả về là invalidToken thì logout
+             * lỗi trả về là token error thì logout
              */
-            if (invalidToken) {
+            if (TOKEN_ERROR_CODES.includes(errorCodeOf(err))) {
                 const store = authStore()
                 store?.logOut()
             }

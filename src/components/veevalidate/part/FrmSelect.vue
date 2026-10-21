@@ -6,6 +6,7 @@
  */
 
 import { useField } from 'vee-validate'
+import { t, tr } from '@/i18n'
 import { defineProps, useAttrs, watch } from 'vue'
 
 const props = defineProps({
@@ -41,7 +42,7 @@ const { value, errorMessage, handleChange, handleBlur } = useField(() => props.n
 
 <template>
     <div class="mb-4">
-        <label :for="props.name" class="form-label">{{ props.label }}</label>
+        <label :for="props.name" class="form-label">{{ tr(props.label) }}</label>
         <select
             :id="props.name"
             :class="['form-control', props.size, { 'border-danger': errorMessage }]"
@@ -53,13 +54,13 @@ const { value, errorMessage, handleChange, handleBlur } = useField(() => props.n
             @input="handleChange"
             @blur="handleBlur"
         >
-            <option value="">Vui lòng chọn</option>
+            <option value="">{{ t('common.pleaseSelect') }}</option>
             <option v-for="el of options" :key="`opt_${el.value}`" :value="el.value">{{ el.text }}</option>
         </select>
 
         <p v-if="errorMessage" :id="`${props.name}-error`" class="mb-0 mt-1 flex items-center gap-1 text-xs text-danger">
-            <FontAwesomeIcon icon="fa-solid fa-circle-exclamation" aria-hidden="true" />{{ errorMessage }}
+            <FontAwesomeIcon icon="fa-solid fa-circle-exclamation" aria-hidden="true" />{{ tr(errorMessage) }}
         </p>
-        <p v-if="props.text" class="form-text mb-0">{{ props.text }}</p>
+        <p v-if="props.text" class="form-text mb-0">{{ tr(props.text) }}</p>
     </div>
 </template>

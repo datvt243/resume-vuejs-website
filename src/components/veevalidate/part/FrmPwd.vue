@@ -6,6 +6,7 @@
  */
 
 import { useField } from 'vee-validate'
+import { t, tr } from '@/i18n'
 import { ref, defineProps, useAttrs, computed, watch } from 'vue'
 
 const props = defineProps({
@@ -33,8 +34,8 @@ const attrs = useAttrs()
 const isShow = ref(false)
 
 const getPlaceholder = computed(() => {
-    const text = 'Vui lòng nhập'
-    return props.placeholder ? props.placeholder : `${text} ${props.label.toLowerCase()}`
+    const text = t('common.pleaseEnter')
+    return props.placeholder ? tr(props.placeholder) : `${text} ${tr(props.label).toLowerCase()}`
 })
 
 /**
@@ -45,7 +46,7 @@ const { value, errorMessage, handleChange, handleBlur } = useField(() => props.n
 
 <template>
     <div class="mb-4">
-        <label v-if="!props.icon" :for="props.name" class="form-label">{{ props.label }}</label>
+        <label v-if="!props.icon" :for="props.name" class="form-label">{{ tr(props.label) }}</label>
         <div class="input-group">
             <span v-if="props.icon" class="input-group-text">
                 <FontAwesomeIcon :icon="props.icon" />
@@ -66,7 +67,7 @@ const { value, errorMessage, handleChange, handleBlur } = useField(() => props.n
             <button
                 type="button"
                 class="input-group-text text-fg-2 hover:text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-                aria-label="Hiện mật khẩu"
+                :aria-label="t('form.showPassword')"
                 :aria-pressed="isShow ? 'true' : 'false'"
                 @click="isShow = !isShow"
             >
@@ -75,8 +76,8 @@ const { value, errorMessage, handleChange, handleBlur } = useField(() => props.n
         </div>
 
         <p v-if="errorMessage" :id="`${props.name}-error`" class="mb-0 mt-1 flex items-center gap-1 text-xs text-danger">
-            <FontAwesomeIcon icon="fa-solid fa-circle-exclamation" aria-hidden="true" />{{ errorMessage }}
+            <FontAwesomeIcon icon="fa-solid fa-circle-exclamation" aria-hidden="true" />{{ tr(errorMessage) }}
         </p>
-        <p v-if="props.text" class="form-text mb-0">{{ props.text }}</p>
+        <p v-if="props.text" class="form-text mb-0">{{ tr(props.text) }}</p>
     </div>
 </template>

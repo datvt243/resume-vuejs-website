@@ -7,6 +7,7 @@
 import axios from 'axios'
 import { API, subURL } from '@/config/api.config'
 import { authStore } from '@/stores/auth'
+import { t } from '@/i18n'
 
 /**
  * Auth = `Authorization: Bearer <token>` from the in-memory authStore —
@@ -92,7 +93,7 @@ export const _axios = async props => {
                 resolve(res.data)
             })
             .catch(err => {
-                reject(err.response?.data ?? { message: 'Lỗi kết nối, vui lòng thử lại', errors: {}, invalidToken: false })
+                reject(err.response?.data ?? { message: t('error.network'), errors: {}, invalidToken: false })
             })
     })
 }

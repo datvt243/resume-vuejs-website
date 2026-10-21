@@ -6,6 +6,7 @@
  */
 
 import { useField, FieldArray, Field } from 'vee-validate'
+import { tr } from '@/i18n'
 import { defineProps, watch } from 'vue'
 
 const props = defineProps({
@@ -32,7 +33,7 @@ const { value, errorMessage } = useField(() => props.name)
 
 <template>
     <div class="mb-4">
-        <label v-if="props.label" :for="props.name" class="form-label">{{ props.label }}</label>
+        <label v-if="props.label" :for="props.name" class="form-label">{{ tr(props.label) }}</label>
         <FieldArray :name="props.name" v-slot="{ fields, push, remove }">
             <div v-for="(field, idx) in fields" :key="field.key">
                 <Field :name="`${props.name}[${idx}].url`" type="url" />
@@ -41,8 +42,8 @@ const { value, errorMessage } = useField(() => props.name)
             <button type="button" @click="push({ id: Date.now(), name: '', url: '' })">Add</button>
         </FieldArray>
         <p v-if="errorMessage" :id="`${props.name}-error`" class="mb-0 mt-1 flex items-center gap-1 text-xs text-danger">
-            <FontAwesomeIcon icon="fa-solid fa-circle-exclamation" aria-hidden="true" />{{ errorMessage }}
+            <FontAwesomeIcon icon="fa-solid fa-circle-exclamation" aria-hidden="true" />{{ tr(errorMessage) }}
         </p>
-        <p v-if="props.text" class="form-text mb-0">{{ props.text }}</p>
+        <p v-if="props.text" class="form-text mb-0">{{ tr(props.text) }}</p>
     </div>
 </template>

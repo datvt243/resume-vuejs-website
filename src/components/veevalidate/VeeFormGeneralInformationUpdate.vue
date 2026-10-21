@@ -15,6 +15,7 @@ import { useDocument } from '@/composables/useDocument'
 import Swal from 'sweetalert2'
 import { buttonClass } from '@/lib/button.lib'
 import { candidateStore } from '@/stores/candidate'
+import { t } from '@/i18n'
 
 const candidate = inject('candidate')
 
@@ -84,16 +85,16 @@ async function handleUpdate(values, action = 'create') {
         }
 
         const { value } = await Swal.fire({
-            title: 'Bạn có chắc là muốn xoá?',
+            title: t('confirm.deleteSure'),
             icon: 'question',
             input: 'text',
-            html: 'Vui lòng nhập vào <code class="code">"delete"</code> để xác nhận xoá',
+            html: t('confirm.typeDelete'),
             inputValue: '',
-            inputPlaceholder: 'Nhập "delete"',
+            inputPlaceholder: t('confirm.typeDeletePlaceholder'),
             showCancelButton: true,
             reverseButtons: true,
-            cancelButtonText: 'Hủy',
-            confirmButtonText: 'Xóa',
+            cancelButtonText: t('common.cancel'),
+            confirmButtonText: t('common.delete'),
             customClass: {
                 confirmButton: buttonClass({ variant: 'danger' }),
                 cancelButton: buttonClass({ variant: 'secondary' }),
@@ -101,7 +102,7 @@ async function handleUpdate(values, action = 'create') {
             buttonsStyling: false,
             inputValidator: value => {
                 if (value !== 'delete') {
-                    return 'Vui lòng nhập vào <span class="code">"delete"</span> để xác nhận xoá'
+                    return t('confirm.typeDelete')
                 }
             },
         })
@@ -142,7 +143,7 @@ async function handleUpdate(values, action = 'create') {
 <template>
     <FormSection :title="props.heading" :description="props.description" :card="false">
         <template v-if="props.hasButtonAdd" #actions>
-            <Button icon="fa-solid fa-plus" text="Thêm" size="sm" @click="showModalCreateDoc()" />
+            <Button icon="fa-solid fa-plus" :text="t('common.add')" size="sm" @click="showModalCreateDoc()" />
         </template>
 
         <div class="space-y-4">
@@ -156,11 +157,11 @@ async function handleUpdate(values, action = 'create') {
                 :height-auto="true"
             >
                 <template #theadMore>
-                    <th scope="col" class="w-12"><span class="sr-only">Thao tác</span></th>
+                    <th scope="col" class="w-12"><span class="sr-only">{{ t('common.actions') }}</span></th>
                 </template>
                 <template #tbodyMore="{ doc }">
                     <td class="w-12 text-right">
-                        <Button icon="fa-solid fa-trash" type="ghost" size="sm" :aria-label="`Xóa ${doc.name || doc.language || ''}`.trim()" @click="handleUpdate({ ...doc }, 'delete')" />
+                        <Button icon="fa-solid fa-trash" type="ghost" size="sm" :aria-label="`${t('common.delete')} ${doc.name || doc.language || ''}`.trim()" @click="handleUpdate({ ...doc }, 'delete')" />
                     </td>
                 </template>
             </TableDefault>
@@ -170,7 +171,7 @@ async function handleUpdate(values, action = 'create') {
     <template v-if="props.hasButtonAdd">
         <Modal
             ref="refModal02"
-            :title="document._id ? `Sửa: ${props.heading.toLowerCase()}` : `Thêm ${props.heading.toLowerCase()}`"
+            :title="t(document._id ? 'form.editTitle' : 'form.addTitle', { name: props.heading.toLowerCase() })"
             is-hidden-footer
         >
             <div class="block-container">
@@ -179,12 +180,12 @@ async function handleUpdate(values, action = 'create') {
                     :fields="props.fields"
                     :document="document"
                     :submit-fn="handleUpdate"
-                    submit-text="Lưu"
+                    :submit-text="t('common.save')"
                     buttonPosition="end"
                     reset-after-save
                 >
                     <template #cancel>
-                        <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
+                        <Button :text="t('common.cancel')" type="ghost" data-bs-dismiss="modal" />
                     </template>
                 </VeeForm>
             </div>

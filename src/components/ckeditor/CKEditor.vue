@@ -13,6 +13,7 @@ import 'ckeditor5-premium-features/ckeditor5-premium-features.css'
 import './custom.scss'
 
 import { defineModel, computed, useAttrs } from 'vue'
+import { t, tr } from '@/i18n'
 
 const model = defineModel({ type: String, default: '' })
 const attrs = useAttrs()
@@ -22,7 +23,7 @@ const editorConfig = {
     plugins: [Bold, Essentials, Italic, Paragraph, Undo, List, Heading],
     toolbar: ['heading', '|', 'bold', 'italic', '|', 'numberedList', 'bulletedList', '|', 'undo', 'redo'],
     height: 500,
-    placeholder: attrs?.placeholder || 'Vui lòng nhập',
+    placeholder: tr(attrs?.placeholder) || t('common.pleaseEnter'),
     name: 'description',
 }
 

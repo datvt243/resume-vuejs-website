@@ -6,6 +6,7 @@
  */
 
 import { useField } from 'vee-validate'
+import { tr } from '@/i18n'
 import { defineProps, computed } from 'vue'
 
 const props = defineProps({
@@ -47,7 +48,7 @@ const vbind = computed(() => {
                 v-bind="vbind"
                 @change="handleChange"
             />
-            <label :for="getId" class="form-check-label"> {{ props.label }} </label>
+            <label :for="getId" class="form-check-label"> {{ tr(props.label) }} </label>
         </div>
     </div>
 </template>

@@ -9,6 +9,7 @@ import { defineProps, defineExpose, computed, ref, watch, inject, onBeforeUnmoun
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 import { buttonClass } from '@/lib/button.lib'
+import { t } from '@/i18n'
 
 import {
     FrmInput,
@@ -24,7 +25,7 @@ import {
 const props = defineProps({
     fields: { type: Array, default: () => [] },
     submitFn: { type: Function, default: () => {} },
-    submitText: { type: String, default: 'Lưu' },
+    submitText: { type: String, default: '' },
     buttonPosition: { type: String, default: 'start' },
     // shows "Hủy", which puts the fields back to `document`
     cancelable: { type: Boolean, default: false },
@@ -176,7 +177,7 @@ const objComponent = {
 
 <template>
     <form class="form" @focusin="onFocusIn">
-        <div v-if="hasLocalizedFields" class="mb-4 inline-flex rounded bg-surface-2 p-0.5" role="radiogroup" aria-label="Ngôn ngữ nội dung">
+        <div v-if="hasLocalizedFields" class="mb-4 inline-flex rounded bg-surface-2 p-0.5" role="radiogroup" :aria-label="t('form.contentLang')">
             <button
                 v-for="l in LANGS"
                 :key="l"
@@ -188,7 +189,7 @@ const objComponent = {
                 :data-lang="l"
                 @click="formLang = l"
             >
-                {{ l.toUpperCase() }}<span v-if="langHasError(l)" class="text-danger" title="Có lỗi cần sửa">!</span>
+                {{ l.toUpperCase() }}<span v-if="langHasError(l)" class="text-danger" :title="t('form.langHasError')">!</span>
             </button>
         </div>
         <div class="row">
@@ -201,10 +202,10 @@ const objComponent = {
         <FrmInput v-if="getFieldId" key="_id" v-bind="getFieldId" type="hidden" label="" class="mb-0" />
         <div class="sticky bottom-0 z-10 flex flex-wrap items-center gap-2 border-t border-line bg-surface py-3" :class="justify[props.buttonPosition] || 'justify-start'">
             <slot name="cancel"></slot>
-            <button v-if="props.cancelable" type="button" :class="cancelClass" :disabled="submitting" @click="loadDocument(props.document)">Hủy</button>
+            <button v-if="props.cancelable" type="button" :class="cancelClass" :disabled="submitting" @click="loadDocument(props.document)">{{ t('common.cancel') }}</button>
             <button type="button" data-submit :class="submitClass" :disabled="!meta.valid || submitting" :aria-busy="submitting ? 'true' : undefined" @click="onSubmit">
                 <FontAwesomeIcon v-if="submitting" icon="fa-solid fa-spinner" spin aria-hidden="true" />
-                {{ submitText }}
+                {{ submitText || t('common.save') }}
             </button>
             <slot name="button"></slot>
         </div>

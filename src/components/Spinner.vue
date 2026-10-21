@@ -10,6 +10,7 @@
  */
 
 import { ref, computed, defineExpose, onBeforeUnmount } from 'vue'
+import { t } from '@/i18n'
 
 const COLD_START_SECONDS = 30
 const COLD_START_NOTICE_AFTER = 3
@@ -65,20 +66,20 @@ onBeforeUnmount(stopCountdown)
 
         <div class="loading-notice flex items-start gap-3 rounded-md border border-line bg-surface p-3 text-sm text-fg shadow-float">
             <span v-if="!isColdStart" class="spinner-border spinner-border-sm text-accent" aria-hidden="true"></span>
-            <span v-if="!isColdStart" class="text-fg-2" role="status">Đang tải…</span>
+            <span v-if="!isColdStart" class="text-fg-2" role="status">{{ t('common.loading') }}</span>
 
             <template v-else>
                 <div class="countdown-ring" :class="{ overtime: isOvertime }" :style="{ '--percent': `${progressPercent}%` }">
                     <span v-if="!isOvertime" class="countdown-number">{{ secondsLeft }}</span>
                     <span v-else class="spinner-border spinner-border-sm text-accent" role="status">
-                        <span class="sr-only">Đang tải…</span>
+                        <span class="sr-only">{{ t('common.loading') }}</span>
                     </span>
                 </div>
 
                 <div class="min-w-0" role="status">
-                    <p class="m-0 font-medium">Server đang khởi động, vui lòng đợi ~{{ COLD_START_SECONDS }} giây</p>
-                    <p class="mb-0 mt-1 text-xs text-fg-2">Gói miễn phí tự ngủ khi không dùng nên lần gọi đầu cần thời gian khởi động lại.</p>
-                    <p v-if="isOvertime" class="mb-0 mt-1 text-xs text-fg-2">Server khởi động lâu hơn dự kiến, vui lòng đợi thêm chút nữa…</p>
+                    <p class="m-0 font-medium">{{ t('spinner.coldStart', { seconds: COLD_START_SECONDS }) }}</p>
+                    <p class="mb-0 mt-1 text-xs text-fg-2">{{ t('spinner.coldStartNote') }}</p>
+                    <p v-if="isOvertime" class="mb-0 mt-1 text-xs text-fg-2">{{ t('spinner.overtime') }}</p>
                 </div>
             </template>
         </div>

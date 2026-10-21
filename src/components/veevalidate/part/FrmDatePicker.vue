@@ -10,6 +10,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
 import '@/styles/vue3datepicker.scss'
 
 import { useField } from 'vee-validate'
+import { tr } from '@/i18n'
 import { ref, useAttrs, watch, computed } from 'vue'
 import { useTheme } from '@/composables/useTheme'
 
@@ -86,7 +87,7 @@ function format(date) {
 
 <template>
     <div class="mb-4">
-        <label :for="props.name" class="form-label">{{ props.label }}</label>
+        <label :for="props.name" class="form-label">{{ tr(props.label) }}</label>
 
         <VueDatePicker
             :dark="theme === 'dark'"
@@ -99,8 +100,8 @@ function format(date) {
         ></VueDatePicker>
 
         <p v-if="errorMessage" :id="`${props.name}-error`" class="mb-0 mt-1 flex items-center gap-1 text-xs text-danger">
-            <FontAwesomeIcon icon="fa-solid fa-circle-exclamation" aria-hidden="true" />{{ errorMessage }}
+            <FontAwesomeIcon icon="fa-solid fa-circle-exclamation" aria-hidden="true" />{{ tr(errorMessage) }}
         </p>
-        <p v-if="props.text" class="form-text mb-0">{{ props.text }}</p>
+        <p v-if="props.text" class="form-text mb-0">{{ tr(props.text) }}</p>
     </div>
 </template>

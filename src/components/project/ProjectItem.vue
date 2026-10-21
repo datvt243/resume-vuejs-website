@@ -9,6 +9,7 @@ import { defineProps, defineEmits, computed } from 'vue'
 import type { PropType } from 'vue'
 
 import { formatDate } from '@/utilities/index'
+import { t } from '@/i18n'
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 const emits = defineEmits(['onEdit', 'onDelete', 'onDuplicate'])
@@ -44,7 +45,7 @@ const model = computed(() => props.modelValue)
 const getDate = computed(() => {
     const { startDate, endDate, isWorking } = props.modelValue
     const _start = formatDate(startDate, 'MM/YYYY')
-    const _end = isWorking ? 'Hiện tại' : formatDate(endDate, 'MM/YYYY')
+    const _end = isWorking ? t('common.present') : formatDate(endDate, 'MM/YYYY')
     return `${_start} - ${_end}`
 })
 

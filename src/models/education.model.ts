@@ -5,31 +5,30 @@
  */
 
 import type { modelItem } from '@/types/model.type.ts'
+import { withParams } from '@/i18n'
 import { defaultId, defaultDateStartEnd, defaultDescription, defaultCheckboxBoolean, withEnglish } from '@/types/model.type'
 
-const _mesRequired = 'Vui lòng nhập'
+const _mesRequired = 'validation.required'
 
 const MODEL: modelItem[] = [
     defaultId,
     {
         name: 'school',
-        label: 'Tên trường',
+        label: 'field.school',
         type: 'text',
-        placeholder: 'Vui lòng nhập Tên trường',
-        valid: yup => yup.string().max(100, 'Tối đa 100 ký tự').required(_mesRequired),
+        valid: yup => yup.string().max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
         default: '',
     },
     {
         name: 'major',
-        label: 'Chuyên ngành',
+        label: 'field.major',
         type: 'text',
-        placeholder: 'Vui lòng nhập Chuyên nhành',
-        valid: yup => yup.string().max(50, 'Tối đa 50 ký tự').required(_mesRequired),
+        valid: yup => yup.string().max(50, withParams('validation.maxChars', { max: 50 })).required(_mesRequired),
         default: '',
     },
     ...defaultDateStartEnd(true),
-    defaultCheckboxBoolean({ name: 'isCurrent', label: 'Đang học tại đây' }),
-    ...withEnglish(defaultDescription({ name: 'description', label: 'Mô tả', required: false })),
+    defaultCheckboxBoolean({ name: 'isCurrent', label: 'field.isStudying' }),
+    ...withEnglish(defaultDescription({ name: 'description', label: 'field.description', required: false })),
 ]
 
 export default MODEL

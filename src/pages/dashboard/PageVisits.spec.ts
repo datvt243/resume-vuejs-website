@@ -11,7 +11,6 @@ const interval = ref('day')
 const stats = ref<any>(null)
 vi.mock('@/composables/useVisitStats', () => ({
     useVisitStats: () => ({ interval, stats }),
-    INTERVAL_LABELS: { day: 'ngày', week: 'tuần', month: 'tháng' },
 }))
 
 function mountPage() {

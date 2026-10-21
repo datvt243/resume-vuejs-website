@@ -10,7 +10,7 @@ import { Table, TableHead, TableBody, TableRow, TableCell } from '@/components/t
 import { useInitTable } from '@/composables/useInitTable'
 import Convert from '@/components/convert/convert'
 import { buttonClass } from '@/lib/button.lib'
-import { t } from '@/i18n'
+import { t, tr } from '@/i18n'
 
 /**
  *
@@ -87,7 +87,7 @@ const pageRows = computed(() => rows.value.slice(pageStart.value, pageStart.valu
 const rangeLabel = computed(() => {
     const total = rows.value.length
     const to = Math.min(pageStart.value + props.pageSize, total)
-    return `${numberFormat.format(pageStart.value + 1)}–${numberFormat.format(to)} trong ${numberFormat.format(total)}`
+    return t('common.rowRange', { from: numberFormat.format(pageStart.value + 1), to: numberFormat.format(to), total: numberFormat.format(total) })
 })
 watch(pageCount, n => {
     if (page.value > n) page.value = n
@@ -132,7 +132,7 @@ const renderCellContent = defineComponent({
                         <template v-for="{ label, field, type } in getColsWithHiddenCells" :key="`thead_cell_${field}`">
                             <TableCell tag="th" scope="col" :aria-sort="ariaSort(field)" :class="{ 'text-right': type === 'number' }">
                                 <button type="button" class="sort-btn" @click="toggleSort(field)">
-                                    {{ label }}
+                                    {{ tr(label) }}
                                     <FontAwesomeIcon :icon="sortIcon(field)" aria-hidden="true" />
                                 </button>
                             </TableCell>
@@ -178,7 +178,7 @@ const renderCellContent = defineComponent({
             </Table>
         </div>
         <footer v-if="pageCount > 1" class="flex items-center justify-between gap-4 border-t border-line px-4 py-3">
-            <span class="text-xs tabular-nums text-fg-3">{{ rangeLabel }} · Trang {{ page }} / {{ pageCount }}</span>
+            <span class="text-xs tabular-nums text-fg-3">{{ rangeLabel }} · {{ t('common.pageOf', { page, pageCount }) }}</span>
             <div class="flex gap-2">
                 <button type="button" :class="pagerBtn" :disabled="page <= 1" @click="page--">{{ t('common.prev') }}</button>
                 <button type="button" :class="pagerBtn" :disabled="page >= pageCount" @click="page++">{{ t('common.next') }}</button>

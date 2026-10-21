@@ -20,6 +20,7 @@ import model from '@/models/application.model.ts'
 
 import { formatDate } from '@/utilities/index'
 import { buttonClass } from '@/lib/button.lib'
+import { t } from '@/i18n'
 
 const { applications: dataList, removeRecordById, addRecordToList } = useCandidate({
     field: 'applications',
@@ -68,10 +69,10 @@ const isDuplicating = ref(false)
 // DESIGN.md §5.6 badges
 const badgeBase = 'inline-flex h-5 items-center gap-1.5 rounded-sm px-2 text-xs font-medium'
 const statusMeta = {
-  applied: { text: 'Đã nộp', badge: 'bg-surface-2 text-fg-2', dot: 'bg-fg-3' },
-  interview: { text: 'Phỏng vấn', badge: 'bg-warning-subtle text-warning', dot: 'bg-warning' },
-  offer: { text: 'Offer', badge: 'bg-success-subtle text-success', dot: 'bg-success' },
-  rejected: { text: 'Từ chối', badge: 'bg-danger-subtle text-danger', dot: 'bg-danger' },
+  applied: { text: 'option.applicationStatus.applied', badge: 'bg-surface-2 text-fg-2', dot: 'bg-fg-3' },
+  interview: { text: 'option.applicationStatus.interview', badge: 'bg-warning-subtle text-warning', dot: 'bg-warning' },
+  offer: { text: 'option.applicationStatus.offer', badge: 'bg-success-subtle text-success', dot: 'bg-success' },
+  rejected: { text: 'option.applicationStatus.rejected', badge: 'bg-danger-subtle text-danger', dot: 'bg-danger' },
 }
 const linkBtn = buttonClass({ variant: 'ghost', iconOnly: true })
 function getStatusMeta(status) {
@@ -134,8 +135,8 @@ function showModalDuplicateDoc(doc) {
 
 <template>
   <div>
-    <Heading :level="1" text="Ứng tuyển">
-      <Button type="primary" icon="fa-solid fa-plus" text="Thêm đơn ứng tuyển" @click="showModalCreateDoc()" />
+    <Heading :level="1" :text="t('nav.application')">
+      <Button type="primary" icon="fa-solid fa-plus" :text="t('crud.application.add')" @click="showModalCreateDoc()" />
     </Heading>
 
     <div v-if="dataList.length">
@@ -150,20 +151,20 @@ function showModalDuplicateDoc(doc) {
             <div class="flex flex-wrap items-center gap-1">
               <span :class="[badgeBase, getStatusMeta(item.status).badge]">
                 <span class="h-1.5 w-1.5 rounded-full" :class="getStatusMeta(item.status).dot" aria-hidden="true"></span>
-                {{ getStatusMeta(item.status).text }}
+                {{ t(getStatusMeta(item.status).text) }}
               </span>
               <template v-if="getProfileLinks(item)">
                 <span :class="[badgeBase, 'bg-surface-2 text-fg-2']">
                   <FontAwesomeIcon icon="fa-solid fa-layer-group" aria-hidden="true" />{{ getProfileLinks(item).name }}
                 </span>
-                <a :class="linkBtn" :href="getProfileLinks(item).publicLink" target="_blank" rel="noopener" aria-label="Xem CV công khai theo profile" title="Xem CV công khai">
+                <a :class="linkBtn" :href="getProfileLinks(item).publicLink" target="_blank" rel="noopener" :aria-label="t('crud.application.viewPublicCv')" :title="t('crud.application.viewPublicCvShort')">
                   <FontAwesomeIcon icon="fa-solid fa-eye" aria-hidden="true" />
                 </a>
-                <a :class="linkBtn" :href="getProfileLinks(item).pdfLink" target="_blank" rel="noopener" aria-label="Tải PDF theo profile" title="Tải PDF">
+                <a :class="linkBtn" :href="getProfileLinks(item).pdfLink" target="_blank" rel="noopener" :aria-label="t('crud.application.downloadPdf')" :title="t('crud.application.downloadPdfShort')">
                   <FontAwesomeIcon icon="fa-solid fa-download" aria-hidden="true" />
                 </a>
               </template>
-              <a v-if="item.jobLink" :class="linkBtn" :href="item.jobLink" target="_blank" rel="noopener" aria-label="Mở tin tuyển dụng" title="Mở tin tuyển dụng">
+              <a v-if="item.jobLink" :class="linkBtn" :href="item.jobLink" target="_blank" rel="noopener" :aria-label="t('crud.application.openJob')" :title="t('crud.application.openJob')">
                 <FontAwesomeIcon icon="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />
               </a>
               <ItemActions :label="item.company" @edit="showModalEditDoc({ ...item })" @duplicate="showModalDuplicateDoc({ ...item })"
@@ -175,21 +176,21 @@ function showModalDuplicateDoc(doc) {
     </div>
     <LoadingGate v-else>
       <div class="rounded-md border border-line bg-surface">
-        <NoData title="Chưa có đơn ứng tuyển nào" description="Ghi lại công ty và vị trí bạn đã nộp để theo dõi tiến độ.">
-          <Button icon="fa-solid fa-plus" text="Thêm đơn ứng tuyển" @click="showModalCreateDoc()" />
+        <NoData :title="t('crud.application.empty')" :description="t('crud.application.emptyDescription')">
+          <Button icon="fa-solid fa-plus" :text="t('crud.application.add')" @click="showModalCreateDoc()" />
         </NoData>
       </div>
     </LoadingGate>
   </div>
 
   <Modal ref="refModal"
-    :title="isDuplicating ? `Nhân bản: ${document.company}` : document._id ? `Chỉnh sửa: ${document.company}` : 'Thêm đơn ứng tuyển'"
+    :title="isDuplicating ? t('form.duplicateTitle', { name: document.company }) : document._id ? t('form.editTitle', { name: document.company }) : t('crud.application.add')"
     is-hidden-footer>
     <div class="block-container">
       <VeeForm ref="refVeeForm" :fields="formFields" :document="document" :submit-fn="handleUpdate"
-        submit-text="Lưu" button-position="end">
+        button-position="end">
         <template #cancel>
-          <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
+          <Button :text="t('common.cancel')" type="ghost" data-bs-dismiss="modal" />
         </template>
       </VeeForm>
     </div>

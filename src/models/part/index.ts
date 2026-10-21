@@ -1,11 +1,10 @@
 import type { modelItem } from '@/types/model.type.ts'
-const _mesRequired = 'Vui lòng nhập'
+const _mesRequired = 'validation.required'
 
 export const startDate: modelItem = {
     name: 'startDate',
-    label: 'Ngày bắt đầu',
+    label: 'field.startDate',
     type: 'date',
-    placeholder: 'Vui lòng nhập Ngày bắt đầu',
     valid: yup => yup.number().required(_mesRequired),
     col: 'col-md-6',
     convertTo: 'date',
@@ -15,9 +14,8 @@ export const startDate: modelItem = {
 
 export const endDate: modelItem = {
     name: 'endDate',
-    label: 'Ngày Kết thúc',
+    label: 'field.endDate',
     type: 'date',
-    placeholder: 'Vui lòng nhập Ngày Kết thúc',
     valid: yup => yup.number().nullable(),
     col: 'col-md-6',
     convertTo: 'date',

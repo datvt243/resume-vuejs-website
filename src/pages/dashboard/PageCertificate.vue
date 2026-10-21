@@ -102,8 +102,8 @@ function showModalDuplicateDoc(doc) {
 
 <template>
     <div>
-        <Heading :level="1" text="Chứng chỉ">
-          <Button type="primary" icon="fa-solid fa-plus" text="Thêm chứng chỉ" @click="showModalCreateDoc()" />
+        <Heading :level="1" :text="$t('nav.certificate')">
+          <Button type="primary" icon="fa-solid fa-plus" :text="$t('crud.certificate.add')" @click="showModalCreateDoc()" />
         </Heading>
 
         <div v-if="dataList.length">
@@ -116,7 +116,7 @@ function showModalDuplicateDoc(doc) {
                             date: () => {
                                 const { startDate, endDate, isNoExpiration } = item
                                 const _start = formatDate(startDate, 'MM/YYYY')
-                                const _end = isNoExpiration ? 'Không thời hạn' : formatDate(endDate, 'MM/YYYY')
+                                const _end = isNoExpiration ? $t('field.noExpiration') : formatDate(endDate, 'MM/YYYY')
                                 return `${_start} - ${_end}`
                             },
                             description: item.description,
@@ -131,8 +131,8 @@ function showModalDuplicateDoc(doc) {
         </div>
         <LoadingGate v-else>
             <div class="rounded-md border border-line bg-surface">
-                <NoData title="Chưa có chứng chỉ nào">
-                    <Button icon="fa-solid fa-plus" text="Thêm chứng chỉ" @click="showModalCreateDoc()" />
+                <NoData :title="$t('crud.certificate.empty')">
+                    <Button icon="fa-solid fa-plus" :text="$t('crud.certificate.add')" @click="showModalCreateDoc()" />
                 </NoData>
             </div>
         </LoadingGate>
@@ -141,7 +141,7 @@ function showModalDuplicateDoc(doc) {
     <Modal
         ref="refModal"
         :title="
-            isDuplicating ? `Nhân bản: ${document.name}` : document._id ? `Chỉnh sửa: ${document.name}` : 'Thêm chứng chỉ'
+            isDuplicating ? $t('form.duplicateTitle', { name: document.name }) : document._id ? $t('form.editTitle', { name: document.name }) : $t('crud.certificate.add')
         "
         is-hidden-footer
     >
@@ -151,11 +151,10 @@ function showModalDuplicateDoc(doc) {
                 :fields="formFields"
                 :document="document"
                 :submit-fn="handleUpdate"
-                submit-text="Lưu"
                 button-position="end"
             >
                 <template #cancel>
-                    <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
+                    <Button :text="$t('common.cancel')" type="ghost" data-bs-dismiss="modal" />
                 </template>
             </VeeForm>
         </div>

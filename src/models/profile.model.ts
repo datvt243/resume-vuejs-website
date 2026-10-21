@@ -14,16 +14,17 @@
  */
 
 import type { modelItem } from '@/types/model.type.ts'
+import { withParams } from '@/i18n'
 import { defaultId } from '@/types/model.type'
 
 const MODEL: modelItem[] = [
     defaultId,
     {
         name: 'name',
-        label: 'Tên profile',
+        label: 'field.profileName',
         type: 'text',
-        placeholder: 'VD: CV Frontend, CV Backend…',
-        valid: yup => yup.string().trim().min(1, 'Tên profile không được trống').max(100, 'Tối đa 100 ký tự').required('Vui lòng nhập tên profile'),
+        placeholder: 'field.profileNamePlaceholder',
+        valid: yup => yup.string().trim().min(1, 'validation.profileNameEmpty').max(100, withParams('validation.maxChars', { max: 100 })).required('validation.profileNameRequired'),
         default: '',
         col: 'col-md-12',
     },

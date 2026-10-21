@@ -3,6 +3,7 @@ import { ref, reactive } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import PageImportLinkedin from './PageImportLinkedin.vue'
+import { i18n } from '@/i18n'
 
 const handleBaseMock = vi.fn()
 const toastMock = vi.fn()
@@ -40,7 +41,7 @@ const parsed = {
 
 function mountPage() {
     setActivePinia(createPinia())
-    return mount(PageImportLinkedin, { global: { stubs } })
+    return mount(PageImportLinkedin, { global: { stubs, plugins: [i18n] } })
 }
 
 async function selectJson(wrapper: ReturnType<typeof mountPage>, content: string) {

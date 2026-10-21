@@ -5,6 +5,7 @@
  */
 
 import { getLocalizedText } from '@/utilities/index'
+import { t } from '@/i18n'
 
 type Lang = 'vi' | 'en'
 type AnyRecord = Record<string, any>
@@ -121,11 +122,11 @@ export const toJsonResume = (data: AnyRecord, lang: Lang = 'vi', socialMedia: An
  * can take it unchanged. Throws on anything that isn't a JSON Resume.
  */
 export const fromJsonResume = (json: unknown): { educations: AnyRecord[]; experiences: AnyRecord[] } => {
-    if (!json || typeof json !== 'object' || Array.isArray(json)) throw new Error('File không phải JSON Resume hợp lệ')
+    if (!json || typeof json !== 'object' || Array.isArray(json)) throw new Error(t('importCv.invalidJsonResume'))
     const doc = json as AnyRecord
     const work = Array.isArray(doc.work) ? doc.work : []
     const education = Array.isArray(doc.education) ? doc.education : []
-    if (!work.length && !education.length && !doc.basics) throw new Error('File không phải JSON Resume hợp lệ')
+    if (!work.length && !education.length && !doc.basics) throw new Error(t('importCv.invalidJsonResume'))
 
     const dates = (item: AnyRecord) => {
         const startDate = fromIsoDate(item.startDate)

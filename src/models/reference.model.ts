@@ -5,37 +5,35 @@
  */
 
 import type { modelItem } from '@/types/model.type.ts'
+import { withParams } from '@/i18n'
 import { defaultId, defaultPhone } from '@/types/model.type'
 
-const _mesRequired = 'Vui lòng nhập'
+const _mesRequired = 'validation.required'
 
 const MODEL: modelItem[] = [
     defaultId,
     {
         name: 'fullName',
-        label: 'Họ tên người tham khảo',
+        label: 'field.referenceName',
         type: 'text',
-        placeholder: 'Vui lòng nhập Họ tên người tham khảo',
-        valid: yup => yup.string().max(100, 'Tối đa 100 ký tự').required(_mesRequired),
+        valid: yup => yup.string().max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
         default: '',
     },
     {
         name: 'company',
-        label: 'Tên công ty',
+        label: 'field.companyName',
         type: 'text',
-        placeholder: 'Vui lòng nhập Tên công ty',
-        valid: yup => yup.string().max(100, 'Tối đa 100 ký tự').required(_mesRequired),
+        valid: yup => yup.string().max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
         default: '',
     },
     {
         name: 'position',
-        label: 'Vị trí công việc',
+        label: 'field.jobTitle',
         type: 'text',
-        placeholder: 'Vui lòng nhập Vị trí công việc',
-        valid: yup => yup.string().max(100, 'Tối đa 100 ký tự').required(_mesRequired),
+        valid: yup => yup.string().max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
         default: '',
     },
-    defaultPhone({ name: 'phone', label: 'Số điện thoại' }),
+    defaultPhone({ name: 'phone', label: 'field.phone' }),
 ]
 
 export default MODEL

@@ -130,12 +130,12 @@ function showModalDuplicateDoc(doc) {
 
 <template>
     <div>
-        <Heading :level="1" text="Học vấn">
-            <Button type="primary" icon="fa-solid fa-plus" text="Thêm học vấn" @click="showModalCreateDoc()" />
+        <Heading :level="1" :text="$t('nav.education')">
+            <Button type="primary" icon="fa-solid fa-plus" :text="$t('crud.education.add')" @click="showModalCreateDoc()" />
         </Heading>
 
         <div v-if="dataList.length">
-            <p class="mb-2 mt-0 text-xs text-fg-3">Kéo thả để sắp xếp. Thứ tự chỉ lưu trên trình duyệt này.</p>
+            <p class="mb-2 mt-0 text-xs text-fg-3">{{ $t('common.dragToSort') }}</p>
             <ListTransition class="m-0 list-none divide-y divide-line rounded-md border border-line bg-surface p-0">
                 <li
                     v-for="edu in orderedItems"
@@ -161,8 +161,8 @@ function showModalDuplicateDoc(doc) {
         </div>
         <LoadingGate v-else>
             <div class="rounded-md border border-line bg-surface">
-                <NoData title="Chưa có học vấn nào" description="Thêm trường học để nhà tuyển dụng thấy nền tảng của bạn.">
-                    <Button icon="fa-solid fa-plus" text="Thêm học vấn" @click="showModalCreateDoc()" />
+                <NoData :title="$t('crud.education.empty')" :description="$t('crud.education.emptyDescription')">
+                    <Button icon="fa-solid fa-plus" :text="$t('crud.education.add')" @click="showModalCreateDoc()" />
                 </NoData>
             </div>
         </LoadingGate>
@@ -170,7 +170,7 @@ function showModalDuplicateDoc(doc) {
 
     <Modal
         ref="refModal"
-        :title="isDuplicating ? `Nhân bản: ${document.school}` : document._id ? `Chỉnh sửa: ${document.school}` : 'Thêm học vấn'"
+        :title="isDuplicating ? $t('form.duplicateTitle', { name: document.school }) : document._id ? $t('form.editTitle', { name: document.school }) : $t('crud.education.add')"
         is-hidden-footer
     >
         <div class="block-container">
@@ -179,11 +179,10 @@ function showModalDuplicateDoc(doc) {
                 :fields="formFields"
                 :document="document"
                 :submit-fn="handleUpdate"
-                submit-text="Lưu"
                 button-position="end"
             >
                 <template #cancel>
-                    <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
+                    <Button :text="$t('common.cancel')" type="ghost" data-bs-dismiss="modal" />
                 </template>
             </VeeForm>
         </div>

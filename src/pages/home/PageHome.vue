@@ -20,6 +20,7 @@ import { API } from '@/config/api.config'
 import { getDownloadCvUrl } from '@/utilities/index'
 import { buttonClass } from '@/lib/button.lib'
 import VisitChart from '@/components/visits/VisitChart.vue'
+import { t } from '@/i18n'
 
 const candidate = candidateStore()
 const auth = authStore()
@@ -30,7 +31,7 @@ const info = computed(() => candidate.getCandidate)
 const generalInfo = computed(() => candidate.getGeneralInformation)
 const fullName = computed(() => {
     const { firstName = '', lastName = '' } = info.value
-    return `${firstName} ${lastName}`.trim() || 'Chưa cập nhật tên'
+    return `${firstName} ${lastName}`.trim() || t('home.noName')
 })
 const initials = computed(() => {
     const { firstName = '', lastName = '' } = info.value
@@ -46,21 +47,21 @@ const { percent: profileCompletion, sections, missingSections } = useProfileComp
 const { applications } = useCandidate({ field: 'applications', collection: 'application' })
 const kpis = computed(() => [
     {
-        label: 'Lượt xem hồ sơ',
+        label: t('home.kpiViews'),
         value: numberFormat.format(info.value?.visitCount ?? 0),
-        hint: 'Tổng số lần hồ sơ công khai được mở',
+        hint: t('home.kpiViewsHint'),
         to: '/dashboard/visits',
     },
     {
-        label: 'Hoàn thành hồ sơ',
+        label: t('home.kpiCompletion'),
         value: `${profileCompletion.value}%`,
-        hint: `${sections.value.length - missingSections.value.length}/${sections.value.length} mục đã đủ`,
+        hint: t('home.kpiCompletionHint', { done: sections.value.length - missingSections.value.length, total: sections.value.length }),
         to: missingSections.value[0]?.to || '/dashboard/information',
     },
     {
-        label: 'Đơn ứng tuyển',
+        label: t('home.kpiApplications'),
         value: numberFormat.format(applications.value?.length ?? 0),
-        hint: 'Đang theo dõi',
+        hint: t('home.kpiApplicationsHint'),
         to: '/dashboard/application',
     },
 ])
@@ -70,10 +71,10 @@ const { stats } = useVisitStats()
 
 /* CV card — the PDF is generated server-side from the profile on download */
 const _host = window.location.host === 'localhost' ? 'http://localhost:3001/' : API
-const CV_TEMPLATES = [
+const CV_TEMPLATES = computed(() => [
     { value: 'classic', label: 'Classic' },
-    { value: 'ats', label: 'Tối ưu ATS' },
-]
+    { value: 'ats', label: t('home.templateAts') },
+])
 const cvTemplate = ref('classic')
 const { selectedLang } = useCvLang()
 // plain link navigation → no Authorization header, pass the in-memory access token as `?token=`
@@ -90,30 +91,30 @@ const btnGhost = buttonClass({ variant: 'ghost', size: 'sm' })
 </script>
 
 <template>
-    <h1 class="sr-only">Tổng quan</h1>
+    <h1 class="sr-only">{{ $t('nav.overview') }}</h1>
     <div class="space-y-6">
         <!-- Profile strip -->
-        <section class="flex flex-wrap items-center gap-4 rounded-md border border-line bg-surface p-4" aria-label="Hồ sơ">
+        <section class="flex flex-wrap items-center gap-4 rounded-md border border-line bg-surface p-4" :aria-label="$t('nav.profile')">
             <div class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent-subtle text-sm font-semibold text-accent">
                 <img v-if="avatarUrl" :src="avatarUrl" alt="" class="h-full w-full object-cover" />
                 <span v-else aria-hidden="true">{{ initials }}</span>
             </div>
             <div class="min-w-0 flex-1">
                 <p class="m-0 truncate text-md font-semibold text-fg">{{ fullName }}</p>
-                <p class="m-0 truncate text-sm text-fg-2">{{ position || 'Chưa có vị trí mong muốn' }}</p>
+                <p class="m-0 truncate text-sm text-fg-2">{{ position || $t('home.noPosition') }}</p>
             </div>
             <span
                 class="inline-flex h-5 items-center gap-1.5 rounded-sm px-2 text-xs font-medium"
                 :class="isOpenToWork ? 'bg-success-subtle text-success' : 'bg-surface-2 text-fg-2'"
             >
                 <span class="h-1.5 w-1.5 rounded-full" :class="isOpenToWork ? 'bg-success' : 'bg-fg-3'" aria-hidden="true"></span>
-                {{ isOpenToWork ? 'Đang mở tìm việc' : 'Không tìm việc' }}
+                {{ isOpenToWork ? $t('field.openToWork') : $t('home.notLooking') }}
             </span>
-            <RouterLink to="/dashboard/information" :class="btnSecondary">Cập nhật hồ sơ</RouterLink>
+            <RouterLink to="/dashboard/information" :class="btnSecondary">{{ $t('home.updateProfile') }}</RouterLink>
         </section>
 
         <!-- KPI row -->
-        <section class="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:gap-6" aria-label="Chỉ số">
+        <section class="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:gap-6" :aria-label="$t('visits.kpis')">
             <RouterLink
                 v-for="k in kpis"
                 :key="k.label"
@@ -130,13 +131,13 @@ const btnGhost = buttonClass({ variant: 'ghost', size: 'sm' })
         <div class="grid gap-6 lg:grid-cols-3">
             <section class="min-w-0 rounded-md border border-line bg-surface lg:col-span-2" aria-labelledby="home-visits-title">
                 <header class="flex h-12 items-center justify-between border-b border-line px-4">
-                    <h2 id="home-visits-title" class="m-0 text-md font-semibold">Lượt xem 30 ngày</h2>
-                    <RouterLink to="/dashboard/visits" class="text-sm font-medium text-accent no-underline hover:text-accent-hover hover:underline">Xem chi tiết</RouterLink>
+                    <h2 id="home-visits-title" class="m-0 text-md font-semibold">{{ $t('home.views30Days') }}</h2>
+                    <RouterLink to="/dashboard/visits" class="text-sm font-medium text-accent no-underline hover:text-accent-hover hover:underline">{{ $t('home.viewDetails') }}</RouterLink>
                 </header>
                 <div class="p-4">
                     <template v-if="stats">
                         <p class="m-0 mb-2 text-sm text-fg-2">
-                            <span class="text-base font-semibold text-fg">{{ numberFormat.format(stats.total) }}</span> lượt xem
+                            <span class="text-base font-semibold text-fg">{{ numberFormat.format(stats.total) }}</span> {{ $t('visits.viewsUnit') }}
                         </p>
                         <VisitChart :series="stats.series" :interval="stats.interval" />
                     </template>
@@ -146,14 +147,14 @@ const btnGhost = buttonClass({ variant: 'ghost', size: 'sm' })
 
             <section class="rounded-md border border-line bg-surface" aria-labelledby="home-completion-title">
                 <header class="flex h-12 items-center border-b border-line px-4">
-                    <h2 id="home-completion-title" class="m-0 text-md font-semibold">Hoàn thiện hồ sơ</h2>
+                    <h2 id="home-completion-title" class="m-0 text-md font-semibold">{{ $t('home.completeProfile') }}</h2>
                 </header>
                 <div class="p-4">
                     <div class="flex items-center gap-3">
                         <div
                             class="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-2"
                             role="progressbar"
-                            aria-label="Mức hoàn thành hồ sơ"
+                            :aria-label="$t('home.completionLevel')"
                             :aria-valuenow="profileCompletion"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -163,14 +164,14 @@ const btnGhost = buttonClass({ variant: 'ghost', size: 'sm' })
                         <span class="text-sm font-medium">{{ profileCompletion }}%</span>
                     </div>
                     <template v-if="missingSections.length">
-                        <p class="m-0 mt-4 text-sm text-fg-2">Còn thiếu {{ missingSections.length }} mục</p>
+                        <p class="m-0 mt-4 text-sm text-fg-2">{{ $t('home.missingSections', { count: missingSections.length }) }}</p>
                         <ul class="m-0 mt-2 list-none space-y-1 p-0">
                             <li v-for="section in missingSections" :key="section.to">
-                                <RouterLink :to="section.to" class="text-sm text-accent no-underline hover:text-accent-hover hover:underline">{{ section.label }}</RouterLink>
+                                <RouterLink :to="section.to" class="text-sm text-accent no-underline hover:text-accent-hover hover:underline">{{ $t(section.label) }}</RouterLink>
                             </li>
                         </ul>
                     </template>
-                    <p v-else class="m-0 mt-4 text-sm text-fg-2">Hồ sơ đã đủ các mục bắt buộc.</p>
+                    <p v-else class="m-0 mt-4 text-sm text-fg-2">{{ $t('home.profileComplete') }}</p>
                 </div>
             </section>
         </div>
@@ -178,8 +179,8 @@ const btnGhost = buttonClass({ variant: 'ghost', size: 'sm' })
         <!-- CV card -->
         <section class="rounded-md border border-line bg-surface" aria-labelledby="home-cv-title">
             <header class="flex h-12 items-center justify-between border-b border-line px-4">
-                <h2 id="home-cv-title" class="m-0 text-md font-semibold">CV của bạn</h2>
-                <RouterLink to="/dashboard/ats-check" :class="btnGhost">Kiểm tra điểm ATS</RouterLink>
+                <h2 id="home-cv-title" class="m-0 text-md font-semibold">{{ $t('home.yourCv') }}</h2>
+                <RouterLink to="/dashboard/ats-check" :class="btnGhost">{{ $t('home.checkAts') }}</RouterLink>
             </header>
             <div class="flex flex-wrap items-center gap-4 p-4">
                 <div class="flex min-w-0 flex-1 items-center gap-3">
@@ -188,21 +189,21 @@ const btnGhost = buttonClass({ variant: 'ghost', size: 'sm' })
                     </div>
                     <div class="min-w-0">
                         <p class="m-0 truncate text-sm font-medium text-fg">{{ cvFileName }}</p>
-                        <p class="m-0 text-xs text-fg-3">Tạo tự động từ hồ sơ, luôn là bản mới nhất</p>
+                        <p class="m-0 text-xs text-fg-3">{{ $t('home.cvAutoGenerated') }}</p>
                     </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                    <SegmentedControl v-model="cvTemplate" :options="CV_TEMPLATES" aria-label="Mẫu CV" />
-                    <span title="Sắp ra mắt">
+                    <SegmentedControl v-model="cvTemplate" :options="CV_TEMPLATES" :aria-label="$t('home.cvTemplate')" />
+                    <span :title="$t('common.comingSoon')">
                         <button type="button" :class="btnSecondary" disabled aria-describedby="home-attach-soon">
                             <FontAwesomeIcon icon="fa-solid fa-paperclip" />
-                            <span>Đính kèm file</span>
+                            <span>{{ $t('home.attachFile') }}</span>
                         </button>
-                        <span id="home-attach-soon" class="sr-only">Sắp ra mắt</span>
+                        <span id="home-attach-soon" class="sr-only">{{ $t('common.comingSoon') }}</span>
                     </span>
                     <a :href="downloadCVUrl" :download="cvFileName" target="_blank" :class="btnPrimary">
                         <FontAwesomeIcon icon="fa-solid fa-download" />
-                        <span>Tải CV</span>
+                        <span>{{ $t('header.downloadCv') }}</span>
                     </a>
                 </div>
             </div>

@@ -5,41 +5,38 @@
  */
 
 import type { modelItem } from '@/types/model.type.ts'
+import { withParams } from '@/i18n'
 import { withEnglish } from '@/types/model.type'
 
-const _mesRequired = 'Vui lòng nhập'
+const _mesRequired = 'validation.required'
 
 const MODEL: modelItem[] = [
     {
         name: '_id',
         label: 'ID',
         type: 'hidden',
-        placeholder: 'Vui lòng nhập',
         valid: yup => yup.string().trim().nullable().default(null),
         col: 'col-md-12',
         default: null,
     },
     {
         name: 'name',
-        label: 'Tên Chứng chỉ',
+        label: 'field.awardName',
         type: 'text',
-        placeholder: 'Vui lòng nhập Tên giải thưởng chỉ',
-        valid: yup => yup.string().trim().max(100, 'Tối đa 100 ký tự').required(_mesRequired),
+        valid: yup => yup.string().trim().max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
         default: '',
     },
     {
         name: 'organization',
-        label: 'Tên tổ chức',
+        label: 'field.organization',
         type: 'text',
-        placeholder: 'Vui lòng nhập Tên tổ chức',
-        valid: yup => yup.string().trim().max(100, 'Tối đa 100 ký tự').required(_mesRequired),
+        valid: yup => yup.string().trim().max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
         default: '',
     },
     {
         name: 'issueDate',
-        label: 'Ngày nhận giải',
+        label: 'field.awardDate',
         type: 'date',
-        placeholder: 'Vui lòng nhập Ngày bắt đầu',
         valid: yup => yup.number().required(_mesRequired),
         col: 'col-md-6',
         convertTo: 'date',
@@ -50,7 +47,7 @@ const MODEL: modelItem[] = [
         name: 'link',
         label: 'Link',
         type: 'text',
-        valid: yup => yup.string().trim().url().nullable(),
+        valid: yup => yup.string().trim().url('validation.urlInvalid').nullable(),
         col: 'col-md-12',
         default: '',
     },
@@ -64,7 +61,7 @@ const MODEL: modelItem[] = [
     }, */
     ...withEnglish({
         name: 'description',
-        label: 'Mô tả',
+        label: 'field.description',
         type: 'ckediter',
         valid: yup => yup.string().trim().required(_mesRequired),
         col: 'col-md-12',

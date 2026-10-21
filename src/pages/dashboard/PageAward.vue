@@ -97,8 +97,8 @@ function showModalDuplicateDoc(doc) {
 
 <template>
   <div>
-    <Heading :level="1" text="Giải thưởng">
-      <Button type="primary" icon="fa-solid fa-plus" text="Thêm giải thưởng" @click="showModalCreateDoc()" />
+    <Heading :level="1" :text="$t('nav.award')">
+      <Button type="primary" icon="fa-solid fa-plus" :text="$t('crud.award.add')" @click="showModalCreateDoc()" />
     </Heading>
 
     <div v-if="dataList.length">
@@ -122,21 +122,21 @@ function showModalDuplicateDoc(doc) {
     </div>
     <LoadingGate v-else>
       <div class="rounded-md border border-line bg-surface">
-        <NoData title="Chưa có giải thưởng nào">
-          <Button icon="fa-solid fa-plus" text="Thêm giải thưởng" @click="showModalCreateDoc()" />
+        <NoData :title="$t('crud.award.empty')">
+          <Button icon="fa-solid fa-plus" :text="$t('crud.award.add')" @click="showModalCreateDoc()" />
         </NoData>
       </div>
     </LoadingGate>
   </div>
 
   <Modal ref="refModal"
-    :title="isDuplicating ? `Nhân bản: ${document.name}` : document._id ? `Chỉnh sửa: ${document.name}` : 'Thêm giải thưởng'"
+    :title="isDuplicating ? $t('form.duplicateTitle', { name: document.name }) : document._id ? $t('form.editTitle', { name: document.name }) : $t('crud.award.add')"
     is-hidden-footer>
     <div class="block-container">
       <VeeForm ref="refVeeForm" :fields="formFields" :document="document" :submit-fn="handleUpdate"
-        submit-text="Lưu" button-position="end">
+        button-position="end">
         <template #cancel>
-          <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
+          <Button :text="$t('common.cancel')" type="ghost" data-bs-dismiss="modal" />
         </template>
       </VeeForm>
     </div>

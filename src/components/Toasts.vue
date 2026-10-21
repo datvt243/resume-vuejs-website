@@ -8,6 +8,7 @@
  */
 
 import { ref, computed, defineProps, defineExpose, onBeforeUnmount } from 'vue'
+import { t } from '@/i18n'
 
 const props = defineProps({
     content: { type: String, default: '' },
@@ -52,7 +53,7 @@ defineExpose({
             :class="{ show: visible }" :style="{ display: visible ? 'flex' : 'none' }">
             <FontAwesomeIcon :icon="type.icon" :class="type.color" class="mt-1 shrink-0" />
             <p class="toast-body m-0 min-w-0 flex-1 whitespace-pre-line">{{ props.content }}</p>
-            <button type="button" aria-label="Đóng thông báo"
+            <button type="button" :aria-label="t('form.closeToast')"
                 class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded text-fg-3 hover:bg-surface-2 hover:text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
                 @click="hide">
                 <FontAwesomeIcon icon="fa-solid fa-xmark" />

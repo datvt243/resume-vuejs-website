@@ -6,6 +6,7 @@
 
 import { computed, defineProps } from 'vue'
 import { useHelper } from '@/composables/useHelper'
+import { t } from '@/i18n'
 
 const props = defineProps({
     // list: card of skeleton rows, slot rendered only after loading
@@ -21,7 +22,7 @@ const busy = computed(() => !!loading?.value?.isLoading)
 <template>
     <template v-if="props.variant === 'form'">
         <div v-if="busy" class="space-y-4 pb-4" aria-busy="true">
-            <span class="sr-only">Đang tải…</span>
+            <span class="sr-only">{{ t('common.loading') }}</span>
             <div v-for="i in 4" :key="i" class="space-y-1" aria-hidden="true">
                 <div class="h-4 w-24 rounded bg-surface-2 motion-safe:animate-pulse"></div>
                 <div class="h-8 rounded bg-surface-2 motion-safe:animate-pulse"></div>
@@ -31,7 +32,7 @@ const busy = computed(() => !!loading?.value?.isLoading)
     </template>
     <template v-else>
         <div v-if="busy" class="divide-y divide-line rounded-md border border-line bg-surface" aria-busy="true">
-            <span class="sr-only">Đang tải…</span>
+            <span class="sr-only">{{ t('common.loading') }}</span>
             <div v-for="i in 3" :key="i" class="flex items-start gap-3 px-4 py-3" aria-hidden="true">
                 <div class="h-8 w-8 shrink-0 rounded bg-surface-2 motion-safe:animate-pulse"></div>
                 <div class="flex-1 space-y-2">

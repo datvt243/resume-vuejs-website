@@ -10,6 +10,7 @@
 
 import { ref, watch, onMounted } from 'vue'
 import QRCode from 'qrcode'
+import { t } from '@/i18n'
 
 const props = defineProps({
     value: { type: String, default: '' },
@@ -51,8 +52,8 @@ async function downloadSvg() {
     <div v-if="value" class="qr-code-block">
         <canvas ref="canvasRef"></canvas>
         <div class="qr-code-actions">
-            <Button icon="fa-solid fa-download" text="Tải PNG" @click="downloadPng" />
-            <Button icon="fa-solid fa-download" text="Tải SVG" @click="downloadSvg" />
+            <Button icon="fa-solid fa-download" :text="t('common.downloadPng')" @click="downloadPng" />
+            <Button icon="fa-solid fa-download" :text="t('common.downloadSvg')" @click="downloadSvg" />
         </div>
     </div>
 </template>

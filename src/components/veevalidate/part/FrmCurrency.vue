@@ -6,6 +6,7 @@
  */
 
 import { useField } from 'vee-validate'
+import { tr } from '@/i18n'
 import { defineProps, watch } from 'vue'
 import { component as VueNumber } from '@coders-tm/vue-number-format'
 
@@ -53,7 +54,7 @@ function _handleChange($event) {
 
 <template>
     <div class="mb-4">
-        <label :for="props.name" class="form-label">{{ props.label }}</label>
+        <label :for="props.name" class="form-label">{{ tr(props.label) }}</label>
         <VueNumber
             :model-value="value"
             @update:model-value="_handleChange"
@@ -78,8 +79,8 @@ function _handleChange($event) {
             @blur="handleBlur"
         /> -->
         <p v-if="errorMessage" :id="`${props.name}-error`" class="mb-0 mt-1 flex items-center gap-1 text-xs text-danger">
-            <FontAwesomeIcon icon="fa-solid fa-circle-exclamation" aria-hidden="true" />{{ errorMessage }}
+            <FontAwesomeIcon icon="fa-solid fa-circle-exclamation" aria-hidden="true" />{{ tr(errorMessage) }}
         </p>
-        <p v-if="props.text" class="form-text mb-0">{{ props.text }}</p>
+        <p v-if="props.text" class="form-text mb-0">{{ tr(props.text) }}</p>
     </div>
 </template>

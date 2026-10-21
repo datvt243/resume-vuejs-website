@@ -21,4 +21,17 @@ describe('i18n', () => {
         expect(i18n.global.t('nav.experience')).toBe('Kinh nghiệm')
         expect(document.documentElement.lang).toBe('vi')
     })
+
+    it('tr translates message keys and passes literal text through', async () => {
+        const { tr } = await import('./index')
+        const { useCvLang } = await import('@/composables/useCvLang')
+        expect(tr('validation.emailRequired')).toBe('Email là bắt buộc')
+        expect(tr('Email')).toBe('Email')
+        expect(tr('Tối thiểu 12 ký tự, gồm chữ hoa.')).toBe('Tối thiểu 12 ký tự, gồm chữ hoa.')
+        expect(tr('')).toBe('')
+
+        useCvLang().setLang('en')
+        await nextTick()
+        expect(tr('validation.emailRequired')).toBe('Email is required')
+    })
 })

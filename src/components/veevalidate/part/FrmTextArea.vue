@@ -6,6 +6,7 @@
  */
 
 import { useField } from 'vee-validate'
+import { t, tr } from '@/i18n'
 import { defineProps, useAttrs, computed, watch } from 'vue'
 
 const props = defineProps({
@@ -35,14 +36,14 @@ const attrs = useAttrs()
 const { value, errorMessage, handleChange, handleBlur } = useField(() => props.name)
 
 const getPlaceholder = computed(() => {
-    const text = 'Vui lòng nhập'
-    return props.placeholder ? props.placeholder : `${text} ${props.label.toLowerCase()}`
+    const text = t('common.pleaseEnter')
+    return props.placeholder ? tr(props.placeholder) : `${text} ${tr(props.label).toLowerCase()}`
 })
 </script>
 
 <template>
     <div class="mb-4">
-        <label :for="props.name" class="form-label">{{ props.label }}</label>
+        <label :for="props.name" class="form-label">{{ tr(props.label) }}</label>
         <textarea
             class="form-control"
             style="min-height: 180px"
@@ -58,8 +59,8 @@ const getPlaceholder = computed(() => {
             @blur="handleBlur"
         ></textarea>
         <p v-if="errorMessage" :id="`${props.name}-error`" class="mb-0 mt-1 flex items-center gap-1 text-xs text-danger">
-            <FontAwesomeIcon icon="fa-solid fa-circle-exclamation" aria-hidden="true" />{{ errorMessage }}
+            <FontAwesomeIcon icon="fa-solid fa-circle-exclamation" aria-hidden="true" />{{ tr(errorMessage) }}
         </p>
-        <p v-if="props.text" class="form-text mb-0">{{ props.text }}</p>
+        <p v-if="props.text" class="form-text mb-0">{{ tr(props.text) }}</p>
     </div>
 </template>

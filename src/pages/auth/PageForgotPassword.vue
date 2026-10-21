@@ -21,8 +21,8 @@ const formFields = [
         name: 'email',
         label: 'Email',
         type: 'email',
-        placeholder: 'Vui lòng nhập Email',
-        valid: yup => yup.string().email('Email sai định dạng').required('Email là bắt buộc'),
+        placeholder: 'auth.emailPlaceholder',
+        valid: yup => yup.string().email('validation.emailInvalid').required('validation.emailRequired'),
     },
 ]
 
@@ -34,10 +34,10 @@ async function _handleForgotPassword(values) {
 <template>
     <div class="flex justify-center py-12">
         <div class="w-full max-w-md rounded-md border border-line bg-surface p-6">
-            <Heading :level="1" text="Quên mật khẩu" description="Nhập email đã đăng ký để nhận liên kết đặt lại mật khẩu." />
-            <VeeForm :fields="formFields" :submit-fn="_handleForgotPassword" :submit-text="'Gửi yêu cầu'">
+            <Heading :level="1" :text="$t('auth.forgotTitle')" :description="$t('auth.forgotDescription')" />
+            <VeeForm :fields="formFields" :submit-fn="_handleForgotPassword" :submit-text="$t('auth.sendRequest')">
                 <template #button>
-                    <RouterLink to="/login" class="ms-auto self-center whitespace-nowrap text-sm">Quay lại đăng nhập</RouterLink>
+                    <RouterLink to="/login" class="ms-auto self-center whitespace-nowrap text-sm">{{ $t('auth.backToLogin') }}</RouterLink>
                 </template>
             </VeeForm>
         </div>

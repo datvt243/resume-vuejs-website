@@ -9,13 +9,14 @@ import VeeForm from '@/components/veevalidate/VeeForm.vue'
 import Modal from '@/components/Modal.vue'
 import ExperienceItem from '@/components/experience/ExperienceItem.vue'
 
-import { ref, shallowRef } from 'vue'
+import { ref, computed } from 'vue'
 import { useCandidate } from '@/composables/useCandidate'
 import { useDocument } from '@/composables/useDocument'
 import { useManualOrder } from '@/composables/useManualOrder'
-import { localizedToForm, localizedFromForm } from '@/utilities/index'
+import { localizedToForm, localizedFromForm, formatDate, getLocalizedText, sanitizeHtml } from '@/utilities/index'
+import { t } from '@/i18n'
 
-import model, { experienceTitle, careerBreakPayload } from '@/models/experience.model.ts'
+import model, { experienceTitle, careerBreakPayload, CAREER_BREAK_TYPES } from '@/models/experience.model.ts'
 
 const { experiences: dataList, removeRecordById, addRecordToList } = useCandidate({ field: 'experiences' })
 
@@ -50,7 +51,23 @@ const { document, updateDoc, deleteDoc } = useDocument({ collection: 'experience
  */
 const refModal = ref()
 const refVeeForm = ref()
-const formFields = shallowRef(model)
+// null = the "experience or career break?" chooser shown before a new entry's form
+const isCareerBreak = ref(null)
+// the type is picked up front, so the checkbox is hidden and its default follows the choice
+const formFields = computed(() =>
+    model.map(f => {
+        if (f.name === 'isCareerBreak') return { ...f, default: !!isCareerBreak.value, showIf: () => false }
+        if (f.name === 'isCurrent' && isCareerBreak.value) return { ...f, label: 'field.isOnBreak' }
+        return f
+    }),
+)
+const modalTitle = computed(() => {
+    if (isCareerBreak.value === null) return t('crud.experience.chooseType')
+    const name = experienceTitle(document)
+    if (isDuplicating.value) return t('form.duplicateTitle', { name })
+    if (document._id) return t('form.editTitle', { name })
+    return t(isCareerBreak.value ? 'crud.experience.addBreak' : 'crud.experience.add')
+})
 
 // Nhân bản (issue #60): giữ `document._id` = id của bản ghi gốc (KHÔNG
 // để rỗng) trong lúc modal mở — VeeForm.vue có watch(document) tự
@@ -96,6 +113,7 @@ async function handleDelete(doc) {
 
 function showModalEditDoc(doc) {
     isDuplicating.value = false
+    isCareerBreak.value = !!doc.isCareerBreak
     const fields = formFields.value.map(e => e.name)
     for (const f of new Set(['_id', ...fields])) {
         document[f] = doc[f]
@@ -107,15 +125,47 @@ function showModalEditDoc(doc) {
 
 function showModalCreateDoc() {
     isDuplicating.value = false
+    isCareerBreak.value = null
+    refModal.value?.show()
+}
+
+function chooseType(careerBreak) {
+    isCareerBreak.value = careerBreak
     for (const k of formFields.value) {
         document[k.name] = k.default
     }
-    refModal.value?.show()
     refVeeForm.value?.reset()
+}
+
+const TYPE_OPTIONS = [
+    { careerBreak: false, icon: 'fa-solid fa-briefcase', key: 'typeExperience' },
+    { careerBreak: true, icon: 'fa-solid fa-mug-hot', key: 'typeBreak' },
+]
+
+/**
+ *  view details (read-only)
+ */
+const refViewModal = ref()
+const viewDoc = ref({})
+const viewDate = computed(() => {
+    const { startDate, endDate, isCurrent } = viewDoc.value
+    return `${formatDate(startDate, 'MM/YYYY')} - ${isCurrent ? t('common.present') : formatDate(endDate, 'MM/YYYY')}`
+})
+const viewDescription = computed(() => sanitizeHtml(getLocalizedText(viewDoc.value.description)))
+
+function showModalViewDoc(doc) {
+    viewDoc.value = doc
+    refViewModal.value?.show()
+}
+
+function editFromView() {
+    refViewModal.value?.hide()
+    showModalEditDoc(viewDoc.value)
 }
 
 function showModalDuplicateDoc(doc) {
     isDuplicating.value = true
+    isCareerBreak.value = !!doc.isCareerBreak
     const fields = formFields.value.map(e => e.name)
     for (const f of new Set(['_id', ...fields])) {
         document[f] = doc[f]
@@ -148,7 +198,8 @@ function showModalDuplicateDoc(doc) {
                     <div class="min-w-0 grow">
                         <ExperienceItem
                             :model-value="edu"
-                            icon="fa-building"
+                            :icon="edu.isCareerBreak ? 'fa-mug-hot' : 'fa-building'"
+                            @on-view="showModalViewDoc"
                             @on-edit="showModalEditDoc"
                             @on-delete="handleDelete"
                             @on-duplicate="showModalDuplicateDoc"
@@ -168,16 +219,24 @@ function showModalDuplicateDoc(doc) {
 
     <Modal
         ref="refModal"
-        :title="
-            isDuplicating
-                ? $t('form.duplicateTitle', { name: experienceTitle(document) })
-                : document._id
-                  ? $t('form.editTitle', { name: experienceTitle(document) })
-                  : $t('crud.experience.add')
-        "
+        :title="modalTitle"
         is-hidden-footer
     >
-        <div class="block-container">
+        <div v-if="isCareerBreak === null" class="grid gap-3 sm:grid-cols-2">
+            <button
+                v-for="opt in TYPE_OPTIONS"
+                :key="opt.key"
+                type="button"
+                class="flex flex-col items-start gap-2 rounded-md border border-line bg-surface p-4 text-start transition-colors hover:border-accent hover:bg-surface-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                :data-type="opt.key"
+                @click="chooseType(opt.careerBreak)"
+            >
+                <span class="flex h-9 w-9 items-center justify-center rounded-md bg-surface-2 text-fg-2" aria-hidden="true"><FontAwesomeIcon :icon="opt.icon" /></span>
+                <span class="text-sm font-semibold text-fg">{{ $t(`crud.experience.${opt.key}`) }}</span>
+                <span class="text-sm text-fg-2">{{ $t(`crud.experience.${opt.key}Description`) }}</span>
+            </button>
+        </div>
+        <div v-show="isCareerBreak !== null" class="block-container">
             <VeeForm
                 ref="refVeeForm"
                 :fields="formFields"
@@ -190,6 +249,28 @@ function showModalDuplicateDoc(doc) {
                 </template>
             </VeeForm>
         </div>
+    </Modal>
+
+    <Modal ref="refViewModal" :title="viewDoc.position || experienceTitle(viewDoc)">
+        <dl class="m-0 grid gap-x-4 gap-y-3 sm:grid-cols-4">
+            <template v-if="viewDoc.isCareerBreak">
+                <dt class="text-sm text-fg-3">{{ $t('field.careerBreakType') }}</dt>
+                <dd class="m-0 sm:col-span-3 text-sm text-fg">{{ CAREER_BREAK_TYPES[viewDoc.careerBreakType]?.[$i18n.locale] || '—' }}</dd>
+            </template>
+            <template v-else>
+                <dt class="text-sm text-fg-3">{{ $t('field.position') }}</dt>
+                <dd class="m-0 sm:col-span-3 text-sm text-fg">{{ viewDoc.position }}</dd>
+                <dt class="text-sm text-fg-3">{{ $t('field.companyName') }}</dt>
+                <dd class="m-0 sm:col-span-3 text-sm text-fg">{{ viewDoc.company }}</dd>
+            </template>
+            <dt class="text-sm text-fg-3">{{ $t('field.startDate') }} - {{ $t('field.endDate') }}</dt>
+            <dd class="m-0 sm:col-span-3 text-sm tabular-nums text-fg">{{ viewDate }}</dd>
+            <dt class="text-sm text-fg-3">{{ $t('field.description') }}</dt>
+            <dd class="post-content m-0 sm:col-span-3 break-words text-sm text-fg" v-html="viewDescription"></dd>
+        </dl>
+        <template #footer>
+            <Button type="primary" icon="fa-solid fa-square-pen" :text="$t('common.edit')" @click="editFromView" />
+        </template>
     </Modal>
 </template>
 

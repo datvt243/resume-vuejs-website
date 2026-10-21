@@ -268,3 +268,4 @@ flowchart TD
 
 Any regression must be a **new node** (LAI-13) — never edit an old node's
 PM status directly to "undo" an existing SEAL.
+| `issue-281-experience-add-type` | SEALED | 2026-10-21 [#281](https://github.com/datvt243/resume-vuejs-website/issues/281) via `/todo`, branch `feature/issue-281-experience-add-type`. Add experience now opens a 2-card chooser (Work experience / Career break) before the form; the form then fits the type (checkbox hidden, its default follows the choice, type-specific modal title, "currently on this break" label). Edit/duplicate skip the chooser. Evidence: `evidence/implementer/2026-10-21-issue-281-experience-add-type.md`. SEALED 2026-10-21 round 2: `evidence/verifier/2026-10-21-issue-281-experience-add-type-seal.md`. |

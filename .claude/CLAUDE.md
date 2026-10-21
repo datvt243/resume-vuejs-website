@@ -40,13 +40,14 @@ Every data section has a `src/models/*.model.ts` file — an array of `modelItem
 - `candidateStore` (`src/stores/candidate.ts`) — full resume object, caches to avoid re-fetching
 
 ### 4. Global Components
-All `src/components/global/*.vue` are auto-registered globally via `src/plugins/GlobalComponents.js`. Use without import: `<Heading>`, `<Button>`, `<NoData>`, `<ListTransition>`, `<Box>`, `<Dropdown>`.
+All `src/components/global/*.vue` are auto-registered globally via `src/plugins/GlobalComponents.js`. Use without import: `<Heading>`, `<Button>`, `<NoData>`, `<ListTransition>`, `<Box>`, `<Dropdown>`, `<ItemTemplate>`, `<ItemActions>`, `<LoadingGate>`, `<FormSection>`, `<SegmentedControl>`.
+- `ItemActions` — CRUD row buttons shared by every list page: edit (`info`), duplicate (`success`), delete (`danger`); pass `viewable` to add an eye button that emits `view` (only Experience uses it so far). The colors use `!` modifiers because the ghost `Button` variant sets its own text/hover colors.
 
 ## Directory Map
 ```
 src/
 ├── components/
-│   ├── global/          # Auto-registered: Button, Heading, NoData, ListTransition, Box, Dropdown
+│   ├── global/          # Auto-registered: Button, Heading, NoData, ListTransition, Box, Dropdown, ItemTemplate, ItemActions, …
 │   ├── veevalidate/     # VeeForm.vue (main), VeeFormGeneralInformationUpdate.vue, part/Frm*.vue
 │   ├── table/           # TableDefault.vue + render-fn parts
 │   ├── convert/         # convert.js — date/boolean/truncate display components
@@ -79,8 +80,9 @@ src/
 ## Gotchas
 
 - **TypeScript is mixed** — `.js` files exist alongside `.ts`. When editing `.js` files, no type checking.
-- **Pug in LayoutDefault** — `src/pages/_layouts/LayoutDefault.vue` uses `<template lang="pug">`. Other files use standard HTML templates.
+- **Pug templates** — `_layouts/{LayoutDefault,LayoutAuth,Header,Footer}.vue`, `ListTransition.vue` and the `{Education,Experience,Project}Item.vue` cards use `<template lang="pug">`. Everything else uses HTML templates.
 - **`_id` drives create vs update** — `useDocument.updateDoc` sends POST if `_id` is falsy, PUT if truthy. Always ensure `_id` is set correctly before calling.
+- **Experience vs career break** — one `experience` collection, split by `isCareerBreak`. `PageExperience` asks for the type before showing a new entry's form (`isCareerBreak` ref, `null` = chooser), hides the checkbox and sets its default from the choice; edit/duplicate take the type from the doc, so an entry can't be switched between types. `careerBreakPayload` clears company/position (or the break type) on save, and `experienceTitle` gives the display title for both.
 - **`useCandidate` collection heuristic** — if `collection` prop omitted, strips trailing `s` from field name (`educations` → `education`). Explicit `collection` is safer.
 
 ## Error Handling Convention

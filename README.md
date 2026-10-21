@@ -32,7 +32,7 @@
 - **Thông tin cơ bản** — Họ tên, giới tính, ngày sinh, địa chỉ, số điện thoại, mạng xã hội
 - **Thông tin chung** — Vị trí mong muốn, mức lương, kỹ năng chuyên môn, kỹ năng cá nhân, ngoại ngữ
 - **Học vấn** — Quản lý danh sách trường học, chuyên ngành
-- **Kinh nghiệm làm việc** — Công ty, vị trí, thời gian
+- **Kinh nghiệm làm việc** — Vị trí, công ty, thời gian. Khi thêm mới sẽ hỏi trước là *kinh nghiệm* hay *khoảng nghỉ việc (career break)*, form đổi theo loại. Xem chi tiết (read-only) mà không cần mở form sửa
 - **Dự án** — Tên dự án, công nghệ, mô tả, link
 - **Giải thưởng** — Danh sách giải thưởng đã đạt
 - **Chứng chỉ** — Chứng chỉ chuyên môn
@@ -107,10 +107,14 @@ src/
 │   │   ├── Box.vue
 │   │   ├── Button.vue
 │   │   ├── Dropdown.vue
+│   │   ├── FormSection.vue
 │   │   ├── Heading.vue
+│   │   ├── ItemActions.vue     # Row actions: view (opt-in) · edit · duplicate · delete
 │   │   ├── ItemTemplate.vue
 │   │   ├── ListTransition.vue
-│   │   └── NoData.vue
+│   │   ├── LoadingGate.vue
+│   │   ├── NoData.vue
+│   │   └── SegmentedControl.vue
 │   ├── veevalidate/            # Form field components
 │   │   ├── VeeForm.vue         # Generic form wrapper
 │   │   ├── VeeFormGeneralInformationUpdate.vue
@@ -278,6 +282,7 @@ debt nào đang mở**; 2 issue còn mở đều là đề xuất tính năng, x
 - [x] Application tracker — theo dõi nơi đã nộp CV (#118)
 - [x] JWT httpOnly cookie migration, thay thế `localStorage` (#8)
 - [x] Nhiều phiên bản CV (multi-profile) — subset riêng + share-link/PDF export riêng (#116)
+- [x] Career break: chọn loại khi thêm kinh nghiệm, xem chi tiết, màu cho nút sửa/nhân bản/xoá (#281, v1.29.0)
 - [ ] Import CV từ file PDF hoặc LinkedIn export (#120) — blocked: backend mới có endpoint parse LinkedIn export ZIP trên `staging` (chưa lên production), phần parse PDF thì chưa có
 - [ ] Gợi ý nội dung CV bằng AI, tối ưu ATS (#122) — cần thảo luận thêm trước khi lên kế hoạch
 

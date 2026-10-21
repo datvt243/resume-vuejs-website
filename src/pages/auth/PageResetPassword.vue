@@ -23,28 +23,28 @@ const refToast = inject('toast')
 const formFields = [
     {
         name: 'password',
-        label: 'Mật khẩu mới',
+        label: 'auth.newPassword',
         type: 'password',
-        text: 'Tối thiểu 12 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.',
+        text: 'auth.passwordHint',
         valid: yup =>
             yup
                 .string()
-                .min(12, 'Mật khẩu phải có ít nhất 12 ký tự')
-                .matches(/[a-z]/, 'Mật khẩu phải có ít nhất 1 chữ thường')
-                .matches(/[A-Z]/, 'Mật khẩu phải có ít nhất 1 chữ hoa')
-                .matches(/[0-9]/, 'Mật khẩu phải có ít nhất 1 chữ số')
-                .matches(/[^A-Za-z0-9]/, 'Mật khẩu phải có ít nhất 1 ký tự đặc biệt')
-                .required(),
+                .min(12, 'validation.passwordMin')
+                .matches(/[a-z]/, 'validation.passwordLower')
+                .matches(/[A-Z]/, 'validation.passwordUpper')
+                .matches(/[0-9]/, 'validation.passwordDigit')
+                .matches(/[^A-Za-z0-9]/, 'validation.passwordSpecial')
+                .required('validation.passwordRequired'),
     },
     {
         name: 'repassword',
-        label: 'Nhập lại mật khẩu',
+        label: 'auth.confirmPassword',
         type: 'password',
         valid: yup =>
             yup
                 .string()
-                .oneOf([yup.ref('password')], 'Mật khẩu nhập lại không khớp')
-                .required('Vui lòng nhập lại mật khẩu'),
+                .oneOf([yup.ref('password')], 'validation.passwordMismatch')
+                .required('validation.confirmPasswordRequired'),
     },
 ]
 
@@ -56,11 +56,11 @@ async function _handleResetPassword(values) {
 <template>
     <div class="flex justify-center py-12">
         <div class="w-full max-w-md rounded-md border border-line bg-surface p-6">
-            <Heading :level="1" text="Đặt lại mật khẩu" />
+            <Heading :level="1" :text="$t('auth.resetTitle')" />
             <p v-if="!route.query.token" class="text-sm text-danger">
-                Liên kết đặt lại mật khẩu không hợp lệ. Mở lại đúng liên kết trong email.
+                {{ $t('auth.resetInvalidLink') }}
             </p>
-            <VeeForm :fields="formFields" :submit-fn="_handleResetPassword" :submit-text="'Đặt lại mật khẩu'" />
+            <VeeForm :fields="formFields" :submit-fn="_handleResetPassword" :submit-text="$t('auth.resetTitle')" />
         </div>
     </div>
 </template>

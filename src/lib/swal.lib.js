@@ -1,5 +1,6 @@
 import Swal from 'sweetalert2'
 import { buttonClass } from '@/lib/button.lib'
+import { t } from '@/i18n'
 
 const actionClasses = {
     confirmButton: buttonClass({ variant: 'danger' }),
@@ -11,15 +12,15 @@ const actionClasses = {
  * `getHtml` is shown as plain text — it often carries user-entered names.
  */
 export const confirmDelete = (props = {}) => {
-    const { title = 'Xóa mục này?', getHtml = null, callback = () => {} } = props
+    const { title = t('confirm.deleteItem'), getHtml = null, callback = () => {} } = props
     Swal.fire({
         title,
         icon: 'warning',
         showCloseButton: true,
         showCancelButton: true,
         reverseButtons: true,
-        cancelButtonText: 'Hủy',
-        confirmButtonText: 'Xóa',
+        cancelButtonText: t('common.cancel'),
+        confirmButtonText: t('common.delete'),
         allowOutsideClick: false,
         customClass: actionClasses,
         buttonsStyling: false,
@@ -33,12 +34,12 @@ export const confirmDelete = (props = {}) => {
 
 export const confirmDiscardChanges = async () => {
     const result = await Swal.fire({
-        title: 'Bạn có thay đổi chưa lưu, vẫn đóng?',
+        title: t('confirm.unsavedChanges'),
         icon: 'warning',
         showCancelButton: true,
         reverseButtons: true,
-        cancelButtonText: 'Ở lại',
-        confirmButtonText: 'Vẫn đóng',
+        cancelButtonText: t('confirm.stay'),
+        confirmButtonText: t('confirm.closeAnyway'),
         customClass: actionClasses,
         buttonsStyling: false,
     })

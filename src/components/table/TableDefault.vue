@@ -10,6 +10,7 @@ import { Table, TableHead, TableBody, TableRow, TableCell } from '@/components/t
 import { useInitTable } from '@/composables/useInitTable'
 import Convert from '@/components/convert/convert'
 import { buttonClass } from '@/lib/button.lib'
+import { t } from '@/i18n'
 
 /**
  *
@@ -179,8 +180,8 @@ const renderCellContent = defineComponent({
         <footer v-if="pageCount > 1" class="flex items-center justify-between gap-4 border-t border-line px-4 py-3">
             <span class="text-xs tabular-nums text-fg-3">{{ rangeLabel }} · Trang {{ page }} / {{ pageCount }}</span>
             <div class="flex gap-2">
-                <button type="button" :class="pagerBtn" :disabled="page <= 1" @click="page--">Trước</button>
-                <button type="button" :class="pagerBtn" :disabled="page >= pageCount" @click="page++">Sau</button>
+                <button type="button" :class="pagerBtn" :disabled="page <= 1" @click="page--">{{ t('common.prev') }}</button>
+                <button type="button" :class="pagerBtn" :disabled="page >= pageCount" @click="page++">{{ t('common.next') }}</button>
             </div>
         </footer>
     </div>

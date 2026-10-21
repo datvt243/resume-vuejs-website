@@ -42,39 +42,39 @@ const formFields = [
         name: 'email',
         label: 'Email',
         type: 'email',
-        placeholder: 'Vui lòng nhập Email',
+        placeholder: 'auth.emailPlaceholder',
         autocomplete: 'email',
-        valid: yup => yup.string().email().required(),
+        valid: yup => yup.string().email('validation.emailInvalid').required('validation.emailRequired'),
     },
     {
         name: 'password',
-        label: 'Mật khẩu',
+        label: 'auth.password',
         type: 'password',
         autocomplete: 'new-password',
-        text: 'Tối thiểu 12 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.',
+        text: 'auth.passwordHint',
         // khớp với format backend yêu cầu (verified qua API: tối thiểu 12
         // ký tự + đủ 4 loại) — trước đây không có rule này nên đăng ký
         // luôn bị backend từ chối 401 mà UI chỉ hiện toast chung chung
         valid: yup =>
             yup
                 .string()
-                .min(12, 'Mật khẩu phải có ít nhất 12 ký tự')
-                .matches(/[a-z]/, 'Mật khẩu phải có ít nhất 1 chữ thường')
-                .matches(/[A-Z]/, 'Mật khẩu phải có ít nhất 1 chữ hoa')
-                .matches(/[0-9]/, 'Mật khẩu phải có ít nhất 1 chữ số')
-                .matches(/[^A-Za-z0-9]/, 'Mật khẩu phải có ít nhất 1 ký tự đặc biệt')
-                .required(),
+                .min(12, 'validation.passwordMin')
+                .matches(/[a-z]/, 'validation.passwordLower')
+                .matches(/[A-Z]/, 'validation.passwordUpper')
+                .matches(/[0-9]/, 'validation.passwordDigit')
+                .matches(/[^A-Za-z0-9]/, 'validation.passwordSpecial')
+                .required('validation.passwordRequired'),
     },
     {
         name: 'repassword',
-        label: 'Nhập lại mật khẩu',
+        label: 'auth.confirmPassword',
         type: 'password',
         autocomplete: 'new-password',
         valid: yup =>
             yup
                 .string()
-                .oneOf([yup.ref('password')], 'Mật khẩu nhập lại không khớp')
-                .required('Vui lòng nhập lại mật khẩu'),
+                .oneOf([yup.ref('password')], 'validation.passwordMismatch')
+                .required('validation.confirmPasswordRequired'),
     },
 ]
 </script>
@@ -82,7 +82,7 @@ const formFields = [
 <template>
     <div class="flex justify-center py-12">
         <div class="w-full max-w-md rounded-md border border-line bg-surface p-6">
-            <Heading :level="1" text="Đăng ký" />
+            <Heading :level="1" :text="$t('auth.registerTitle')" />
             <VeeForm
                 :fields="formFields"
                 :submit-fn="
@@ -90,7 +90,7 @@ const formFields = [
                         handleRegister(values, { toast: refToast, loading: refSpinner })
                     }
                 "
-                submit-text="Tạo tài khoản"
+                :submit-text="$t('auth.createAccount')"
             />
         </div>
     </div>

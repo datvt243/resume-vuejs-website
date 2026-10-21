@@ -31,6 +31,7 @@ let modalSeq = 0
 import { ref, defineProps, defineExpose, useSlots, onBeforeUnmount, nextTick, provide } from 'vue'
 import { confirmDiscardChanges } from '@/lib/swal.lib'
 import { buttonClass } from '@/lib/button.lib'
+import { t } from '@/i18n'
 
 const slots = useSlots()
 
@@ -174,7 +175,7 @@ defineExpose({
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 :id="titleId" class="modal-title m-0 text-md font-semibold">{{ props.title }}</h2>
-                    <button type="button" data-bs-dismiss="modal" aria-label="Đóng"
+                    <button type="button" data-bs-dismiss="modal" :aria-label="t('common.close')"
                         class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded text-fg-2 hover:bg-surface-2 hover:text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent">
                         <FontAwesomeIcon icon="fa-solid fa-xmark" />
                     </button>
@@ -186,7 +187,7 @@ defineExpose({
                     <p v-else>Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam, facilis!</p>
                 </div>
                 <div class="modal-footer" v-if="!isHiddenFooter">
-                    <button type="button" :class="closeBtnClass" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" :class="closeBtnClass" data-bs-dismiss="modal">{{ t('common.close') }}</button>
                     <template v-if="slots?.footer"><slot name="footer"></slot></template>
                 </div>
             </div>

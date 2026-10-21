@@ -9,6 +9,7 @@ import { authStore } from '@/stores/auth'
 import { candidateStore } from '@/stores/candidate'
 import { toValue } from 'vue'
 import { subURL } from '@/config/api.config'
+import { t } from '@/i18n'
 
 export const handleLogin = async (values, props) => {
     const { email, password } = values
@@ -52,7 +53,7 @@ export const handleLogin = async (values, props) => {
     } catch (err) {
         authStore().setTokens()
         toast?.({
-            message: 'Đăng nhập thất bại',
+            message: t('error.loginFailed'),
             bg: 'danger',
         })
     } finally {

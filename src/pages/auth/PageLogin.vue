@@ -25,22 +25,22 @@ const formFields = [
         name: 'email',
         label: 'Email',
         type: 'email',
-        placeholder: 'Vui lòng nhập Email',
+        placeholder: 'auth.emailPlaceholder',
         autocomplete: 'username',
         /* value: 'david@gmail.com', */
-        valid: yup => yup.string().email('Email sai định dạng').required('Email là bắt buộc'),
+        valid: yup => yup.string().email('validation.emailInvalid').required('validation.emailRequired'),
     },
     {
         name: 'password',
-        label: 'Mật khẩu',
+        label: 'auth.password',
         type: 'password',
         autocomplete: 'current-password',
         /* value: 'david243', */
-        valid: yup => yup.string().required('Mật khẩu là bắt buộc'),
+        valid: yup => yup.string().required('validation.passwordRequired'),
     },
     {
         name: 'rememberMe',
-        label: 'Ghi nhớ đăng nhập',
+        label: 'auth.rememberMe',
         type: 'checkbox',
     },
 ]
@@ -53,10 +53,10 @@ async function _handleLogin(values) {
 <template>
     <div class="flex justify-center py-12">
         <div class="w-full max-w-md rounded-md border border-line bg-surface p-6">
-            <Heading :level="1" text="Đăng nhập" />
-            <VeeForm :fields="formFields" :submit-fn="_handleLogin" submit-text="Đăng nhập">
+            <Heading :level="1" :text="$t('auth.loginTitle')" />
+            <VeeForm :fields="formFields" :submit-fn="_handleLogin" :submit-text="$t('auth.loginTitle')">
                 <template #button>
-                    <RouterLink to="/forgot-password" class="ms-auto self-center whitespace-nowrap text-sm">Quên mật khẩu?</RouterLink>
+                    <RouterLink to="/forgot-password" class="ms-auto self-center whitespace-nowrap text-sm">{{ $t('auth.forgotPasswordLink') }}</RouterLink>
                 </template>
             </VeeForm>
         </div>

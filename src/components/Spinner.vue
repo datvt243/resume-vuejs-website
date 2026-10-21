@@ -3,7 +3,7 @@
  * Author: Đạt Võ - https://github.com/datvt243
  * Date: `--/--`
  * Description: non-blocking loading indicator (top bar + corner notice, DESIGN.md §5.9)
- * + 30s cold-start countdown (backend chạy
+ * + 30s cold-start countdown, shown as a full-screen blocking overlay (backend chạy
  * trên Render free tier, lần gọi API đầu tiên có thể mất tới 30s). Thông báo
  * cold start chỉ hiện khi request đã chờ quá COLD_START_NOTICE_AFTER giây —
  * request nhanh chỉ thấy spinner thường, không bị doạ "đợi 30 giây".
@@ -24,6 +24,8 @@ defineExpose({
     hide,
     // read by LoadingGate so list pages show a skeleton, not "no data", while fetching
     isLoading,
+    // read by App.vue to make the app `inert` (no keyboard input) under the cold-start overlay
+    isColdStart: computed(() => isLoading.value && isColdStart.value),
 })
 
 const progressPercent = computed(() => ((COLD_START_SECONDS - secondsLeft.value) / COLD_START_SECONDS) * 100)
@@ -61,7 +63,7 @@ onBeforeUnmount(stopCountdown)
 </script>
 
 <template>
-    <div v-if="isLoading" class="spinner-container" aria-live="polite">
+    <div v-if="isLoading" class="spinner-container" :class="{ 'cold-start': isColdStart }" aria-live="polite" :aria-busy="isColdStart ? 'true' : undefined">
         <div class="loading-bar" aria-hidden="true"></div>
 
         <div class="loading-notice flex items-start gap-3 rounded-md border border-line bg-surface p-3 text-sm text-fg shadow-float">
@@ -87,12 +89,26 @@ onBeforeUnmount(stopCountdown)
 </template>
 
 <style scoped lang="scss">
-/* never blocks the page: no overlay, clicks pass through except on the notice itself */
+/* short requests never block the page: no overlay, clicks pass through except on the notice itself */
 .spinner-container {
     position: fixed;
     inset: 0 0 auto 0;
     z-index: 1080;
     pointer-events: none;
+}
+
+/* cold start: the API can't answer for ~30s, so cover the app (above modals) and swallow clicks */
+.spinner-container.cold-start {
+    @apply flex items-center justify-center bg-black/50 p-4;
+    inset: 0;
+    pointer-events: auto;
+
+    .loading-bar {
+        @apply absolute left-0 top-0;
+    }
+    .loading-notice {
+        @apply static max-w-sm;
+    }
 }
 
 .loading-bar {

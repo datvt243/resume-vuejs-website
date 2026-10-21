@@ -57,6 +57,24 @@ describe('Spinner', () => {
         expect(wrapper.find('.countdown-ring').exists()).toBe(false)
     })
 
+    it('blocks the whole screen only once the cold-start notice shows, and releases it on hide()', async () => {
+        const wrapper = mount(Spinner)
+        const vm = wrapper.vm as unknown as { show: () => void; hide: () => void; isColdStart: boolean }
+        vm.show()
+        await tick(wrapper, 2)
+        expect(wrapper.find('.spinner-container').classes()).not.toContain('cold-start')
+        expect(vm.isColdStart).toBe(false)
+
+        await tick(wrapper, 1)
+        expect(wrapper.find('.spinner-container').classes()).toContain('cold-start')
+        expect(wrapper.find('.spinner-container').attributes('aria-busy')).toBe('true')
+        expect(vm.isColdStart).toBe(true)
+
+        vm.hide()
+        await wrapper.vm.$nextTick()
+        expect(vm.isColdStart).toBe(false)
+    })
+
     it('shows the overtime message after 30 seconds', async () => {
         const wrapper = mount(Spinner)
         ;(wrapper.vm as unknown as { show: () => void }).show()

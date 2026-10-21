@@ -83,7 +83,7 @@ function showToast({ message, bg }) {
 
 <template>
     <Spinner ref="refSpinner" />
-    <div class="clearfix">
+    <div class="clearfix" :inert="refSpinner?.isColdStart">
         <component :is="store.isAuthenticated ? LayoutDefault : LayoutAuth">
             <RouterView />
         </component>

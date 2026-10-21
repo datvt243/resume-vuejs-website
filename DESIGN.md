@@ -352,6 +352,7 @@ Accept `title`, `description`, and an action slot as props or slots.
 - First load: a skeleton that matches the final layout (`bg-surface-2 rounded animate-pulse`, wrapped in `motion-safe`). No full-page spinner over content.
 - Refetch (changing a filter): keep the previous data at `opacity-60` and avoid layout jumps.
 - Spinners only inside buttons.
+- Exception: backend cold start. Once a request has waited 3s (`Spinner.vue`), a full-screen dimmed overlay with the countdown notice covers the app and the app is `inert` until the request ends. Shorter waits stay non-blocking (top bar + corner notice).
 - Toasts: bottom-right, `bg-surface border border-line shadow-float rounded-md p-3 text-sm`, with an icon by type, auto-dismiss after 4s, and `aria-live="polite"`.
 - Modal: `rounded-lg shadow-float`, max width 480 or 640px. Title sentence case. Footer actions right-aligned (secondary, then primary). Esc closes it, focus is trapped inside, and focus returns to the trigger.
 

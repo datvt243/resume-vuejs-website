@@ -18,13 +18,14 @@ import { authStore } from '@/stores/auth'
 import { buttonClass } from '@/lib/button.lib'
 import { badgeClass } from '@/lib/badge.lib'
 import { useCvLang } from '@/composables/useCvLang'
+import { t } from '@/i18n'
 
 const { loading, toast } = useHelper()
 
-const TEMPLATES = [
-    { value: 'ats', label: 'Tối ưu ATS' },
+const TEMPLATES = computed(() => [
+    { value: 'ats', label: t('home.templateAts') },
     { value: 'classic', label: 'Classic' },
-]
+])
 
 const template = ref('ats')
 // CV language comes from the header VI | EN switch
@@ -66,50 +67,50 @@ async function handleCheck() {
 
 <template>
     <div class="space-y-6">
-        <Heading :level="1" text="Kiểm tra CV theo ATS" description="Chấm điểm CV theo cách hệ thống lọc hồ sơ (ATS) đọc file PDF, kèm so khớp từ khóa nếu bạn dán mô tả công việc.">
-            <Button icon="fa-solid fa-gauge" type="primary" text="Kiểm tra" @click="handleCheck" />
+        <Heading :level="1" :text="t('ats.title')" :description="t('ats.description')">
+            <Button icon="fa-solid fa-gauge" type="primary" :text="t('ats.check')" @click="handleCheck" />
         </Heading>
 
         <section :class="[card, 'space-y-4']">
             <div class="flex flex-wrap items-end gap-4">
                 <div>
-                    <p class="form-label block">Mẫu CV</p>
-                    <SegmentedControl v-model="template" :options="TEMPLATES" aria-label="Mẫu CV" />
+                    <p class="form-label block">{{ t('home.cvTemplate') }}</p>
+                    <SegmentedControl v-model="template" :options="TEMPLATES" :aria-label="t('home.cvTemplate')" />
                 </div>
                 <a :class="downloadBtn" :href="downloadUrl" target="_blank" rel="noopener">
-                    <FontAwesomeIcon icon="fa-solid fa-download" aria-hidden="true" />Tải CV mẫu này
+                    <FontAwesomeIcon icon="fa-solid fa-download" aria-hidden="true" />{{ t('ats.downloadTemplate') }}
                 </a>
             </div>
             <div>
-                <label for="ats-job-description" class="form-label">Mô tả công việc <span class="font-normal text-fg-3">(không bắt buộc)</span></label>
+                <label for="ats-job-description" class="form-label">{{ t('ats.jobDescription') }} <span class="font-normal text-fg-3">{{ t('common.optional') }}</span></label>
                 <textarea
                     id="ats-job-description"
                     v-model="jobDescription"
                     class="form-control"
                     rows="5"
-                    placeholder="Dán nội dung tin tuyển dụng để so khớp từ khóa…"
+                    :placeholder="t('ats.jobDescriptionPlaceholder')"
                 ></textarea>
             </div>
         </section>
 
         <template v-if="result">
             <section :class="card">
-                <Heading text="Kết quả" />
+                <Heading :text="t('ats.result')" />
                 <div class="flex flex-wrap items-baseline gap-6">
                     <p class="m-0">
                         <span class="text-xl font-semibold tracking-tight tabular-nums" :class="scoreClass">{{ result.score }}</span>
                         <span class="text-sm text-fg-3">/100</span>
                     </p>
-                    <p class="m-0 text-sm text-fg-2">{{ result.pages }} trang</p>
-                    <p class="m-0 text-sm text-fg-2">{{ failedCount ? `${failedCount} tiêu chí chưa đạt` : 'Đạt tất cả tiêu chí' }}</p>
+                    <p class="m-0 text-sm text-fg-2">{{ t('ats.pages', { count: result.pages }) }}</p>
+                    <p class="m-0 text-sm text-fg-2">{{ failedCount ? t('ats.failedCount', { count: failedCount }) : t('ats.allPassed') }}</p>
                 </div>
                 <p v-if="checkedTemplate === 'classic'" class="mb-0 mt-2 text-xs text-fg-3">
-                    Mẫu Classic không làm cho ATS nên điểm thấp hơn là bình thường; chọn "Tối ưu ATS" để so sánh.
+                    {{ t('ats.classicNote') }}
                 </p>
             </section>
 
             <section :class="card">
-                <Heading text="Chi tiết từng tiêu chí" />
+                <Heading :text="t('ats.details')" />
                 <ul class="m-0 list-none divide-y divide-line p-0">
                     <li v-for="check in result.checks" :key="check.id" class="flex items-start gap-2 py-2">
                         <FontAwesomeIcon
@@ -125,7 +126,7 @@ async function handleCheck() {
                                 :class="badgeClass(check.severity === 'error' ? 'danger' : 'warning')"
                                 :data-badge="check.severity === 'error' ? 'danger' : 'warning'"
                             >
-                                {{ check.severity === 'error' ? 'Lỗi' : 'Cảnh báo' }}
+                                {{ check.severity === 'error' ? t('ats.error') : t('ats.warning') }}
                             </span>
                         </div>
                     </li>
@@ -133,16 +134,16 @@ async function handleCheck() {
             </section>
 
             <section v-if="result.keywordMatch" :class="card">
-                <Heading text="So khớp từ khóa với mô tả công việc" />
+                <Heading :text="t('ats.keywordMatch')" />
                 <p class="mb-4 mt-0 text-sm text-fg-2">
-                    Độ phủ <strong class="text-md font-semibold tabular-nums text-fg">{{ Math.round(result.keywordMatch.coverage * 100) }}%</strong>
+                    {{ t('ats.coverage') }} <strong class="text-md font-semibold tabular-nums text-fg">{{ Math.round(result.keywordMatch.coverage * 100) }}%</strong>
                 </p>
-                <p class="form-label block">Đã có trong CV ({{ result.keywordMatch.matched.length }})</p>
+                <p class="form-label block">{{ t('ats.matched', { count: result.keywordMatch.matched.length }) }}</p>
                 <div class="mb-4 flex flex-wrap gap-1.5">
                     <span v-for="k in result.keywordMatch.matched" :key="`m_${k}`" :class="badgeClass('success')" data-badge="success">{{ k }}</span>
                     <span v-if="!result.keywordMatch.matched.length" class="text-sm text-fg-3">—</span>
                 </div>
-                <p class="form-label block">Còn thiếu ({{ result.keywordMatch.missing.length }})</p>
+                <p class="form-label block">{{ t('ats.missing', { count: result.keywordMatch.missing.length }) }}</p>
                 <div class="flex flex-wrap gap-1.5">
                     <span v-for="k in result.keywordMatch.missing" :key="`x_${k}`" :class="badgeClass('neutral')" data-badge="neutral">{{ k }}</span>
                     <span v-if="!result.keywordMatch.missing.length" class="text-sm text-fg-3">—</span>
@@ -150,7 +151,7 @@ async function handleCheck() {
             </section>
 
             <details :class="card">
-                <summary class="cursor-pointer text-sm font-medium">Text ATS đọc được từ CV</summary>
+                <summary class="cursor-pointer text-sm font-medium">{{ t('ats.extractedText') }}</summary>
                 <pre class="mb-0 mt-2 whitespace-pre-wrap break-words text-sm text-fg-2">{{ result.extractedText }}</pre>
             </details>
         </template>

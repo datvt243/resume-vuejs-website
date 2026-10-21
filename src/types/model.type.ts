@@ -6,6 +6,7 @@
 
 import { phoneRegex } from '@/config/regex.config'
 import { EN_FIELD_SUFFIX } from '@/utilities/index'
+import { withParams } from '@/i18n'
 
 type inputType =
     | 'text'
@@ -27,7 +28,7 @@ interface Options {
     text: string
 }
 
-const _mesRequired = 'Vui lòng nhập'
+const _mesRequired = 'validation.required'
 
 interface Part {
     name: string
@@ -62,7 +63,6 @@ export const defaultId: modelItem = {
     name: '_id',
     label: 'ID',
     type: 'hidden',
-    placeholder: 'Vui lòng nhập',
     valid: yup => yup.string().nullable().default(null),
     col: 'col-md-12',
     default: null,
@@ -99,7 +99,7 @@ export const withEnglish = function (item: modelItem): modelItem[] {
         {
             ...item,
             name: `${item.name}${EN_FIELD_SUFFIX}`,
-            label: `${item.label} (English)`,
+            label: withParams('form.englishField', { label: item.label }),
             placeholder: '',
             lang: 'en',
             ...(valid && { valid: (yup: any) => valid(yup).notRequired() }),
@@ -112,7 +112,7 @@ export const defaultLink = function (props: Part): modelItem {
         name: props.name,
         label: props.label,
         type: 'text',
-        valid: yup => yup.string().url().nullable(),
+        valid: yup => yup.string().url('validation.urlInvalid').nullable(),
         col: props?.col || 'col-md-12',
         default: '',
     }
@@ -129,8 +129,8 @@ export const defaultDate = function (props: Part): modelItem {
     }
 }
 export const defaultDateStartEnd = function (isMonthPicker = false): modelItem[] {
-    const _startLabel = 'Ngày bắt đầu',
-        _endLabel = 'Ngày kết thúc'
+    const _startLabel = 'field.startDate',
+        _endLabel = 'field.endDate'
 
     // endDate mặc định phải SAU startDate — trước đây cả 2 cùng dùng
     // `+new Date()`, ở monthPicker mode 2 giá trị luôn bị làm tròn về
@@ -144,7 +144,6 @@ export const defaultDateStartEnd = function (isMonthPicker = false): modelItem[]
             name: 'startDate',
             label: _startLabel,
             type: 'date',
-            placeholder: `Vui lòng nhập ${_startLabel}`,
             valid: yup => yup.number().required(_mesRequired),
             col: 'col-md-6',
             convertTo: 'date',
@@ -155,8 +154,7 @@ export const defaultDateStartEnd = function (isMonthPicker = false): modelItem[]
             name: 'endDate',
             label: _endLabel,
             type: 'date',
-            placeholder: `Vui lòng nhập ${_endLabel}`,
-            valid: yup => yup.number().required(_mesRequired).min(yup.ref('startDate'), `${_endLabel} phải sau ngày bắt đầu`),
+            valid: yup => yup.number().required(_mesRequired).min(yup.ref('startDate'), 'validation.endAfterStart'),
             col: 'col-md-6',
             convertTo: 'date',
             default: +_defaultEndDate,
@@ -193,7 +191,7 @@ export const defaultPhone = function (props: Part): modelItem {
                 .string()
                 .matches(phoneRegex, {
                     excludeEmptyString: true,
-                    message: 'Số điện thoại không đúng định dạng. Bắt đầu bằng 84 hoặc 0, bao gồm 11 số',
+                    message: 'validation.phoneInvalid',
                 })
                 .required(_mesRequired),
         default: '',

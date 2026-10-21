@@ -44,6 +44,7 @@ import { _axios } from '@/services/axios'
 import { resolveTheme } from '@/composables/useCvTheme'
 import { resolveCvLang } from '@/composables/useCvLang'
 import CvResumeLayout from '@/components/cv/CvResumeLayout.vue'
+import { t } from '@/i18n'
 
 const route = useRoute()
 const identifier = route.params.slug
@@ -90,7 +91,7 @@ onMounted(async () => {
 
 <template>
     <div v-if="loading" class="mx-auto max-w-3xl space-y-3 px-4 py-12" aria-busy="true">
-        <span class="sr-only">Đang tải hồ sơ…</span>
+        <span class="sr-only">{{ t('publicResume.loading') }}</span>
         <div class="h-8 w-1/2 rounded bg-surface-2 motion-safe:animate-pulse"></div>
         <div class="h-4 w-1/3 rounded bg-surface-2 motion-safe:animate-pulse"></div>
         <div class="h-32 rounded bg-surface-2 motion-safe:animate-pulse"></div>
@@ -99,8 +100,8 @@ onMounted(async () => {
     <NoData
         v-else-if="notFound"
         icon="fa-solid fa-circle-info"
-        title="Không tìm thấy hồ sơ"
-        description="Hồ sơ không tồn tại hoặc chưa được chia sẻ công khai."
+        :title="t('publicResume.notFound')"
+        :description="t('publicResume.notFoundDescription')"
     />
 
     <CvResumeLayout v-else :data="data" :theme="theme" :lang="lang" />

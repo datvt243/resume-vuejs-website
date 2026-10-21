@@ -85,8 +85,8 @@ function showModalDuplicateDoc(doc) {
 
 <template>
     <div>
-        <Heading :level="1" text="Người tham khảo">
-            <Button type="primary" icon="fa-solid fa-plus" text="Thêm người tham khảo" @click="showModalCreateDoc()" />
+        <Heading :level="1" :text="$t('nav.reference')">
+            <Button type="primary" icon="fa-solid fa-plus" :text="$t('crud.reference.add')" @click="showModalCreateDoc()" />
         </Heading>
 
         <!--  -->
@@ -112,8 +112,8 @@ function showModalDuplicateDoc(doc) {
         </TableDefault>
         <LoadingGate v-else>
             <div class="rounded-md border border-line bg-surface">
-                <NoData title="Chưa có người tham khảo nào" description="Thêm người có thể xác nhận kinh nghiệm của bạn.">
-                    <Button icon="fa-solid fa-plus" text="Thêm người tham khảo" @click="showModalCreateDoc()" />
+                <NoData :title="$t('crud.reference.empty')" :description="$t('crud.reference.emptyDescription')">
+                    <Button icon="fa-solid fa-plus" :text="$t('crud.reference.add')" @click="showModalCreateDoc()" />
                 </NoData>
             </div>
         </LoadingGate>
@@ -123,10 +123,10 @@ function showModalDuplicateDoc(doc) {
         ref="refModal"
         :title="
             isDuplicating
-                ? `Nhân bản: ${document.fullName}`
+                ? $t('form.duplicateTitle', { name: document.fullName })
                 : document._id
-                  ? `Chỉnh sửa: ${document.fullName}`
-                  : 'Thêm người tham khảo'
+                  ? $t('form.editTitle', { name: document.fullName })
+                  : $t('crud.reference.add')
         "
         is-hidden-footer
     >
@@ -136,11 +136,10 @@ function showModalDuplicateDoc(doc) {
                 :fields="formFields"
                 :document="document"
                 :submit-fn="handleUpdate"
-                submit-text="Lưu"
                 button-position="end"
             >
                 <template #cancel>
-                    <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
+                    <Button :text="$t('common.cancel')" type="ghost" data-bs-dismiss="modal" />
                 </template>
             </VeeForm>
         </div>

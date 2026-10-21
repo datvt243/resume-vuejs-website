@@ -20,6 +20,7 @@ import { useCvLang } from '@/composables/useCvLang'
 import { useActiveProfile } from '@/composables/useActiveProfile'
 import CvResumeLayout from '@/components/cv/CvResumeLayout.vue'
 import { toJsonResume } from '@/utilities/jsonResume'
+import { t } from '@/i18n'
 
 const candidate = candidateStore()
 const auth = authStore()
@@ -89,19 +90,19 @@ onUnmounted(() => document.body.classList.remove('cv-print-mode'))
 
 <template>
     <div class="no-print mb-6">
-        <Heading :level="1" text="Xem trước CV">
-            <Button text="Xuất JSON Resume" icon="fa-solid fa-download" @click="handleExportJsonResume()" />
-            <Button text="Xuất PDF / In" icon="fa-solid fa-download" type="primary" @click="handlePrint()" />
+        <Heading :level="1" :text="t('preview.title')">
+            <Button :text="t('preview.exportJson')" icon="fa-solid fa-download" @click="handleExportJsonResume()" />
+            <Button :text="t('preview.exportPdf')" icon="fa-solid fa-download" type="primary" @click="handlePrint()" />
         </Heading>
         <div class="flex flex-wrap items-end gap-4 rounded-md border border-line bg-surface p-4">
             <div>
-                <p class="form-label block">Giao diện</p>
-                <SegmentedControl :model-value="selectedTheme" :options="THEMES" aria-label="Giao diện CV" @update:model-value="setTheme" />
+                <p class="form-label block">{{ t('preview.theme') }}</p>
+                <SegmentedControl :model-value="selectedTheme" :options="THEMES" :aria-label="t('preview.cvTheme')" @update:model-value="setTheme" />
             </div>
             <div v-if="profiles.length">
-                <label for="preview-profile" class="form-label">Profile CV</label>
+                <label for="preview-profile" class="form-label">{{ t('field.cvProfile') }}</label>
                 <select id="preview-profile" class="form-select block" :value="activeProfileId" @change="setActiveProfile($event.target.value)">
-                    <option value="">Tất cả (mặc định)</option>
+                    <option value="">{{ t('information.allProfiles') }}</option>
                     <option v-for="p in profiles" :key="p._id" :value="p._id">{{ p.name }}</option>
                 </select>
             </div>

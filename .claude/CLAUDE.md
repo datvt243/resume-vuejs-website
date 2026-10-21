@@ -99,7 +99,7 @@ Every user-visible string goes through `src/i18n/index.ts` — never hardcode it
 - **Field configs** (`models/*.model.ts`, page `formFields`) and **yup messages** → pass the key string itself (`label: 'auth.password'`, `.required('validation.emailRequired')`). `Frm*` parts render it through `tr()`, which translates keys and passes literal text through, so it updates live on a language switch.
 - Interpolate with `{name}` (`t('form.addTitle', { name })`), never string-concatenate translated fragments. Don't put a literal `@`, `$`, `|`, `{` or `}` in a message (vue-i18n syntax).
 - Not i18n: user CV *content* (`{ vi, en }` localized fields, `getLocalizedText`) and `CvResumeLayout`'s own `lang`-prop labels.
-- Legacy screens still hardcode Vietnamese until #266 phases 2–4 land. When editing one, move the strings you touch into i18n.
+- Need a param in a string-only slot (yup message, field label)? `withParams('validation.maxChars', { max: 100 })` — `tr` unpacks it and translates string params that are keys.
 
 ## UI / Design
 Before creating, editing, or reviewing any UI (pages, components, styles), read `DESIGN.md` at the repo root and follow it — tokens, layout templates, components, and the definition-of-done checklist. To restyle an existing page, follow its §0.2 refactor procedure (audit → plan → apply → verify).

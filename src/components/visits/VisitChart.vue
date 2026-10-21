@@ -6,7 +6,8 @@
  * accessible table view.
  */
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
-import { formatBucket, INTERVAL_LABELS } from '@/composables/useVisitStats'
+import { formatBucket } from '@/composables/useVisitStats'
+import { t } from '@/i18n'
 
 const props = defineProps({
     // [{ bucket: 'YYYY-MM-DD' | 'YYYY-Www' | 'YYYY-MM', count }]
@@ -89,7 +90,7 @@ const tooltip = computed(() => {
 
 <template>
     <div ref="root" class="visit-chart relative" @mouseleave="active = null">
-        <svg :width="width" :height="HEIGHT" :viewBox="`0 0 ${width} ${HEIGHT}`" class="block" role="img" :aria-label="`Lượt xem theo ${INTERVAL_LABELS[interval] ?? interval}`">
+        <svg :width="width" :height="HEIGHT" :viewBox="`0 0 ${width} ${HEIGHT}`" class="block" role="img" :aria-label="t(`visits.chartTitle.${interval}`)">
             <g class="grid">
                 <template v-for="t in ticks" :key="t">
                     <line :x1="PAD.left" :x2="width - PAD.right" :y1="y(t)" :y2="y(t)" :class="t === 0 ? 'baseline' : 'gridline'" />
@@ -107,7 +108,7 @@ const tooltip = computed(() => {
                         :height="plotH"
                         fill="transparent"
                         tabindex="0"
-                        :aria-label="`${b.label}: ${b.count} lượt xem`"
+                        :aria-label="t('visits.barLabel', { label: b.label, count: b.count })"
                         @mouseenter="active = i"
                         @focus="active = i"
                         @blur="active = null"
@@ -131,7 +132,7 @@ const tooltip = computed(() => {
             role="status"
         >
             <div class="text-fg-2">{{ tooltip.label }}</div>
-            <strong>{{ tooltip.count }}</strong> lượt xem
+            <strong>{{ tooltip.count }}</strong> {{ t('visits.viewsUnit') }}
         </div>
     </div>
 </template>

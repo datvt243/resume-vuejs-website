@@ -10,6 +10,7 @@ import type { Response } from '@/types/api.type'
 import { ref, watch } from 'vue'
 import { handleBase } from '@/services/base'
 import { useHelper } from '@/composables/useHelper'
+import { t } from '@/i18n'
 
 export type VisitStatsInterval = 'day' | 'week' | 'month'
 
@@ -21,13 +22,11 @@ export interface VisitStats {
     sources: { source: string | null; count: number }[]
 }
 
-export const INTERVAL_LABELS: Record<VisitStatsInterval, string> = { day: 'ngày', week: 'tuần', month: 'tháng' }
-
 const DAY_MS = 24 * 60 * 60 * 1000
 
-/** Axis label for a backend bucket key: `YYYY-MM-DD` → `DD/MM`, `YYYY-Www` → `Tuần N`, `YYYY-MM` → `MM/YYYY`. */
+/** Axis label for a backend bucket key: `YYYY-MM-DD` → `DD/MM`, `YYYY-Www` → week N (`visits.weekN`), `YYYY-MM` → `MM/YYYY`. */
 export function formatBucket(bucket: string, interval: VisitStatsInterval): string {
-    if (interval === 'week') return `Tuần ${Number(bucket.split('-W')[1])}`
+    if (interval === 'week') return t('visits.weekN', { n: Number(bucket.split('-W')[1]) })
     const [y, m, d] = bucket.split('-')
     return interval === 'month' ? `${m}/${y}` : `${d}/${m}`
 }

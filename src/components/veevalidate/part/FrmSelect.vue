@@ -55,7 +55,7 @@ const { value, errorMessage, handleChange, handleBlur } = useField(() => props.n
             @blur="handleBlur"
         >
             <option value="">{{ t('common.pleaseSelect') }}</option>
-            <option v-for="el of options" :key="`opt_${el.value}`" :value="el.value">{{ el.text }}</option>
+            <option v-for="el of options" :key="`opt_${el.value}`" :value="el.value">{{ tr(el.text) }}</option>
         </select>
 
         <p v-if="errorMessage" :id="`${props.name}-error`" class="mb-0 mt-1 flex items-center gap-1 text-xs text-danger">

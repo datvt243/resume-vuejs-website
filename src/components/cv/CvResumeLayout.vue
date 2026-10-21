@@ -18,6 +18,7 @@ import { formatDate, getLocalizedText, sanitizeHtml } from '@/utilities/index'
 import generalInformationModel from '@/models/generalInformation.model'
 import { experienceTitle } from '@/models/experience.model'
 import { resolveTheme } from '@/composables/useCvTheme'
+import { i18n } from '@/i18n'
 
 const props = defineProps({
     data: { type: Object, required: true },
@@ -64,31 +65,6 @@ const LABELS = {
     },
 }
 
-// English text for the generalInformation select options (the model only
-// carries the Vietnamese labels)
-const OPTION_LABELS_EN = {
-    intern: 'Intern',
-    staff: 'Staff',
-    teamLeader: 'Team Leader',
-    manager: 'Manager',
-    viceDirector: 'Vice Director',
-    director: 'Director',
-    ceo: 'CEO',
-    highSchool: 'High School',
-    associateDegree: 'Associate Degree',
-    bachelorDegree: "Bachelor's Degree",
-    masterDegree: "Master's Degree",
-    doctorateDegree: 'Doctorate',
-    fulltime: 'Full-time',
-    parttime: 'Part-time',
-    temporary: 'Temporary',
-    internship: 'Probation',
-    freelance: 'Freelance',
-    contract: 'Contract',
-    remote: 'Remote',
-    consultant: 'Collaborator',
-}
-
 const isEn = computed(() => props.lang === 'en')
 const t = computed(() => (isEn.value ? LABELS.en : LABELS.vi))
 const text = value => getLocalizedText(value, isEn.value ? 'en' : 'vi')
@@ -100,8 +76,8 @@ const generalInformation = computed(() => props.data.generalInformation || {})
 function optionLabel(model, name, value) {
     const field = model.find(f => f.name === name)
     const opt = field?.options?.find(o => o.value === value)
-    if (isEn.value && OPTION_LABELS_EN[value]) return OPTION_LABELS_EN[value]
-    return opt?.text ?? value ?? ''
+    // option text is a UI message key; render it in the CV's language, not the UI's
+    return opt ? i18n.global.t(opt.text, {}, { locale: props.lang }) : (value ?? '')
 }
 
 function dateRange(item) {

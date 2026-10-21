@@ -69,14 +69,14 @@ export const useProfileCompletion = () => {
     }
 
     const sections = computed(() => [
-        objectSection('Thông tin cơ bản', '/dashboard/information', informationModel, candidate.getCandidate),
-        objectSection('Thông tin chung', '/dashboard/general-information', generalInformationModel, candidate.getGeneralInformation),
-        listSection('Học vấn', '/dashboard/education', educations.value),
-        listSection('Kinh nghiệm làm việc', '/dashboard/experience', experiences.value),
-        listSection('Dự án', '/dashboard/project', projects.value),
-        listSection('Giải thưởng', '/dashboard/award', awards.value),
-        listSection('Chứng chỉ', '/dashboard/certificate', certificates.value),
-        listSection('Người tham khảo', '/dashboard/reference', references.value),
+        objectSection('nav.information', '/dashboard/information', informationModel, candidate.getCandidate),
+        objectSection('nav.generalInformation', '/dashboard/general-information', generalInformationModel, candidate.getGeneralInformation),
+        listSection('nav.education', '/dashboard/education', educations.value),
+        listSection('nav.experience', '/dashboard/experience', experiences.value),
+        listSection('nav.project', '/dashboard/project', projects.value),
+        listSection('nav.award', '/dashboard/award', awards.value),
+        listSection('nav.certificate', '/dashboard/certificate', certificates.value),
+        listSection('nav.reference', '/dashboard/reference', references.value),
     ])
 
     const missingSections = computed(() => sections.value.filter(s => !s.complete))

@@ -17,6 +17,7 @@ import { useCvTheme, DEFAULT_THEME } from '@/composables/useCvTheme'
 import { useActiveProfile } from '@/composables/useActiveProfile'
 import { useCvLang } from '@/composables/useCvLang'
 import { localizedToForm, localizedFromForm } from '@/utilities/index'
+import { t } from '@/i18n'
 
 /* import { useDocument } from '@/composables/useDocument' */
 
@@ -95,8 +96,8 @@ const slugFields = ref([
         name: 'slug',
         label: 'Slug',
         type: 'text',
-        placeholder: 'vd: nguyen-van-a',
-        text: 'Để trống nếu chưa muốn đặt.',
+        placeholder: 'information.slugPlaceholder',
+        text: 'information.slugHint',
         autocomplete: 'off',
         autocapitalize: 'none',
         spellcheck: 'false',
@@ -109,9 +110,9 @@ const slugFields = ref([
                 .lowercase()
                 .matches(/^[a-z0-9]+(-[a-z0-9]+)*$/, {
                     excludeEmptyString: true,
-                    message: 'Slug chỉ được chứa chữ thường, số và dấu gạch ngang',
+                    message: 'validation.slugFormat',
                 })
-                .test('slug-length', 'Slug phải từ 3-50 ký tự', v => !v || (v.length >= 3 && v.length <= 50)),
+                .test('slug-length', 'validation.slugLength', v => !v || (v.length >= 3 && v.length <= 50)),
     },
 ])
 // `_id` is included so VeeForm's own `watch(document, ...)` (VeeForm.vue)
@@ -183,7 +184,7 @@ async function handleUpdate(values) {
     _newValues._id = candidate.getId
     if (!_newValues._id) {
         toast?.({
-            message: 'Xảy ra lỗi',
+            message: t('error.generic'),
             bg: 'danger',
         })
     }
@@ -228,75 +229,75 @@ async function handleUpdateSlug(values) {
 
 <template>
     <div class="max-w-4xl space-y-6">
-        <Heading :level="1" text="Thông tin cơ bản" />
+        <Heading :level="1" :text="$t('nav.information')" />
 
-        <FormSection title="Ảnh đại diện" description="Hiển thị trên CV và trang công khai.">
+        <FormSection :title="$t('information.avatar')" :description="$t('information.avatarDescription')">
             <div class="flex flex-wrap items-center gap-4 pb-4">
                 <div class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-lg font-semibold text-fg-2">
-                    <img v-if="avatarUrl" :src="avatarUrl" alt="Ảnh đại diện" class="h-full w-full object-cover" />
+                    <img v-if="avatarUrl" :src="avatarUrl" :alt="$t('information.avatar')" class="h-full w-full object-cover" />
                     <span v-else aria-hidden="true">{{ initials }}</span>
                 </div>
                 <!-- disabled buttons swallow hover, so the tooltip sits on the wrapper -->
-                <span class="inline-flex" title="Sắp ra mắt">
-                    <Button icon="fa-solid fa-camera" text="Chọn ảnh" disabled aria-describedby="avatar-soon" />
+                <span class="inline-flex" :title="$t('common.comingSoon')">
+                    <Button icon="fa-solid fa-camera" :text="$t('information.chooseImage')" disabled aria-describedby="avatar-soon" />
                 </span>
-                <span id="avatar-soon" class="sr-only">Sắp ra mắt</span>
+                <span id="avatar-soon" class="sr-only">{{ $t('common.comingSoon') }}</span>
             </div>
         </FormSection>
 
-        <FormSection title="Thông tin cá nhân" description="Họ tên, liên hệ và phần giới thiệu trên CV.">
+        <FormSection :title="$t('information.personal')" :description="$t('information.personalDescription')">
             <LoadingGate variant="form">
                 <VeeForm
                     :key="'frm-basic-info'"
                     :fields="formFields"
                     :document="document"
                     :submit-fn="handleUpdate"
-                    submit-text="Lưu thay đổi"
+                    :submit-text="$t('common.saveChanges')"
                     button-position="end"
                     cancelable
                 />
             </LoadingGate>
         </FormSection>
 
-        <FormSection title="Mạng xã hội" description="Hiện ở phần liên hệ trên CV.">
+        <FormSection :title="$t('information.social')" :description="$t('information.socialDescription')">
             <LoadingGate variant="form">
                 <VeeForm
                     :key="'frm-social-media'"
                     :fields="socialMediaFields"
                     :submit-fn="handleUpdateSocialNetwork"
-                    submit-text="Lưu thay đổi"
+                    :submit-text="$t('common.saveChanges')"
                     button-position="end"
                 />
             </LoadingGate>
         </FormSection>
 
-        <FormSection title="Link CV công khai" description="Địa chỉ dễ đọc thay cho email trên URL.">
+        <FormSection :title="$t('information.publicLink')" :description="$t('information.publicLinkDescription')">
             <LoadingGate variant="form">
                 <VeeForm
                     :key="'frm-slug'"
                     :fields="slugFields"
                     :document="slugDocument"
                     :submit-fn="handleUpdateSlug"
-                    submit-text="Lưu thay đổi"
+                    :submit-text="$t('common.saveChanges')"
                     button-position="end"
                     cancelable
                 />
             </LoadingGate>
         </FormSection>
 
-        <FormSection title="Chia sẻ CV" description="Chọn profile cho link, rồi gửi link hoặc mã QR. Ngôn ngữ của link theo bộ chọn VI | EN trên thanh trên cùng.">
+        <FormSection :title="$t('information.share')" :description="$t('information.shareDescription')">
             <div class="space-y-4 pb-4">
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div v-if="profiles.length">
-                        <label for="share-profile" class="form-label">Profile CV</label>
+                        <label for="share-profile" class="form-label">{{ $t('field.cvProfile') }}</label>
                         <select id="share-profile" class="form-select w-full" :value="activeProfileId" @change="setActiveProfile($event.target.value)">
-                            <option value="">Tất cả (mặc định)</option>
+                            <option value="">{{ $t('information.allProfiles') }}</option>
                             <option v-for="p in profiles" :key="p._id" :value="p._id">{{ p.name }}</option>
                         </select>
                     </div>
                 </div>
                 <div v-if="publicLink">
-                    <p class="form-label">Link CV của bạn</p>
+                    <p class="form-label">{{ $t('information.yourLink') }}</p>
                     <p class="m-0 break-all rounded bg-surface-2 px-3 py-2 font-mono text-sm text-fg-2">{{ publicLink }}</p>
                 </div>
                 <QrCode :value="publicLink" />

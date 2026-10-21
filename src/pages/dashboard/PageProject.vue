@@ -134,12 +134,12 @@ function showModalDuplicateDoc(doc) {
 
 <template>
     <div>
-        <Heading :level="1" text="Dự án">
-            <Button type="primary" icon="fa-solid fa-plus" text="Thêm dự án" @click="showModalCreateDoc()" />
+        <Heading :level="1" :text="$t('nav.project')">
+            <Button type="primary" icon="fa-solid fa-plus" :text="$t('crud.project.add')" @click="showModalCreateDoc()" />
         </Heading>
 
         <div v-if="dataList.length">
-            <p class="mb-2 mt-0 text-xs text-fg-3">Kéo thả để sắp xếp. Thứ tự chỉ lưu trên trình duyệt này.</p>
+            <p class="mb-2 mt-0 text-xs text-fg-3">{{ $t('common.dragToSort') }}</p>
             <ListTransition class="m-0 list-none divide-y divide-line rounded-md border border-line bg-surface p-0">
                 <li
                     v-for="edu in orderedItems"
@@ -160,7 +160,7 @@ function showModalDuplicateDoc(doc) {
                             @on-duplicate="showModalDuplicateDoc"
                         >
                             <template #sub>
-                                <p v-if="edu.technology?.length" class="m-0 mt-0.5 text-xs text-fg-2">Công nghệ: {{ edu.technology.join(', ') }}</p>
+                                <p v-if="edu.technology?.length" class="m-0 mt-0.5 text-xs text-fg-2">{{ $t('crud.project.technologies', { list: edu.technology.join(', ') }) }}</p>
                             </template>
                         </ProjectItem>
                     </div>
@@ -169,8 +169,8 @@ function showModalDuplicateDoc(doc) {
         </div>
         <LoadingGate v-else>
             <div class="rounded-md border border-line bg-surface">
-                <NoData title="Chưa có dự án nào" description="Thêm dự án để cho thấy bạn đã làm được gì.">
-                    <Button icon="fa-solid fa-plus" text="Thêm dự án" @click="showModalCreateDoc()" />
+                <NoData :title="$t('crud.project.empty')" :description="$t('crud.project.emptyDescription')">
+                    <Button icon="fa-solid fa-plus" :text="$t('crud.project.add')" @click="showModalCreateDoc()" />
                 </NoData>
             </div>
         </LoadingGate>
@@ -178,7 +178,7 @@ function showModalDuplicateDoc(doc) {
 
     <Modal
         ref="refModal"
-        :title="isDuplicating ? `Nhân bản: ${document.name}` : document._id ? `Chỉnh sửa: ${document.name}` : 'Thêm dự án'"
+        :title="isDuplicating ? $t('form.duplicateTitle', { name: document.name }) : document._id ? $t('form.editTitle', { name: document.name }) : $t('crud.project.add')"
         is-hidden-footer
     >
         <div class="block-container">
@@ -187,11 +187,10 @@ function showModalDuplicateDoc(doc) {
                 :fields="formFields"
                 :document="document"
                 :submit-fn="handleUpdate"
-                submit-text="Lưu"
                 button-position="end"
             >
                 <template #cancel>
-                    <Button text="Hủy" type="ghost" data-bs-dismiss="modal" />
+                    <Button :text="$t('common.cancel')" type="ghost" data-bs-dismiss="modal" />
                 </template>
             </VeeForm>
         </div>

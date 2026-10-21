@@ -5,149 +5,141 @@
  */
 
 import type { modelItem } from '@/types/model.type.ts'
+import { withParams } from '@/i18n'
 import { defaultCheckboxBoolean, withEnglish } from '@/types/model.type'
 /* import { formatDateToInput } from '@/utilities/index' */
 
-const _mesRequired = 'Vui lòng nhập'
+const _mesRequired = 'validation.required'
 
 const MODEL: modelItem[] = [
     {
         name: '_id',
         label: 'ID',
         type: 'hidden',
-        placeholder: 'Vui lòng nhập Vị trí mong muốn',
         valid: yup => yup.string().nullable().default(null),
         default: null,
     },
-    defaultCheckboxBoolean({ name: 'openToWork', label: 'Đang mở tìm việc' }),
+    defaultCheckboxBoolean({ name: 'openToWork', label: 'field.openToWork' }),
     {
         name: 'positionDesired',
-        label: 'Vị trí mong muốn',
+        label: 'field.positionDesired',
         type: 'text',
-        placeholder: 'Vui lòng nhập Vị trí mong muốn',
-        valid: yup => yup.string().max(50).trim().required(_mesRequired),
+        valid: yup => yup.string().max(50, withParams('validation.maxChars', { max: 50 })).trim().required(_mesRequired),
         default: '',
     },
     ...withEnglish({
         name: 'career',
-        label: 'Ngành nghề',
+        label: 'field.career',
         type: 'text',
-        placeholder: 'Vui lòng nhập Ngành nghề',
-        valid: yup => yup.string().max(50).trim().required(_mesRequired),
+        valid: yup => yup.string().max(50, withParams('validation.maxChars', { max: 50 })).trim().required(_mesRequired),
         default: '',
     }),
     {
         name: 'levelCurrent',
-        label: 'Cấp bậc hiện tại',
+        label: 'field.levelCurrent',
         type: 'select',
         options: [
-            { text: 'Thực tập sinh', value: 'intern' },
-            { text: 'Nhân viên', value: 'staff' },
-            { text: 'Trưởng nhóm', value: 'teamLeader' },
-            { text: 'Quản lý', value: 'manager' },
-            { text: 'Phó giám đốc', value: 'viceDirector' },
-            { text: 'Giám đốc', value: 'director' },
-            { text: 'Tổng giám đốc', value: 'ceo' },
+            { text: 'option.level.intern', value: 'intern' },
+            { text: 'option.level.staff', value: 'staff' },
+            { text: 'option.level.teamLeader', value: 'teamLeader' },
+            { text: 'option.level.manager', value: 'manager' },
+            { text: 'option.level.viceDirector', value: 'viceDirector' },
+            { text: 'option.level.director', value: 'director' },
+            { text: 'option.level.ceo', value: 'ceo' },
         ],
         default: 'staff',
-        placeholder: 'Vui lòng nhập Cấp bậc hiện tại',
-        valid: yup => yup.string().max(50).trim().required(_mesRequired),
+        valid: yup => yup.string().max(50, withParams('validation.maxChars', { max: 50 })).trim().required(_mesRequired),
         col: 'col-md-6',
     },
     {
         name: 'levelDesired',
-        label: 'Cấp bậc mong muốn',
+        label: 'field.levelDesired',
         type: 'select',
         options: [
-            { text: 'Thực tập sinh', value: 'intern' },
-            { text: 'Nhân viên', value: 'staff' },
-            { text: 'Trưởng nhóm', value: 'teamLeader' },
-            { text: 'Quản lý', value: 'manager' },
-            { text: 'Phó giám đốc', value: 'viceDirector' },
-            { text: 'Giám đốc', value: 'director' },
-            { text: 'Tổng giám đốc', value: 'ceo' },
+            { text: 'option.level.intern', value: 'intern' },
+            { text: 'option.level.staff', value: 'staff' },
+            { text: 'option.level.teamLeader', value: 'teamLeader' },
+            { text: 'option.level.manager', value: 'manager' },
+            { text: 'option.level.viceDirector', value: 'viceDirector' },
+            { text: 'option.level.director', value: 'director' },
+            { text: 'option.level.ceo', value: 'ceo' },
         ],
         default: 'staff',
-        placeholder: 'Vui lòng nhập Cấp bậc mong muốn',
-        valid: yup => yup.string().max(50).trim().required(_mesRequired),
+        valid: yup => yup.string().max(50, withParams('validation.maxChars', { max: 50 })).trim().required(_mesRequired),
         col: 'col-md-6',
     },
     {
         name: 'education',
-        label: 'Trình độ',
+        label: 'field.educationLevel',
         type: 'select',
         options: [
-            { text: 'Trung học phổ thông', value: 'highSchool' },
-            { text: 'Trung cấp/Cao đẳng', value: 'associateDegree' },
-            { text: 'Đại học', value: 'bachelorDegree' },
-            { text: 'Thạc sĩ', value: 'masterDegree' },
-            { text: 'Tiến sĩ', value: 'doctorateDegree' },
+            { text: 'option.degree.highSchool', value: 'highSchool' },
+            { text: 'option.degree.associateDegree', value: 'associateDegree' },
+            { text: 'option.degree.bachelorDegree', value: 'bachelorDegree' },
+            { text: 'option.degree.masterDegree', value: 'masterDegree' },
+            { text: 'option.degree.doctorateDegree', value: 'doctorateDegree' },
         ],
         default: 'bachelorDegree',
-        placeholder: 'Vui lòng nhập Trình độ',
-        valid: yup => yup.string().trim().max(50).required(_mesRequired),
+        valid: yup => yup.string().trim().max(50, withParams('validation.maxChars', { max: 50 })).required(_mesRequired),
         col: 'col-md-6',
     },
     {
         name: 'yearsOfExperience',
-        label: 'Số năm kinh nghiệm',
+        label: 'field.yearsOfExperience',
         type: 'number',
-        placeholder: 'Vui lòng nhập Số năm kinh nghiệm',
         inputmode: 'numeric',
         valid: yup =>
             yup
-                .number('Vui lòng nhập vào số')
-                .integer('Vui lòng nhập vào số nguyên')
-                .min(0, 'Số năm kinh nghiệm phải lớn hơn 0')
+                .number()
+                .typeError('validation.number')
+                .integer('validation.integer')
+                .min(0, 'validation.yearsOfExperienceMin')
                 .required(_mesRequired),
         default: '',
         col: 'col-md-6',
     },
     {
         name: 'salaryDesired',
-        label: 'Mức lương mong muốn',
+        label: 'field.salaryDesired',
         type: 'currency',
-        placeholder: 'Vui lòng nhập Mức lương mong muốn',
         valid: yup =>
             yup
-                .number('Vui lòng nhập vào số')
-                .integer('Vui lòng nhập vào số nguyên')
-                .positive('Mức lương mong muốn phải lớn hơn 0')
+                .number()
+                .typeError('validation.number')
+                .integer('validation.integer')
+                .positive('validation.salaryPositive')
                 .required(_mesRequired),
         default: '',
     },
     {
         name: 'workForm',
-        label: 'Hình thức làm việc',
+        label: 'field.workForm',
         type: 'select',
         options: [
-            { value: 'fulltime', text: 'Toàn thời gian' },
-            { value: 'parttime', text: 'Bán thời gian' },
-            { value: 'temporary', text: 'Thời vụ' },
-            { value: 'internship', text: 'Thử việc' },
-            { value: 'freelance', text: 'Freelance' },
-            { value: 'contract', text: 'Hợp đồng' },
-            { value: 'remote', text: 'Làm việc từ xa' },
-            { value: 'consultant', text: 'Cộng tác viên' },
+            { value: 'fulltime', text: 'option.workForm.fulltime' },
+            { value: 'parttime', text: 'option.workForm.parttime' },
+            { value: 'temporary', text: 'option.workForm.temporary' },
+            { value: 'internship', text: 'option.workForm.internship' },
+            { value: 'freelance', text: 'option.workForm.freelance' },
+            { value: 'contract', text: 'option.workForm.contract' },
+            { value: 'remote', text: 'option.workForm.remote' },
+            { value: 'consultant', text: 'option.workForm.consultant' },
         ],
-        placeholder: 'Vui lòng nhập Mức lương mong muốn',
         valid: yup => yup.string().required(_mesRequired),
         default: 'fulltime',
     },
     {
         name: 'workLocation',
-        label: 'Địa điểm làm việc',
+        label: 'field.workLocation',
         type: 'text',
         default: '',
-        placeholder: 'Vui lòng nhập Địa điểm làm việc',
         valid: yup => yup.string().required(_mesRequired),
     },
     ...withEnglish({
         name: 'careerGoal',
-        label: 'Mục tiêu công việc',
+        label: 'field.careerGoal',
         type: 'ckediter',
         default: '',
-        placeholder: 'Vui lòng nhập Mức lương mong muốn',
         valid: yup => yup.string(),
     }),
 ]

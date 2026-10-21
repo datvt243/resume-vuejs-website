@@ -92,5 +92,14 @@ src/
 - Never mutate props — copy with spread or destructuring
 - New form sections → create a `models/*.model.ts`, use `useCandidate` + `useDocument` + `VeeForm`
 
+## i18n (UI text)
+Every user-visible string goes through `src/i18n/index.ts` — never hardcode it. This includes labels, buttons, headings, placeholders, `aria-label`/`title`, toasts, Swal dialogs and yup messages. The header VI | EN switch drives `i18n.global.locale`.
+- **Add the key to both `vi` and `en`**, grouped by area (`common`, `form`, `auth`, `validation`, …). `en` is typed `typeof vi`, so the editor flags a missing EN key, but `vite build` doesn't type-check, so check it yourself. Reuse `common.*` (save, cancel, delete, …) before adding a new key.
+- **Templates** → `$t('group.key')`. **Script / `lib/` / `services/` / components mounted in specs** → `import { t } from '@/i18n'` (works without the plugin installed).
+- **Field configs** (`models/*.model.ts`, page `formFields`) and **yup messages** → pass the key string itself (`label: 'auth.password'`, `.required('validation.emailRequired')`). `Frm*` parts render it through `tr()`, which translates keys and passes literal text through, so it updates live on a language switch.
+- Interpolate with `{name}` (`t('form.addTitle', { name })`), never string-concatenate translated fragments. Don't put a literal `@`, `$`, `|`, `{` or `}` in a message (vue-i18n syntax).
+- Not i18n: user CV *content* (`{ vi, en }` localized fields, `getLocalizedText`) and `CvResumeLayout`'s own `lang`-prop labels.
+- Legacy screens still hardcode Vietnamese until #266 phases 2–4 land. When editing one, move the strings you touch into i18n.
+
 ## UI / Design
 Before creating, editing, or reviewing any UI (pages, components, styles), read `DESIGN.md` at the repo root and follow it — tokens, layout templates, components, and the definition-of-done checklist. To restyle an existing page, follow its §0.2 refactor procedure (audit → plan → apply → verify).

@@ -1,1 +1,0 @@
-import{e as t,f as e,o}from"./index-xXV0YcYe.js";const s={class:"auth-container m-auto",style:{"max-width":"500px"}},a=e("p",null,"404!!! Page not Found",-1),n=[a],u={__name:"NotFound",setup(c){return(_,r)=>(o(),t("div",s,n))}};export{u as default};

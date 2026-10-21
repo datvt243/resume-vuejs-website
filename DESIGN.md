@@ -399,6 +399,7 @@ Never use dual y-axes, 3D, a truncated y-axis on bars, or a rainbow palette.
 
 ## 7. Copy (Vietnamese UI)
 
+- **No hardcoded UI text.** Every string has a VI and an EN message in `src/i18n/index.ts`. See `.claude/CLAUDE.md` → i18n for how to wire it. The rules below apply to both languages.
 - Sentence case everywhere ("Lượt truy cập hồ sơ", not "LƯỢT TRUY CẬP HỒ SƠ").
 - Labels name what users understand, not how the system works.
 - **No developer notes in the UI** (for example "backend chưa có endpoint…", "ghi nhận qua API thật"). If a feature isn't available, disable it with a short reason in a tooltip ("Sắp ra mắt"), or hide it.

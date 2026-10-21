@@ -13,7 +13,7 @@ import { t } from '@/i18n'
 import { experienceTitle } from '@/models/experience.model'
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
-const emits = defineEmits(['onEdit', 'onDelete', 'onDuplicate'])
+const emits = defineEmits(['onView', 'onEdit', 'onDelete', 'onDuplicate'])
 const props = defineProps({
     modelValue: {
         type: Object as PropType<Experience>,
@@ -40,8 +40,9 @@ const getDate = computed(() => {
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 const item = computed(() => ({
-    title: experienceTitle(model.value),
-    subTitle: model.value.position,
+    // job title first, company below; a break (or old entry) without a position falls back to experienceTitle
+    title: model.value.position || experienceTitle(model.value),
+    subTitle: model.value.position ? model.value.company : '',
     date: getDate.value,
     description: model.value.description,
 }))
@@ -49,5 +50,5 @@ const item = computed(() => ({
 
 <template lang="pug">
 ItemTemplate(:model-value="item")
-    ItemActions(:label="item.title" @edit="emits('onEdit', {...model})" @duplicate="emits('onDuplicate', {...model})" @delete="emits('onDelete', {...model})")
+    ItemActions(:label="item.title" viewable @view="emits('onView', {...model})" @edit="emits('onEdit', {...model})" @duplicate="emits('onDuplicate', {...model})" @delete="emits('onDelete', {...model})")
 </template>

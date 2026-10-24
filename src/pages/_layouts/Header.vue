@@ -15,7 +15,8 @@ import LangSwitch from '@/pages/_layouts/LangSwitch.vue'
 import { useI18n } from 'vue-i18n'
 import { useCvLang } from '@/composables/useCvLang'
 import { API } from '@/config/api.config'
-import { getDownloadCvUrl, escapeHtml } from '@/utilities/index'
+import { escapeHtml } from '@/utilities/index'
+import { useDownloadCv } from '@/composables/useDownloadCv'
 
 defineProps({ navOpen: { type: Boolean, default: false } })
 defineEmits(['toggle-nav'])
@@ -25,7 +26,10 @@ const store = authStore()
 const candidate = candidateStore()
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 const { theme, toggleTheme } = useTheme()
+// eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 const { selectedLang } = useCvLang()
+// eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
+const { download, isDownloading } = useDownloadCv()
 const { t } = useI18n()
 
 const _user = store.getUser
@@ -35,11 +39,6 @@ const _settings = {
     host: window.location.host === 'localhost' ? 'http://localhost:3001/' : API,
     getMe() {
         return _user?.email ? `${this.host}api/me/${_user.email}` : '#'
-    },
-    getFile() {
-        // plain link navigation → no Authorization header, pass the
-        // in-memory access token as `?token=` (see stores/auth.ts)
-        return getDownloadCvUrl(this.host, 'classic', store.getToken, selectedLang.value)
     },
 }
 
@@ -122,8 +121,15 @@ header.sticky.top-0.z-20.flex.h-14.shrink-0.items-center.gap-2.border-b.border-l
                 @click="toggleTheme"
             )
                 FontAwesomeIcon(:icon="theme === 'dark' ? 'fa fa-sun' : 'fa fa-moon'")
-            a(:href="_settings.getFile()" target="_blank" :class="[secondaryBtn, 'hidden sm:inline-flex']" :aria-label="$t('header.downloadCv')")
-                FontAwesomeIcon(icon="fa-solid fa-download")
+            button(
+                type="button"
+                :class="[secondaryBtn, 'hidden sm:inline-flex']"
+                :aria-label="$t('header.downloadCv')"
+                :disabled="isDownloading"
+                :aria-busy="isDownloading"
+                @click="download({ lang: selectedLang })"
+            )
+                FontAwesomeIcon(:icon="isDownloading ? 'fa-solid fa-spinner' : 'fa-solid fa-download'" :spin="isDownloading")
                 span.hidden(class="md:inline") {{ $t('header.downloadCv') }}
             Dropdown.user-menu(:text="mesUser" variant="secondary" split is-sm)
                 li

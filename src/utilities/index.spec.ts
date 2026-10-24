@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatDate, formatDateToInput, getLocalizedText, splitLocalizedText, localizedToForm, localizedFromForm, getDownloadCvUrl, sanitizeHtml, escapeHtml } from './index'
+import { formatDate, formatDateToInput, getLocalizedText, splitLocalizedText, localizedToForm, localizedFromForm, sanitizeHtml, escapeHtml } from './index'
 
 describe('formatDate', () => {
     it('returns the placeholder for a falsy date', () => {
@@ -86,32 +86,6 @@ describe('localizedToForm / localizedFromForm', () => {
             career: { vi: 'IT', en: '' },
             careerGoal: { vi: 'mục tiêu', en: '' },
         })
-    })
-})
-
-describe('getDownloadCvUrl', () => {
-    const host = 'https://api.example.com/'
-
-    it('defaults to the classic template with no query string (unchanged pre-#159 URL)', () => {
-        expect(getDownloadCvUrl(host)).toBe('https://api.example.com/api/v1/download-pdf')
-    })
-
-    it('omits the query string for an explicit classic template', () => {
-        expect(getDownloadCvUrl(host, 'classic')).toBe('https://api.example.com/api/v1/download-pdf')
-    })
-
-    it('adds template=ats for the ATS-optimized template', () => {
-        expect(getDownloadCvUrl(host, 'ats')).toBe('https://api.example.com/api/v1/download-pdf?template=ats')
-    })
-
-    it('appends the access token as ?token= (link navigation sends no Authorization header)', () => {
-        expect(getDownloadCvUrl(host, 'classic', 'abc')).toBe('https://api.example.com/api/v1/download-pdf?token=abc')
-        expect(getDownloadCvUrl(host, 'ats', 'abc')).toBe('https://api.example.com/api/v1/download-pdf?template=ats&token=abc')
-    })
-
-    it('adds lang=en for the English CV and omits the default vi', () => {
-        expect(getDownloadCvUrl(host, 'classic', '', 'vi')).toBe('https://api.example.com/api/v1/download-pdf')
-        expect(getDownloadCvUrl(host, 'ats', 'abc', 'en')).toBe('https://api.example.com/api/v1/download-pdf?template=ats&lang=en&token=abc')
     })
 })
 

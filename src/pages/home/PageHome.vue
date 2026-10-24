@@ -11,19 +11,16 @@
 
 import { computed, ref } from 'vue'
 import { candidateStore } from '@/stores/candidate'
-import { authStore } from '@/stores/auth'
 import { useProfileCompletion } from '@/composables/useProfileCompletion'
 import { useCandidate } from '@/composables/useCandidate'
 import { useVisitStats } from '@/composables/useVisitStats'
 import { useCvLang } from '@/composables/useCvLang'
-import { API } from '@/config/api.config'
-import { getDownloadCvUrl } from '@/utilities/index'
+import { useDownloadCv } from '@/composables/useDownloadCv'
 import { buttonClass } from '@/lib/button.lib'
 import VisitChart from '@/components/visits/VisitChart.vue'
 import { t } from '@/i18n'
 
 const candidate = candidateStore()
-const auth = authStore()
 const numberFormat = new Intl.NumberFormat('vi-VN')
 
 /* profile strip */
@@ -70,20 +67,13 @@ const kpis = computed(() => [
 const { stats } = useVisitStats()
 
 /* CV card — the PDF is generated server-side from the profile on download */
-const _host = window.location.host === 'localhost' ? 'http://localhost:3001/' : API
 const CV_TEMPLATES = computed(() => [
     { value: 'classic', label: 'Classic' },
     { value: 'ats', label: t('home.templateAts') },
 ])
 const cvTemplate = ref('classic')
 const { selectedLang } = useCvLang()
-// plain link navigation → no Authorization header, pass the in-memory access token as `?token=`
-const downloadCVUrl = computed(() => getDownloadCvUrl(_host, cvTemplate.value, auth.getToken, selectedLang.value))
-const cvFileName = computed(() => {
-    const { firstName = '', lastName = '' } = info.value
-    const name = `${firstName}_${lastName}`.replace(/\s+/g, '_').replace(/^_+|_+$/g, '')
-    return `${name || 'CV'}.pdf`
-})
+const { download, isDownloading, cvFileName } = useDownloadCv()
 
 const btnSecondary = buttonClass({ variant: 'secondary' })
 const btnPrimary = buttonClass({ variant: 'primary' })
@@ -201,10 +191,16 @@ const btnGhost = buttonClass({ variant: 'ghost', size: 'sm' })
                         </button>
                         <span id="home-attach-soon" class="sr-only">{{ $t('common.comingSoon') }}</span>
                     </span>
-                    <a :href="downloadCVUrl" :download="cvFileName" target="_blank" :class="btnPrimary">
-                        <FontAwesomeIcon icon="fa-solid fa-download" />
+                    <button
+                        type="button"
+                        :class="btnPrimary"
+                        :disabled="isDownloading"
+                        :aria-busy="isDownloading"
+                        @click="download({ template: cvTemplate, lang: selectedLang })"
+                    >
+                        <FontAwesomeIcon :icon="isDownloading ? 'fa-solid fa-spinner' : 'fa-solid fa-download'" :spin="isDownloading" />
                         <span>{{ $t('header.downloadCv') }}</span>
-                    </a>
+                    </button>
                 </div>
             </div>
         </section>

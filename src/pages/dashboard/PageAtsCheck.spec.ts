@@ -16,6 +16,11 @@ vi.mock('@/composables/useHelper', () => ({
     useHelper: () => ({ loading: ref(null), toast: vi.fn() }),
 }))
 
+const downloadMock = vi.fn()
+vi.mock('@/composables/useDownloadCv', () => ({
+    useDownloadCv: () => ({ download: downloadMock, isDownloading: ref(false) }),
+}))
+
 // Global components (auto-registered in the real app via GlobalComponents.js)
 // stubbed down to just what this page relies on: Heading renders its slot,
 // Button emits click.
@@ -102,16 +107,17 @@ describe('PageAtsCheck (issue #159)', () => {
         expect(wrapper.text()).not.toContain('So khớp từ khóa')
     })
 
-    it('points the download link at the selected template', async () => {
+    it('downloads the selected template in the CV language', async () => {
         const wrapper = mountPage()
-        const link = () => wrapper.find('a[href*="download-pdf"]').attributes('href')
+        const downloadButton = () => wrapper.find('button[aria-busy]')
 
-        expect(link()).toMatch(/api\/v1\/download-pdf\?template=ats$/)
+        await downloadButton().trigger('click')
+        expect(downloadMock).toHaveBeenLastCalledWith({ template: 'ats', lang: 'vi' })
+
         await wrapper.findAll('button').find(b => b.text() === 'Classic')!.trigger('click')
-        expect(link()).toMatch(/api\/v1\/download-pdf$/)
-
         useCvLang().setLang('en')
         await flushPromises()
-        expect(link()).toMatch(/api\/v1\/download-pdf\?lang=en$/)
+        await downloadButton().trigger('click')
+        expect(downloadMock).toHaveBeenLastCalledWith({ template: 'classic', lang: 'en' })
     })
 })

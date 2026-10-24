@@ -87,6 +87,9 @@ it's not reinvented per hub.
    one = REOPEN, list it under "missing". Always includes the "comments
    per code-comments.md" row (see that standard's Enforcement), even if
    the node's own criteria don't list it.
+6b. [synced 2026-10-24] An open row for the same issue exists on the active
+   diagram but the note has no `## Supersedes`/`## Still open` line for it
+   → REOPEN (implement's Supersedes check skipped).
 7. Scan all 6 forbidden states.
 7b. Check the BRANCH — does the note clearly name a dedicated branch
     (other than `main`) used for the diff? Missing, or the diff was made
@@ -103,6 +106,16 @@ it's not reinvented per hub.
     SEALED) — never reorder, move, or re-sort rows in the table
     (`AppendOnly`); this keeps `agent-hub/.gitattributes`' `merge=union`
     able to merge cleanly across branches.
+    [added 2026-10-24] COLLAPSE ON SEAL, same in-place row: (a) append
+    the node's full row (state SEALED) verbatim to the END of
+    `haven/diagrams/dev-loop-archive.md` (create if absent); (b) replace
+    the active row in place with `| node | SEALED | <date> — archived,
+    see dev-loop-archive.md. Evidence: <this verdict note path> |`;
+    (c) if the active PM status now holds more than 20 such pointer
+    rows, delete the oldest ones (full row already in the archive).
+    (d) each row the note lists under `## Supersedes`: append it verbatim to
+    the archive under `## Superseded by \`<this node>\` (<date>)`, then
+    delete it from the active file — no pointer.
 12. Write the verdict to
     `evidence/verifier/<date>-<slug>-{seal|reopen}.md` (flat file,
     matches the convention used across every prior evidence note).
@@ -136,7 +149,7 @@ it's not reinvented per hub.
 | Failure | Handling |
 |---|---|
 | No evidence note | REOPEN, `NO_EVIDENCE` |
-| Node doesn't exist on any diagram | REOPEN, `forbidden_hit: node_unknown` |
+| Node doesn't exist on any diagram | `grep` its slug in `dev-loop-archive.md` first — found SEALED there → treat as already SEALED; otherwise REOPEN, `forbidden_hit: node_unknown` |
 | Node is already SEALED | Don't overwrite — must be a new node |
 
 ## Runtime

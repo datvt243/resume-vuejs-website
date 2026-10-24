@@ -272,3 +272,4 @@
 | Node | State | Notes |
 |---|---|---|
 | `issue-266-i18n-phase2-4-remaining` | IN_PROGRESS | 2026-10-21 [#266](https://github.com/datvt243/resume-vuejs-website/issues/266) via `/todo`, branch `fix/issue-266-i18n-remaining-text`. Phases 2–4 together: dashboard pages, `src/models/*` (labels, options, yup messages), home + public pages. Audit 476 → 39 lines (all 39 are CV-content/dead-code exclusions). New `withParams` in `src/i18n/index.ts` for param messages in string-only slots. Evidence: `evidence/implementer/2026-10-21-issue-266-i18n-phase2-4-remaining.md`. |
+| `issue-295-typecheck-script` | SEALED | [issue #295](https://github.com/datvt243/resume-vuejs-website/issues/295) — add `vue-tsc` + `npm run typecheck`, flip `doctrine/MEMORY.md` Typecheck row off CANNOT RUN. Branch `fix/issue-295-typecheck-script`. |

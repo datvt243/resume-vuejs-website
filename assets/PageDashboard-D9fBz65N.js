@@ -1,1 +1,0 @@
-import{e as o,j as t,o as a,p as r}from"./index-BOBfbrGD.js";const s={class:"dashboard"},d={__name:"PageDashboard",setup(c){return(n,_)=>{const e=a("router-view");return r(),o("div",s,[t(e)])}}};export{d as default};

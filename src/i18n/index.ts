@@ -105,6 +105,7 @@ const vi = {
     },
     error: {
         network: 'Lỗi kết nối, vui lòng thử lại',
+        downloadCv: 'Không tải được CV, vui lòng thử lại sau',
         loginFailed: 'Đăng nhập thất bại',
         generic: 'Xảy ra lỗi',
     },
@@ -578,6 +579,7 @@ const en: typeof vi = {
     },
     error: {
         network: 'Connection error, please try again',
+        downloadCv: 'Could not download the CV, please try again later',
         loginFailed: 'Login failed',
         generic: 'Something went wrong',
     },

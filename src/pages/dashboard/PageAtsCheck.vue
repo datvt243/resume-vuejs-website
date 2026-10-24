@@ -12,9 +12,7 @@
 import { computed, ref } from 'vue'
 import { useHelper } from '@/composables/useHelper'
 import { handleBase } from '@/services/base'
-import { API } from '@/config/api.config'
-import { getDownloadCvUrl } from '@/utilities/index'
-import { authStore } from '@/stores/auth'
+import { useDownloadCv } from '@/composables/useDownloadCv'
 import { buttonClass } from '@/lib/button.lib'
 import { badgeClass } from '@/lib/badge.lib'
 import { useCvLang } from '@/composables/useCvLang'
@@ -37,9 +35,7 @@ const result = ref(null)
 // template của lần kiểm tra gần nhất — có thể khác `template` đang chọn
 const checkedTemplate = ref('ats')
 
-const _host = window.location.host === 'localhost' ? 'http://localhost:3001/' : API
-const auth = authStore()
-const downloadUrl = computed(() => getDownloadCvUrl(_host, template.value, auth.getToken, lang.value))
+const { download, isDownloading } = useDownloadCv()
 
 const scoreClass = computed(() => {
     const score = result.value?.score ?? 0
@@ -77,9 +73,15 @@ async function handleCheck() {
                     <p class="form-label block">{{ t('home.cvTemplate') }}</p>
                     <SegmentedControl v-model="template" :options="TEMPLATES" :aria-label="t('home.cvTemplate')" />
                 </div>
-                <a :class="downloadBtn" :href="downloadUrl" target="_blank" rel="noopener">
-                    <FontAwesomeIcon icon="fa-solid fa-download" aria-hidden="true" />{{ t('ats.downloadTemplate') }}
-                </a>
+                <button
+                    type="button"
+                    :class="downloadBtn"
+                    :disabled="isDownloading"
+                    :aria-busy="isDownloading"
+                    @click="download({ template, lang })"
+                >
+                    <FontAwesomeIcon :icon="isDownloading ? 'fa-solid fa-spinner' : 'fa-solid fa-download'" :spin="isDownloading" aria-hidden="true" />{{ t('ats.downloadTemplate') }}
+                </button>
             </div>
             <div>
                 <label for="ats-job-description" class="form-label">{{ t('ats.jobDescription') }} <span class="font-normal text-fg-3">{{ t('common.optional') }}</span></label>

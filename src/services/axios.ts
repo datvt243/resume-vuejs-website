@@ -79,7 +79,7 @@ instanceAxios.interceptors.response.use(
 )
 
 export const _axios = async props => {
-    const { url, method, params, data, customURL = null } = props
+    const { url, method, params, data, customURL = null, responseType } = props
     // FormData (e.g. the LinkedIn-export import upload) must NOT get a
     // forced 'application/json' Content-Type — axios/the browser need to
     // set their own 'multipart/form-data; boundary=...' header instead,
@@ -91,6 +91,7 @@ export const _axios = async props => {
             method,
             params,
             data,
+            responseType,
             headers: isFormData
                 ? undefined
                 : {

@@ -108,25 +108,6 @@ export const localizedFromForm = <T extends Record<string, any>>(values: T, name
 }
 
 /**
- * URL of the server-rendered CV download (`GET api/v1/download-pdf`).
- * Issue #159: `template=ats` picks the backend's ATS-optimized template;
- * `classic` is the backend default, so it's left off the URL entirely —
- * keeps the classic link byte-identical to what it was before #159.
- * `token`: this is a plain link navigation, so no Authorization header —
- * the backend also accepts the access token as `?token=`.
- * `lang`: which half of the `{ vi, en }` fields the CV is rendered from;
- * `vi` is the backend default, so it's left off like `classic`.
- */
-export const getDownloadCvUrl = (host: string, template: 'classic' | 'ats' = 'classic', token = '', lang: 'vi' | 'en' = 'vi'): string => {
-    const params = new URLSearchParams()
-    if (template === 'ats') params.set('template', 'ats')
-    if (lang === 'en') params.set('lang', 'en')
-    if (token) params.set('token', token)
-    const query = params.toString()
-    return `${host}api/v1/download-pdf${query ? `?${query}` : ''}`
-}
-
-/**
  * Strip scripts, event handlers and `javascript:` URLs from user-authored
  * rich text (CKEditor output, imported data) before it reaches `v-html`.
  * Access/refresh tokens are JS-readable, so any XSS here can read them.

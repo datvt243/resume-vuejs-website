@@ -104,3 +104,4 @@
 2026-10-21T13:41:14Z role=verifier outcome=REOPEN node=issue-266-i18n-phase2-4-remaining rerun=none hub_bytes_before=204611 hub_bytes_after=204611
 2026-10-21T14:00:53Z role=verifier outcome=REOPEN node=issue-281-experience-add-type rerun=none hub_bytes_before=195030 hub_bytes_after=195030
 2026-10-21T14:04:37Z role=verifier outcome=SEAL node=issue-281-experience-add-type rerun=partial hub_bytes_before=195030 hub_bytes_after=205237
+2026-10-24T03:26:31Z role=verifier outcome=SEAL node=issue-266-i18n-dashboard-browser-check rerun=none hub_bytes_before=205237 hub_bytes_after=206159

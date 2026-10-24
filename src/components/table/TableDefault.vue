@@ -46,7 +46,7 @@ for (const el of props.settings) {
 }
 const displayValue = (doc, field, type, name) => {
     const value = doc?.[field]
-    return type === 'select' ? (objectSelect[name]?.[value] ?? value) : value
+    return type === 'select' ? (tr(objectSelect[name]?.[value]) ?? value) : value
 }
 
 /**

@@ -38,6 +38,10 @@
 7. If the diff touches UI/routes, also confirm with `npm run dev` +
    manual observation of the relevant screen; state clearly this is
    manual observation, not an automated test.
+7b. [synced 2026-10-24] `grep` the active diagram for other not-yet-SEALED
+   rows citing the same issue (`#<n>`)/task. Each goes in the note under
+   `## Supersedes` (this node finishes its work → `verify_seal` retires it)
+   or `## Still open` (1-line reason). None → `## Supersedes: none`.
 8. Only report `sealed_pending_verifier` when ALL criteria pass with
    evidence.
 9. If you spot a new bug/trap outside scope, log it under "Noticed, not

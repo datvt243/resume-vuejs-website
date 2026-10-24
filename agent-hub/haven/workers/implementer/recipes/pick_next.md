@@ -28,8 +28,25 @@
    required for `agent-hub/.gitattributes`' `merge=union` to merge
    cleanly when 2 branches each add a different new node around the same
    time.
+   [added 2026-10-24] Before adding a new node, `grep` its slug in
+   `dev-loop-archive.md` — sealed pointers get dropped from the active
+   file (`verify_seal` step 11c), so a taken slug may only be there;
+   taken → pick a new slug.
+   [synced 2026-10-24] Also `grep` the active diagram for a not-yet-SEALED
+   row of the same task/issue (`#<n>`) — found → resume THAT row in place
+   (state + Notes pointer), never add a "recheck" node beside it (LAI-13's
+   new-node rule covers SEALED nodes only).
 4. If genuinely ambiguous (task unclear, not just "no existing node") —
    stop and ask, don't guess.
+4b. [synced 2026-10-24, analyze-lite / Layer 1.5] Self-check the picked
+   node's acceptance criteria before coding — not a verify pass, no state
+   change, no separate evidence. Block on exactly 3 error classes:
+   - Ambiguity: vague adjective ("fast", "clean") with no measurement/command.
+   - Underspecification: no pass/fail condition mapping to a command in
+     `doctrine/MEMORY.md`.
+   - Coverage gap: criteria point to no file/anchor that will change.
+   Found one → rewrite the criteria on the node first; the evidence note
+   adds `## Acceptance criteria clarified: <before> → <after>`.
 5. Locate code anchors by grepping `../src/` — real paths only, never
    invented (e.g. `src/models/`, `src/composables/`, `src/services/`).
 6. Declare blockers: if `doctrine/MEMORY.md` is missing a needed command,

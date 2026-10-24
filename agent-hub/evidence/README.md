@@ -30,6 +30,9 @@ otherwise).
   specific output line — never just say "build passed," quote it
   verbatim, e.g. `✓ built in 3.21s`); always has a "comments per
   code-comments.md" row
+- `## Supersedes` / `## Still open` — [synced 2026-10-24] other open rows
+  for the same issue: retired on SEAL, or kept open with a reason; `none`
+  if there are none
 - `## Noticed, not done` — things spotted outside scope but not fixed
   (e.g. another trap in `doctrine/domains/PROJECT.md` not part of this
   task)
@@ -71,6 +74,10 @@ otherwise).
   unusual jump in hub size between two runs. Not a real token count.
 - Cold storage — not re-read wholesale every worker session, only opened
   when someone audits patterns on purpose. NEVER delete a line.
+- [synced 2026-10-24] TOKEN DISCIPLINE: over ~15KB → move lines older than
+  the current work session to `evidence/worker-runs-archive.log` (same
+  dir, plain append, create lazily) — VERBATIM, never reformat. Checked by
+  `/hub-tokens`. A move, not a cleanup: delete nothing.
 
 ## The three rules of this directory
 1. **VERBATIM, ALWAYS** — never claim something without a real citable

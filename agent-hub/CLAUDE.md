@@ -44,13 +44,6 @@ no `(#N)` refs, plus whatever project opt-ins that file enables);
 doesn't type-check is not a typecheck. Missing either in the evidence
 note = `EDIT_UNVERIFIED`.
 
-[vuejs, 2026-10-07] Transitional: `Typecheck` is CANNOT RUN until the
-`add-typecheck-script` initiative lands (no `vue-tsc`; `tsc --noEmit`
-alone already reports 75 errors in `.ts`, `.vue` unchecked). Until then
-the evidence note records `Typecheck: CANNOT RUN — pending
-add-typecheck-script` instead of being `blocked`; remove this paragraph
-when `doctrine/MEMORY.md` gets a real Typecheck command.
-
 ## Forbidden states (Cost = KILL — stop immediately, don't self-continue)
 | State | Meaning |
 |---|---|

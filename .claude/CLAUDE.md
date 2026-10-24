@@ -1,14 +1,12 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Project
 **resume-vuejs-website** — Resume/CV management SPA. Users manage structured resume data (education, experience, projects, awards, certificates, references) via a Node.js REST API.
 
 - **Repo:** https://github.com/datvt243/resume-vuejs-website
 - **Live:** https://datvt243.github.io/resume-vuejs-website/
 - **Backend:** https://nodejs-resume-api-ts.onrender.com/api/v1/ (Render free tier, cold start ~30s)
-- **Branch:** `main` → auto-deploys to `gh-pages` via GitHub Actions (`.github/workflows/deploy.yml`) on every push to `main`; CI (`.github/workflows/ci.yml`, lint + build) also runs on push/PR to `main`
+- **Deploy:** every push to `main` auto-deploys to `gh-pages` (`.github/workflows/deploy.yml`); CI (`.github/workflows/ci.yml`, lint + build) runs on push/PR to `main` and `staging`
 
 ## Stack
 Vue 3 + Vite 5 · Pinia · Vue Router 4 · VeeValidate 4 + Yup · Axios · Tailwind CSS 3.4 (Bootstrap removed — legacy class names re-implemented in `src/styles/tailwind.css`) · CKEditor 5 · FontAwesome 6 · SweetAlert2 · TypeScript (partial — see gotchas)
@@ -18,6 +16,7 @@ Vue 3 + Vite 5 · Pinia · Vue Router 4 · VeeValidate 4 + Yup · Axios · Tailw
 npm run dev      # http://localhost:5173
 npm run build    # output: dist/
 npm run preview
+npm run lint
 npm run test     # vitest run (specs: src/**/*.spec.ts)
 ```
 
@@ -42,32 +41,6 @@ Every data section has a `src/models/*.model.ts` file — an array of `modelItem
 ### 4. Global Components
 All `src/components/global/*.vue` are auto-registered globally via `src/plugins/GlobalComponents.js`. Use without import: `<Heading>`, `<Button>`, `<NoData>`, `<ListTransition>`, `<Box>`, `<Dropdown>`, `<ItemTemplate>`, `<ItemActions>`, `<LoadingGate>`, `<FormSection>`, `<SegmentedControl>`.
 - `ItemActions` — CRUD row buttons shared by every list page: edit (`info`), duplicate (`success`), delete (`danger`); pass `viewable` to add an eye button that emits `view` (only Experience uses it so far). The colors use `!` modifiers because the ghost `Button` variant sets its own text/hover colors.
-
-## Directory Map
-```
-src/
-├── components/
-│   ├── global/          # Auto-registered: Button, Heading, NoData, ListTransition, Box, Dropdown, ItemTemplate, ItemActions, …
-│   ├── veevalidate/     # VeeForm.vue (main), VeeFormGeneralInformationUpdate.vue, part/Frm*.vue
-│   ├── table/           # TableDefault.vue + render-fn parts
-│   ├── convert/         # convert.js — date/boolean/truncate display components
-│   ├── {education,experience,project}/  # Domain item cards
-│   ├── Modal.vue · Spinner.vue · Toasts.vue
-├── composables/         # useCandidate.ts · useDocument.ts · useHelper.ts · useInitTable.ts
-├── config/              # api.config.js (URL) · regex.config.js
-├── lib/                 # swal.lib.js (confirmDelete helper)
-├── models/              # *.model.ts — form field definitions per entity
-├── pages/
-│   ├── _layouts/        # LayoutDefault.vue (pug) · LayoutAuth.vue · Header · Footer · Main
-│   ├── auth/            # PageLogin · PageRegister
-│   ├── dashboard/       # PageDashboard + Page{Information,GeneralInformation,Education,...}
-├── plugins/             # GlobalComponents.js · initFontAwesomeIcon.js
-├── routers/index.ts     # Routes + beforeEach auth guard
-├── services/            # axios.ts · base.ts (handleBase) · auth.ts (handleLogin/Register)
-├── stores/              # auth.ts · candidate.ts
-├── types/               # api.type.ts · model.type.ts · table.type.ts · ...
-└── utilities/index.ts   # formatDate · formatDateToInput
-```
 
 ## API
 - Base: `http://localhost:3001/` (dev) or `https://nodejs-resume-api-ts.onrender.com/` (prod)
@@ -105,3 +78,7 @@ Every user-visible string goes through `src/i18n/index.ts` — never hardcode it
 
 ## UI / Design
 Before creating, editing, or reviewing any UI (pages, components, styles), read `DESIGN.md` at the repo root and follow it — tokens, layout templates, components, and the definition-of-done checklist. To restyle an existing page, follow its §0.2 refactor procedure (audit → plan → apply → verify).
+
+## Workflow
+- Tracked code work goes through agent-hub (`agent-hub/README.md`): `/todo "<task>"` → `/ship`.
+- Never push directly to `main` or `staging` (GitHub-protected, PR-only). Branch `fix/*`/`feature/*`/`hotfix/*` off `staging`, PR into `staging`; `staging` → `main` only via `/release`. Rationale: `CONTRIBUTING.md`.

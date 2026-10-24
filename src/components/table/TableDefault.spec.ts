@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { h } from 'vue'
+import { h, nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import TableDefault from './TableDefault.vue'
+import { i18n } from '@/i18n'
 
 const settings = [
     { name: 'name', label: 'Kỹ năng', type: 'text' },
@@ -73,6 +74,17 @@ describe('TableDefault', () => {
         expect(bodyCol(wrapper, 0)).toEqual(['5'])
         expect(wrapper.find('footer').text()).toContain('5–5 trong 5 · Trang 3 / 3')
         expect(next.attributes('disabled')).toBeDefined()
+    })
+
+    it('shows a select cell as its translated option text, following the locale', async () => {
+        const levelSettings = [{ name: 'level', label: 'generalInfo.level', type: 'select', options: [{ value: 'basic', text: 'option.languageLevel.basic' }] }]
+        const wrapper = mountTable([{ _id: '1', level: 'basic' }, { _id: '2', level: 'unknown' }], { settings: levelSettings })
+        expect(bodyCol(wrapper, 1)).toEqual(['Cơ bản', 'unknown'])
+
+        i18n.global.locale.value = 'en'
+        await nextTick()
+        expect(bodyCol(wrapper, 1)).toEqual(['Basic', 'unknown'])
+        i18n.global.locale.value = 'vi'
     })
 
     it('hides the pager when everything fits on one page', () => {

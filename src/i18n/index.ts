@@ -21,6 +21,10 @@ const vi = {
         viewApi: 'Xem API',
         logout: 'Đăng xuất',
     },
+    footer: {
+        copyright: 'bản quyền thuộc về {me}',
+        me: 'tôi',
+    },
     nav: {
         main: 'Điều hướng chính',
         overview: 'Tổng quan',
@@ -489,6 +493,10 @@ const en: typeof vi = {
         downloadCv: 'Download CV',
         viewApi: 'View API',
         logout: 'Log out',
+    },
+    footer: {
+        copyright: 'copyright by {me}',
+        me: 'me',
     },
     nav: {
         main: 'Main navigation',

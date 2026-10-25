@@ -2,12 +2,17 @@
 /**
  * Author: Đạt Võ - https://github.com/datvt243
  * Date: `--/--`
- * Description:
+ * Description: catch-all route — empty state (DESIGN.md §5.8) with a way back.
  */
+
+import { t } from '@/i18n'
+import { buttonClass } from '@/lib/button.lib'
 </script>
 
 <template>
-    <div class="auth-container m-auto" style="max-width: 500px">
-        <p>404!!! Page not Found</p>
-    </div>
+    <main class="flex min-h-screen items-center justify-center">
+        <NoData icon="fa-solid fa-circle-info" :title="t('notFound.title')" :description="t('notFound.description')">
+            <RouterLink to="/" :class="buttonClass({ variant: 'primary' })">{{ t('notFound.backHome') }}</RouterLink>
+        </NoData>
+    </main>
 </template>

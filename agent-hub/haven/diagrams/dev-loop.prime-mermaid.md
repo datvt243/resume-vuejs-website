@@ -125,4 +125,5 @@ PM status directly to "undo" an existing SEAL.
 | `issue-309-cv-technology` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-309-cv-technology-seal.md` |
 | `issue-308-visits-count` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-308-visits-count-seal.md` |
 | `issue-307-modal-save-close` | SEALED | 2026-10-25 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-25-issue-307-modal-save-close-seal.md`. |
+| `issue-310-toast-language` | SEALED | 2026-10-25 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-25-issue-310-toast-language-seal.md`. |
 | `issue-317-reload-redirect` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-317-reload-redirect-seal.md` |

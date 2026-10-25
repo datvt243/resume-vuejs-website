@@ -27,7 +27,8 @@ export const useCandidate = (props: Props) => {
 
     onBeforeMount(async () => {
         let _result: Result = candidate.getCandidateByField(toValue(field))
-        const hasCachedData = Array.isArray(_result) ? _result.length > 0 : Object.keys(_result || {}).length > 0
+        // "fetched" is the field being set at all — an empty list is a valid cached answer, not a reason to refetch
+        const hasCachedData = (candidate.getCandidate as any)?.[toValue(field)] != null
 
         if (!hasCachedData) {
             await getData()

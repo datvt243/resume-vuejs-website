@@ -20,8 +20,11 @@ const instanceAxios = axios.create({
     timeout: 90_000,
 })
 
-instanceAxios.interceptors.request.use(config => {
-    const token = authStore().getToken
+instanceAxios.interceptors.request.use(async config => {
+    const store = authStore()
+    // after a reload only the refresh token survives — refresh once up front instead of letting every request 401 first
+    if (!store.getToken && store.getRefreshToken) await refreshOnce().catch(() => {})
+    const token = store.getToken
     if (token) config.headers.Authorization = `Bearer ${token}`
     // the API localizes its messages (shown as toasts) from this header, not the browser's
     config.headers['Accept-Language'] = i18n.global.locale.value
@@ -43,6 +46,16 @@ const refreshTokens = async () => {
     store.setTokens(res.data?.data ?? {})
 }
 
+// dedupe: concurrent callers share one auth/refresh — required, the backend rotates (blacklists) the old refresh token
+const refreshOnce = () => {
+    if (!_refreshPromise) {
+        _refreshPromise = refreshTokens().finally(() => {
+            _refreshPromise = null
+        })
+    }
+    return _refreshPromise
+}
+
 /** 401 codes that mean "access token missing/bad" — the only ones worth a refresh (API-STANDARD C3) */
 export const TOKEN_ERROR_CODES = ['NO_TOKEN', 'INVALID_TOKEN', 'TOKEN_EXPIRED', 'TOKEN_REVOKED']
 
@@ -60,17 +73,7 @@ instanceAxios.interceptors.response.use(
         if (err.response?.status === 401 && isTokenError && !originalRequest?._retry) {
             originalRequest._retry = true
             try {
-                /**
-                 * dedupe: nhiều request 401 cùng lúc chỉ gọi auth/refresh một
-                 * lần — bắt buộc, vì backend rotate (blacklist) refresh token
-                 * cũ sau mỗi lần refresh.
-                 */
-                if (!_refreshPromise) {
-                    _refreshPromise = refreshTokens().finally(() => {
-                        _refreshPromise = null
-                    })
-                }
-                await _refreshPromise
+                await refreshOnce()
                 return instanceAxios(originalRequest)
             } catch (refreshErr) {
                 authStore().logOut()

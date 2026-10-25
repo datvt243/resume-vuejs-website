@@ -82,4 +82,17 @@ describe('CvResumeLayout', () => {
         expect(titles('vi')).toContain('Nghỉ việc tạm thời — Du lịch')
         expect(titles('en')).toContain('Career break — Travel')
     })
+
+    it('lists project technologies as text, trimmed, not as a raw array', () => {
+        const projects = [
+            { _id: 'p1', name: 'Resume', position: 'Owner', technology: ['Vue3', ' Pinia', ''] },
+            { _id: 'p2', name: 'Blog', position: 'Dev', technology: [] },
+        ]
+        const subs = mount(CvResumeLayout, { props: { data: { ...data, projects } } }).findAll('.cv-item-sub').map(s => s.text())
+
+        expect(subs).toContain('Owner · Vue3, Pinia')
+        expect(subs).toContain('Dev')
+        expect(subs.join('|')).not.toContain('Dev ·')
+        expect(subs.join()).not.toContain('[')
+    })
 })

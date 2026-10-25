@@ -100,7 +100,7 @@ async function handleUpdate(values) {
     await updateDoc(data, res => {
         const { data } = res
         addRecordToList(data)
-        refVeeForm.value?.markSaved()
+        refModal.value?.hide()
     })
 }
 

@@ -50,4 +50,5 @@
 2026-10-24T03:50:06Z role=verifier outcome=SEAL node=issue-291-download-cv rerun=partial hub_bytes_before=205237 hub_bytes_after=207092
 2026-10-24T15:05:56Z role=verifier outcome=REOPEN node=issue-295-typecheck-script rerun=none hub_bytes_before=85021 hub_bytes_after=85154
 2026-10-24T15:07:07Z role=verifier outcome=SEAL node=issue-295-typecheck-script rerun=none hub_bytes_before=85021 hub_bytes_after=84847
+2026-10-25T08:01:48Z role=verifier outcome=SEAL node=issue-307-modal-save-close rerun=none hub_bytes_before=82009 hub_bytes_after=81827
 2026-10-25T08:14:15Z role=verifier outcome=SEAL node=issue-308-visits-count rerun=none hub_bytes_before=82009 hub_bytes_after=84639

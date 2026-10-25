@@ -121,6 +121,7 @@ async function handleUpdate(values) {
     await updateDoc(data, res => {
         const { data } = res
         addRecordToList(data)
+        refModal.value?.hide()
     })
 }
 

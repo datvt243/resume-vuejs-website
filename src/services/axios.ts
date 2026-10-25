@@ -16,6 +16,8 @@ import { t } from '@/i18n'
  */
 const instanceAxios = axios.create({
     baseURL: API,
+    // ends a hung request; longer than a Render free-tier cold start
+    timeout: 90_000,
 })
 
 instanceAxios.interceptors.request.use(config => {

@@ -57,6 +57,15 @@ describe('_axios 401 interceptor', () => {
     })
 })
 
+describe('_axios timeout', () => {
+    it('gives every request a timeout so a hung call ends in the network error', async () => {
+        adapter.mockReset()
+        adapter.mockImplementation(config => reply(config, 200, { success: true }))
+        await _axios({ method: 'get', url: 'api/v1/education/' })
+        expect(adapter.mock.calls[0][0].timeout).toBe(90_000)
+    })
+})
+
 describe('_axios Accept-Language', () => {
     beforeEach(() => {
         adapter.mockReset()

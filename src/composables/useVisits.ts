@@ -22,7 +22,7 @@ import { useHelper } from '@/composables/useHelper'
 
 export const useVisits = () => {
     const candidate = candidateStore()
-    const { loading } = useHelper()
+    const { loading, toast } = useHelper()
     // `visitCount` starts unset (undefined) — null-check, not falsy-check,
     // so a real cached count of 0 isn't mistaken for "not fetched yet"
     // (same class of bug as issue #9/useDocument's `f.default || ''`).
@@ -40,7 +40,7 @@ export const useVisits = () => {
                 method: 'get',
                 url: 'candidate/visits',
             },
-            { loading, toast: null },
+            { loading, toast: null, toastError: toast },
             (res: Response) => {
                 const list = Array.isArray(res.data) ? res.data : []
                 count.value = res.meta?.total ?? list.length

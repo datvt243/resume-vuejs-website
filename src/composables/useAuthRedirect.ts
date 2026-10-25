@@ -8,7 +8,12 @@ import { authStore } from '@/stores/auth'
  * services/base.ts) clear the store without a router, and the beforeEach
  * guard only runs on navigation — without this the dashboard page stays
  * mounted inside LayoutAuth and keeps firing 401ing requests.
+ *
+ * Also sends an already logged-in user who opens /login or /register to the
+ * dashboard. Any other URL (a reload, a deep link) is kept as loaded.
  */
+const GUEST_ONLY = ['login', 'register']
+
 export const useAuthRedirect = () => {
     const store = authStore()
     const route = useRoute()
@@ -20,4 +25,8 @@ export const useAuthRedirect = () => {
             if (!isAuthenticated && route.meta.requiresAuth) router.push({ name: 'login' })
         },
     )
+
+    router.isReady().then(() => {
+        if (store.isAuthenticated && GUEST_ONLY.includes(String(route.name))) router.push('/dashboard/information')
+    })
 }

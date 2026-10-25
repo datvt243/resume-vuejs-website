@@ -59,4 +59,16 @@ describe('handleBase', () => {
         await run()
         expect(logOut).toHaveBeenCalled()
     })
+
+    it('reports a failure through toastError when the success toast is off (silent fetch)', async () => {
+        const toastError = vi.fn()
+        axiosMock.mockRejectedValueOnce({ success: false, error: { code: 'RATE_LIMITED', message: 'Too many requests' } })
+        await handleBase({ method: 'get', url: 'award/' }, { toast: null, toastError }, vi.fn())
+        expect(toastError).toHaveBeenCalledWith({ message: 'Too many requests', bg: 'danger' })
+
+        toastError.mockReset()
+        axiosMock.mockResolvedValueOnce({ success: true, message: 'OK', data: [] })
+        await handleBase({ method: 'get', url: 'award/' }, { toast: null, toastError }, vi.fn())
+        expect(toastError).not.toHaveBeenCalled()
+    })
 })

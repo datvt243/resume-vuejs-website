@@ -7,7 +7,7 @@
 import axios from 'axios'
 import { API, subURL } from '@/config/api.config'
 import { authStore } from '@/stores/auth'
-import { t } from '@/i18n'
+import { i18n, t } from '@/i18n'
 
 /**
  * Auth = `Authorization: Bearer <token>` from the in-memory authStore —
@@ -16,6 +16,8 @@ import { t } from '@/i18n'
  */
 const instanceAxios = axios.create({
     baseURL: API,
+    // ends a hung request; longer than a Render free-tier cold start
+    timeout: 90_000,
 })
 
 instanceAxios.interceptors.request.use(async config => {
@@ -24,6 +26,8 @@ instanceAxios.interceptors.request.use(async config => {
     if (!store.getToken && store.getRefreshToken) await refreshOnce().catch(() => {})
     const token = store.getToken
     if (token) config.headers.Authorization = `Bearer ${token}`
+    // the API localizes its messages (shown as toasts) from this header, not the browser's
+    config.headers['Accept-Language'] = i18n.global.locale.value
     return config
 })
 

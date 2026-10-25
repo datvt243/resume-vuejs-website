@@ -80,3 +80,29 @@ describe('_axios up-front refresh after a reload', () => {
         store.getToken = 'old'
     })
 })
+
+describe('_axios timeout', () => {
+    it('gives every request a timeout so a hung call ends in the network error', async () => {
+        adapter.mockReset()
+        adapter.mockImplementation(config => reply(config, 200, { success: true }))
+        await _axios({ method: 'get', url: 'api/v1/education/' })
+        expect(adapter.mock.calls[0][0].timeout).toBe(90_000)
+    })
+})
+
+describe('_axios Accept-Language', () => {
+    beforeEach(() => {
+        adapter.mockReset()
+        adapter.mockImplementation(config => reply(config, 200, { success: true }))
+    })
+
+    it('sends the current UI language so API messages match it', async () => {
+        const { i18n } = await import('@/i18n')
+        i18n.global.locale.value = 'en'
+        await _axios({ method: 'get', url: 'api/v1/education/' })
+        i18n.global.locale.value = 'vi'
+        await _axios({ method: 'get', url: 'api/v1/education/' })
+
+        expect(adapter.mock.calls.map(([c]) => c.headers['Accept-Language'])).toEqual(['en', 'vi'])
+    })
+})

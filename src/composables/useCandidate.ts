@@ -23,7 +23,7 @@ export const useCandidate = (props: Props) => {
     const result = ref<Result>([])
 
     const candidateId = computed(() => candidate.getId)
-    const { loading } = useHelper()
+    const { loading, toast } = useHelper()
 
     onBeforeMount(async () => {
         let _result: Result = candidate.getCandidateByField(toValue(field))
@@ -49,7 +49,7 @@ export const useCandidate = (props: Props) => {
                 method: 'get',
                 url: `${_collection}/`,
             },
-            { loading: loading, toast: null },
+            { loading: loading, toast: null, toastError: toast },
             (res: Response) => {
                 const { data = [] } = res
                 _data = data

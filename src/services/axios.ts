@@ -7,7 +7,7 @@
 import axios from 'axios'
 import { API, subURL } from '@/config/api.config'
 import { authStore } from '@/stores/auth'
-import { t } from '@/i18n'
+import { i18n, t } from '@/i18n'
 
 /**
  * Auth = `Authorization: Bearer <token>` from the in-memory authStore —
@@ -23,6 +23,8 @@ const instanceAxios = axios.create({
 instanceAxios.interceptors.request.use(config => {
     const token = authStore().getToken
     if (token) config.headers.Authorization = `Bearer ${token}`
+    // the API localizes its messages (shown as toasts) from this header, not the browser's
+    config.headers['Accept-Language'] = i18n.global.locale.value
     return config
 })
 

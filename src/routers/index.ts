@@ -136,9 +136,6 @@ const router = createRouter({
 })
 
 router?.beforeEach((to, from, next) => {
-    const { path } = to
-    if (path !== '/') localStorage.setItem('current-page', path)
-
     if (to.matched.some(record => record.meta.requiresAuth)) {
         const store = authStore()
         const isAuthenticated = store.isAuthenticated

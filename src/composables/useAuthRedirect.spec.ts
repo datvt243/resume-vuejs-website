@@ -17,6 +17,7 @@ const makeRouter = () =>
     createRouter({
         history: createMemoryHistory(),
         routes: [
+            { path: '/', component: Blank, meta: { requiresAuth: true } },
             { path: '/login', name: 'login', component: Blank },
             { path: '/resume/:slug', name: 'public-resume', component: Blank },
             {
@@ -85,5 +86,28 @@ describe('useAuthRedirect', () => {
         await flushPromises()
 
         expect(router.currentRoute.value.path).toBe('/dashboard/information')
+    })
+
+    it('keeps the loaded URL on a reload, including the dashboard home', async () => {
+        logIn()
+        const router = await mountAt('/')
+        await flushPromises()
+
+        expect(router.currentRoute.value.path).toBe('/')
+    })
+
+    it('sends a logged-in user who opens /login to the dashboard', async () => {
+        logIn()
+        const router = await mountAt('/login')
+        await flushPromises()
+
+        expect(router.currentRoute.value.path).toBe('/dashboard/information')
+    })
+
+    it('leaves a logged-out user on /login', async () => {
+        const router = await mountAt('/login')
+        await flushPromises()
+
+        expect(router.currentRoute.value.path).toBe('/login')
     })
 })

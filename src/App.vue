@@ -19,12 +19,10 @@ import { authStore } from '@/stores/auth'
 import { candidateStore } from '@/stores/candidate'
 
 import { handleBase } from '@/services/base'
-import { useRouter } from 'vue-router'
 import { useAuthRedirect } from '@/composables/useAuthRedirect'
 
 const store = authStore()
 const candidate = candidateStore()
-const router = useRouter()
 useAuthRedirect()
 
 onMounted(async () => {
@@ -46,14 +44,6 @@ onMounted(async () => {
         } finally {
             refSpinner?.value?.hide()
         }
-
-        /**
-         * chuyển tới dashboard
-         */
-
-        const _path = localStorage.getItem('current-page')
-
-        router?.push(_path ? _path : '/dashboard/information')
     }
 })
 

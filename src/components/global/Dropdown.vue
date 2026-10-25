@@ -25,6 +25,8 @@ const props = defineProps({
     // DESIGN.md §5.3 variant: primary | secondary | ghost | danger
     variant: { type: String, default: 'primary' },
     text: { type: String, default: 'Dropdown button' },
+    // accessible name for the split caret — `text` may be HTML (it's rendered with v-html)
+    label: { type: String, default: '' },
     href: { type: String, default: '' },
     split: { type: Boolean, default: false },
     btnSize: { type: String, default: '' },
@@ -69,6 +71,7 @@ const attrBtnToggle = computed(() => {
     return {
         class: className,
         'aria-expanded': isOpen.value ? 'true' : 'false',
+        'aria-haspopup': 'true',
     }
 })
 </script>
@@ -82,12 +85,12 @@ const attrBtnToggle = computed(() => {
         </template>
         <template v-else>
             <button v-if="text" type="button" :class="[btnClass, { 'rounded-e-none': props.split }]" v-html="props.text"
-                @click="toggle"></button>
+                aria-haspopup="true" :aria-expanded="isOpen ? 'true' : 'false'" @click="toggle"></button>
         </template>
         <template v-if="props.split">
             <button type="button" :class="['dropdown-toggle dropdown-toggle-split -ml-px rounded-s-none', caretClass]"
-                :aria-expanded="isOpen ? 'true' : 'false'" @click="toggle">
-                <span class="sr-only">{{ props.text }}</span>
+                aria-haspopup="true" :aria-expanded="isOpen ? 'true' : 'false'" @click="toggle">
+                <span class="sr-only">{{ props.label || props.text }}</span>
             </button>
         </template>
         <ul class="dropdown-menu" :class="{ show: isOpen }" @click="close">

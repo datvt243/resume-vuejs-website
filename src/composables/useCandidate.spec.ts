@@ -74,6 +74,15 @@ describe('useCandidate', () => {
         expect(result.educations.value).toEqual([{ _id: 'cached' }])
     })
 
+    it('does not refetch a list that was fetched and came back empty', async () => {
+        candidateStore().setCandidateByField({ awards: [] })
+
+        withUseCandidate('awards')
+        await flushPromises()
+
+        expect(handleBaseMock).not.toHaveBeenCalled()
+    })
+
     it('sorts fetched list results by startDate descending', async () => {
         handleBaseMock.mockImplementation(async (_opt, _props, cb) =>
             cb({

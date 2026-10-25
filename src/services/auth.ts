@@ -52,8 +52,10 @@ export const handleLogin = async (values, props) => {
         router?.push('/dashboard/information')
     } catch (err) {
         authStore().setTokens()
+        // the API's own reason (wrong credentials, too many requests, unreachable) beats a generic line
+        const body = err as { success?: boolean; message?: string; error?: { message?: string } } | undefined
         toast?.({
-            message: t('error.loginFailed'),
+            message: body?.error?.message ?? (body?.success === false ? body.message : undefined) ?? t('error.loginFailed'),
             bg: 'danger',
         })
     } finally {

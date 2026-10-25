@@ -53,7 +53,7 @@ export function visitStatsFrom(interval: VisitStatsInterval, tz: string, nowMs =
 }
 
 export const useVisitStats = () => {
-    const { loading } = useHelper()
+    const { loading, toast } = useHelper()
     const interval = ref<VisitStatsInterval>('day')
     const stats = ref<VisitStats | null>(null)
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Ho_Chi_Minh'
@@ -65,7 +65,7 @@ export const useVisitStats = () => {
                 url: 'candidate/visits/stats',
                 params: { interval: interval.value, from: visitStatsFrom(interval.value, tz), tz },
             },
-            { loading, toast: null },
+            { loading, toast: null, toastError: toast },
             (res: Response) => {
                 stats.value = (res.data as VisitStats) ?? null
             },

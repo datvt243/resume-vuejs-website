@@ -102,8 +102,6 @@ flowchart TD
 
 
 | `issue-122-ai-cv-suggestions-pending` | PENDING | Operator (2026-10-05): "#122 chuyển status thành PENDING". Deliberately deferred, not started — waiting on an owner decision: shared app AI key vs BYOK (BYOK needs new two-way encryption on the backend; only `bcrypt` exists today) + a consent checkbox for sending CV data out. Checked: no branch/PR/evidence for #122; backend `origin/staging` (`f05930a`) has no AI-provider code. Partly overlapped by #159's non-AI JD keyword match. GitHub label `status: pending` applied. Evidence: `evidence/implementer/2026-10-05-issue-122-158-status-rows.md`. |
-| `issue-219-home-overview` | SEALED | 2026-10-19 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-19-issue-219-home-overview-seal.md`. |
-| `issue-220-visits-analytics` | SEALED | 2026-10-19 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-19-issue-220-visits-analytics-seal.md`. |
 | `issue-221-table-default` | SEALED | 2026-10-19 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-19-issue-221-table-default-seal.md`. |
 | `issue-222-forms` | SEALED | 2026-10-19 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-19-issue-222-forms-seal.md`. |
 | `issue-223-crud-lists` | SEALED | 2026-10-19 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-19-issue-223-crud-lists-seal.md`. |
@@ -127,3 +125,4 @@ PM status directly to "undo" an existing SEAL.
 | `issue-266-i18n-dashboard-browser-check` | SEALED | 2026-10-24 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-24-issue-266-i18n-dashboard-browser-check-seal.md`. |
 | `issue-291-download-cv` | SEALED | 2026-10-24 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-24-issue-291-download-cv-seal.md`. |
 | `issue-295-typecheck-script` | SEALED | 2026-10-24 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-24-issue-295-typecheck-script-seal.md` |
+| `issue-308-visits-count` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-308-visits-count-seal.md` |

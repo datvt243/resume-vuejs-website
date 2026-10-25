@@ -117,4 +117,13 @@ describe('Dropdown', () => {
         // real regression guard
         expect(() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))).not.toThrow()
     })
+
+    it('names the split caret from `label`, not the (HTML) `text`, and marks both buttons as menu triggers', () => {
+        const wrapper = mountDropdown({ text: '<span class="truncate">Dat</span>', label: 'Open account menu', split: true })
+        const [main, caret] = wrapper.findAll('.dropdown > button')
+        expect(caret.find('.sr-only').text()).toBe('Open account menu')
+        expect(main.attributes('aria-haspopup')).toBe('true')
+        expect(caret.attributes('aria-haspopup')).toBe('true')
+        expect(main.attributes('aria-expanded')).toBe('false')
+    })
 })

@@ -479,6 +479,11 @@ const vi = {
         notFound: 'Không tìm thấy hồ sơ',
         notFoundDescription: 'Hồ sơ không tồn tại hoặc chưa được chia sẻ công khai.',
     },
+    notFound: {
+        title: 'Không tìm thấy trang',
+        description: 'Trang bạn tìm không tồn tại hoặc đã được chuyển đi.',
+        backHome: 'Về trang chủ',
+    },
 }
 
 const en: typeof vi = {
@@ -953,6 +958,11 @@ const en: typeof vi = {
         loading: 'Loading profile…',
         notFound: 'Profile not found',
         notFoundDescription: 'This profile doesn\'t exist or hasn\'t been shared publicly.',
+    },
+    notFound: {
+        title: 'Page not found',
+        description: 'The page you\'re looking for doesn\'t exist or has moved.',
+        backHome: 'Back to home',
     },
 }
 

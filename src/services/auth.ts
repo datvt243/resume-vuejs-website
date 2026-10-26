@@ -143,7 +143,7 @@ export const handleResetPassword = async (values, props) => {
 }
 
 export const handleRegister = async (values, props) => {
-    const { firstName, lastName, email, password, repassword } = values
+    const { email, password, repassword } = values
     const { loading = null, toast = null, router = null } = props
 
     /**
@@ -156,8 +156,6 @@ export const handleRegister = async (values, props) => {
             method: 'post',
             url: `${subURL}auth/register`,
             data: {
-                firstName,
-                lastName,
                 email,
                 password,
                 repassword,

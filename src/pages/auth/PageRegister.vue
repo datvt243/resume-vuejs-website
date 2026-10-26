@@ -21,23 +21,8 @@ if (store.isAuthenticated) {
     router?.push('/dashboard/information')
 }
 
+// no name fields: auth/register only accepts email/password/repassword — names are set later on the information page
 const formFields = [
-    /* {
-        name: 'firstName',
-        label: 'Họ',
-        type: 'text',
-        placeholder: 'Vui lòng nhập Họ',
-        valid: (yup) => yup.string().min(0).max(10).required(),
-        col: 'col-md-6',
-    },
-    {
-        name: 'lastName',
-        label: 'Tên',
-        type: 'text',
-        placeholder: 'Vui lòng nhập Tên',
-        valid: (yup) => yup.string().min(0).max(30).required(),
-        col: 'col-md-6',
-    }, */
     {
         name: 'email',
         label: 'Email',
@@ -87,7 +72,7 @@ const formFields = [
                 :fields="formFields"
                 :submit-fn="
                     values => {
-                        handleRegister(values, { toast: refToast, loading: refSpinner })
+                        handleRegister(values, { toast: refToast, loading: refSpinner, router })
                     }
                 "
                 :submit-text="$t('auth.createAccount')"

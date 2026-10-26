@@ -48,7 +48,7 @@ const formFields = shallowRef(model)
 /* const socialMediaFields = ref(modalSocial) */
 const socialMediaFields = ref([
     {
-        name: 'socialMedia.github',
+        name: 'github',
         label: 'GitHub',
         type: 'text',
         placeholder: 'https://github.com/…',
@@ -58,7 +58,7 @@ const socialMediaFields = ref([
         col: 'col-md-12',
     },
     {
-        name: 'socialMedia.linkedin',
+        name: 'linkedin',
         label: 'LinkedIn',
         type: 'text',
         placeholder: 'https://linkedin.com/in/…',
@@ -68,7 +68,7 @@ const socialMediaFields = ref([
         col: 'col-md-12',
     },
     {
-        name: 'socialMedia.website',
+        name: 'website',
         label: 'Website',
         type: 'text',
         placeholder: 'https://…',
@@ -78,6 +78,8 @@ const socialMediaFields = ref([
         col: 'col-md-12',
     },
 ])
+// flat names: VeeForm seeds a document by top-level key, so `socialMedia.github` could never be seeded
+const socialDocument = reactive({ _id: '', github: '', linkedin: '', website: '' })
 
 /**
  * Slug tùy chỉnh cho link CV công khai (issue #117) — cố tình KHÔNG thêm
@@ -118,9 +120,7 @@ const slugFields = ref([
 // `_id` is included so VeeForm's own `watch(document, ...)` (VeeForm.vue)
 // takes the `setValues()` branch instead of its `!doc._id -> reset()`
 // branch — required for the seeded `slug` value to actually land in
-// vee-validate's real form state (not just a DOM-attribute display trick
-// like `socialMediaFields`' `field.value` above, which only affects what
-// renders, not what `values` submits if the user leaves it untouched).
+// vee-validate's real form state (`socialDocument` relies on the same).
 const slugDocument = reactive({ _id: '', slug: '' })
 // Issue #119: carry the owner's chosen CV theme into the copyable public
 // link/QR code as `?theme=`, so anonymous visitors see the same theme
@@ -167,12 +167,7 @@ onMounted(() => {
     Object.assign(document, localizedToForm(_candidate, ['introduction']))
 
     const { socialMedia = {} } = _candidate
-
-    for (const field of socialMediaFields.value) {
-        const { name } = field
-        const [, key] = name.split('.')
-        field['value'] = socialMedia[key] || ''
-    }
+    Object.assign(socialDocument, { _id: _candidate._id || '', github: socialMedia.github || '', linkedin: socialMedia.linkedin || '', website: socialMedia.website || '' })
 
     slugDocument._id = _candidate._id || ''
     slugDocument.slug = _candidate.slug || ''
@@ -206,7 +201,8 @@ async function handleUpdateSocialNetwork(values) {
     const _id = candidate.getId
 
     if (!_id) return false
-    const socialMedia = socialMediaPayload(candidate.getCandidate?.socialMedia, values.socialMedia)
+    const { github, linkedin, website } = values
+    const socialMedia = socialMediaPayload(candidate.getCandidate?.socialMedia, { github, linkedin, website })
 
     await updatePatchDoc({ _id, socialMedia }, res => {
         const { data } = res
@@ -264,6 +260,7 @@ async function handleUpdateSlug(values) {
                 <VeeForm
                     :key="'frm-social-media'"
                     :fields="socialMediaFields"
+                    :document="socialDocument"
                     :submit-fn="handleUpdateSocialNetwork"
                     :submit-text="$t('common.saveChanges')"
                     button-position="end"

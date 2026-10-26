@@ -38,4 +38,19 @@ describe('LoadingGate', () => {
         expect(wrapper.find('[aria-busy="true"]').exists()).toBe(false)
         expect((wrapper.find('.empty').element.parentElement as HTMLElement).style.display).toBe('')
     })
+
+    it('shows an error with a retry instead of the empty state when the load failed', async () => {
+        const wrapper = mount(LoadingGate, {
+            props: { error: true },
+            slots: { default: '<p class="empty">Chưa có dữ liệu</p>' },
+            global: {
+                provide: { spinner: ref({ isLoading: false }), toast: null },
+                stubs: { NoData: { template: '<div><slot /></div>' }, Button: { template: '<button />' } },
+            },
+        })
+        expect(wrapper.find('[role="alert"]').exists()).toBe(true)
+        expect(wrapper.find('.empty').exists()).toBe(false)
+        await wrapper.find('button').trigger('click')
+        expect(wrapper.emitted('retry')).toHaveLength(1)
+    })
 })

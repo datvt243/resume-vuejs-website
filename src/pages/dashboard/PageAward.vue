@@ -17,7 +17,7 @@ import model from '@/models/award.model.ts'
 
 import { formatDate, localizedToForm, localizedFromForm } from '@/utilities/index'
 
-const { awards: dataList, removeRecordById, addRecordToList } = useCandidate({ field: 'awards' })
+const { awards: dataList, removeRecordById, addRecordToList, loadError, getData } = useCandidate({ field: 'awards' })
 
 /**
  *
@@ -121,7 +121,7 @@ function showModalDuplicateDoc(doc) {
         </li>
       </ListTransition>
     </div>
-    <LoadingGate v-else>
+    <LoadingGate v-else :error="loadError" @retry="getData">
       <div class="rounded-md border border-line bg-surface">
         <NoData :title="$t('crud.award.empty')">
           <Button icon="fa-solid fa-plus" :text="$t('crud.award.add')" @click="showModalCreateDoc()" />

@@ -102,12 +102,6 @@ flowchart TD
 
 
 | `issue-122-ai-cv-suggestions-pending` | PENDING | Operator (2026-10-05): "#122 chuyển status thành PENDING". Deliberately deferred, not started — waiting on an owner decision: shared app AI key vs BYOK (BYOK needs new two-way encryption on the backend; only `bcrypt` exists today) + a consent checkbox for sending CV data out. Checked: no branch/PR/evidence for #122; backend `origin/staging` (`f05930a`) has no AI-provider code. Partly overlapped by #159's non-AI JD keyword match. GitHub label `status: pending` applied. Evidence: `evidence/implementer/2026-10-05-issue-122-158-status-rows.md`. |
-| `issue-260-texteditor-list-style` | SEALED | 2026-10-21 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/implementer/2026-10-21-issue-260-texteditor-list-style.md`. |
-| `issue-262-cv-lang-cleanup` | SEALED | 2026-10-21 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-21-issue-262-cv-lang-cleanup-seal.md`. |
-
-| `issue-266-i18n-phase1-shared-auth` | SEALED | 2026-10-21 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-21-issue-266-i18n-phase1-shared-auth-seal.md`. |
-| `issue-271-cold-start-overlay` | SEALED | 2026-10-21 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: see archived row. |
-| `issue-252-api-response-standard` | SEALED | 2026-10-21 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: see archived row. |
 
 Any regression must be a **new node** (LAI-13) — never edit an old node's
 PM status directly to "undo" an existing SEAL.
@@ -127,3 +121,7 @@ PM status directly to "undo" an existing SEAL.
 | `issue-317-reload-redirect` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-317-reload-redirect-seal.md` |
 | `issue-336-social-media-update` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-336-social-media-update-seal.md` |
 | `issue-340-input-cannot-clear` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-340-input-cannot-clear-seal.md` |
+| `issue-344-reload-empty-form` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-344-reload-empty-form-seal.md` |
+| `issue-335-register-names` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-335-register-names-seal.md` |
+| `issue-312-load-error-retry` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-312-load-error-retry-seal.md` |
+| `issue-312-visits-error-retry` | SEALED | 2026-10-27 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-27-issue-312-visits-error-retry-seal.md` |

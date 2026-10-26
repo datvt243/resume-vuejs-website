@@ -22,7 +22,7 @@ import { formatDate } from '@/utilities/index'
 import { buttonClass } from '@/lib/button.lib'
 import { t } from '@/i18n'
 
-const { applications: dataList, removeRecordById, addRecordToList } = useCandidate({
+const { applications: dataList, removeRecordById, addRecordToList, loadError, getData } = useCandidate({
     field: 'applications',
     collection: 'application',
 })
@@ -175,7 +175,7 @@ function showModalDuplicateDoc(doc) {
         </li>
       </ListTransition>
     </div>
-    <LoadingGate v-else>
+    <LoadingGate v-else :error="loadError" @retry="getData">
       <div class="rounded-md border border-line bg-surface">
         <NoData :title="t('crud.application.empty')" :description="t('crud.application.emptyDescription')">
           <Button icon="fa-solid fa-plus" :text="t('crud.application.add')" @click="showModalCreateDoc()" />

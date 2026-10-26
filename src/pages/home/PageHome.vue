@@ -9,7 +9,7 @@
  * application count from useCandidate.
  */
 
-import { computed, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { candidateStore } from '@/stores/candidate'
 import { useProfileCompletion } from '@/composables/useProfileCompletion'
 import { useCandidate } from '@/composables/useCandidate'
@@ -45,7 +45,7 @@ const { applications } = useCandidate({ field: 'applications', collection: 'appl
 const kpis = computed(() => [
     {
         label: t('home.kpiViews'),
-        value: numberFormat.format(info.value?.visitCount ?? 0),
+        value: info.value?.visitsLoadError ? '—' : numberFormat.format(info.value?.visitCount ?? 0),
         hint: t('home.kpiViewsHint'),
         to: '/dashboard/visits',
     },
@@ -64,7 +64,12 @@ const kpis = computed(() => [
 ])
 
 /* visits chart (default interval: day, last 30 days) */
-const { stats } = useVisitStats()
+const { stats, loadError: statsError, getData: reloadStats } = useVisitStats()
+const reloadVisits = inject('reloadVisits', null)
+function retryVisits() {
+    if (statsError.value) reloadStats()
+    if (info.value?.visitsLoadError) reloadVisits?.()
+}
 
 /* CV card — the PDF is generated server-side from the profile on download */
 const CV_TEMPLATES = computed(() => [
@@ -131,6 +136,11 @@ const btnGhost = buttonClass({ variant: 'ghost', size: 'sm' })
                         </p>
                         <VisitChart :series="stats.series" :interval="stats.interval" />
                     </template>
+                    <div v-else-if="statsError || info?.visitsLoadError" role="alert">
+                        <NoData icon="fa-solid fa-triangle-exclamation" :title="$t('error.loadList')" :description="$t('error.loadListDescription')">
+                            <Button icon="fa-solid fa-rotate-right" :text="$t('common.retry')" @click="retryVisits" />
+                        </NoData>
+                    </div>
                     <div v-else class="h-56 rounded bg-surface-2 motion-safe:animate-pulse" aria-hidden="true"></div>
                 </div>
             </section>

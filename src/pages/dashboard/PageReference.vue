@@ -16,7 +16,7 @@ import { useDocument } from '@/composables/useDocument' */
 
 import model from '@/models/reference.model.ts'
 /** */
-const { references: dataList, removeRecordById, addRecordToList } = useCandidate({ field: 'references' })
+const { references: dataList, removeRecordById, addRecordToList, loadError, getData } = useCandidate({ field: 'references' })
 const colHidden = ['_id']
 
 /**
@@ -111,7 +111,7 @@ function showModalDuplicateDoc(doc) {
                 </div>
             </template>
         </TableDefault>
-        <LoadingGate v-else>
+        <LoadingGate v-else :error="loadError" @retry="getData">
             <div class="rounded-md border border-line bg-surface">
                 <NoData :title="$t('crud.reference.empty')" :description="$t('crud.reference.emptyDescription')">
                     <Button icon="fa-solid fa-plus" :text="$t('crud.reference.add')" @click="showModalCreateDoc()" />

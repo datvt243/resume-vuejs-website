@@ -5,7 +5,7 @@ vi.mock('@/services/axios', () => ({ _axios: axiosMock }))
 vi.mock('@/stores/auth', () => ({ authStore: () => ({ setTokens: vi.fn(), setUser: vi.fn() }) }))
 vi.mock('@/stores/candidate', () => ({ candidateStore: () => ({ setCandidate: vi.fn() }) }))
 
-import { handleLogin } from './auth'
+import { handleLogin, handleRegister } from './auth'
 import { t } from '@/i18n'
 
 const login = async () => {
@@ -30,5 +30,19 @@ describe('handleLogin errors', () => {
     it('falls back to the generic message for a non-API error', async () => {
         axiosMock.mockRejectedValue(new TypeError('Cannot read properties of undefined'))
         expect(await login()).toEqual({ message: t('error.loginFailed'), bg: 'danger' })
+    })
+})
+
+describe('handleRegister', () => {
+    beforeEach(() => {
+        axiosMock.mockReset()
+    })
+
+    it('sends only the fields auth/register accepts, then goes to login', async () => {
+        axiosMock.mockResolvedValue({ message: 'ok' })
+        const router = { push: vi.fn() }
+        await handleRegister({ email: 'a@b.c', password: 'p', repassword: 'p', firstName: 'X' }, { toast: vi.fn(), router })
+        expect(axiosMock.mock.calls[0][0].data).toEqual({ email: 'a@b.c', password: 'p', repassword: 'p' })
+        expect(router.push).toHaveBeenCalledWith('/login')
     })
 })

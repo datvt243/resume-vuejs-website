@@ -18,7 +18,7 @@ import { t } from '@/i18n'
 
 import model, { experienceTitle, careerBreakPayload, CAREER_BREAK_TYPES } from '@/models/experience.model.ts'
 
-const { experiences: dataList, removeRecordById, addRecordToList } = useCandidate({ field: 'experiences' })
+const { experiences: dataList, removeRecordById, addRecordToList, loadError, getData } = useCandidate({ field: 'experiences' })
 
 // Sắp xếp thủ công (issue #57) — chỉ lưu ở trình duyệt (localStorage),
 // KHÔNG đồng bộ server (backend chưa có field order — xem comment đầu
@@ -208,7 +208,7 @@ function showModalDuplicateDoc(doc) {
                 </li>
             </ListTransition>
         </div>
-        <LoadingGate v-else>
+        <LoadingGate v-else :error="loadError" @retry="getData">
             <div class="rounded-md border border-line bg-surface">
                 <NoData :title="$t('crud.experience.empty')" :description="$t('crud.experience.emptyDescription')">
                     <Button icon="fa-solid fa-plus" :text="$t('crud.experience.add')" @click="showModalCreateDoc()" />

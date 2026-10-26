@@ -56,9 +56,12 @@ export const useVisitStats = () => {
     const { loading, toast } = useHelper()
     const interval = ref<VisitStatsInterval>('day')
     const stats = ref<VisitStats | null>(null)
+    // a failed load must not read as zero views (pages show an error + retry)
+    const loadError = ref(false)
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Ho_Chi_Minh'
 
     async function getData() {
+        let loaded = false
         await handleBase(
             {
                 method: 'get',
@@ -68,11 +71,13 @@ export const useVisitStats = () => {
             { loading, toast: null, toastError: toast },
             (res: Response) => {
                 stats.value = (res.data as VisitStats) ?? null
+                loaded = true
             },
         )
+        loadError.value = !loaded
     }
 
     watch(interval, getData, { immediate: true })
 
-    return { interval, stats, getData }
+    return { interval, stats, loadError, getData }
 }

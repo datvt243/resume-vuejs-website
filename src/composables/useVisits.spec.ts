@@ -67,4 +67,15 @@ describe('useVisits', () => {
         await flushPromises()
         expect(handleBaseMock).not.toHaveBeenCalled()
     })
+
+    it('caches a load-error flag so cache readers can tell a failed load from 0 views', async () => {
+        handleBaseMock.mockImplementationOnce(async () => {})
+        const result = withUseVisits()
+        await flushPromises()
+        expect((candidateStore().getCandidate as any).visitsLoadError).toBe(true)
+
+        handleBaseMock.mockImplementationOnce(async (_opt, _props, cb) => cb({ success: true, message: '', data: [] }))
+        await result.getData()
+        expect((candidateStore().getCandidate as any).visitsLoadError).toBe(false)
+    })
 })

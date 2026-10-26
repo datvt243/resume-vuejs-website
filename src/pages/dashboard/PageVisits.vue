@@ -10,7 +10,7 @@
  * through a `computed` (instead of calling `useVisits()` again) keeps it
  * reactive to the parent's in-flight fetch.
  */
-import { computed, ref, watch } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
 import VisitChart from '@/components/visits/VisitChart.vue'
 import { candidateStore } from '@/stores/candidate'
 import { useVisitStats } from '@/composables/useVisitStats'
@@ -20,7 +20,14 @@ import { buttonClass } from '@/lib/button.lib'
 const candidate = candidateStore()
 const dataList = computed(() => candidate.getCandidate?.visits || [])
 
-const { interval, stats } = useVisitStats()
+const { interval, stats, loadError: statsError, getData: reloadStats } = useVisitStats()
+const reloadVisits = inject('reloadVisits', null)
+const visitsError = computed(() => !!candidate.getCandidate?.visitsLoadError)
+const loadError = computed(() => statsError.value || visitsError.value)
+function retry() {
+    if (statsError.value) reloadStats()
+    if (visitsError.value) reloadVisits?.()
+}
 const INTERVAL_OPTIONS = computed(() => ['day', 'week', 'month'].map(value => ({ value, label: t(`visits.interval.${value}`) })))
 const rangeText = computed(() => t(`visits.range.${interval.value}`))
 
@@ -80,7 +87,12 @@ const pagerBtn = buttonClass({ variant: 'secondary', size: 'sm' })
         <SegmentedControl v-model="interval" :options="INTERVAL_OPTIONS" :aria-label="t('visits.timeRange')" />
     </Heading>
 
-    <div class="space-y-6">
+    <div v-if="loadError" class="rounded-md border border-line bg-surface" role="alert">
+        <NoData icon="fa-solid fa-triangle-exclamation" :title="t('error.loadList')" :description="t('error.loadListDescription')">
+            <Button icon="fa-solid fa-rotate-right" :text="t('common.retry')" @click="retry" />
+        </NoData>
+    </div>
+    <div v-else class="space-y-6">
         <section class="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:gap-6" :aria-label="t('visits.kpis')">
             <div v-for="k in kpis" :key="k.label" class="min-w-0 rounded-md border border-line bg-surface p-4">
                 <p class="m-0 text-sm text-fg-2">{{ k.label }}</p>

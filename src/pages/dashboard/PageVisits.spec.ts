@@ -9,8 +9,10 @@ import { candidateStore } from '@/stores/candidate'
 
 const interval = ref('day')
 const stats = ref<any>(null)
+const loadError = ref(false)
+const reloadStats = vi.fn()
 vi.mock('@/composables/useVisitStats', () => ({
-    useVisitStats: () => ({ interval, stats }),
+    useVisitStats: () => ({ interval, stats, loadError, getData: reloadStats }),
 }))
 
 function mountPage() {
@@ -25,6 +27,26 @@ describe('PageVisits', () => {
         setActivePinia(createPinia())
         interval.value = 'day'
         stats.value = null
+        loadError.value = false
+        reloadStats.mockReset()
+    })
+
+    it('shows an error with a retry instead of zeros when a load failed, retrying only what failed', async () => {
+        const reloadVisits = vi.fn()
+        candidateStore().setCandidateByField({ visitsLoadError: true })
+        const wrapper = mount(PageVisits, {
+            global: {
+                components: { Heading, SegmentedControl },
+                stubs: { VisitChart: true, NoData: { template: '<div><slot /></div>' }, Button: { template: '<button />' } },
+                provide: { reloadVisits },
+            },
+        })
+
+        expect(wrapper.find('[role="alert"]').exists()).toBe(true)
+        expect(wrapper.find('table').exists()).toBe(false)
+        await wrapper.find('[role="alert"] button').trigger('click')
+        expect(reloadVisits).toHaveBeenCalledTimes(1)
+        expect(reloadStats).not.toHaveBeenCalled()
     })
 
     it('renders no chart or breakdowns before stats arrive, but keeps the visit table', () => {

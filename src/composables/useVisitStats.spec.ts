@@ -85,4 +85,15 @@ describe('useVisitStats', () => {
         expect(handleBaseMock).toHaveBeenCalledTimes(2)
         expect(handleBaseMock.mock.calls[1][0].params.interval).toBe('week')
     })
+
+    it('flags a failed load, and clears the flag once a retry succeeds', async () => {
+        handleBaseMock.mockImplementationOnce(async () => {})
+        const result = withUseVisitStats()
+        await flushPromises()
+        expect(result.loadError.value).toBe(true)
+
+        handleBaseMock.mockImplementationOnce(async (_opt, _props, cb) => cb({ success: true, message: '', data: { total: 0 } }))
+        await result.getData()
+        expect(result.loadError.value).toBe(false)
+    })
 })

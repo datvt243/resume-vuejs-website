@@ -102,13 +102,6 @@ flowchart TD
 
 
 | `issue-122-ai-cv-suggestions-pending` | PENDING | Operator (2026-10-05): "#122 chuyển status thành PENDING". Deliberately deferred, not started — waiting on an owner decision: shared app AI key vs BYOK (BYOK needs new two-way encryption on the backend; only `bcrypt` exists today) + a consent checkbox for sending CV data out. Checked: no branch/PR/evidence for #122; backend `origin/staging` (`f05930a`) has no AI-provider code. Partly overlapped by #159's non-AI JD keyword match. GitHub label `status: pending` applied. Evidence: `evidence/implementer/2026-10-05-issue-122-158-status-rows.md`. |
-| `issue-224-remaining-pages` | SEALED | 2026-10-19 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-19-issue-224-remaining-pages-r3-seal.md`. |
-| `issue-235-career-break` | SEALED | 2026-10-19 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-19-issue-235-career-break-r2-seal.md`. |
-| `issue-211-epic-review` | SEALED | 2026-10-20 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-20-issue-211-epic-review-r2-seal.md`. |
-| `issue-249-experience-unsaved-warning` | SEALED | 2026-10-20 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/implementer/2026-10-20-issue-249-experience-unsaved-warning.md`. |
-| `issue-251-header-language-switch` | SEALED | 2026-10-20 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/implementer/2026-10-20-issue-251-header-language-switch.md`. |
-| `issue-251-lang-switch-left-tooltip` | SEALED | 2026-10-20 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/implementer/2026-10-20-issue-251-lang-switch-left-tooltip.md`. |
-| `issue-251-ci-lockfile` | SEALED | 2026-10-21 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/implementer/2026-10-21-issue-251-ci-lockfile.md`. |
 | `issue-260-texteditor-list-style` | SEALED | 2026-10-21 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/implementer/2026-10-21-issue-260-texteditor-list-style.md`. |
 | `issue-262-cv-lang-cleanup` | SEALED | 2026-10-21 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-21-issue-262-cv-lang-cleanup-seal.md`. |
 
@@ -132,3 +125,4 @@ PM status directly to "undo" an existing SEAL.
 | `issue-312-load-login-errors` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-312-load-login-errors-seal.md` |
 | `issue-310-toast-language` | SEALED | 2026-10-25 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-25-issue-310-toast-language-seal.md`. |
 | `issue-317-reload-redirect` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-317-reload-redirect-seal.md` |
+| `issue-336-social-media-update` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-336-social-media-update-seal.md` |

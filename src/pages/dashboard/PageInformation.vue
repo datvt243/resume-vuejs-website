@@ -43,7 +43,7 @@ const initials = computed(() => {
 /**
  *
  */
-import { modalDefault as model } from '@/models/information.model'
+import { modalDefault as model, socialMediaPayload } from '@/models/information.model'
 const formFields = shallowRef(model)
 /* const socialMediaFields = ref(modalSocial) */
 const socialMediaFields = ref([
@@ -203,10 +203,10 @@ async function handleUpdate(values) {
 }
 
 async function handleUpdateSocialNetwork(values) {
-    const { socialMedia } = values
     const _id = candidate.getId
 
     if (!_id) return false
+    const socialMedia = socialMediaPayload(candidate.getCandidate?.socialMedia, values.socialMedia)
 
     await updatePatchDoc({ _id, socialMedia }, res => {
         const { data } = res

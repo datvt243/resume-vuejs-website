@@ -18,7 +18,7 @@ import model from '@/models/certificate.model.ts'
 
 import { formatDate, localizedToForm, localizedFromForm } from '@/utilities/index'
 
-const { certificates: dataList, removeRecordById, addRecordToList } = useCandidate({ field: 'certificates' })
+const { certificates: dataList, removeRecordById, addRecordToList, loadError, getData } = useCandidate({ field: 'certificates' })
 
 /**
  *
@@ -130,7 +130,7 @@ function showModalDuplicateDoc(doc) {
                 </li>
             </ListTransition>
         </div>
-        <LoadingGate v-else>
+        <LoadingGate v-else :error="loadError" @retry="getData">
             <div class="rounded-md border border-line bg-surface">
                 <NoData :title="$t('crud.certificate.empty')">
                     <Button icon="fa-solid fa-plus" :text="$t('crud.certificate.add')" @click="showModalCreateDoc()" />

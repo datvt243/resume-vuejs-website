@@ -27,7 +27,7 @@ import model from '@/models/profile.model'
 import { experienceTitle } from '@/models/experience.model'
 import { t } from '@/i18n'
 
-const { profiles: dataList, removeRecordById, addRecordToList } = useCandidate({
+const { profiles: dataList, removeRecordById, addRecordToList, loadError, getData } = useCandidate({
     field: 'profiles',
     collection: 'profile',
 })
@@ -177,7 +177,7 @@ function showModalDuplicateDoc(doc) {
                 </li>
             </ListTransition>
         </div>
-        <LoadingGate v-else>
+        <LoadingGate v-else :error="loadError" @retry="getData">
             <div class="rounded-md border border-line bg-surface">
                 <NoData :title="$t('profileCv.empty')" :description="$t('profileCv.emptyDescription')">
                     <Button icon="fa-solid fa-plus" :text="$t('profileCv.add')" @click="showModalCreateDoc()" />

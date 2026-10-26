@@ -21,6 +21,8 @@ const {
     educations: dataList,
     removeRecordById,
     addRecordToList,
+    loadError,
+    getData,
 } = useCandidate({ field: 'educations', collection: 'education' })
 
 // Sắp xếp thủ công (issue #57) — chỉ lưu ở trình duyệt (localStorage),
@@ -160,7 +162,7 @@ function showModalDuplicateDoc(doc) {
                 </li>
             </ListTransition>
         </div>
-        <LoadingGate v-else>
+        <LoadingGate v-else :error="loadError" @retry="getData">
             <div class="rounded-md border border-line bg-surface">
                 <NoData :title="$t('crud.education.empty')" :description="$t('crud.education.emptyDescription')">
                     <Button icon="fa-solid fa-plus" :text="$t('crud.education.add')" @click="showModalCreateDoc()" />

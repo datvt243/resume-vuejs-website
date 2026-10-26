@@ -21,6 +21,8 @@ export const useCandidate = (props: Props) => {
     const collection = props.collection || null
 
     const result = ref<Result>([])
+    // a failed load must not read as an empty list (LoadingGate shows an error + retry)
+    const loadError = ref(false)
 
     const candidateId = computed(() => candidate.getId)
     const { loading, toast } = useHelper()
@@ -39,6 +41,7 @@ export const useCandidate = (props: Props) => {
 
     async function getData() {
         let _data: Result = []
+        let loaded = false
         const _collection = (() => {
             if (collection) return collection
             return field.value.endsWith('s') ? field.value.slice(0, -1) : field.value
@@ -53,12 +56,14 @@ export const useCandidate = (props: Props) => {
             (res: Response) => {
                 const { data = [] } = res
                 _data = data
+                loaded = true
                 candidate.setCandidateByField({
                     [`${field.value}`]: data,
                 })
             },
         )
 
+        loadError.value = !loaded
         result.value = sortData(_data)
         /* return _data */
     }
@@ -112,5 +117,6 @@ export const useCandidate = (props: Props) => {
         updateField,
         updateGeneralInformationByField,
         getData,
+        loadError,
     }
 }

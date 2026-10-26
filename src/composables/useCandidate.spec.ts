@@ -186,4 +186,14 @@ describe('useCandidate', () => {
 
         expect(candidateStore().getGeneralInformation).toEqual({ fullName: 'Vo Dat' })
     })
+    it('flags loadError when the load fails, and clears it on a successful retry', async () => {
+        handleBaseMock.mockImplementation(async () => {})
+        const { result } = withUseCandidate('educations')
+        await flushPromises()
+        expect(result.loadError.value).toBe(true)
+
+        handleBaseMock.mockImplementation(async (_opt, _props, cb) => cb({ success: true, message: '', data: [] }))
+        await result.getData()
+        expect(result.loadError.value).toBe(false)
+    })
 })

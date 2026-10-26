@@ -93,4 +93,11 @@ const modalSocial: modelItem[] = [
     },
 ]
 
+// PATCH replaces the whole `socialMedia` object and the form only submits links the user
+// touched (untouched ones are `undefined`) — keep the stored ones, drop cleared ones (the API rejects '', omitting removes it)
+export function socialMediaPayload(stored: Record<string, string> = {}, edited: Record<string, string | undefined> = {}): Record<string, string> {
+    const touched = Object.entries(edited).filter(([, v]) => v !== undefined)
+    return Object.fromEntries(Object.entries({ ...stored, ...Object.fromEntries(touched) }).filter((e): e is [string, string] => !!e[1]))
+}
+
 export { modalDefault, modalSocial }

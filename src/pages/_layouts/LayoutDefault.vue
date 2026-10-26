@@ -10,14 +10,16 @@ import Header from '@/pages/_layouts/Header.vue'
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 import Footer from '@/pages/_layouts/Footer.vue'
 
-import { ref, watch, onBeforeUnmount } from 'vue'
+import { ref, watch, onBeforeUnmount, provide } from 'vue'
 import { useRoute } from 'vue-router'
 import { useVisits } from '@/composables/useVisits'
 
 // lượt xem CV — LayoutDefault là ancestor duy nhất bọc mọi trang dashboard
 // nên fetch ở đây, cache vào candidateStore; PageHome.vue chỉ đọc lại giá
 // trị cache, không fetch riêng (tránh gọi API 2 lần cùng lúc)
-useVisits()
+const { getData: reloadVisits } = useVisits()
+// pages showing the cached visits retry through this instead of a second useVisits() (would double-fetch on reload)
+provide('reloadVisits', reloadVisits)
 
 const route = useRoute()
 

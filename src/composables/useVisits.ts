@@ -35,6 +35,7 @@ export const useVisits = () => {
     })
 
     async function getData() {
+        let loaded = false
         await handleBase(
             {
                 method: 'get',
@@ -46,8 +47,11 @@ export const useVisits = () => {
                 count.value = res.meta?.total ?? list.length
                 visits.value = list
                 candidate.setCandidateByField({ visitCount: count.value, visits: visits.value })
+                loaded = true
             },
         )
+        // cached next to the data so pages reading the cache can tell a failed load from 0 views
+        candidate.setCandidateByField({ visitsLoadError: !loaded })
     }
 
     return { count, visits, getData }

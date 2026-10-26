@@ -3,8 +3,8 @@
  * Date: `--/--`
  * Description: Fetch-once-and-cache the authenticated candidate's own
  * profile visits. Backend `GET /api/v1/candidate/visits` (bearer auth,
- * feat/visit-tracking, resume-nodejs-api v1.2.0+) returns
- * `{ count, visits }` in one call — both cached on `candidateStore`
+ * resume-nodejs-api) returns the visit list as `data` and its count as
+ * `meta.total` (standard list envelope) — both cached on `candidateStore`
  * (`visitCount` + `visits`, same generic `setCandidateByField`/
  * `getCandidateByField` mechanism every other CV section already uses)
  * so every `LayoutDefault`-wrapped page shares one fetch instead of each
@@ -22,7 +22,7 @@ import { useHelper } from '@/composables/useHelper'
 
 export const useVisits = () => {
     const candidate = candidateStore()
-    const { loading } = useHelper()
+    const { loading, toast } = useHelper()
     // `visitCount` starts unset (undefined) — null-check, not falsy-check,
     // so a real cached count of 0 isn't mistaken for "not fetched yet"
     // (same class of bug as issue #9/useDocument's `f.default || ''`).
@@ -40,11 +40,11 @@ export const useVisits = () => {
                 method: 'get',
                 url: 'candidate/visits',
             },
-            { loading, toast: null },
+            { loading, toast: null, toastError: toast },
             (res: Response) => {
-                const data = res.data as any
-                count.value = data?.count ?? 0
-                visits.value = data?.visits ?? []
+                const list = Array.isArray(res.data) ? res.data : []
+                count.value = res.meta?.total ?? list.length
+                visits.value = list
                 candidate.setCandidateByField({ visitCount: count.value, visits: visits.value })
             },
         )

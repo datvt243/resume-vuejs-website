@@ -18,6 +18,7 @@ const vi = {
         themeDark: 'Chuyển sang giao diện tối',
         openNav: 'Mở menu điều hướng',
         downloadCv: 'Tải CV',
+        accountMenu: 'Mở menu tài khoản',
         viewApi: 'Xem API',
         logout: 'Đăng xuất',
     },
@@ -478,6 +479,11 @@ const vi = {
         notFound: 'Không tìm thấy hồ sơ',
         notFoundDescription: 'Hồ sơ không tồn tại hoặc chưa được chia sẻ công khai.',
     },
+    notFound: {
+        title: 'Không tìm thấy trang',
+        description: 'Trang bạn tìm không tồn tại hoặc đã được chuyển đi.',
+        backHome: 'Về trang chủ',
+    },
 }
 
 const en: typeof vi = {
@@ -492,6 +498,7 @@ const en: typeof vi = {
         themeDark: 'Switch to dark theme',
         openNav: 'Open navigation menu',
         downloadCv: 'Download CV',
+        accountMenu: 'Open account menu',
         viewApi: 'View API',
         logout: 'Log out',
     },
@@ -951,6 +958,11 @@ const en: typeof vi = {
         loading: 'Loading profile…',
         notFound: 'Profile not found',
         notFoundDescription: 'This profile doesn\'t exist or hasn\'t been shared publicly.',
+    },
+    notFound: {
+        title: 'Page not found',
+        description: 'The page you\'re looking for doesn\'t exist or has moved.',
+        backHome: 'Back to home',
     },
 }
 

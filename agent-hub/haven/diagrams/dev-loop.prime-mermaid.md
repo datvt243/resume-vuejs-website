@@ -102,11 +102,6 @@ flowchart TD
 
 
 | `issue-122-ai-cv-suggestions-pending` | PENDING | Operator (2026-10-05): "#122 chuyển status thành PENDING". Deliberately deferred, not started — waiting on an owner decision: shared app AI key vs BYOK (BYOK needs new two-way encryption on the backend; only `bcrypt` exists today) + a consent checkbox for sending CV data out. Checked: no branch/PR/evidence for #122; backend `origin/staging` (`f05930a`) has no AI-provider code. Partly overlapped by #159's non-AI JD keyword match. GitHub label `status: pending` applied. Evidence: `evidence/implementer/2026-10-05-issue-122-158-status-rows.md`. |
-| `issue-219-home-overview` | SEALED | 2026-10-19 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-19-issue-219-home-overview-seal.md`. |
-| `issue-220-visits-analytics` | SEALED | 2026-10-19 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-19-issue-220-visits-analytics-seal.md`. |
-| `issue-221-table-default` | SEALED | 2026-10-19 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-19-issue-221-table-default-seal.md`. |
-| `issue-222-forms` | SEALED | 2026-10-19 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-19-issue-222-forms-seal.md`. |
-| `issue-223-crud-lists` | SEALED | 2026-10-19 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-19-issue-223-crud-lists-seal.md`. |
 | `issue-224-remaining-pages` | SEALED | 2026-10-19 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-19-issue-224-remaining-pages-r3-seal.md`. |
 | `issue-235-career-break` | SEALED | 2026-10-19 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-19-issue-235-career-break-r2-seal.md`. |
 | `issue-211-epic-review` | SEALED | 2026-10-20 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-20-issue-211-epic-review-r2-seal.md`. |
@@ -127,3 +122,13 @@ PM status directly to "undo" an existing SEAL.
 | `issue-266-i18n-dashboard-browser-check` | SEALED | 2026-10-24 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-24-issue-266-i18n-dashboard-browser-check-seal.md`. |
 | `issue-291-download-cv` | SEALED | 2026-10-24 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-24-issue-291-download-cv-seal.md`. |
 | `issue-295-typecheck-script` | SEALED | 2026-10-24 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-24-issue-295-typecheck-script-seal.md` |
+| `issue-309-cv-technology` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-309-cv-technology-seal.md` |
+| `issue-308-visits-count` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-308-visits-count-seal.md` |
+| `issue-307-modal-save-close` | SEALED | 2026-10-25 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-25-issue-307-modal-save-close-seal.md`. |
+| `issue-316-404-page` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-316-404-page-seal.md` |
+| `issue-315-user-menu-label` | SEALED | 2026-10-25 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-25-issue-315-user-menu-label-seal.md`. |
+| `issue-314-public-cv-slug-reload` | SEALED | 2026-10-25 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-25-issue-314-public-cv-slug-reload-seal.md`. |
+| `issue-311-redundant-requests` | SEALED | 2026-10-25 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-25-issue-311-redundant-requests-seal.md`. |
+| `issue-312-load-login-errors` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-312-load-login-errors-seal.md` |
+| `issue-310-toast-language` | SEALED | 2026-10-25 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-25-issue-310-toast-language-seal.md`. |
+| `issue-317-reload-redirect` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-317-reload-redirect-seal.md` |

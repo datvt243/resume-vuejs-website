@@ -56,3 +56,53 @@ describe('_axios 401 interceptor', () => {
         await expect(_axios({ method: 'get', url: 'x' })).rejects.toMatchObject({ success: false, error: { code: 'NETWORK_ERROR' } })
     })
 })
+
+describe('_axios up-front refresh after a reload', () => {
+    beforeEach(() => {
+        adapter.mockReset()
+        store.setTokens.mockReset()
+        store.logOut.mockReset()
+    })
+
+    it('refreshes once before sending when only the refresh token is left, so no request 401s first', async () => {
+        store.getToken = ''
+        store.setTokens.mockImplementation(({ token }) => (store.getToken = token))
+        adapter.mockImplementation(config =>
+            config.url.endsWith('auth/refresh') ? reply(config, 200, { data: { token: 'new' } }) : reply(config, 200, { success: true }),
+        )
+
+        await Promise.all([_axios({ method: 'get', url: 'api/v1/award/' }), _axios({ method: 'get', url: 'api/v1/project/' })])
+
+        const sent = adapter.mock.calls.map(([c]) => c.url)
+        expect(refreshCalls()).toBe(1)
+        expect(sent.filter(u => !u.endsWith('auth/refresh'))).toHaveLength(2)
+        expect(adapter.mock.calls.filter(([c]) => !c.url.endsWith('auth/refresh')).every(([c]) => c.headers.Authorization === 'Bearer new')).toBe(true)
+        store.getToken = 'old'
+    })
+})
+
+describe('_axios timeout', () => {
+    it('gives every request a timeout so a hung call ends in the network error', async () => {
+        adapter.mockReset()
+        adapter.mockImplementation(config => reply(config, 200, { success: true }))
+        await _axios({ method: 'get', url: 'api/v1/education/' })
+        expect(adapter.mock.calls[0][0].timeout).toBe(90_000)
+    })
+})
+
+describe('_axios Accept-Language', () => {
+    beforeEach(() => {
+        adapter.mockReset()
+        adapter.mockImplementation(config => reply(config, 200, { success: true }))
+    })
+
+    it('sends the current UI language so API messages match it', async () => {
+        const { i18n } = await import('@/i18n')
+        i18n.global.locale.value = 'en'
+        await _axios({ method: 'get', url: 'api/v1/education/' })
+        i18n.global.locale.value = 'vi'
+        await _axios({ method: 'get', url: 'api/v1/education/' })
+
+        expect(adapter.mock.calls.map(([c]) => c.headers['Accept-Language'])).toEqual(['en', 'vi'])
+    })
+})

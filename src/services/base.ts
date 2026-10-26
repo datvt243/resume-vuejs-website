@@ -26,7 +26,8 @@ export const handleBase = async (axiosOptions, props, callback) => {
             return _result
         })()
 
-        const __helper = _helper({ toast })
+        // `toastError` lets a silent fetch (toast: null) still report a failure
+        const __helper = _helper({ toast, toastError: props.toastError ?? toast })
         await _axios(_props)
             .then(res => {
                 // some endpoints answer 2xx with success:false (API-STANDARD C1)
@@ -63,7 +64,7 @@ const handleFrameFetch = async (axiosOptions, props, callback, action) => {
 }
 
 const _helper = props => {
-    const { toast } = props
+    const { toast, toastError } = props
     return {
         success: res => {
             const { message = '' } = res
@@ -100,11 +101,10 @@ const _helper = props => {
             /**
              * show toast
              */
-            toast &&
-                toast?.({
-                    message: _message.join('\n') + '',
-                    bg: 'danger',
-                })
+            toastError?.({
+                message: _message.join('\n') + '',
+                bg: 'danger',
+            })
 
             /**
              * lỗi trả về là token error thì logout

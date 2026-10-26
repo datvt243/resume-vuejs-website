@@ -68,6 +68,8 @@ const LABELS = {
 const isEn = computed(() => props.lang === 'en')
 const t = computed(() => (isEn.value ? LABELS.en : LABELS.vi))
 const text = value => getLocalizedText(value, isEn.value ? 'en' : 'vi')
+// stored as an array (older entries keep the spaces typed after each comma)
+const techList = value => (Array.isArray(value) ? value.map(s => String(s).trim()).filter(Boolean).join(', ') : value)
 
 const themeClass = computed(() => `cv-theme-${resolveTheme(props.theme)}`)
 const fullName = computed(() => `${props.data.firstName || ''} ${props.data.lastName || ''}`.trim())
@@ -158,10 +160,10 @@ function certDateRange(item) {
                     <span class="cv-item-title">{{ pj.name }}</span>
                     <span class="cv-item-date">{{ dateRange({ ...pj, isCurrent: pj.isWorking }) }}</span>
                 </div>
-                <p v-if="pj.position || pj.technology" class="cv-item-sub">
+                <p v-if="pj.position || techList(pj.technology)" class="cv-item-sub">
                     <span v-if="pj.position">{{ pj.position }}</span>
-                    <span v-if="pj.position && pj.technology"> · </span>
-                    <span v-if="pj.technology">{{ pj.technology }}</span>
+                    <span v-if="pj.position && techList(pj.technology)"> · </span>
+                    <span v-if="techList(pj.technology)">{{ techList(pj.technology) }}</span>
                 </p>
                 <p v-if="pj.link" class="cv-item-link">{{ pj.link }}</p>
                 <div v-if="pj.description" class="cv-item-desc" v-html="sanitizeHtml(text(pj.description))"></div>

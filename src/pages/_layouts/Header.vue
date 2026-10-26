@@ -131,7 +131,7 @@ header.sticky.top-0.z-20.flex.h-14.shrink-0.items-center.gap-2.border-b.border-l
             )
                 FontAwesomeIcon(:icon="isDownloading ? 'fa-solid fa-spinner' : 'fa-solid fa-download'" :spin="isDownloading")
                 span.hidden(class="md:inline") {{ $t('header.downloadCv') }}
-            Dropdown.user-menu(:text="mesUser" variant="secondary" split is-sm)
+            Dropdown.user-menu(:text="mesUser" :label="$t('header.accountMenu')" variant="secondary" split is-sm)
                 li
                     a.dropdown-item(:href="_settings.getMe()" target="_blank")
                         FontAwesomeIcon.me-2.text-fg-3(icon="fa-solid fa-code")

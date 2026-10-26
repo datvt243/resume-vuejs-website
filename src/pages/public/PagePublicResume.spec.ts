@@ -74,3 +74,33 @@ describe('PagePublicResume — visit tracking', () => {
         expect(axiosMock.mock.calls.some(([opt]) => opt.method === 'post')).toBe(false)
     })
 })
+
+describe('PagePublicResume — slug change in the same tab', () => {
+    beforeEach(() => {
+        axiosMock.mockReset()
+        axiosMock.mockImplementation(async ({ method, customURL }) =>
+            method === 'get' ? (customURL === 'api/me/missing' ? { success: false } : { success: true, data: { firstName: customURL.split('/').pop(), introduction: customURL } }) : {},
+        )
+    })
+
+    it('refetches when only the slug changes (the router reuses the component)', async () => {
+        const router = createRouter({
+            history: createMemoryHistory(),
+            routes: [{ path: '/resume/:slug', name: 'public-resume', component: PagePublicResume }],
+        })
+        await router.push('/resume/alice')
+        const wrapper = mount({ template: '<RouterView />' }, { global: { plugins: [router], stubs: { NoData: { template: '<p class="no-data" />' } } } })
+        await flushPromises()
+        expect(wrapper.find('.cv-introduction').text()).toBe('api/me/alice')
+
+        await router.push('/resume/bob')
+        await flushPromises()
+        expect(axiosMock.mock.calls.filter(([opt]) => opt.method === 'get').map(([opt]) => opt.customURL)).toEqual(['api/me/alice', 'api/me/bob'])
+        expect(wrapper.find('.cv-introduction').text()).toBe('api/me/bob')
+
+        await router.push('/resume/missing')
+        await flushPromises()
+        expect(wrapper.find('.cv-introduction').exists()).toBe(false)
+        expect(wrapper.find('.no-data').exists()).toBe(true)
+    })
+})

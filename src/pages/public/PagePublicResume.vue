@@ -38,7 +38,7 @@
  * account, `LayoutAuth` otherwise), not by route. Pre-existing app-wide
  * behavior, not something newly introduced here.
  */
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { _axios } from '@/services/axios'
 import { resolveTheme } from '@/composables/useCvTheme'
@@ -47,7 +47,6 @@ import CvResumeLayout from '@/components/cv/CvResumeLayout.vue'
 import { t } from '@/i18n'
 
 const route = useRoute()
-const identifier = route.params.slug
 
 const loading = ref(true)
 const notFound = ref(false)
@@ -55,7 +54,13 @@ const data = ref(null)
 const theme = computed(() => resolveTheme(route.query.theme))
 const lang = computed(() => resolveCvLang(route.query.lang))
 
-onMounted(async () => {
+// watched, not onMounted: the router reuses this component when only the slug changes
+watch(() => route.params.slug, load, { immediate: true })
+
+async function load(identifier) {
+    loading.value = true
+    notFound.value = false
+    data.value = null
     try {
         // Issue #116: optional `?profile=` query param (appended to the
         // copyable public link in PageInformation.vue) — the backend
@@ -86,7 +91,7 @@ onMounted(async () => {
     } finally {
         loading.value = false
     }
-})
+}
 </script>
 
 <template>

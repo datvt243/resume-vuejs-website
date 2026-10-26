@@ -23,11 +23,12 @@ export const useCandidate = (props: Props) => {
     const result = ref<Result>([])
 
     const candidateId = computed(() => candidate.getId)
-    const { loading } = useHelper()
+    const { loading, toast } = useHelper()
 
     onBeforeMount(async () => {
         let _result: Result = candidate.getCandidateByField(toValue(field))
-        const hasCachedData = Array.isArray(_result) ? _result.length > 0 : Object.keys(_result || {}).length > 0
+        // "fetched" is the field being set at all — an empty list is a valid cached answer, not a reason to refetch
+        const hasCachedData = (candidate.getCandidate as any)?.[toValue(field)] != null
 
         if (!hasCachedData) {
             await getData()
@@ -48,7 +49,7 @@ export const useCandidate = (props: Props) => {
                 method: 'get',
                 url: `${_collection}/`,
             },
-            { loading: loading, toast: null },
+            { loading: loading, toast: null, toastError: toast },
             (res: Response) => {
                 const { data = [] } = res
                 _data = data

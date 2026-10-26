@@ -4,7 +4,7 @@
  * flight, otherwise its slot — so an empty state only appears once a fetch is done.
  */
 
-import { computed, defineProps } from 'vue'
+import { computed, defineProps, defineEmits } from 'vue'
 import { useHelper } from '@/composables/useHelper'
 import { t } from '@/i18n'
 
@@ -13,7 +13,10 @@ const props = defineProps({
     // form: field skeleton, slot stays mounted (v-show) — VeeForm only picks up `document`
     //       through a non-immediate watcher, so remounting it after the data landed would leave it blank
     variant: { type: String, default: 'list' },
+    // list: the load failed — show an error with a retry instead of the empty-state slot
+    error: { type: Boolean, default: false },
 })
+const emit = defineEmits(['retry'])
 
 const { loading } = useHelper()
 const busy = computed(() => !!loading?.value?.isLoading)
@@ -40,6 +43,11 @@ const busy = computed(() => !!loading?.value?.isLoading)
                     <div class="h-3 w-1/4 rounded bg-surface-2 motion-safe:animate-pulse"></div>
                 </div>
             </div>
+        </div>
+        <div v-else-if="props.error" class="rounded-md border border-line bg-surface" role="alert">
+            <NoData icon="fa-solid fa-triangle-exclamation" :title="t('error.loadList')" :description="t('error.loadListDescription')">
+                <Button icon="fa-solid fa-rotate-right" :text="t('common.retry')" @click="emit('retry')" />
+            </NoData>
         </div>
         <slot v-else></slot>
     </template>

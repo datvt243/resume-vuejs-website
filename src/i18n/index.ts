@@ -50,6 +50,7 @@ const vi = {
     },
     common: {
         save: 'Lưu',
+        retry: 'Thử lại',
         cancel: 'Hủy',
         delete: 'Xóa',
         edit: 'Sửa',
@@ -106,6 +107,8 @@ const vi = {
     },
     error: {
         network: 'Lỗi kết nối, vui lòng thử lại',
+        loadList: 'Không tải được dữ liệu',
+        loadListDescription: 'Kiểm tra kết nối mạng rồi thử lại.',
         downloadCv: 'Không tải được CV, vui lòng thử lại sau',
         loginFailed: 'Đăng nhập thất bại',
         generic: 'Xảy ra lỗi',
@@ -530,6 +533,7 @@ const en: typeof vi = {
     },
     common: {
         save: 'Save',
+        retry: 'Try again',
         cancel: 'Cancel',
         delete: 'Delete',
         edit: 'Edit',
@@ -586,6 +590,8 @@ const en: typeof vi = {
     },
     error: {
         network: 'Connection error, please try again',
+        loadList: 'Could not load data',
+        loadListDescription: 'Check your connection and try again.',
         downloadCv: 'Could not download the CV, please try again later',
         loginFailed: 'Login failed',
         generic: 'Something went wrong',

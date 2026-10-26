@@ -18,7 +18,7 @@ import { localizedToForm, localizedFromForm } from '@/utilities/index'
 
 import model from '@/models/project.model.ts'
 
-const { projects: dataList, removeRecordById, addRecordToList } = useCandidate({ field: 'projects' })
+const { projects: dataList, removeRecordById, addRecordToList, loadError, getData } = useCandidate({ field: 'projects' })
 
 // Sắp xếp thủ công (issue #57) — chỉ lưu ở trình duyệt (localStorage),
 // KHÔNG đồng bộ server (backend chưa có field order — xem comment đầu
@@ -168,7 +168,7 @@ function showModalDuplicateDoc(doc) {
                 </li>
             </ListTransition>
         </div>
-        <LoadingGate v-else>
+        <LoadingGate v-else :error="loadError" @retry="getData">
             <div class="rounded-md border border-line bg-surface">
                 <NoData :title="$t('crud.project.empty')" :description="$t('crud.project.emptyDescription')">
                     <Button icon="fa-solid fa-plus" :text="$t('crud.project.add')" @click="showModalCreateDoc()" />

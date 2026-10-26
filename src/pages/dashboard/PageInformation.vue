@@ -10,7 +10,7 @@
 import VeeForm from '@/components/veevalidate/VeeForm.vue'
 import QrCode from '@/components/QrCode.vue'
 
-import { ref, reactive, shallowRef, onMounted, computed } from 'vue'
+import { ref, reactive, shallowRef, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDocument, useHelper, useCandidate } from '@/composables'
 import { useCvTheme, DEFAULT_THEME } from '@/composables/useCvTheme'
@@ -157,7 +157,7 @@ const publicLink = computed(() => {
  */
 const { document, updateDoc, updatePatchDoc } = useDocument({ collection: 'candidate', fields: formFields.value })
 
-onMounted(() => {
+function seedFromStore() {
     const _candidate = candidate.getCandidate
 
     /** gán value cho doc */
@@ -171,7 +171,10 @@ onMounted(() => {
 
     slugDocument._id = _candidate._id || ''
     slugDocument.slug = _candidate.slug || ''
-})
+}
+onMounted(seedFromStore)
+// after a hard reload App.vue's candidate fetch lands after this page mounted
+watch(() => candidate.getCandidate?._id, id => id && seedFromStore())
 
 async function handleUpdate(values) {
     const _newValues = { ...values }

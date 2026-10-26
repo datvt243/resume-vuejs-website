@@ -127,3 +127,4 @@ PM status directly to "undo" an existing SEAL.
 | `issue-317-reload-redirect` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-317-reload-redirect-seal.md` |
 | `issue-336-social-media-update` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-336-social-media-update-seal.md` |
 | `issue-340-input-cannot-clear` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-340-input-cannot-clear-seal.md` |
+| `issue-344-reload-empty-form` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-344-reload-empty-form-seal.md` |

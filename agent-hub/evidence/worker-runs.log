@@ -71,3 +71,4 @@
 2026-10-31T13:15:50Z role=verifier outcome=SEAL node=issue-355-education-major-min rerun=none hub_bytes_before=2559584 hub_bytes_after=2568964
 2026-10-31T13:23:04Z role=verifier outcome=SEAL node=issue-347-veeform-hidden-lang-flag rerun=none hub_bytes_before=2568964 hub_bytes_after=2577631
 2026-10-31T14:22:31Z role=verifier outcome=SEAL node=issue-352-import-modal-close rerun=none hub_bytes_before=2577631 hub_bytes_after=2583911
+2026-10-31T14:31:35Z role=verifier outcome=SEAL node=issue-353-stale-header-email rerun=none hub_bytes_before=2583911 hub_bytes_after=2590620

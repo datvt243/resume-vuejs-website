@@ -105,12 +105,6 @@ flowchart TD
 
 Any regression must be a **new node** (LAI-13) — never edit an old node's
 PM status directly to "undo" an existing SEAL.
-| `issue-281-experience-add-type` | SEALED | 2026-10-21 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-21-issue-281-experience-add-type-seal.md`. |
-| `issue-266-i18n-dashboard-browser-check` | SEALED | 2026-10-24 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-24-issue-266-i18n-dashboard-browser-check-seal.md`. |
-| `issue-291-download-cv` | SEALED | 2026-10-24 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-24-issue-291-download-cv-seal.md`. |
-| `issue-295-typecheck-script` | SEALED | 2026-10-24 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-24-issue-295-typecheck-script-seal.md` |
-| `issue-309-cv-technology` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-309-cv-technology-seal.md` |
-| `issue-308-visits-count` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-308-visits-count-seal.md` |
 | `issue-307-modal-save-close` | SEALED | 2026-10-25 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-25-issue-307-modal-save-close-seal.md`. |
 | `issue-316-404-page` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-316-404-page-seal.md` |
 | `issue-315-user-menu-label` | SEALED | 2026-10-25 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-25-issue-315-user-menu-label-seal.md`. |
@@ -125,3 +119,10 @@ PM status directly to "undo" an existing SEAL.
 | `issue-335-register-names` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-335-register-names-seal.md` |
 | `issue-312-load-error-retry` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-312-load-error-retry-seal.md` |
 | `issue-312-visits-error-retry` | SEALED | 2026-10-27 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-27-issue-312-visits-error-retry-seal.md` |
+| `issue-355-education-major-min` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-355-education-major-min-seal.md` |
+| `issue-347-veeform-hidden-lang-flag` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-347-veeform-hidden-lang-flag-seal.md` |
+| `issue-352-import-modal-close` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-352-import-modal-close-seal.md` |
+| `issue-353-stale-header-email` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-353-stale-header-email-seal.md` |
+| `issue-354-public-cv-experience-order` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-354-public-cv-experience-order-seal.md` |
+| `issue-356-editor-datepicker-i18n` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-356-editor-datepicker-i18n-seal.md` |
+| `issue-364-form-length-rules` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-364-form-length-rules-seal.md` |

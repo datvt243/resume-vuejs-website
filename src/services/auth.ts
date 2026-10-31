@@ -45,10 +45,11 @@ export const handleLogin = async (values, props) => {
         // before the next request so the axios interceptor can attach them
         const store = authStore()
         store.setTokens({ token, tokenRefresh })
+        // tokens alone make isAuthenticated true, so set the user now or the header shows a cached previous user while the candidate loads
+        store.setUser({ ...user })
         const candidateRes = await _axios({ method: 'get', url: `${subURL}candidate/${email.trim()}` })
         candidateStore().setCandidate({ ...candidateRes.data })
 
-        store.setUser({ ...user })
         router?.push('/dashboard/information')
     } catch (err) {
         authStore().setTokens()

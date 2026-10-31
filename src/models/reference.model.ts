@@ -16,7 +16,7 @@ const MODEL: modelItem[] = [
         name: 'fullName',
         label: 'field.referenceName',
         type: 'text',
-        valid: yup => yup.string().max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
+        valid: yup => yup.string().min(3, withParams('validation.minChars', { min: 3 })).max(50, withParams('validation.maxChars', { max: 50 })).required(_mesRequired),
         default: '',
     },
     {

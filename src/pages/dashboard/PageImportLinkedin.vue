@@ -138,6 +138,7 @@ async function handleSaveEducation(values) {
         const { data } = res
         addEducation(data)
         if (activeEduItem.value) activeEduItem.value._imported = true
+        refModalEdu.value?.hide()
     })
 }
 
@@ -166,6 +167,7 @@ async function handleSaveExperience(values) {
         const { data } = res
         addExperience(data)
         if (activeExpItem.value) activeExpItem.value._imported = true
+        refModalExp.value?.hide()
     })
 }
 </script>

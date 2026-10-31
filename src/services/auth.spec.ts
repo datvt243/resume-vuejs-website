@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-const { axiosMock } = vi.hoisted(() => ({ axiosMock: vi.fn() }))
+const { axiosMock, setUserMock } = vi.hoisted(() => ({ axiosMock: vi.fn(), setUserMock: vi.fn() }))
 vi.mock('@/services/axios', () => ({ _axios: axiosMock }))
-vi.mock('@/stores/auth', () => ({ authStore: () => ({ setTokens: vi.fn(), setUser: vi.fn() }) }))
+vi.mock('@/stores/auth', () => ({ authStore: () => ({ setTokens: vi.fn(), setUser: setUserMock }) }))
 vi.mock('@/stores/candidate', () => ({ candidateStore: () => ({ setCandidate: vi.fn() }) }))
 
 import { handleLogin, handleRegister } from './auth'
@@ -30,6 +30,25 @@ describe('handleLogin errors', () => {
     it('falls back to the generic message for a non-API error', async () => {
         axiosMock.mockRejectedValue(new TypeError('Cannot read properties of undefined'))
         expect(await login()).toEqual({ message: t('error.loginFailed'), bg: 'danger' })
+    })
+})
+
+describe('handleLogin success', () => {
+    it('sets the new user before fetching the candidate, so a cached previous user never shows', async () => {
+        axiosMock.mockReset()
+        setUserMock.mockReset()
+        let userSetBeforeCandidate = false
+        axiosMock
+            .mockResolvedValueOnce({ message: 'ok', data: { user: { email: 'b@b.c' }, token: 't', tokenRefresh: 'r' } })
+            .mockImplementationOnce(async () => {
+                userSetBeforeCandidate = setUserMock.mock.calls.length === 1
+                return { data: {} }
+            })
+
+        await handleLogin({ email: 'b@b.c', password: 'x' }, { toast: vi.fn() })
+
+        expect(userSetBeforeCandidate).toBe(true)
+        expect(setUserMock).toHaveBeenCalledWith({ email: 'b@b.c' })
     })
 })
 

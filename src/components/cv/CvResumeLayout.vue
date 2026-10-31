@@ -74,6 +74,8 @@ const techList = value => (Array.isArray(value) ? value.map(s => String(s).trim(
 const themeClass = computed(() => `cv-theme-${resolveTheme(props.theme)}`)
 const fullName = computed(() => `${props.data.firstName || ''} ${props.data.lastName || ''}`.trim())
 const generalInformation = computed(() => props.data.generalInformation || {})
+// newest first, the same order as the exported PDF (the API returns insertion order)
+const experiences = computed(() => [...(props.data.experiences || [])].sort((a, b) => b.startDate - a.startDate))
 
 function optionLabel(model, name, value) {
     const field = model.find(f => f.name === name)
@@ -141,9 +143,9 @@ function certDateRange(item) {
             </div>
         </section>
 
-        <section v-if="data.experiences?.length" class="cv-section">
+        <section v-if="experiences.length" class="cv-section">
             <h3 class="cv-section-title">{{ t.experiences }}</h3>
-            <div v-for="exp in data.experiences" :key="exp._id" class="cv-item">
+            <div v-for="exp in experiences" :key="exp._id" class="cv-item">
                 <div class="cv-item-head">
                     <span class="cv-item-title">{{ experienceTitle(exp, isEn ? 'en' : 'vi') }}</span>
                     <span class="cv-item-date">{{ dateRange(exp) }}</span>

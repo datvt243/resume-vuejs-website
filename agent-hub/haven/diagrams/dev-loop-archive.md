@@ -293,3 +293,4 @@
 | `issue-347-veeform-hidden-lang-flag` | SEALED | 2026-10-31 — #347: VeeForm.spec timing tests wait for the debounced validation with `vi.waitFor`; 2 "BUG" tests rewritten to assert the working guard. Evidence: `evidence/implementer/2026-10-31-issue-347-veeform-hidden-lang-flag.md` |
 | `issue-352-import-modal-close` | SEALED | 2026-10-31 — #352: import page closes the add-education/experience modal after a successful save. Evidence: `evidence/implementer/2026-10-31-issue-352-import-modal-close.md` |
 | `issue-353-stale-header-email` | SEALED | 2026-10-31 — #353: login sets the new user right after the tokens, before the candidate fetch. Evidence: `evidence/implementer/2026-10-31-issue-353-stale-header-email.md` |
+| `issue-354-public-cv-experience-order` | SEALED | 2026-10-31 — #354: CvResumeLayout lists experience by startDate desc, same as the PDF. Evidence: `evidence/implementer/2026-10-31-issue-354-public-cv-experience-order.md` |

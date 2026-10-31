@@ -83,6 +83,17 @@ describe('CvResumeLayout', () => {
         expect(titles('en')).toContain('Career break — Travel')
     })
 
+    it('lists experience newest first, career breaks included, whatever order the API returns', () => {
+        const experiences = [
+            { _id: 'a', company: 'JOBTEST', startDate: Date.UTC(2022, 1) },
+            { _id: 'b', company: 'FASTCODING', startDate: Date.UTC(2014, 10) },
+            { _id: 'c', company: 'Laidon', startDate: Date.UTC(2024, 11), isCurrent: true },
+            { _id: 'd', isCareerBreak: true, careerBreakType: 'travel', startDate: Date.UTC(2024, 4) },
+        ]
+        const titles = mount(CvResumeLayout, { props: { data: { experiences } } }).findAll('.cv-item-title').map(t => t.text())
+        expect(titles).toEqual(['Laidon', 'Nghỉ việc tạm thời — Du lịch', 'JOBTEST', 'FASTCODING'])
+    })
+
     it('lists project technologies as text, trimmed, not as a raw array', () => {
         const projects = [
             { _id: 'p1', name: 'Resume', position: 'Owner', technology: ['Vue3', ' Pinia', ''] },

@@ -133,7 +133,7 @@ const MODEL: modelItem[] = [
         label: 'field.workLocation',
         type: 'text',
         default: '',
-        valid: yup => yup.string().required(_mesRequired),
+        valid: yup => yup.string().min(3, withParams('validation.minChars', { min: 3 })).max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
     },
     ...withEnglish({
         name: 'careerGoal',

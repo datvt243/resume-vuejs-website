@@ -10,7 +10,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
 import '@/styles/vue3datepicker.scss'
 
 import { useField } from 'vee-validate'
-import { tr } from '@/i18n'
+import { i18n, t, tr } from '@/i18n'
 import { ref, useAttrs, watch, computed } from 'vue'
 import { useTheme } from '@/composables/useTheme'
 
@@ -25,6 +25,8 @@ const props = defineProps({
 })
 const attrs = useAttrs()
 const isMonthPicker = computed(() => Object.hasOwn(attrs, 'monthPicker'))
+// the picker's own button labels are English
+const ariaLabels = computed(() => ({ clearInput: t('form.clearDate') }))
 watch(
     () => props.value,
     val => {
@@ -87,11 +89,14 @@ function format(date) {
 
 <template>
     <div class="mb-4">
-        <label :for="props.name" class="form-label">{{ tr(props.label) }}</label>
+        <label :for="`dp-input-${props.name}`" class="form-label">{{ tr(props.label) }}</label>
 
         <VueDatePicker
             :dark="theme === 'dark'"
             :id="props.name"
+            :uid="props.name"
+            :locale="i18n.global.locale.value"
+            :aria-labels="ariaLabels"
             v-model="date"
             :enable-time-picker="false"
             :format="format"

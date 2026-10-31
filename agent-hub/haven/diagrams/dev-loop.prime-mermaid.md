@@ -125,3 +125,4 @@ PM status directly to "undo" an existing SEAL.
 | `issue-353-stale-header-email` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-353-stale-header-email-seal.md` |
 | `issue-354-public-cv-experience-order` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-354-public-cv-experience-order-seal.md` |
 | `issue-356-editor-datepicker-i18n` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-356-editor-datepicker-i18n-seal.md` |
+| `issue-364-form-length-rules` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-364-form-length-rules-seal.md` |

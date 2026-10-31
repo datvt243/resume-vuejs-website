@@ -295,3 +295,4 @@
 | `issue-353-stale-header-email` | SEALED | 2026-10-31 — #353: login sets the new user right after the tokens, before the candidate fetch. Evidence: `evidence/implementer/2026-10-31-issue-353-stale-header-email.md` |
 | `issue-354-public-cv-experience-order` | SEALED | 2026-10-31 — #354: CvResumeLayout lists experience by startDate desc, same as the PDF. Evidence: `evidence/implementer/2026-10-31-issue-354-public-cv-experience-order.md` |
 | `issue-356-editor-datepicker-i18n` | SEALED | 2026-10-31 — #356: CKEditor + date picker follow the UI language; date label targets the real input. Evidence: `evidence/implementer/2026-10-31-issue-356-editor-datepicker-i18n.md` |
+| `issue-364-form-length-rules` | SEALED | 2026-10-31 — #364: reference fullName 3–50 and workLocation 3–100 enforced in the form, matching the API. Evidence: `evidence/implementer/2026-10-31-issue-364-form-length-rules.md` |

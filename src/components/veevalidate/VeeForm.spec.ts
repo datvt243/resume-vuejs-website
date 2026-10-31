@@ -71,26 +71,15 @@ describe('VeeForm', () => {
         expect(wrapper.find('button[data-submit]').attributes('disabled')).toBeUndefined()
     })
 
-    it('BUG (real, verified — not asserting correctness): typing then clearing a required field does NOT disable submit', async () => {
-        // Isolated repro (outside VeeForm.vue, plain vee-validate `useForm` +
-        // `useField`) confirms this is not an artifact of the test harness:
-        // `meta.valid` only updates after an EXPLICIT `form.validate()` call —
-        // neither `handleChange` (fired by typing/setValue) nor `handleBlur`
-        // updates it on their own with this vee-validate 4.13.1 setup, and
-        // VeeForm.vue never calls `validate()` anywhere. Net effect: the
-        // submit button's `:disabled="!meta.valid"` guard is dead in every
-        // real user flow (type -> click submit), not just on a pristine form.
-        // Flagged prominently in the evidence note as a new, higher-severity
-        // finding than this task's scope covers — logged under "Noticed, not
-        // done", not fixed here.
+    it('typing then clearing a required field disables submit', async () => {
         const wrapper = mountForm()
         await wrapper.find('input[type="text"]').setValue('Dat')
         await flushPromises()
         await wrapper.find('input[type="text"]').setValue('')
         await wrapper.find('input[type="text"]').trigger('blur')
-        await flushPromises()
 
-        expect(wrapper.find('button[data-submit]').attributes('disabled')).toBeUndefined()
+        // vee-validate debounces schema validation on a real timer, so flushPromises alone can assert too early
+        await vi.waitFor(() => expect(wrapper.find('button[data-submit]').attributes('disabled')).toBeDefined())
     })
 
     it('typing a value into a required field enables the submit button', async () => {
@@ -128,21 +117,19 @@ describe('VeeForm', () => {
         expect(submitFn).toHaveBeenCalledTimes(1)
     })
 
-    it('BUG (real, verified): clicking submit after touching+clearing a required field still calls submitFn', async () => {
-        // Same root cause as the test above — `onSubmit()`'s own `if
-        // (!meta.value.valid) return false` guard reads the same dead
-        // `meta.valid`, so it doesn't block this submit either.
+    it('clicking submit after touching+clearing a required field does not call submitFn', async () => {
         const submitFn = vi.fn()
         const wrapper = mountForm({ submitFn })
         await wrapper.find('input[type="text"]').setValue('Dat')
         await flushPromises()
         await wrapper.find('input[type="text"]').setValue('')
         await wrapper.find('input[type="text"]').trigger('blur')
-        await flushPromises()
+        await vi.waitFor(() => expect(wrapper.find('button[data-submit]').attributes('disabled')).toBeDefined())
 
         await wrapper.find('button[data-submit]').trigger('click')
+        await flushPromises()
 
-        expect(submitFn).toHaveBeenCalledTimes(1)
+        expect(submitFn).not.toHaveBeenCalled()
     })
 
     it('exposed reset() restores each field to its own model default, not a blind ""', async () => {
@@ -282,9 +269,8 @@ describe('VeeForm', () => {
             await inputs[1].setValue('x')
             await inputs[1].setValue('')
             await wrapper.find('[data-lang="en"]').trigger('click')
-            await flushPromises()
 
-            expect(wrapper.find('[data-lang="vi"]').text()).toContain('!')
+            await vi.waitFor(() => expect(wrapper.find('[data-lang="vi"]').text()).toContain('!'))
             expect(wrapper.find('[data-lang="en"]').text()).not.toContain('!')
         })
     })

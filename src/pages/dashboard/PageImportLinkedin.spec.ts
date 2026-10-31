@@ -19,16 +19,20 @@ vi.mock('@/composables/useCandidate', () => ({
     useCandidate: () => ({ addRecordToList: vi.fn() }),
 }))
 
+const updateDocMock = vi.fn()
 vi.mock('@/composables/useDocument', () => ({
-    useDocument: () => ({ document: reactive({}), updateDoc: vi.fn() }),
+    useDocument: () => ({ document: reactive({}), updateDoc: (...args: unknown[]) => updateDocMock(...args) }),
 }))
+
+const hideMock = vi.fn()
+const VeeFormStub = { name: 'VeeForm', props: ['submitFn'], render: () => null }
 
 const stubs = {
     Heading: { props: ['text'], template: '<div><h2>{{ text }}</h2><slot /></div>' },
     SegmentedControl: true,
     Button: { props: ['text'], emits: ['click'], template: '<button class="stub-btn" @click="$emit(\'click\')">{{ text }}</button>' },
-    Modal: { props: ['title'], template: '<div class="stub-modal">{{ title }}<slot /></div>' },
-    VeeForm: true,
+    Modal: { props: ['title'], methods: { show: () => {}, hide: () => hideMock() }, template: '<div class="stub-modal">{{ title }}<slot /></div>' },
+    VeeForm: VeeFormStub,
     NoData: true,
     FontAwesomeIcon: true,
 }
@@ -66,6 +70,8 @@ describe('PageImportLinkedin', () => {
     beforeEach(() => {
         handleBaseMock.mockReset()
         toastMock.mockReset()
+        updateDocMock.mockReset()
+        hideMock.mockReset()
     })
 
     it('POSTs the PDF as multipart field `file` to candidate/parse-cv-pdf', async () => {
@@ -130,5 +136,16 @@ describe('PageImportLinkedin', () => {
         await selectJson(wrapper, JSON.stringify({ foo: 1 }))
         expect(toastMock).toHaveBeenLastCalledWith({ message: 'File không phải JSON Resume hợp lệ', bg: 'danger' })
         expect(wrapper.text()).not.toContain('Nguồn:')
+    })
+
+    it('closes the add modal after a successful save, so a second Save cannot create a duplicate', async () => {
+        updateDocMock.mockImplementation(async (_data, cb) => cb({ data: { _id: 'new' } }))
+        const wrapper = mountPage()
+        const values = { startDate: '2020-01-01', endDate: '2021-01-01', description: '' }
+
+        for (const form of wrapper.findAllComponents(VeeFormStub)) await form.props('submitFn')({ ...values })
+
+        expect(updateDocMock).toHaveBeenCalledTimes(2)
+        expect(hideMock).toHaveBeenCalledTimes(2)
     })
 })

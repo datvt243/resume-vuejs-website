@@ -292,3 +292,4 @@
 | `issue-355-education-major-min` | SEALED | 2026-10-31 — #355: education `major` gets yup `min(3)` to match the API. Evidence: `evidence/implementer/2026-10-31-issue-355-education-major-min.md` |
 | `issue-347-veeform-hidden-lang-flag` | SEALED | 2026-10-31 — #347: VeeForm.spec timing tests wait for the debounced validation with `vi.waitFor`; 2 "BUG" tests rewritten to assert the working guard. Evidence: `evidence/implementer/2026-10-31-issue-347-veeform-hidden-lang-flag.md` |
 | `issue-352-import-modal-close` | SEALED | 2026-10-31 — #352: import page closes the add-education/experience modal after a successful save. Evidence: `evidence/implementer/2026-10-31-issue-352-import-modal-close.md` |
+| `issue-353-stale-header-email` | SEALED | 2026-10-31 — #353: login sets the new user right after the tokens, before the candidate fetch. Evidence: `evidence/implementer/2026-10-31-issue-353-stale-header-email.md` |

@@ -43,6 +43,7 @@ module.exports = {
                     'Button',
                     'Dropdown',
                     'Heading',
+                    'Tabs',
                     'Footer',
                     'Header',
                     'Main',

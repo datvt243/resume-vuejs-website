@@ -128,3 +128,4 @@ PM status directly to "undo" an existing SEAL.
 | `issue-364-form-length-rules` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-364-form-length-rules-seal.md` |
 | `issue-370-language-in-settings` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-370-language-in-settings-seal.md` |
 | `issue-370-remove-header-lang-switch` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-370-remove-header-lang-switch-seal.md` |
+| `issue-372-skills-page` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-372-skills-page-seal.md` |

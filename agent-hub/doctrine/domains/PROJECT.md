@@ -38,6 +38,41 @@ code must match it.
 See `CLAUDE.md` — `ADHOC_WORK`, `NO_EVIDENCE`, `EDIT_UNVERIFIED`,
 `CODE_IN_HAVEN`, `DIAGRAM_DRIFT`.
 
+## Branching rule
+> **2026-08-30**: `main` and `staging` are now real GitHub
+> branch-protected branches (PR required, 0 approvals needed,
+> `enforce_admins: true`, no force-push, no deletion) — a raw `git push`
+> to either is rejected (`GH006`), verified directly. `main` is
+> production, only ever receives code from `staging` via `/release`
+> (`.claude/skills/release/SKILL.md`). `staging` is the integration
+> branch — this is now what every task branches from and PRs into.
+
+**NEVER edit or commit directly on `main` OR `staging`.** Before any
+diff (even one line):
+1. `git checkout -b <branch> staging` (from `staging`, not `main`) —
+   name it by task TYPE:
+   - Bugfix → `fix/issue-<n>-<slug>` (e.g.
+     `fix/issue-34-converttotruncate-length`).
+   - New feature → `feature/<slug>` (e.g. `feature/export-cv-pdf`).
+   - Other (docs/chore/tooling) → `chore/<slug>` or `docs/<slug>`.
+   The prefix decides whether the branch survives after merge (see
+   `/ship` — `.claude/skills/ship/SKILL.md`): `fix/*` gets deleted,
+   `feature/*` is KEPT, everything else deleted by default.
+2. The whole diff, `npm run build`, and the evidence note all happen on
+   that branch — the evidence note MUST name the branch.
+3. Merging back to `staging` is an **outward-facing** action — goes
+   through the Seal Gate like any commit/push/deploy: stop, show the
+   diff + branch name, wait for operator approval before `/ship`
+   (`gh pr create --base staging` + `gh pr merge`, not a raw `git merge
+   && git push` — that's rejected by branch protection).
+4. Getting `staging` onto `main` is a SEPARATE outward-facing action —
+   `/release`, not `/ship`. Never merge a task branch straight into
+   `main`.
+5. If you find yourself on `main` or `staging` with uncommitted changes
+   already there → stop immediately, report `MAIN_EDIT`, don't
+   self-continue — ask the operator whether to `git stash` that diff
+   onto a new branch (branched from `staging`).
+
 ## Traps (append when you find a new one)
 > Verified directly from source at hub-init time (2026-08-20). These are
 > REAL bugs/tech debt currently in the codebase — don't repeat the

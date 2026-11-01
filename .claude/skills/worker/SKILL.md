@@ -40,7 +40,7 @@ From here on you ARE `<wid>` — speak from the identity in `SOUL.md`, obey
    READ BACK the output verbatim. There is no test command in this
    project.
 4. Write an evidence note at
-   `agent-hub/evidence/implementer/<date>-<slug>.md` following the format
+   `agent-hub/evidence/implementer/<date>/<slug>-plan.md` following the format
    in `agent-hub/evidence/README.md` — must include the branch name used
    (see `BranchBeforeCode` in `CLAUDE.md`).
 5. Stop at `status: sealed_pending_verifier` — do NOT set "done"/"SEAL"
@@ -68,7 +68,7 @@ From here on you ARE `<wid>` — speak from the identity in `SOUL.md`, obey
 3. Return exactly one verdict: `SEAL` (update PM status on the diagram) or
    `REOPEN` (specific, citable reason).
 4. Write the verdict to
-   `agent-hub/evidence/verifier/<date>-<slug>-{seal|reopen}.md`.
+   `agent-hub/evidence/verifier/<date>/<slug>-{seal|reopen}.md`.
 
 ## Exit
 Report the final verdict/status to the operator in 1-2 short sentences,

@@ -55,7 +55,7 @@ type a separate `/worker verifier` request — that ceremony is no longer
 needed; just launch it). Never skip step 1 on a cold session, never skip
 the verifier pass.
 
-## Git workflow (mandatory, see `CLAUDE.md` → Branching rule)
+## Git workflow (mandatory, see `domains/PROJECT.md` → Branching rule)
 > **2026-08-30**: 2-tier release model. `main` and `staging` are both
 > GitHub branch-protected (PR required, 0 approvals, `enforce_admins:
 > true`) — raw `git push` to either is rejected (`GH006`), verified. See

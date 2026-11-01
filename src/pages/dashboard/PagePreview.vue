@@ -16,7 +16,7 @@ import { candidateStore } from '@/stores/candidate'
 import { authStore } from '@/stores/auth'
 import { useCandidate } from '@/composables/useCandidate'
 import { useCvTheme } from '@/composables/useCvTheme'
-import { useCvLang } from '@/composables/useCvLang'
+import { useCvLang, LANG_OPTIONS } from '@/composables/useCvLang'
 import { useActiveProfile } from '@/composables/useActiveProfile'
 import CvResumeLayout from '@/components/cv/CvResumeLayout.vue'
 import { toJsonResume } from '@/utilities/jsonResume'
@@ -65,7 +65,7 @@ const cvData = computed(() => ({
 }))
 
 const { selectedTheme, setTheme, THEMES } = useCvTheme()
-const { selectedLang } = useCvLang()
+const { selectedLang, setLang } = useCvLang()
 
 function handlePrint() {
     window.print()
@@ -98,6 +98,10 @@ onUnmounted(() => document.body.classList.remove('cv-print-mode'))
             <div>
                 <p class="form-label block">{{ t('preview.theme') }}</p>
                 <SegmentedControl :model-value="selectedTheme" :options="THEMES" :aria-label="t('preview.cvTheme')" @update:model-value="setTheme" />
+            </div>
+            <div>
+                <p class="form-label block">{{ t('preview.cvLanguage') }}</p>
+                <SegmentedControl :model-value="selectedLang" :options="LANG_OPTIONS" :aria-label="t('preview.cvLanguage')" @update:model-value="setLang" />
             </div>
             <div v-if="profiles.length">
                 <label for="preview-profile" class="form-label">{{ t('field.cvProfile') }}</label>

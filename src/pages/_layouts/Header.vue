@@ -10,8 +10,6 @@ import { authStore } from '@/stores/auth'
 import { candidateStore } from '@/stores/candidate'
 import { useTheme } from '@/composables/useTheme'
 import { useRouter } from 'vue-router'
-// eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
-import LangSwitch from '@/pages/_layouts/LangSwitch.vue'
 import { useI18n } from 'vue-i18n'
 import { useCvLang } from '@/composables/useCvLang'
 import { API } from '@/config/api.config'
@@ -83,7 +81,6 @@ header.sticky.top-0.z-20.flex.h-14.shrink-0.items-center.gap-2.border-b.border-l
         RouterLink.flex.items-center.gap-2.text-fg.no-underline(to="/login" class="hover:text-fg")
             FontAwesomeIcon.text-brand(icon="fa-solid fa-file-lines")
             span.hidden.text-md.font-semibold(class="sm:inline") Resume API
-        LangSwitch
         nav.ms-auto.flex.items-center.gap-1(:aria-label="$t('header.account')")
             RouterLink(
                 v-for="r in authRouter"
@@ -112,7 +109,6 @@ header.sticky.top-0.z-20.flex.h-14.shrink-0.items-center.gap-2.border-b.border-l
         RouterLink.flex.items-center.gap-2.text-fg.no-underline(to="/" class="hover:text-fg lg:hidden")
             FontAwesomeIcon.text-brand(icon="fa-solid fa-file-lines")
             span.hidden.text-md.font-semibold(class="sm:inline") Resume API
-        LangSwitch
         .ms-auto.flex.min-w-0.items-center.gap-1(class="sm:gap-2")
             button(
                 type="button"

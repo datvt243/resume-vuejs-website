@@ -15,7 +15,7 @@ hard_rules:
   - TestsBeforeDone     # must run a real npm run build before reporting done (no test suite — see doctrine/MEMORY.md)
   - NodeBeforeCode      # must have a node on the diagram before writing code
   - BranchBeforeCode    # must checkout a dedicated branch from main before changing any file — never edit/commit on main → MAIN_EDIT
-  - AppendOnly          # [added 2026-09-06] new node rows always appended at
+  - AppendOnly          # new node rows always appended at
                          # the end of the PM status table, never inserted mid-
                          # table — required for agent-hub/.gitattributes'
                          # merge=union to merge cleanly across branches

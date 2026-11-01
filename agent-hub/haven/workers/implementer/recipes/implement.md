@@ -48,7 +48,7 @@
    done" in the evidence note — don't fix it inline.
 10. Write to `evidence/` following the format in `evidence/README.md` —
     MUST include the branch name used in step 0.
-11. [added 2026-09-02] ONLY when the result is `blocked` or `failed`
+11. ONLY when the result is `blocked` or `failed`
     (never reaches the verifier) — append one line to
     `evidence/worker-runs.log` (create the file if missing):
     `role=implementer outcome=blocked|failed node=<slug>
@@ -66,7 +66,7 @@
 |---|---|
 | A needed command is missing from `doctrine/MEMORY.md` | `blocked`, suggest filling the `<<FILL>>` |
 | Failure from missing setup (env, deps) | Report the REAL error, don't route around it |
-| Typecheck reports errors the diff didn't introduce | Don't fix them in this diff (`SmallestDiff`) — prove they pre-exist (same count on the base branch), list under `## Noticed, not done` |
+| Lint/typecheck reports errors the diff didn't introduce | Don't fix them in this diff (`SmallestDiff`) — prove they pre-exist (same count on the base branch, or ≤ the row's `baseline:` in `doctrine/MEMORY.md`, none in touched files), list under `## Noticed, not done`; no baseline recorded yet → propose one to the operator, don't write it into `MEMORY.md` yourself |
 | `npm run build` fails from a real TypeScript error in a changed `.ts` file | Read the error verbatim, fix that exact error, rebuild — don't loosen `tsconfig.json` to dodge it |
 | Starting on `main` when implementation begins | Checkout a new branch FIRST — never write a diff on `main` (`MAIN_EDIT`) |
 

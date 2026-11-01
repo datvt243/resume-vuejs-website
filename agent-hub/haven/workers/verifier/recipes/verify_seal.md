@@ -15,7 +15,7 @@
   (`NeverVerifyOwnWork`) — in a batch, this applies PER NODE: refuse just
   the self-written node, don't cancel the rest of the batch.
 
-## Batch verify [added 2026-09-06]
+## Batch verify
 The heaviest cost of a verify pass isn't the act of verifying — it's
 reloading the whole bundle + doctrine on every subagent spawn (this hub's
 diagram alone is ~21KB active + ~98KB archived). Batch verify pays that
@@ -33,7 +33,7 @@ anything about the substance of verifying:
 - `all-pending`: first list every `sealed_pending_verifier` node on
   `dev-loop.prime-mermaid.md`, then run the full procedure below on each.
 
-## Re-run scope [cost-driven, added 2026-09-02]
+## Re-run scope
 Default: AUDIT the note, don't re-run `npm run build`/dev-server checks from
 scratch. `EvidenceOnly` means "don't substitute reasoning for real
 evidence" — it does NOT mean "always regenerate the evidence yourself." If
@@ -59,8 +59,7 @@ it's not reinvented per hub.
 
 ## Steps
 1. REFUSE SELF-GRADING FIRST — did I write this diff in this session?
-1b. [added 2026-09-06, fed back from real production use in
-   `datvt243.github.io`] Record proof this pass is really a separate
+1b. Record proof this pass is really a separate
    subagent context, not a self-report: cite whatever this invocation was
    actually spawned with that the implementer pass didn't have (e.g. the
    `description`/task string passed to the Agent tool for this spawn) —
@@ -70,17 +69,16 @@ it's not reinvented per hub.
 2. [LOOP STARTS HERE FOR EACH NODE if batch] Read the NOTE — only the
    note, do NOT open the diff directly. (`EvidenceOnly`)
 3. Read the NODE — get acceptance criteria from `haven/diagrams/`,
-   forbidden states from `CLAUDE.md`. [GUARD, added 2026-08-31] Don't `Read
+   forbidden states from `CLAUDE.md`. [GUARD] Don't `Read
    agent-hub/CLAUDE.md` yourself for this — same mechanism as
    `boot/SKILL.md`: the harness auto-injects this file's full content as a
    nested-CLAUDE.md `<system-reminder>` the moment step 2 touches anything
    under `agent-hub/`; reading it again here duplicates that content. Read
    it directly only if it's actually missing from context after step 2.
 4. Check the commands in the note match `doctrine/MEMORY.md` — `npm run
-   test` + `npm run build` from repo root, + the `Typecheck` row (while
-   it's CANNOT RUN, the note must say so explicitly per `CLAUDE.md`'s
-   transitional note; silence → REOPEN, `EDIT_UNVERIFIED`). [synced
-   2026-10-07]
+   test` + `npm run build` from repo root, + the `Typecheck` row (`npm run
+   typecheck`); no typecheck output → REOPEN, `EDIT_UNVERIFIED`. Row has a `baseline:` → the note must cite the
+   count; count above it, or an error in a touched file → REOPEN.
 5. Check the output isn't truncated/hidden (`...`, "truncated") → REOPEN
    if it is.
 6. Go through acceptance criteria ONE BY ONE — missing evidence for any
@@ -102,11 +100,11 @@ it's not reinvented per hub.
 10. Decide exactly one of two: SEAL (every criterion has citable
     evidence) or REOPEN (even one important gap is enough).
 11. Only on SEAL: update the ratchet/PM status in `haven/diagrams/`.
-    [added 2026-09-06] Update the node's own row IN PLACE (state column →
+    Update the node's own row IN PLACE (state column →
     SEALED) — never reorder, move, or re-sort rows in the table
     (`AppendOnly`); this keeps `agent-hub/.gitattributes`' `merge=union`
     able to merge cleanly across branches.
-    [added 2026-10-24] COLLAPSE ON SEAL, same in-place row: (a) append
+    COLLAPSE ON SEAL, same in-place row: (a) append
     the node's full row (state SEALED) verbatim to the END of
     `haven/diagrams/dev-loop-archive.md` (create if absent); (b) replace
     the active row in place with `| node | SEALED | <date> — archived,
@@ -119,20 +117,19 @@ it's not reinvented per hub.
 12. Write the verdict to
     `evidence/verifier/<date>-<slug>-{seal|reopen}.md` (flat file,
     matches the convention used across every prior evidence note).
-12a. [added 2026-09-06] In that note, include the `## Isolation proof`
+12a. In that note, include the `## Isolation proof`
     line from step 1b.
-12b. [added 2026-09-02] In the verdict note, truthfully declare 1 line
+12b. In the verdict note, truthfully declare 1 line
    `## Re-run`: `none` (audit-only, the correct default per "Re-run
    scope" above), `partial` (name exactly which command was re-run), or
    `full` (re-ran the entire build from scratch) — always with a reason
    matching one of the 3 exception cases in "Re-run scope" if not `none`.
    Misdeclaring this corrupts the duplicate-cost signal step 13 depends
    on.
-13. [added 2026-09-02] Append 1 line to `evidence/worker-runs.log`
+13. Append 1 line to `evidence/worker-runs.log`
    (create the file if it doesn't exist): take `hub_bytes_before` from the
    `## Hub bytes before` line in the implementer's note (already read in
-   step 2, reuse it); measure `hub_bytes_after` the same way (this hub's
-   `/hub-tokens` per-session total), taken AFTER updating PM status in
+   step 2, reuse it); measure `hub_bytes_after` with the exact command in `evidence/README.md` (Format — worker-runs.log), taken AFTER updating PM status in
    step 11 if SEALed. Format:
    ```
    <ISO timestamp> role=verifier outcome=SEAL|REOPEN node=<slug>
@@ -155,7 +152,7 @@ it's not reinvented per hub.
 ## Runtime
 `/worker verifier "<task or note>"`. Prefer spawning a fresh subagent for
 this pass — it naturally satisfies `NeverVerifyOwnWork` without needing
-the operator to explicitly request a separate session. [added 2026-09-06]
+the operator to explicitly request a separate session.
 `/worker verifier "<path1> <path2> ..."` (multiple evidence note paths)
 or `/worker verifier all-pending` spawns ONE subagent that verifies every
 queued node independently — use this after several small implementer

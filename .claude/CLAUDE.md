@@ -39,7 +39,7 @@ Every data section has a `src/models/*.model.ts` file — an array of `modelItem
 - `candidateStore` (`src/stores/candidate.ts`) — full resume object, caches to avoid re-fetching
 
 ### 4. Global Components
-All `src/components/global/*.vue` are auto-registered globally via `src/plugins/GlobalComponents.js`. Use without import: `<Heading>`, `<Button>`, `<NoData>`, `<ListTransition>`, `<Box>`, `<Dropdown>`, `<ItemTemplate>`, `<ItemActions>`, `<LoadingGate>`, `<FormSection>`, `<SegmentedControl>`.
+All `src/components/global/*.vue` are auto-registered globally via `src/plugins/GlobalComponents.js`. Use without import: `<Heading>`, `<Button>`, `<NoData>`, `<ListTransition>`, `<Box>`, `<Dropdown>`, `<ItemTemplate>`, `<ItemActions>`, `<LoadingGate>`, `<FormSection>`, `<SegmentedControl>`, `<Tabs>`.
 - `ItemActions` — CRUD row buttons shared by every list page: edit (`info`), duplicate (`success`), delete (`danger`); pass `viewable` to add an eye button that emits `view` (only Experience uses it so far). The colors use `!` modifiers because the ghost `Button` variant sets its own text/hover colors.
 
 ## API

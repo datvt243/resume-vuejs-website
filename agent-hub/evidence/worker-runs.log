@@ -78,3 +78,5 @@
 2026-11-01T14:58:47Z role=verifier outcome=SEAL node=issue-370-language-in-settings rerun=none hub_bytes_before=84843 hub_bytes_after=85021
 2026-11-01T15:04:12Z role=verifier outcome=REOPEN node=issue-370-app-language-split rerun=none hub_bytes_before=85021 hub_bytes_after=85529
 2026-11-01T15:08:23Z role=verifier outcome=SEAL node=issue-370-remove-header-lang-switch rerun=none hub_bytes_before=85529 hub_bytes_after=85209
+2026-11-01T15:16:19Z role=verifier outcome=REOPEN node=issue-372-skills-page rerun=none hub_bytes_before=85209 hub_bytes_after=85615
+2026-11-01T15:20:24Z role=verifier outcome=SEAL node=issue-372-skills-page rerun=none hub_bytes_before=85209 hub_bytes_after=85369

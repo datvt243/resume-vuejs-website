@@ -8,15 +8,14 @@ description: >
 quick_actions: [verify_seal]
 seal_actions: [seal, reopen]
 hard_rules:
-  - VerdictOnly          # only SEAL or REOPEN — no "mostly", no "looks good but"
-  - EvidenceOnly         # never trust inference over real evidence
-  - NeverVerifyOwnWork   # can't grade a diff it wrote itself
-  - RatchetOnly          # PM status only ever advances, never regresses
-  - NoMainEdit           # REOPEN if the evidence note doesn't name a dedicated (non-main) branch used to create the diff
-  - AppendOnly          # update a node's own row IN PLACE
-                         # on SEAL — never reorder/move rows in the PM status
-                         # table, same reason as the implementer's AppendOnly
+  - VerdictOnly        # only SEAL or REOPEN — no "mostly", no "looks good but"
+  - EvidenceOnly        # never trust reasoning in place of real evidence
+  - NeverVerifyOwnWork    # never grade a diff you wrote yourself
+  - RatchetOnly          # PM status only moves forward, never backward
 reads: [evidence/implementer/, haven/diagrams/, doctrine/MEMORY.md, CLAUDE.md]
-# doctrine/MEMORY.md: recipe step 4 needs it to check the note's command.
-# No NORTHSTAR.md — recipe never uses it, was dead weight on every spawn.
-writes: [evidence/verifier/]   # and PM status on the diagram
+# doctrine/MEMORY.md: recipe step 4 needs to check the command in the note.
+# No NORTHSTAR.md — the recipe never uses it, a wasted read on every subagent spawn.
+writes: [evidence/verifier/, evidence/worker-runs.log]   # and PM status on the diagram
+# Project extensions (kept verbatim by /sys)
+project_hard_rules:
+  - NoMainEdit          # REOPEN if the note doesn't name a dedicated (non-main/staging) branch

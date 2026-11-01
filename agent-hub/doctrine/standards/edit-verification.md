@@ -1,39 +1,34 @@
-> "You may not claim an outcome you have not observed." Quy tắc bị vi phạm
-> nhiều nhất trong agent work. Exceptions: None.
+> "You may not claim an outcome you have not observed." The most
+> commonly violated rule in agent work. Exceptions: None.
 
 ## The rule
-Chỉ được báo hoàn tất khi output đã thực sự được xuất ra và đọc lại — không
-phải khi bạn nghĩ edit đã đúng.
+You may only report completion once the output has actually been
+produced and read back — not once you think the edit is correct.
 
 ## Not evidence vs Evidence
 | Not evidence | Evidence |
 |---|---|
-| "Fix này chắc sẽ giải quyết được lỗi" | Chạy lại `npm run build`, đọc output thật |
-| "App chắc chạy được rồi" | Mở `npm run dev`, xác nhận route/màn hình cụ thể load đúng, ghi lại quan sát |
-| "Build should pass now" | `vite v5.x building for production... ✓ built in Xs` (verbatim) |
+| "This fix should resolve the bug" | Ran it again, read the real output |
+| "Tests should pass now" | `Tests: 42 passed, 42 total` (verbatim) |
 
 ## Why reasoning doesn't count
-Lập luận về code không phải là chạy code. Mô hình thường tin vào mô tả của
-chính nó hơn là kiểm tra thật.
+Reasoning about code is not the same as running code. Models tend to
+trust their own description more than an actual check.
 
 ## What read back means
-Copy nguyên văn lệnh CHÍNH XÁC từ `doctrine/MEMORY.md` (`npm run build`,
-`npm run dev`...), chạy, đọc kết quả verbatim, ghi vào evidence note — không
-tự diễn giải, không tóm tắt thành kết luận riêng.
-
-## Riêng project này: không có test suite
-`npm test` KHÔNG tồn tại (xem `doctrine/MEMORY.md`). Cho tới khi có test
-thật, "evidence" tối thiểu là: `npm run build` xanh (verbatim output) +
-quan sát thủ công trên `npm run dev` cho đúng phần bị đổi. Ghi rõ trong note
-đây là build-only, không phải test suite thật — không được gọi tắt thành
-"tests pass".
+Copy the EXACT command verbatim from `doctrine/MEMORY.md`, run it, read
+the result verbatim, write it into the evidence note — no paraphrasing,
+no summarizing into your own conclusion.
 
 ## No Exceptions
-Chưa verify được → báo `blocked`. Không có ngoại lệ "chắc là đúng".
+Can't verify it yet → report `blocked`. There's no "probably fine"
+exception.
 
 ## Failure mode this catches
-"Green-by-supposition" — tự claim build/output đúng mà không thực sự chạy.
+"Green-by-supposition" — claiming a test passed without actually running
+it.
 
 ## Enforcement
-Implementer: hard rule `TestsBeforeDone`. Verifier: hard rule `EvidencePerAction` —
-claim không đủ bằng chứng → REOPEN. Liên quan: `EDIT_UNVERIFIED`.
+Implementer: hard rule `TestsBeforeDone`. Verifier: hard rule
+`EvidencePerAction` — a claim without enough evidence → REOPEN. Related:
+`EDIT_UNVERIFIED`.

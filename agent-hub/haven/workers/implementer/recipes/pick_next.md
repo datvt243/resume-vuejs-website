@@ -3,7 +3,7 @@
 - Output: `{node, diagram, current_state, acceptance: string[],
   files: string[], blocked_by: string|null}`
 
-> [GUARD, added 2026-08-31] If `/boot` already ran in THIS SAME session,
+> [GUARD] If `/boot` already ran in THIS SAME session,
 > `NORTHSTAR.md` / `doctrine/MEMORY.md` / `doctrine/domains/PROJECT.md` /
 > `haven/diagrams/` are already in context from that pass — steps 1-2 below
 > REUSE that content, don't `Read` it again (a second full read of the same
@@ -23,12 +23,12 @@
 3. If the task doesn't match an existing node, don't invent work —
    append a new row to the PM status table for it (`IN_PROGRESS`) instead
    of blocking, matching how prior ad-hoc/operator-direct tasks were
-   added (e.g. `eslint-lint-actually-runs`). [added 2026-09-06] Always at
+   added (e.g. `eslint-lint-actually-runs`). Always at
    the END of the table, never inserted mid-table (`AppendOnly`) —
    required for `agent-hub/.gitattributes`' `merge=union` to merge
    cleanly when 2 branches each add a different new node around the same
    time.
-   [added 2026-10-24] Before adding a new node, `grep` its slug in
+   Before adding a new node, `grep` its slug in
    `dev-loop-archive.md` — sealed pointers get dropped from the active
    file (`verify_seal` step 11c), so a taken slug may only be there;
    taken → pick a new slug.
@@ -51,9 +51,7 @@
    invented (e.g. `src/models/`, `src/composables/`, `src/services/`).
 6. Declare blockers: if `doctrine/MEMORY.md` is missing a needed command,
    stop and report `blocked` — do NOT guess a command.
-7. [added 2026-09-02] Measure `hub_bytes_before` — the total bytes across
-   the 5 categories `/hub-tokens` calls the "per-session total" (root
-   files, `doctrine/`, the active `haven/diagrams/`, 2 worker bundles).
+7. Measure `hub_bytes_before` — the "per-session total", with the exact command in `evidence/README.md` (Format — worker-runs.log).
    Record this number in the evidence note at step 8 — the verifier reads
    it back to compute the hub-size diff in `worker-runs.log`.
 8. Evidence: write `evidence/implementer/<date>-<slug>.md` (flat file,

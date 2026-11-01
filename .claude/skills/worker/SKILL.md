@@ -7,7 +7,7 @@ description: "Become an agent-hub worker (implementer or verifier) and run its r
 
 `args` holds `<wid> "<task>"` — `wid` is `implementer` or `verifier`, the
 rest (quoted or not) is the task. If `wid` or `task` is missing, stop and
-ask — don't guess. [added 2026-09-06] For `verifier` specifically, the
+ask — don't guess. For `verifier` specifically, the
 rest can also be multiple evidence note paths (batch) or the keyword
 `all-pending` (every node currently `sealed_pending_verifier` on the
 active diagram) — see "Batch verify" in `recipes/verify_seal.md`. Batch
@@ -48,7 +48,7 @@ From here on you ARE `<wid>` — speak from the identity in `SOUL.md`, obey
    `run_in_background: false`) to run `/worker verifier "<task>"` on this
    same evidence note — don't wait for the operator to ask for a separate
    verify step. A subagent has no memory of this session, so
-   `NeverVerifyOwnWork` is satisfied by construction. [added 2026-09-06]
+   `NeverVerifyOwnWork` is satisfied by construction.
    No hook technically blocks a skipped spawn, though — the real defense
    is a citeable trail: `recipes/verify_seal.md` step 1b has the verifier
    record proof of this separate spawn into the verdict note's

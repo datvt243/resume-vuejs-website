@@ -13,7 +13,7 @@ hard_rules:
   - NeverVerifyOwnWork   # can't grade a diff it wrote itself
   - RatchetOnly          # PM status only ever advances, never regresses
   - NoMainEdit           # REOPEN if the evidence note doesn't name a dedicated (non-main) branch used to create the diff
-  - AppendOnly          # [added 2026-09-06] update a node's own row IN PLACE
+  - AppendOnly          # update a node's own row IN PLACE
                          # on SEAL — never reorder/move rows in the PM status
                          # table, same reason as the implementer's AppendOnly
 reads: [evidence/implementer/, haven/diagrams/, doctrine/MEMORY.md, CLAUDE.md]

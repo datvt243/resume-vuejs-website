@@ -52,9 +52,13 @@ note = `EDIT_UNVERIFIED`.
 | `EDIT_UNVERIFIED` | Claimed a result (build pass, correct output...) without actually running it to read back |
 | `CODE_IN_HAVEN` | Code (`.ts`/`.js`/`.vue`/`.sh`...) leaked into `haven/` — that's memory only |
 | `DIAGRAM_DRIFT` | Code changed but the diagram's PM status wasn't updated to match |
-| `MAIN_EDIT` | Edited/committed directly on `main` instead of a separate branch merged in |
 
-## Branching rule
+## Project extensions
+| State | Meaning |
+|---|---|
+| `MAIN_EDIT` | Edited/committed directly on `main` or `staging` instead of a separate branch merged in |
+
+### Branching rule
 > **2026-08-30**: `main` and `staging` are now real GitHub
 > branch-protected branches (PR required, 0 approvals needed,
 > `enforce_admins: true`, no force-push, no deletion) — a raw `git push`

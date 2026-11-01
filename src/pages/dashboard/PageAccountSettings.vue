@@ -17,11 +17,13 @@ import { authStore } from '@/stores/auth'
 import { useHelper } from '@/composables/useHelper'
 import { handleBase } from '@/services/base'
 import { confirmDelete } from '@/lib/swal.lib'
-import { t } from '@/i18n'
+import { t, uiLang, setUiLang } from '@/i18n'
+import { useCvLang, LANG_OPTIONS } from '@/composables/useCvLang'
 
 const router = useRouter()
 const auth = authStore()
 const { loading, toast } = useHelper()
+const { selectedLang, setLang } = useCvLang()
 
 function handleDeleteAccount() {
     confirmDelete({
@@ -62,10 +64,22 @@ function handleDeleteAccount() {
         </FormSection>
         <span id="account-soon" class="sr-only">{{ $t('common.comingSoon') }}</span>
 
-        <FormSection :title="$t('account.delete')" :description="$t('account.deleteDescription')">
+        <FormSection :title="$t('account.delete')" :description="$t('account.deleteDescription')" danger>
             <div class="pb-4">
                 <p class="mb-4 mt-0 text-sm text-fg-2">{{ $t('account.cannotUndo') }}</p>
                 <Button :text="$t('account.delete')" type="danger" icon="fa-solid fa-trash" @click="handleDeleteAccount()" />
+            </div>
+        </FormSection>
+
+        <FormSection :title="$t('account.appLanguage')" :description="$t('account.appLanguageDescription')">
+            <div class="pb-4">
+                <SegmentedControl :model-value="uiLang" :options="LANG_OPTIONS" :aria-label="$t('account.appLanguage')" @update:model-value="setUiLang" />
+            </div>
+        </FormSection>
+
+        <FormSection :title="$t('preview.cvLanguage')" :description="$t('account.cvLanguageDescription')">
+            <div class="pb-4">
+                <SegmentedControl :model-value="selectedLang" :options="LANG_OPTIONS" :aria-label="$t('preview.cvLanguage')" @update:model-value="setLang" />
             </div>
         </FormSection>
     </div>

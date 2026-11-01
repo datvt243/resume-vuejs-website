@@ -7,9 +7,9 @@ describe('i18n', () => {
         vi.resetModules()
     })
 
-    it('starts in the stored CV language and follows the header switch', async () => {
+    it('starts in the language the old shared switch stored, then follows only setUiLang', async () => {
         localStorage.setItem('cvLang', 'en')
-        const { i18n } = await import('./index')
+        const { i18n, setUiLang } = await import('./index')
         const { useCvLang } = await import('@/composables/useCvLang')
         expect(i18n.global.locale.value).toBe('en')
         expect(i18n.global.t('nav.experience')).toBe('Experience')
@@ -17,20 +17,31 @@ describe('i18n', () => {
 
         useCvLang().setLang('vi')
         await nextTick()
+        expect(i18n.global.locale.value).toBe('en')
+
+        setUiLang('vi')
+        await nextTick()
         expect(i18n.global.locale.value).toBe('vi')
         expect(i18n.global.t('nav.experience')).toBe('Kinh nghiệm')
         expect(document.documentElement.lang).toBe('vi')
+        expect(localStorage.getItem('uiLang')).toBe('vi')
+    })
+
+    it('a stored uiLang wins over cvLang', async () => {
+        localStorage.setItem('cvLang', 'en')
+        localStorage.setItem('uiLang', 'vi')
+        const { i18n } = await import('./index')
+        expect(i18n.global.locale.value).toBe('vi')
     })
 
     it('tr translates message keys and passes literal text through', async () => {
-        const { tr } = await import('./index')
-        const { useCvLang } = await import('@/composables/useCvLang')
+        const { tr, setUiLang } = await import('./index')
         expect(tr('validation.emailRequired')).toBe('Email là bắt buộc')
         expect(tr('Email')).toBe('Email')
         expect(tr('Tối thiểu 12 ký tự, gồm chữ hoa.')).toBe('Tối thiểu 12 ký tự, gồm chữ hoa.')
         expect(tr('')).toBe('')
 
-        useCvLang().setLang('en')
+        setUiLang('en')
         await nextTick()
         expect(tr('validation.emailRequired')).toBe('Email is required')
     })
@@ -51,13 +62,12 @@ describe('i18n', () => {
     })
 
     it('tr unpacks withParams, translating string params that are keys', async () => {
-        const { tr, withParams } = await import('./index')
-        const { useCvLang } = await import('@/composables/useCvLang')
+        const { tr, withParams, setUiLang } = await import('./index')
         expect(tr(withParams('validation.maxChars', { max: 100 }))).toBe('Tối đa 100 ký tự')
         expect(tr(withParams('form.englishField', { label: 'field.description' }))).toBe('Mô tả (English)')
         expect(tr(withParams('form.englishField', { label: 'Github' }))).toBe('Github (English)')
 
-        useCvLang().setLang('en')
+        setUiLang('en')
         await nextTick()
         expect(tr(withParams('validation.maxChars', { max: 100 }))).toBe('Maximum 100 characters')
         expect(tr(withParams('form.englishField', { label: 'field.description' }))).toBe('Description (English)')

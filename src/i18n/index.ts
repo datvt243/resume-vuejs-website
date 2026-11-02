@@ -1,19 +1,16 @@
 /**
- * UI language. Follows the CV language chosen in the header (`useCvLang`),
- * so one VI | EN switch controls both.
+ * UI language, chosen in Account settings. Separate from the CV language
+ * (`useCvLang`).
  */
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
-import { useCvLang } from '@/composables/useCvLang'
+import { resolveCvLang, type CvLang } from '@/composables/useCvLang'
 
 const vi = {
     header: {
         account: 'Tài khoản',
         login: 'Đăng nhập',
         register: 'Đăng ký',
-        language: 'Ngôn ngữ',
-        languageInfoLabel: 'Ngôn ngữ này áp dụng cho những gì?',
-        languageInfo: 'Áp dụng cho cả giao diện và ngôn ngữ CV: xem trước, link CV công khai và file PDF tải về.',
         themeLight: 'Chuyển sang giao diện sáng',
         themeDark: 'Chuyển sang giao diện tối',
         openNav: 'Mở menu điều hướng',
@@ -35,6 +32,7 @@ const vi = {
         visits: 'Lượt truy cập',
         information: 'Thông tin cơ bản',
         generalInformation: 'Thông tin chung',
+        skills: 'Kỹ năng',
         education: 'Học vấn',
         experience: 'Kinh nghiệm',
         project: 'Dự án',
@@ -83,7 +81,7 @@ const vi = {
         langHasError: 'Có lỗi cần sửa',
         showPassword: 'Hiện mật khẩu',
         closeToast: 'Đóng thông báo',
-        newTag: 'Thêm mới',
+        newTag: 'Nhập tên nhóm',
         addTag: 'Thêm thẻ',
         removeTag: 'Xóa thẻ {tag}',
         editTitle: 'Sửa: {name}',
@@ -316,9 +314,30 @@ const vi = {
         group: 'Nhóm',
         jobPreferences: 'Mong muốn công việc',
         jobPreferencesDescription: 'Vị trí, mức lương và nơi làm việc bạn đang tìm.',
+        mainSkills: 'Kỹ năng chính',
+        mainSkillsDescription: 'Những kỹ năng nổi bật nhất của bạn, chọn từ kỹ năng chuyên môn, tối đa {max}.',
+        mainSkillsPick: 'Chọn kỹ năng chính',
+        familiarSkills: 'Kỹ năng quen thuộc',
+        familiarSkillsDescription: 'Kỹ năng bạn đã từng dùng, chọn từ kỹ năng chuyên môn.',
+        familiarSkillsPick: 'Chọn kỹ năng quen thuộc',
+        selectedCount: 'Đã chọn {count}',
+        mainSkillsCount: 'Đã chọn {count}/{max}',
+        searchSkill: 'Tìm theo tên',
+        allGroups: 'Tất cả nhóm',
         professionalSkills: 'Kỹ năng chuyên môn',
         professionalSkillsDescription: 'Công nghệ và công cụ, gom theo nhóm.',
         skillGroups: 'Nhóm kỹ năng',
+        ungrouped: 'Chưa phân nhóm',
+        skillYearsShort: '{n} năm',
+        deleteSkill: 'Xóa {name}',
+        editSkill: 'Sửa {name}',
+        renameGroup: 'Đổi tên nhóm {name}',
+        renameGroupTitle: 'Đổi tên nhóm {name}',
+        groupExists: 'Đã có nhóm với tên này',
+        addSkillToGroup: 'Thêm kỹ năng vào nhóm {name}',
+        deleteGroup: 'Xóa nhóm {name}',
+        deleteGroupTitle: 'Xóa nhóm {name}?',
+        deleteGroupText: 'Nhóm và {count} kỹ năng trong nhóm sẽ bị xóa. Không thể hoàn tác.',
         personalSkills: 'Kỹ năng cá nhân',
         personalSkillsDescription: 'Kỹ năng mềm bạn muốn nhà tuyển dụng thấy.',
         foreignLanguages: 'Ngoại ngữ',
@@ -337,7 +356,7 @@ const vi = {
         publicLink: 'Link CV công khai',
         publicLinkDescription: 'Địa chỉ dễ đọc thay cho email trên URL.',
         share: 'Chia sẻ CV',
-        shareDescription: 'Chọn profile cho link, rồi gửi link hoặc mã QR. Ngôn ngữ của link theo bộ chọn VI hoặc EN trên thanh trên cùng.',
+        shareDescription: 'Chọn profile cho link, rồi gửi link hoặc mã QR. Ngôn ngữ của link theo ngôn ngữ CV trong Cài đặt tài khoản hoặc trang Xem trước.',
         allProfiles: 'Tất cả (mặc định)',
         yourLink: 'Link CV của bạn',
     },
@@ -471,6 +490,9 @@ const vi = {
         delete: 'Xóa tài khoản',
         deleteDescription: 'Xóa vĩnh viễn hồ sơ và mọi file đã tải lên.',
         cannotUndo: 'Không thể khôi phục sau khi xóa.',
+        appLanguage: 'Ngôn ngữ ứng dụng',
+        appLanguageDescription: 'Ngôn ngữ của menu, nút và thông báo. Không đổi ngôn ngữ CV.',
+        cvLanguageDescription: 'Dùng cho xem trước, link CV công khai và file PDF tải về.',
     },
     preview: {
         title: 'Xem trước CV',
@@ -478,6 +500,7 @@ const vi = {
         exportPdf: 'Xuất PDF / In',
         theme: 'Giao diện',
         cvTheme: 'Giao diện CV',
+        cvLanguage: 'Ngôn ngữ CV',
     },
     publicResume: {
         loading: 'Đang tải hồ sơ…',
@@ -496,9 +519,6 @@ const en: typeof vi = {
         account: 'Account',
         login: 'Log in',
         register: 'Sign up',
-        language: 'Language',
-        languageInfoLabel: 'What does this language apply to?',
-        languageInfo: 'Applies to both the interface and your CV language: the preview, the public CV link and the downloaded PDF.',
         themeLight: 'Switch to light theme',
         themeDark: 'Switch to dark theme',
         openNav: 'Open navigation menu',
@@ -520,6 +540,7 @@ const en: typeof vi = {
         visits: 'Visits',
         information: 'Basic information',
         generalInformation: 'General information',
+        skills: 'Skills',
         education: 'Education',
         experience: 'Experience',
         project: 'Projects',
@@ -568,7 +589,7 @@ const en: typeof vi = {
         langHasError: 'Has errors to fix',
         showPassword: 'Show password',
         closeToast: 'Close notification',
-        newTag: 'Add new',
+        newTag: 'Enter a group name',
         addTag: 'Add tag',
         removeTag: 'Remove tag {tag}',
         editTitle: 'Edit: {name}',
@@ -801,9 +822,30 @@ const en: typeof vi = {
         group: 'Group',
         jobPreferences: 'Job preferences',
         jobPreferencesDescription: 'The position, salary and work location you are looking for.',
+        mainSkills: 'Main skills',
+        mainSkillsDescription: 'Your strongest skills, picked from your professional skills, up to {max}.',
+        mainSkillsPick: 'Choose main skills',
+        familiarSkills: 'Familiar skills',
+        familiarSkillsDescription: 'Skills you have worked with, picked from your professional skills.',
+        familiarSkillsPick: 'Choose familiar skills',
+        selectedCount: '{count} selected',
+        mainSkillsCount: '{count}/{max} selected',
+        searchSkill: 'Search by name',
+        allGroups: 'All groups',
         professionalSkills: 'Professional skills',
         professionalSkillsDescription: 'Technologies and tools, grouped.',
         skillGroups: 'Skill groups',
+        ungrouped: 'Ungrouped',
+        skillYearsShort: '{n} yr',
+        deleteSkill: 'Delete {name}',
+        editSkill: 'Edit {name}',
+        renameGroup: 'Rename group {name}',
+        renameGroupTitle: 'Rename group {name}',
+        groupExists: 'A group with this name already exists',
+        addSkillToGroup: 'Add a skill to {name}',
+        deleteGroup: 'Delete group {name}',
+        deleteGroupTitle: 'Delete group {name}?',
+        deleteGroupText: 'The group and its {count} skills will be deleted. This can\'t be undone.',
         personalSkills: 'Personal skills',
         personalSkillsDescription: 'Soft skills you want recruiters to see.',
         foreignLanguages: 'Foreign languages',
@@ -822,7 +864,7 @@ const en: typeof vi = {
         publicLink: 'Public CV link',
         publicLinkDescription: 'A readable address instead of your email in the URL.',
         share: 'Share CV',
-        shareDescription: 'Pick a profile for the link, then send the link or QR code. The link language follows the VI or EN switch in the top bar.',
+        shareDescription: 'Pick a profile for the link, then send the link or QR code. The link language follows the CV language in Account settings or on the Preview page.',
         allProfiles: 'All (default)',
         yourLink: 'Your CV link',
     },
@@ -956,6 +998,9 @@ const en: typeof vi = {
         delete: 'Delete account',
         deleteDescription: 'Permanently delete your profile and every uploaded file.',
         cannotUndo: 'This can\'t be recovered after deletion.',
+        appLanguage: 'App language',
+        appLanguageDescription: 'The language of menus, buttons and messages. Doesn\'t change your CV language.',
+        cvLanguageDescription: 'Used for the preview, the public CV link and the downloaded PDF.',
     },
     preview: {
         title: 'CV preview',
@@ -963,6 +1008,7 @@ const en: typeof vi = {
         exportPdf: 'Export PDF / Print',
         theme: 'Theme',
         cvTheme: 'CV theme',
+        cvLanguage: 'CV language',
     },
     publicResume: {
         loading: 'Loading profile…',
@@ -976,11 +1022,18 @@ const en: typeof vi = {
     },
 }
 
-const { selectedLang } = useCvLang()
+const UI_LANG_KEY = 'uiLang'
+
+// no stored choice yet → keep the language the old shared VI | EN switch left in `cvLang`
+export const uiLang = ref<CvLang>(resolveCvLang(localStorage.getItem(UI_LANG_KEY) ?? localStorage.getItem('cvLang')))
+
+export function setUiLang(value: unknown) {
+    uiLang.value = resolveCvLang(value)
+}
 
 export const i18n = createI18n({
     legacy: false,
-    locale: selectedLang.value,
+    locale: uiLang.value,
     fallbackLocale: 'vi',
     messages: { vi, en },
 })
@@ -1005,10 +1058,11 @@ export const tr = (s?: string): string | undefined => {
 }
 
 watch(
-    selectedLang,
+    uiLang,
     lang => {
         i18n.global.locale.value = lang
         document.documentElement.lang = lang
+        localStorage.setItem(UI_LANG_KEY, lang)
     },
     { immediate: true },
 )

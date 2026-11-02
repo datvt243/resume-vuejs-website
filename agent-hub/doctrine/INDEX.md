@@ -1,39 +1,40 @@
-# doctrine/INDEX.md — map của doctrine
+# doctrine/INDEX.md — a map of doctrine
 
-> Doctrine là VERIFIED TRUTH. Phỏng đoán, ý tưởng dang dở KHÔNG
-> thuộc về đây — chúng thuộc `evidence/` note hoặc diagram note.
+> Doctrine is VERIFIED TRUTH. Guesses and half-finished ideas do NOT
+> belong here — they belong in an `evidence/` note or a diagram note.
 
 ## Read in this order
 | File | What it is | When you need it |
 |---|---|---|
-| `SOUL.md` | Identity của hub agent | Trước khi tự ý quyết định thay đổi gì |
-| `MEMORY.md` | Path, stack, lệnh chính xác | Mọi phiên, ngay từ đầu |
-| `domains/PROJECT.md` | Ground truth riêng resume-vuejs-website | Trước khi implement |
-| `standards/edit-verification.md` | Luật không claim thứ chưa quan sát | Trước khi báo "done" |
-| `standards/recipes.md` | Recipe là gì, khi nào viết | Khi lặp lại 1 quy trình lần 2 |
+| `SOUL.md` | The hub agent's identity | Before deciding to change anything on your own |
+| `MEMORY.md` | Path, stack, exact commands | Every session, right at the start |
+| `domains/PROJECT.md` | The project's own ground truth | Before implementing |
+| `standards/edit-verification.md` | The rule against claiming what hasn't been observed | Before reporting "done" |
+| `standards/recipes.md` | What a recipe is, when to write one | The 2nd time you repeat a process |
 | `standards/initiative-scoping.md` | Measure exhaustively by rule+file before/after a multi-phase count-based initiative | Before carving up any "clean up X across the codebase" effort into phases |
 | `standards/code-comments.md` | What a source comment may say + its style, plus project opt-ins (file header, object params) | Before writing/changing any comment or function signature |
 
 ## The three kinds of knowledge here
 | Kind | Home | Example |
 |---|---|---|
-| Về hub | `SOUL.md` / `MEMORY.md` | Lệnh build chính xác |
-| Về domain/project | `domains/PROJECT.md` | `_id` presence quyết định POST vs PUT trong `useDocument` |
-| Về cách làm việc | `standards/*.md` | Format recipe bắt buộc |
+| About the hub | `SOUL.md` / `MEMORY.md` | The exact test command |
+| About the domain/project | `domains/<project>.md` | An invariant specific to this project |
+| About how to work | `standards/*.md` | The mandatory recipe format |
 
-Một fact nằm sai ngăn là một fact không ai tin.
+A fact living in the wrong drawer is a fact no one trusts.
 
 ## Growing the doctrine
-Chỉ thêm file/mục khi CẢ 3 đúng: (1) verified, (2) durable, (3) NOT
-INFERABLE — agent đọc code 2 phút không tự suy ra được. Trượt điều (3) thì
-đừng viết — doctrine mà chỉ nhại lại code sẽ cũ đi âm thầm và đánh lừa người
-đọc.
+Only add a file/section when ALL 3 are true: (1) verified, (2) durable,
+(3) NOT INFERABLE — an agent reading the code for 2 minutes couldn't
+figure it out on its own. Fails (3)? Don't write it — doctrine that just
+echoes the code will silently go stale and mislead the reader.
 
 ## Correcting the doctrine
-Sửa file, VÀ ghi "tôi từng tin gì / thực tế là gì" vào bảng Corrections
-trong `MEMORY.md` của worker liên quan. Xoá âm thầm một fact sai = mất luôn
-bài học đằng sau nó.
+Fix the file, AND record "what I used to believe / what's actually true"
+in the Corrections table in the related worker's `MEMORY.md`. Silently
+deleting a wrong fact also erases the lesson behind it.
 
 ## Deliberately absent
-Không có `laws/`, `architecture/`, `uplifts/`, `training/`. Chỉ thêm khi đã
-có bài học thật sự cần nó — không thêm trước.
+No `laws/`, `architecture/`, `uplifts/`, `training/`. Only add these once
+there's a real lesson that actually needs them — never add them ahead of
+time.

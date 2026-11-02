@@ -14,13 +14,19 @@ export type CvLang = 'vi' | 'en'
 
 export const DEFAULT_CV_LANG: CvLang = 'vi'
 
+// language names stay in their own language
+export const LANG_OPTIONS = [
+    { value: 'vi', label: 'Tiếng Việt' },
+    { value: 'en', label: 'English' },
+]
+
 const STORAGE_KEY = 'cvLang'
 
 export function resolveCvLang(value: unknown): CvLang {
     return value === 'en' ? 'en' : DEFAULT_CV_LANG
 }
 
-// module scope: the header switch and every page share one value (it also drives the UI locale, see src/i18n)
+// module scope: the header switch and every page share one value
 const selectedLang = ref<CvLang>(resolveCvLang(localStorage.getItem(STORAGE_KEY)))
 
 watch(selectedLang, value => {

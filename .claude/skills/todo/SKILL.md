@@ -31,7 +31,7 @@ argument-hint: "<task>|#<issue-number> [--ship]"
       3 words of the issue title, lowercased, non-alphanumeric collapsed
       to `-`. E.g. issue #42 "Fix login redirect loop" →
       `42-fix-login-redirect`.
-      [added 2026-09-19] This check matters whenever a project has
+      This check matters whenever a project has
       hand-patched its own `/ship` (see `ship.md`'s note on hand-patched
       guards) to auto-close issues by parsing the issue number out of a
       specific branch-name pattern (e.g. `bug/<n>`/`feature/<n>`) —

@@ -1,25 +1,28 @@
-> Recipe là SAVED REASONING — các bước tốt định thay thế việc suy ra từ
-> đầu. Lần sau chỉ cần replay.
+> A recipe is SAVED REASONING — good steps meant to replace figuring it
+> out from scratch. Next time, just replay it.
 
-## Why they matter (Trí Tuệ Tích Luỹ)
-"Recipes are capital. Models are fuel." Trí tuệ tích luỹ không nằm trong
-model — nó nằm trong recipe đã viết ra.
+## Why they matter (Compounding Intelligence)
+"Recipes are capital. Models are fuel." Compounding intelligence doesn't
+live in the model — it lives in the recipe that got written down.
 
 ## When to write one
-Viết recipe khi: (1) task này lặp lại ≥ 2 lần, (2) có bước dễ nhầm/khó nhớ,
-(3) có bước tốn công debug mới ra, (4) quy trình đủ dài để đáng lưu lại.
+Write a recipe when: (1) this task repeats ≥ 2 times, (2) there's a step
+that's easy to get wrong/hard to remember, (3) there's a step that took
+real debugging effort to figure out, (4) the process is long enough to
+be worth saving.
 
 ## What they are NOT
-Không phải action/lệnh cố định trong `manifest.yaml` — đó là thẩm quyền khác.
-Recipe sống ở `haven/workers/<wid>/recipes/*.md`.
+Not a fixed action/command in `manifest.yaml` — that's a different
+authority. A recipe lives at `haven/workers/<wid>/recipes/*.md`.
 
-## Format (bắt buộc 5 mục)
-1. **Contract** — Input, Output, khi nào dùng.
-2. **Steps** — đánh số, tất định.
-3. **Hard rules honored** — liệt kê tên hard rule liên quan.
-4. **Failure branches** — bảng | Failure | Handling |.
-5. **Runtime** — cách gọi (`/worker <wid> "<task>"`).
+## Format (5 mandatory sections)
+1. **Contract** — Input, Output, when to use it.
+2. **Steps** — numbered, deterministic.
+3. **Hard rules honored** — list the related hard rule names.
+4. **Failure branches** — a table | Failure | Handling |.
+5. **Runtime** — how it's invoked (`/worker <wid> "<task>"`).
 
 ## Maintaining them
-Recipe sai thì sửa lại, và ghi vào bảng Corrections trong `MEMORY.md` của
-worker khi phát hiện nó sai. Không xoá rồi bỏ đi — sửa và giữ lại bài học.
+When a recipe turns out wrong, fix it, and record it in the Corrections
+table in the worker's `MEMORY.md` the moment you discover it's wrong.
+Don't delete and walk away — fix it and keep the lesson.

@@ -16,7 +16,7 @@ defineProps({
 </script>
 
 <template>
-    <div class="flex flex-col items-center px-4 py-12 text-center">
+    <div class="flex flex-col items-center rounded-md border border-dashed border-line bg-surface-2 px-4 py-12 text-center">
         <FontAwesomeIcon :icon="icon" class="text-xl text-fg-3" />
         <p class="mb-0 mt-3 text-md font-semibold text-fg">{{ title || t('common.noData') }}</p>
         <p v-if="description" class="mb-0 mt-1 max-w-sm text-sm text-fg-2">{{ description }}</p>

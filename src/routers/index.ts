@@ -44,6 +44,12 @@ const routes = [
                 meta: { requiresAuth: true },
             },
             {
+                path: 'skills',
+                name: 'skills',
+                component: () => import('@/pages/dashboard/PageSkills.vue'),
+                meta: { requiresAuth: true },
+            },
+            {
                 path: 'education',
                 name: 'education',
                 component: () => import('@/pages/dashboard/PageEducation.vue'),

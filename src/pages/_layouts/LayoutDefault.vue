@@ -54,6 +54,7 @@ const navGroups = [
         items: [
             { key: 'nav.information', to: '/dashboard/information', icon: 'fa-solid fa-user' },
             { key: 'nav.generalInformation', to: '/dashboard/general-information', icon: 'fa-solid fa-id-card' },
+            { key: 'nav.skills', to: '/dashboard/skills', icon: 'fa-solid fa-code' },
             { key: 'nav.education', to: '/dashboard/education', icon: 'fa-solid fa-graduation-cap' },
             { key: 'nav.experience', to: '/dashboard/experience', icon: 'fa-solid fa-briefcase' },
             { key: 'nav.project', to: '/dashboard/project', icon: 'fa-solid fa-layer-group' },

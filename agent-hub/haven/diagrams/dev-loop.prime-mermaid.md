@@ -105,18 +105,6 @@ flowchart TD
 
 Any regression must be a **new node** (LAI-13) — never edit an old node's
 PM status directly to "undo" an existing SEAL.
-| `issue-307-modal-save-close` | SEALED | 2026-10-25 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-25-issue-307-modal-save-close-seal.md`. |
-| `issue-316-404-page` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-316-404-page-seal.md` |
-| `issue-315-user-menu-label` | SEALED | 2026-10-25 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-25-issue-315-user-menu-label-seal.md`. |
-| `issue-314-public-cv-slug-reload` | SEALED | 2026-10-25 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-25-issue-314-public-cv-slug-reload-seal.md`. |
-| `issue-311-redundant-requests` | SEALED | 2026-10-25 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-25-issue-311-redundant-requests-seal.md`. |
-| `issue-312-load-login-errors` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-312-load-login-errors-seal.md` |
-| `issue-310-toast-language` | SEALED | 2026-10-25 — archived, see `haven/diagrams/dev-loop-archive.md`. Evidence: `evidence/verifier/2026-10-25-issue-310-toast-language-seal.md`. |
-| `issue-317-reload-redirect` | SEALED | 2026-10-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-25-issue-317-reload-redirect-seal.md` |
-| `issue-336-social-media-update` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-336-social-media-update-seal.md` |
-| `issue-340-input-cannot-clear` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-340-input-cannot-clear-seal.md` |
-| `issue-344-reload-empty-form` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-344-reload-empty-form-seal.md` |
-| `issue-335-register-names` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-335-register-names-seal.md` |
 | `issue-312-load-error-retry` | SEALED | 2026-10-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-26-issue-312-load-error-retry-seal.md` |
 | `issue-312-visits-error-retry` | SEALED | 2026-10-27 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-27-issue-312-visits-error-retry-seal.md` |
 | `issue-355-education-major-min` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-355-education-major-min-seal.md` |
@@ -126,3 +114,14 @@ PM status directly to "undo" an existing SEAL.
 | `issue-354-public-cv-experience-order` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-354-public-cv-experience-order-seal.md` |
 | `issue-356-editor-datepicker-i18n` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-356-editor-datepicker-i18n-seal.md` |
 | `issue-364-form-length-rules` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-364-form-length-rules-seal.md` |
+| `issue-370-language-in-settings` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-370-language-in-settings-seal.md` |
+| `issue-370-remove-header-lang-switch` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-370-remove-header-lang-switch-seal.md` |
+| `issue-372-skills-page` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-372-skills-page-seal.md` |
+| `issue-374-skill-badges` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-374-skill-badges-seal.md` |
+| `issue-374-skill-group-actions` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-374-skill-group-actions-seal.md` |
+| `issue-374-skill-name-emphasis` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-374-skill-name-emphasis-seal.md` |
+| `issue-374-skill-edit-rename` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-374-skill-edit-rename-seal.md` |
+| `issue-374-main-skills` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-374-main-skills-seal.md` |
+| `issue-374-nodata-box` | SEALED | 2026-11-02 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-02/issue-374-nodata-box-seal.md` |
+| `issue-377-familiar-skills` | SEALED | 2026-11-02 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-02/issue-377-familiar-skills-seal.md` |
+| `nodata-dashed-border` | SEALED | 2026-11-02 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-02/nodata-dashed-border-seal.md` |

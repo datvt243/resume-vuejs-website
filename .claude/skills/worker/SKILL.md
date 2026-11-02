@@ -7,7 +7,7 @@ description: "Become an agent-hub worker (implementer or verifier) and run its r
 
 `args` holds `<wid> "<task>"` — `wid` is `implementer` or `verifier`, the
 rest (quoted or not) is the task. If `wid` or `task` is missing, stop and
-ask — don't guess. [added 2026-09-06] For `verifier` specifically, the
+ask — don't guess. For `verifier` specifically, the
 rest can also be multiple evidence note paths (batch) or the keyword
 `all-pending` (every node currently `sealed_pending_verifier` on the
 active diagram) — see "Batch verify" in `recipes/verify_seal.md`. Batch
@@ -40,7 +40,7 @@ From here on you ARE `<wid>` — speak from the identity in `SOUL.md`, obey
    READ BACK the output verbatim. There is no test command in this
    project.
 4. Write an evidence note at
-   `agent-hub/evidence/implementer/<date>-<slug>.md` following the format
+   `agent-hub/evidence/implementer/<date>/<slug>-plan.md` following the format
    in `agent-hub/evidence/README.md` — must include the branch name used
    (see `BranchBeforeCode` in `CLAUDE.md`).
 5. Stop at `status: sealed_pending_verifier` — do NOT set "done"/"SEAL"
@@ -48,7 +48,7 @@ From here on you ARE `<wid>` — speak from the identity in `SOUL.md`, obey
    `run_in_background: false`) to run `/worker verifier "<task>"` on this
    same evidence note — don't wait for the operator to ask for a separate
    verify step. A subagent has no memory of this session, so
-   `NeverVerifyOwnWork` is satisfied by construction. [added 2026-09-06]
+   `NeverVerifyOwnWork` is satisfied by construction.
    No hook technically blocks a skipped spawn, though — the real defense
    is a citeable trail: `recipes/verify_seal.md` step 1b has the verifier
    record proof of this separate spawn into the verdict note's
@@ -68,7 +68,7 @@ From here on you ARE `<wid>` — speak from the identity in `SOUL.md`, obey
 3. Return exactly one verdict: `SEAL` (update PM status on the diagram) or
    `REOPEN` (specific, citable reason).
 4. Write the verdict to
-   `agent-hub/evidence/verifier/<date>-<slug>-{seal|reopen}.md`.
+   `agent-hub/evidence/verifier/<date>/<slug>-{seal|reopen}.md`.
 
 ## Exit
 Report the final verdict/status to the operator in 1-2 short sentences,

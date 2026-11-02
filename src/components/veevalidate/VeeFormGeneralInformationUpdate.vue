@@ -36,11 +36,21 @@ const refModal02 = ref()
 const refVeeForm02 = ref()
 
 function showModalCreateDoc() {
+    editIndex.value = null
+    document._id = null
     for (const k of generalInformationField.value) {
         document[k.name] = k.default
     }
     refModal02.value?.show()
     refVeeForm02.value?.reset()
+}
+
+// list items have no `_id`; a placeholder one makes VeeForm load the values (it resets id-less docs) and titles the modal "edit"
+const editIndex = ref(null)
+function showModalEditDoc(index) {
+    editIndex.value = index
+    Object.assign(document, generalInformationField.value[index], { _id: `edit-${index}` })
+    refModal02.value?.show()
 }
 
 /**
@@ -80,7 +90,10 @@ async function handleUpdate(values, action = 'create') {
         let _list = []
         if (action === 'create') {
             const _document = { ...values }
-            _list = [...generalInformationField.value, _document]
+            _list =
+                editIndex.value === null
+                    ? [...generalInformationField.value, _document]
+                    : generalInformationField.value.map((item, i) => (i === editIndex.value ? _document : item))
             return { _flag: true, _list }
         }
 
@@ -135,6 +148,10 @@ async function handleUpdate(values, action = 'create') {
                     const candidate = candidateStore()
                     candidate.setGeneralInformation({ [props.fieldKey]: generalInformation[props.fieldKey] })
                 }
+                if (action === 'create') {
+                    editIndex.value = null
+                    refModal02.value?.hide()
+                }
             },
         ))
 }
@@ -149,22 +166,25 @@ async function handleUpdate(values, action = 'create') {
         <div class="space-y-4">
             <slot name="group"></slot>
 
-            <TableDefault
-                :model-value="generalInformationField"
-                :settings="props.fields"
-                :cols-hidden="[]"
-                col-control="fullName"
-                :height-auto="true"
-            >
-                <template #theadMore>
-                    <th scope="col" class="w-12"><span class="sr-only">{{ t('common.actions') }}</span></th>
-                </template>
-                <template #tbodyMore="{ doc }">
-                    <td class="w-12 text-right">
-                        <Button icon="fa-solid fa-trash" type="ghost" size="sm" :aria-label="`${t('common.delete')} ${doc.name || doc.language || ''}`.trim()" @click="handleUpdate({ ...doc }, 'delete')" />
-                    </td>
-                </template>
-            </TableDefault>
+            <!-- `list` replaces the table; `remove(index)` runs the same confirm + patch as the row delete, `add()` / `edit(index)` open the modal -->
+            <slot name="list" :items="generalInformationField" :remove="index => handleUpdate({ index }, 'delete')" :add="showModalCreateDoc" :edit="showModalEditDoc">
+                <TableDefault
+                    :model-value="generalInformationField"
+                    :settings="props.fields"
+                    :cols-hidden="[]"
+                    col-control="fullName"
+                    :height-auto="true"
+                >
+                    <template #theadMore>
+                        <th scope="col" class="w-12"><span class="sr-only">{{ t('common.actions') }}</span></th>
+                    </template>
+                    <template #tbodyMore="{ doc }">
+                        <td class="w-12 text-right">
+                            <Button icon="fa-solid fa-trash" type="ghost" size="sm" :aria-label="`${t('common.delete')} ${doc.name || doc.language || ''}`.trim()" @click="handleUpdate({ ...doc }, 'delete')" />
+                        </td>
+                    </template>
+                </TableDefault>
+            </slot>
         </div>
     </FormSection>
 

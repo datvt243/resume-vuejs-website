@@ -44,7 +44,7 @@ const busy = computed(() => !!loading?.value?.isLoading)
                 </div>
             </div>
         </div>
-        <div v-else-if="props.error" class="rounded-md border border-line bg-surface" role="alert">
+        <div v-else-if="props.error" role="alert">
             <NoData icon="fa-solid fa-triangle-exclamation" :title="t('error.loadList')" :description="t('error.loadListDescription')">
                 <Button icon="fa-solid fa-rotate-right" :text="t('common.retry')" @click="emit('retry')" />
             </NoData>

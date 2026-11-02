@@ -249,9 +249,7 @@ const personalSkillFields = [
                                 </ul>
                             </section>
                         </div>
-                        <div v-else class="rounded-md border border-line bg-surface">
-                            <NoData />
-                        </div>
+                        <NoData v-else />
                     </template>
                 </VeeFormGeneralInformationUpdate>
             </template>

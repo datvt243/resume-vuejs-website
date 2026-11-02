@@ -73,16 +73,14 @@ describe('PickedSkills picker', () => {
         expect(hide).not.toHaveBeenCalled()
     })
 
-    it('boxes the empty state only when there are no main skills', () => {
+    it('shows the empty state only when there are no picks', () => {
         const empty = mountComponent(vi.fn(), [])
-        const box = empty.findAll('.no-data')[0].element.parentElement!
-        expect(box.className).toContain('border border-line')
-        expect(box.tagName).toBe('DIV')
+        expect(empty.findAll('button[aria-label="generalInfo.deleteSkill"]')).toHaveLength(0)
+        expect(empty.findAll('.no-data')).toHaveLength(1)
 
         const filled = mountComponent(vi.fn(), [{ name: 'Vue' }])
         expect(filled.find('ul li').text()).toContain('Vue')
-        // the picker's own "no match" state lives in the modal, outside the section
-        expect(filled.findAll('.border-line .no-data')).toHaveLength(0)
+        expect(filled.findAll('.no-data')).toHaveLength(0)
     })
 
     it('has no limit when max is 0', async () => {

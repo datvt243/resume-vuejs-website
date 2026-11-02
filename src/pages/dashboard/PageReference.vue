@@ -112,11 +112,9 @@ function showModalDuplicateDoc(doc) {
             </template>
         </TableDefault>
         <LoadingGate v-else :error="loadError" @retry="getData">
-            <div class="rounded-md border border-line bg-surface">
-                <NoData :title="$t('crud.reference.empty')" :description="$t('crud.reference.emptyDescription')">
-                    <Button icon="fa-solid fa-plus" :text="$t('crud.reference.add')" @click="showModalCreateDoc()" />
-                </NoData>
-            </div>
+            <NoData :title="$t('crud.reference.empty')" :description="$t('crud.reference.emptyDescription')">
+                <Button icon="fa-solid fa-plus" :text="$t('crud.reference.add')" @click="showModalCreateDoc()" />
+            </NoData>
         </LoadingGate>
     </div>
 

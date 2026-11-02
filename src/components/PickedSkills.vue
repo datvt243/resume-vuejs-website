@@ -69,9 +69,7 @@ async function submit() {
                 </span>
             </li>
         </ul>
-        <div v-else class="rounded-md border border-line bg-surface">
-            <NoData />
-        </div>
+        <NoData v-else />
     </FormSection>
 
     <Modal ref="refModal" :title="pickTitle">

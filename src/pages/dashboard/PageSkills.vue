@@ -6,7 +6,7 @@
 
 import VeeFormGeneralInformationUpdate from '@/components/veevalidate/VeeFormGeneralInformationUpdate.vue'
 import GroupTags from '@/components/GroupTags.vue'
-import MainSkills from '@/components/MainSkills.vue'
+import PickedSkills from '@/components/PickedSkills.vue'
 
 import { ref, computed, watch, provide, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -121,10 +121,11 @@ async function renameGroup(group) {
     })
 }
 
-async function saveMainSkills(mainSkills) {
+// saves one picked-skills field (mainSkills, familiarSkills); resolves true on success
+async function savePicked(field, list) {
     let saved = false
-    await updatePatchDoc({ _id: candidate.getGeneralInformation?._id, mainSkills }, ({ data }) => {
-        candidate.setGeneralInformation({ mainSkills: data.mainSkills })
+    await updatePatchDoc({ _id: candidate.getGeneralInformation?._id, [field]: list }, ({ data }) => {
+        candidate.setGeneralInformation({ [field]: data[field] })
         saved = true
     })
     return saved
@@ -178,7 +179,25 @@ const personalSkillFields = [
             <Button @click="getData?.()" icon="fa-solid fa-repeat" type="ghost" :aria-label="$t('common.reload')" />
         </Heading>
 
-        <MainSkills :model-value="info.mainSkills || []" :skills="skills" :groups="groupNames" :max="MAIN_SKILLS_MAX" :save="saveMainSkills" />
+        <PickedSkills
+            :title="$t('generalInfo.mainSkills')"
+            :description="$t('generalInfo.mainSkillsDescription', { max: MAIN_SKILLS_MAX })"
+            :pick-title="$t('generalInfo.mainSkillsPick')"
+            :model-value="info.mainSkills || []"
+            :skills="skills"
+            :groups="groupNames"
+            :max="MAIN_SKILLS_MAX"
+            :save="list => savePicked('mainSkills', list)"
+        />
+        <PickedSkills
+            :title="$t('generalInfo.familiarSkills')"
+            :description="$t('generalInfo.familiarSkillsDescription')"
+            :pick-title="$t('generalInfo.familiarSkillsPick')"
+            :model-value="info.familiarSkills || []"
+            :skills="skills"
+            :groups="groupNames"
+            :save="list => savePicked('familiarSkills', list)"
+        />
 
         <Tabs v-model="tab" :tabs="TABS" :aria-label="$t('nav.skills')">
             <template #professional>

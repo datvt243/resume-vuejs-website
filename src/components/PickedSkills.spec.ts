@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { defineComponent, h } from 'vue'
 import { mount, flushPromises } from '@vue/test-utils'
-import MainSkills from './MainSkills.vue'
+import PickedSkills from './PickedSkills.vue'
 import Button from '@/components/global/Button.vue'
 import FormSection from '@/components/global/FormSection.vue'
 
@@ -20,9 +20,9 @@ const skills = [
     { name: 'Node', group: 'Backend' },
 ]
 
-function mountComponent(save = vi.fn().mockResolvedValue(true), modelValue = [{ name: 'Vue' }]) {
-    return mount(MainSkills, {
-        props: { modelValue, skills, groups: ['Frontend', 'Backend'], max: 2, save },
+function mountComponent(save = vi.fn().mockResolvedValue(true), modelValue = [{ name: 'Vue' }], max = 2) {
+    return mount(PickedSkills, {
+        props: { modelValue, skills, groups: ['Frontend', 'Backend'], max, save },
         global: {
             components: { Button, FormSection },
             stubs: { Modal: ModalStub, NoData: { template: '<p class="no-data" />' }, FontAwesomeIcon: true },
@@ -33,7 +33,7 @@ function mountComponent(save = vi.fn().mockResolvedValue(true), modelValue = [{ 
 
 const names = (wrapper: ReturnType<typeof mountComponent>) => wrapper.findAll('label').map(l => l.find('span').text())
 
-describe('MainSkills picker', () => {
+describe('PickedSkills picker', () => {
     it('filters by group and searches by name', async () => {
         const wrapper = mountComponent()
         await wrapper.find('select').setValue('Frontend')
@@ -83,5 +83,13 @@ describe('MainSkills picker', () => {
         expect(filled.find('ul li').text()).toContain('Vue')
         // the picker's own "no match" state lives in the modal, outside the section
         expect(filled.findAll('.border-line .no-data')).toHaveLength(0)
+    })
+
+    it('has no limit when max is 0', async () => {
+        const wrapper = mountComponent(vi.fn(), [{ name: 'Vue' }, { name: 'React' }], 0)
+        await wrapper.findAll('button').find(b => b.text() === 'common.add')!.trigger('click')
+        await wrapper.findAll('input[type=checkbox]')[2].trigger('change')
+        expect(wrapper.findAll('input[type=checkbox]').some(b => (b.element as HTMLInputElement).disabled)).toBe(false)
+        expect(wrapper.find('[aria-live]').text()).toBe('generalInfo.selectedCount')
     })
 })

@@ -13,7 +13,10 @@ import { ref, shallowRef } from 'vue'
 import { useCandidate } from '@/composables/useCandidate'
 import { useDocument } from '@/composables/useDocument'
 import { useManualOrder } from '@/composables/useManualOrder'
-import { localizedToForm, localizedFromForm } from '@/utilities/index'
+import { localizedToForm, localizedFromForm, getLocalizedText } from '@/utilities/index'
+
+// sent as { vi, en } objects; the form edits them as `<name>` + `<name>_en`
+const LOCALIZED_FIELDS = ['school', 'major', 'description']
 
 import model from '@/models/education.model'
 
@@ -78,7 +81,7 @@ async function handleUpdate(values) {
         val.startDate = +new Date(val.startDate)
         val.endDate = +new Date(val.endDate)
         !val.isCurrent && (val.isCurrent = false)
-        return localizedFromForm(val, ['description'])
+        return localizedFromForm(val, LOCALIZED_FIELDS)
     })({ ...values })
 
     if (isDuplicating.value) {
@@ -93,7 +96,7 @@ async function handleUpdate(values) {
     })
 }
 async function handleDelete(doc) {
-    deleteDoc({ ...doc }, 'school', res => {
+    deleteDoc({ ...doc, school: getLocalizedText(doc.school) }, 'school', res => {
         const { data } = res
         removeRecordById(data._id)
     })
@@ -105,7 +108,7 @@ function showModalEditDoc(doc) {
     for (const f of new Set(['_id', ...fields])) {
         document[f] = doc[f]
     }
-    Object.assign(document, localizedToForm(doc, ['description']))
+    Object.assign(document, localizedToForm(doc, LOCALIZED_FIELDS))
 
     refModal.value?.show()
 }
@@ -125,7 +128,7 @@ function showModalDuplicateDoc(doc) {
     for (const f of new Set(['_id', ...fields])) {
         document[f] = doc[f]
     }
-    Object.assign(document, localizedToForm(doc, ['description']))
+    Object.assign(document, localizedToForm(doc, LOCALIZED_FIELDS))
 
     refModal.value?.show()
 }
@@ -164,7 +167,7 @@ function showModalDuplicateDoc(doc) {
         </div>
         <LoadingGate v-else :error="loadError" @retry="getData">
             <NoData :title="$t('crud.education.empty')" :description="$t('crud.education.emptyDescription')">
-                <Button icon="fa-solid fa-plus" :text="$t('crud.education.add')" @click="showModalCreateDoc()" />
+                <Button icon="fa-solid fa-plus" action="add" :text="$t('crud.education.add')" @click="showModalCreateDoc()" />
             </NoData>
         </LoadingGate>
     </div>

@@ -11,7 +11,7 @@ import { badgeClass } from '@/lib/badge.lib'
 import { t } from '@/i18n'
 
 // raised on focus so the positioned input doesn't paint over its focus ring
-const addClass = `${buttonClass({ variant: 'secondary', iconOnly: true })} relative focus-visible:z-10`
+const addClass = `${buttonClass({ variant: 'secondary', iconOnly: true, action: 'add' })} relative focus-visible:z-10`
 const tagClass = badgeClass()
 
 const emits = defineEmits(['update:modelValue'])

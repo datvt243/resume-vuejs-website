@@ -26,6 +26,7 @@ import { useDocument } from '@/composables/useDocument'
 import model from '@/models/profile.model'
 import { experienceTitle } from '@/models/experience.model'
 import { t } from '@/i18n'
+import { getLocalizedText } from '@/utilities/index'
 
 const { profiles: dataList, removeRecordById, addRecordToList, loadError, getData } = useCandidate({
     field: 'profiles',
@@ -42,7 +43,7 @@ const { awards } = useCandidate({ field: 'awards' })
 const { references } = useCandidate({ field: 'references' })
 
 const sections = computed(() => [
-    { key: 'educationIds', label: 'nav.education', items: educations.value, title: i => i.school, subTitle: i => i.major },
+    { key: 'educationIds', label: 'nav.education', items: educations.value, title: i => getLocalizedText(i.school), subTitle: i => getLocalizedText(i.major) },
     { key: 'experienceIds', label: 'nav.experience', items: experiences.value, title: i => experienceTitle(i), subTitle: i => i.position },
     { key: 'projectIds', label: 'nav.project', items: projects.value, title: i => i.name, subTitle: i => i.position },
     { key: 'certificateIds', label: 'nav.certificate', items: certificates.value, title: i => i.name, subTitle: i => i.organization },
@@ -179,7 +180,7 @@ function showModalDuplicateDoc(doc) {
         </div>
         <LoadingGate v-else :error="loadError" @retry="getData">
             <NoData :title="$t('profileCv.empty')" :description="$t('profileCv.emptyDescription')">
-                <Button icon="fa-solid fa-plus" :text="$t('profileCv.add')" @click="showModalCreateDoc()" />
+                <Button icon="fa-solid fa-plus" action="add" :text="$t('profileCv.add')" @click="showModalCreateDoc()" />
             </NoData>
         </LoadingGate>
     </div>

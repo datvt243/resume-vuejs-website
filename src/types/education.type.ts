@@ -6,8 +6,9 @@
 
 export interface Education {
     _id?: string
-    school: string
-    major: string
+    // { vi, en } from the owner API; a resolved string from the public API
+    school: string | { vi: string; en?: string }
+    major: string | { vi: string; en?: string }
     startDate: number
     endDate: number
     isCurrent: boolean

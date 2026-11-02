@@ -20,11 +20,11 @@
     --color-accent-fg: #ffffff;
     --color-accent-subtle: #ecfdf5;
     --color-success: #15803d;
-    --color-warning: #b45309;
+    --color-warning: #c2410c;
     --color-danger: #dc2626;
     --color-info: #2563eb;
     --color-success-subtle: #f0fdf4;
-    --color-warning-subtle: #fffbeb;
+    --color-warning-subtle: #fff7ed;
     --color-danger-subtle: #fef2f2;
     --color-info-subtle: #eff6ff;
     --shadow-float: 0 8px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
@@ -55,11 +55,11 @@
     --color-accent-fg: #04211a;
     --color-accent-subtle: rgba(0, 208, 149, 0.12);
     --color-success: #4ade80;
-    --color-warning: #fbbf24;
+    --color-warning: #fb923c;
     --color-danger: #f87171;
     --color-info: #60a5fa;
     --color-success-subtle: rgba(74, 222, 128, 0.12);
-    --color-warning-subtle: rgba(251, 191, 36, 0.12);
+    --color-warning-subtle: rgba(251, 146, 60, 0.12);
     --color-danger-subtle: rgba(248, 113, 113, 0.12);
     --color-info-subtle: rgba(96, 165, 250, 0.12);
     --shadow-float: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);

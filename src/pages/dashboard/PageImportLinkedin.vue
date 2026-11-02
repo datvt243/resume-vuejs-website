@@ -131,7 +131,7 @@ async function handleSaveEducation(values) {
         val.endDate = +new Date(val.endDate)
         !val.isCurrent && (val.isCurrent = false)
         val._id = null
-        return localizedFromForm(val, ['description'])
+        return localizedFromForm(val, ['school', 'major', 'description'])
     })({ ...values })
 
     await updateEducationDoc(data, res => {
@@ -216,7 +216,7 @@ async function handleSaveExperience(values) {
                             <p class="m-0 break-words text-sm font-medium text-fg">{{ group.name(item) }}</p>
                             <p v-if="group.sub(item)" class="m-0 text-xs text-fg-2">{{ group.sub(item) }}</p>
                         </div>
-                        <Button v-if="!item._imported" icon="fa-solid fa-plus" :text="t('common.add')" size="sm" @click="group.open(item)" />
+                        <Button v-if="!item._imported" icon="fa-solid fa-plus" action="add" :text="t('common.add')" size="sm" @click="group.open(item)" />
                         <span v-else class="inline-flex items-center gap-1 text-sm text-success"><FontAwesomeIcon icon="fa-solid fa-circle-check" aria-hidden="true" />{{ t('importCv.added') }}</span>
                     </li>
                 </ul>

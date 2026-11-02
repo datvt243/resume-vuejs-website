@@ -87,7 +87,7 @@ export const toJsonResume = (data: AnyRecord, lang: Lang = 'vi', socialMedia: An
             compact({ name: e.company, position: e.position, ...range(e, e.isCurrent), summary: text(e.description) }),
         ),
         education: (data.educations || []).map((e: AnyRecord) =>
-            compact({ institution: e.school, area: e.major, ...range(e, e.isCurrent) }),
+            compact({ institution: text(e.school), area: text(e.major), ...range(e, e.isCurrent) }),
         ),
         projects: (data.projects || []).map((p: AnyRecord) =>
             compact({

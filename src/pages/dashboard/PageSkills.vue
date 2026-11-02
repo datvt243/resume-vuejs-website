@@ -219,9 +219,9 @@ const personalSkillFields = [
                                 <div class="mb-2 flex flex-wrap items-center gap-2">
                                     <h3 class="m-0 text-md font-semibold text-fg">{{ group.name ?? $t('generalInfo.ungrouped') }}</h3>
                                     <template v-if="group.name">
-                                        <Button :text="$t('common.add')" icon="fa-solid fa-plus" type="ghost" size="sm" :aria-label="$t('generalInfo.addSkillToGroup', { name: group.name })" @click="addToGroup(group.name, add)" />
-                                        <Button icon="fa-solid fa-square-pen" type="ghost" size="sm" class="ms-auto" :aria-label="$t('generalInfo.renameGroup', { name: group.name })" @click="renameGroup(group)" />
-                                        <Button icon="fa-solid fa-trash" type="ghost" size="sm" :aria-label="$t('generalInfo.deleteGroup', { name: group.name })" @click="deleteGroup(group)" />
+                                        <Button :text="$t('common.add')" icon="fa-solid fa-plus" action="add" type="ghost" size="sm" :aria-label="$t('generalInfo.addSkillToGroup', { name: group.name })" @click="addToGroup(group.name, add)" />
+                                        <Button icon="fa-solid fa-square-pen" type="ghost" action="update" size="sm" class="ms-auto" :aria-label="$t('generalInfo.renameGroup', { name: group.name })" @click="renameGroup(group)" />
+                                        <Button icon="fa-solid fa-trash" type="ghost" action="delete" size="sm" :aria-label="$t('generalInfo.deleteGroup', { name: group.name })" @click="deleteGroup(group)" />
                                     </template>
                                 </div>
                                 <ul class="m-0 flex list-none flex-wrap gap-2 p-0">

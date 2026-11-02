@@ -12,13 +12,33 @@ const variants = {
     danger: 'bg-danger text-white hover:text-white',
 }
 
+// action colors (add green, update orange, delete red, clone/view blue) for the
+// secondary and ghost variants; solid variants keep their own fill
+const actionTones = {
+    secondary: {
+        add: 'bg-surface border border-line-strong text-success hover:bg-success-subtle hover:text-success',
+        update: 'bg-surface border border-line-strong text-warning hover:bg-warning-subtle hover:text-warning',
+        delete: 'bg-surface border border-line-strong text-danger hover:bg-danger-subtle hover:text-danger',
+        clone: 'bg-surface border border-line-strong text-info hover:bg-info-subtle hover:text-info',
+        view: 'bg-surface border border-line-strong text-info hover:bg-info-subtle hover:text-info',
+    },
+    ghost: {
+        add: 'text-success hover:bg-success-subtle hover:text-success',
+        update: 'text-warning hover:bg-warning-subtle hover:text-warning',
+        delete: 'text-danger hover:bg-danger-subtle hover:text-danger',
+        clone: 'text-info hover:bg-info-subtle hover:text-info',
+        view: 'text-info hover:bg-info-subtle hover:text-info',
+    },
+}
+
 const sizes = {
     sm: { box: 'h-7 px-3', square: 'h-7 w-7' },
     md: { box: 'h-8 px-3', square: 'h-8 w-8' },
     lg: { box: 'h-10 px-4', square: 'h-10 w-10' },
 }
 
-export function buttonClass({ variant = 'secondary', size = 'md', iconOnly = false } = {}) {
+export function buttonClass({ variant = 'secondary', size = 'md', iconOnly = false, action = '' } = {}) {
     const s = sizes[size] || sizes.md
-    return [base, variants[variant] || variants.secondary, iconOnly ? s.square : s.box].join(' ')
+    const color = actionTones[variant]?.[action] || variants[variant] || variants.secondary
+    return [base, color, iconOnly ? s.square : s.box].join(' ')
 }

@@ -12,6 +12,8 @@ export default {
         iconPosition: { type: String, default: 'start' },
         // sm (h-7) | md (h-8) | lg (h-10)
         size: { type: String, default: 'md' },
+        // add | update | delete | clone | view: colors a secondary/ghost button by what it does
+        action: { type: String, default: '' },
     },
     setup(props, { attrs }) {
         const iconOnly = computed(() => !!props.icon && !props.text)
@@ -35,7 +37,7 @@ export default {
                 'button',
                 {
                     type: 'button',
-                    class: buttonClass({ variant: props.type, size: props.size, iconOnly: iconOnly.value }),
+                    class: buttonClass({ variant: props.type, size: props.size, iconOnly: iconOnly.value, action: props.action }),
                 },
                 getContent.value,
             )

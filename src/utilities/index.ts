@@ -122,3 +122,21 @@ export const sanitizeHtml = (html: string | null | undefined): string => {
  */
 export const escapeHtml = (text: string): string =>
     text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+
+/**
+ * Groups skills by their `group`: groups listed in `groups` (the skill-group tags) first, in that order,
+ * then any other group name in order of first use, then skills with no group (`name: null`). Tag groups
+ * stay even when empty (so skills can be added to them); the no-group bucket only shows when used.
+ * Each skill keeps its `index` in `items`, so callers can delete by it.
+ */
+export const groupSkills = <T extends { group?: string }>(items: T[], groups: string[]): { name: string | null; skills: (T & { index: number })[] }[] => {
+    const byGroup = new Map<string | null, (T & { index: number })[]>(groups.map(name => [name, []]))
+    const ungrouped: (T & { index: number })[] = []
+    items.forEach((skill, index) => {
+        if (!skill.group) return ungrouped.push({ ...skill, index })
+        if (!byGroup.has(skill.group)) byGroup.set(skill.group, [])
+        byGroup.get(skill.group)!.push({ ...skill, index })
+    })
+    byGroup.set(null, ungrouped)
+    return [...byGroup].map(([name, skills]) => ({ name, skills })).filter(g => g.name !== null || g.skills.length)
+}

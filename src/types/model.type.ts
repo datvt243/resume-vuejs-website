@@ -102,7 +102,8 @@ export const withEnglish = function (item: modelItem): modelItem[] {
             label: withParams('form.englishField', { label: item.label }),
             placeholder: '',
             lang: 'en',
-            ...(valid && { valid: (yup: any) => valid(yup).notRequired() }),
+            // EN is optional: an empty input skips the VI rules (`min` would still reject "")
+            ...(valid && { valid: (yup: any) => valid(yup).transform((v: unknown) => (v === '' ? undefined : v)).notRequired() }),
         },
     ]
 }

@@ -135,10 +135,10 @@ function certDateRange(item) {
             <h3 class="cv-section-title">{{ t.educations }}</h3>
             <div v-for="edu in data.educations" :key="edu._id" class="cv-item">
                 <div class="cv-item-head">
-                    <span class="cv-item-title">{{ edu.school }}</span>
+                    <span class="cv-item-title">{{ text(edu.school) }}</span>
                     <span class="cv-item-date">{{ dateRange(edu) }}</span>
                 </div>
-                <p v-if="edu.major" class="cv-item-sub">{{ edu.major }}</p>
+                <p v-if="text(edu.major)" class="cv-item-sub">{{ text(edu.major) }}</p>
                 <div v-if="edu.description" class="cv-item-desc" v-html="sanitizeHtml(text(edu.description))"></div>
             </div>
         </section>

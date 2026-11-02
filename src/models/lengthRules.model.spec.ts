@@ -15,6 +15,27 @@ describe('education major', () => {
     })
 })
 
+describe('education school/major EN fields', () => {
+    const majorEn = schemaOf(MODEL, 'major_en')
+    const schoolEn = schemaOf(MODEL, 'school_en')
+
+    it('are optional: an empty EN input passes even though VI has a minimum', () => {
+        expect(majorEn.isValidSync('')).toBe(true)
+        expect(schoolEn.isValidSync('')).toBe(true)
+    })
+
+    it('still apply the VI length rules once filled', () => {
+        expect(majorEn.isValidSync('CS')).toBe(false)
+        expect(majorEn.isValidSync('Computer Science')).toBe(true)
+        expect(schoolEn.isValidSync('a'.repeat(101))).toBe(false)
+    })
+
+    it('keep VI required', () => {
+        expect(schemaOf(MODEL, 'school').isValidSync('')).toBe(false)
+        expect(major.isValidSync('')).toBe(false)
+    })
+})
+
 // length rules the API enforces, so a too-short or too-long value fails in the form, not as a 400
 describe.each([
     ['reference fullName', schemaOf(REFERENCE, 'fullName'), 3, 50],

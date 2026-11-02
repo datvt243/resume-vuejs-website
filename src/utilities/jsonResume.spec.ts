@@ -91,6 +91,12 @@ describe('toJsonResume', () => {
 })
 
 describe('fromJsonResume', () => {
+    it('exports localized school/major in the requested language', () => {
+        const data = { educations: [{ school: { vi: 'ĐH KHTN', en: 'HCMUS' }, major: { vi: 'Khoa học máy tính', en: '' }, startDate: local(2015, 9, 1), endDate: local(2019, 6, 1), isCurrent: false }] }
+        expect(toJsonResume(data as any, 'en').education[0]).toMatchObject({ institution: 'HCMUS', area: 'Khoa học máy tính' })
+        expect(toJsonResume(data as any, 'vi').education[0]).toMatchObject({ institution: 'ĐH KHTN', area: 'Khoa học máy tính' })
+    })
+
     it('maps work/education into the import-page shape', () => {
         const parsed = fromJsonResume({
             work: [

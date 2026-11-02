@@ -1,19 +1,23 @@
 <script setup>
 /**
- * Main skills: up to `max` names picked from the professional skills. "Add" opens a
- * picker (search by name, filter by group) that edits the whole selection; × removes one.
+ * A list of skill names picked from the professional skills (main skills, familiar skills).
+ * "Add" opens a picker (search by name, filter by group) that edits the whole selection; × removes one.
  */
 
 import Modal from '@/components/Modal.vue'
 import { ref, computed, defineProps } from 'vue'
 
 const props = defineProps({
-    // stored main skills, [{ name }]
+    title: { type: String, default: '' },
+    description: { type: String, default: '' },
+    pickTitle: { type: String, default: '' },
+    // stored picks, [{ name }]
     modelValue: { type: Array, default: () => [] },
     // professional skills to pick from, [{ name, group }]
     skills: { type: Array, default: () => [] },
     groups: { type: Array, default: () => [] },
-    max: { type: Number, default: 5 },
+    // 0 = no limit
+    max: { type: Number, default: 0 },
     // saves the new [{ name }] list, resolves true on success
     save: { type: Function, required: true },
 })
@@ -45,7 +49,7 @@ async function submit() {
 </script>
 
 <template>
-    <FormSection :title="$t('generalInfo.mainSkills')" :description="$t('generalInfo.mainSkillsDescription', { max })" :card="false">
+    <FormSection :title="title" :description="description" :card="false">
         <template #actions>
             <Button icon="fa-solid fa-plus" :text="$t('common.add')" size="sm" @click="open()" />
         </template>
@@ -70,7 +74,7 @@ async function submit() {
         </div>
     </FormSection>
 
-    <Modal ref="refModal" :title="$t('generalInfo.mainSkillsPick')">
+    <Modal ref="refModal" :title="pickTitle">
         <div class="space-y-3">
             <div class="flex flex-wrap gap-2">
                 <input v-model="search" type="search" class="form-control min-w-0 flex-1" :placeholder="$t('generalInfo.searchSkill')" :aria-label="$t('generalInfo.searchSkill')" />
@@ -79,7 +83,7 @@ async function submit() {
                     <option v-for="name in groups" :key="name" :value="name">{{ name }}</option>
                 </select>
             </div>
-            <p class="m-0 text-sm text-fg-2" aria-live="polite">{{ $t('generalInfo.mainSkillsCount', { count: selected.length, max }) }}</p>
+            <p class="m-0 text-sm text-fg-2" aria-live="polite">{{ max ? $t('generalInfo.mainSkillsCount', { count: selected.length, max }) : $t('generalInfo.selectedCount', { count: selected.length }) }}</p>
             <ul v-if="options.length" class="m-0 max-h-80 list-none space-y-1 overflow-y-auto p-0">
                 <li v-for="(skill, i) in options" :key="i">
                     <label class="form-check m-0 flex items-center gap-2 py-1">
@@ -87,7 +91,7 @@ async function submit() {
                             type="checkbox"
                             class="form-check-input m-0"
                             :checked="selected.includes(skill.name)"
-                            :disabled="!selected.includes(skill.name) && selected.length >= max"
+                            :disabled="!!max && !selected.includes(skill.name) && selected.length >= max"
                             @change="toggle(skill.name)"
                         />
                         <span class="text-sm text-fg">{{ skill.name }}</span>

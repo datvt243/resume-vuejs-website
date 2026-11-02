@@ -15,14 +15,14 @@ vi.mock('@/composables/useDocument', () => ({
     useDocument: () => ({ updatePatchDoc: (...args: unknown[]) => updatePatchDoc(...args) }),
 }))
 
-const MainSkillsStub = { name: 'MainSkills', props: ['modelValue', 'skills', 'groups', 'max', 'save'], template: '<div />' }
+const PickedStub = { name: 'PickedSkills', props: ['title', 'modelValue', 'skills', 'groups', 'max', 'save'], template: '<div />' }
 
 function mountPage() {
     setActivePinia(createPinia())
     return mount(PageSkills, {
         global: {
             plugins: [i18n],
-            stubs: { MainSkills: MainSkillsStub, Heading: true, Button: true, Tabs: true, VeeFormGeneralInformationUpdate: true, GroupTags: true },
+            stubs: { PickedSkills: PickedStub, Heading: true, Button: true, Tabs: true, VeeFormGeneralInformationUpdate: true, GroupTags: true },
         },
     })
 }
@@ -35,7 +35,7 @@ describe('PageSkills — main skills save', () => {
         const wrapper = mountPage()
         const store = candidateStore()
         const setGeneralInformation = vi.spyOn(store, 'setGeneralInformation').mockImplementation(() => {})
-        const main = wrapper.findComponent(MainSkillsStub)
+        const main = wrapper.findAllComponents(PickedStub)[0]
         expect(main.props('skills')).toEqual([{ name: 'Vue', group: 'FE' }])
         expect(main.props('max')).toBe(5)
 
@@ -44,9 +44,23 @@ describe('PageSkills — main skills save', () => {
         expect(setGeneralInformation).toHaveBeenCalledWith({ mainSkills: [{ name: 'Vue' }] })
     })
 
+    it('familiar skills save their own field, with no limit', async () => {
+        updatePatchDoc.mockImplementation(async (_payload, cb) => cb?.({ data: { familiarSkills: [{ name: 'Vue' }] } }))
+        const wrapper = mountPage()
+        const setGeneralInformation = vi.spyOn(candidateStore(), 'setGeneralInformation').mockImplementation(() => {})
+        const familiar = wrapper.findAllComponents(PickedStub)[1]
+        expect(familiar.props('title')).toBe('Kỹ năng quen thuộc')
+        expect(familiar.props('max')).toBeUndefined()
+
+        expect(await familiar.props('save')([{ name: 'Vue' }])).toBe(true)
+        expect(updatePatchDoc.mock.calls[0][0]).toMatchObject({ familiarSkills: [{ name: 'Vue' }] })
+        expect(updatePatchDoc.mock.calls[0][0]).not.toHaveProperty('mainSkills')
+        expect(setGeneralInformation).toHaveBeenCalledWith({ familiarSkills: [{ name: 'Vue' }] })
+    })
+
     it('reports failure when the API rejects the save (callback never runs)', async () => {
         updatePatchDoc.mockResolvedValue(undefined)
-        const main = mountPage().findComponent(MainSkillsStub)
+        const main = mountPage().findAllComponents(PickedStub)[0]
         expect(await main.props('save')([{ name: 'Vue' }])).toBe(false)
     })
 })
@@ -54,7 +68,7 @@ describe('PageSkills — main skills save', () => {
 // renders the professional tab and hands `listItems` to its `list` slot
 let listItems: unknown[] = []
 const listStubs = {
-    MainSkills: true,
+    PickedSkills: true,
     Heading: true,
     Button: true,
     GroupTags: true,

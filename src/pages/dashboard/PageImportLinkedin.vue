@@ -131,7 +131,7 @@ async function handleSaveEducation(values) {
         val.endDate = +new Date(val.endDate)
         !val.isCurrent && (val.isCurrent = false)
         val._id = null
-        return localizedFromForm(val, ['description'])
+        return localizedFromForm(val, ['school', 'major', 'description'])
     })({ ...values })
 
     await updateEducationDoc(data, res => {

@@ -8,7 +8,7 @@
 import { defineProps, defineEmits, computed } from 'vue'
 import type { PropType } from 'vue'
 import type { Education } from '@/types/education.type'
-import { formatDate } from '@/utilities/index'
+import { formatDate, getLocalizedText } from '@/utilities/index'
 import { t } from '@/i18n'
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
@@ -38,8 +38,8 @@ const getDate = computed(() => {
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 const item = computed(() => ({
-    title: model.value.school,
-    subTitle: model.value.major,
+    title: getLocalizedText(model.value.school),
+    subTitle: getLocalizedText(model.value.major),
     date: getDate.value,
     description: model.value.description,
 }))

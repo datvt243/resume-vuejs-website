@@ -24,15 +24,15 @@ const name = verb => `${verb} ${props.label}`.trim()
         v-if="props.viewable"
         icon="fa-solid fa-eye"
         type="ghost"
+        action="view"
         :aria-label="name(t('common.view'))"
         :title="t('common.view')"
         @click="emit('view')"
     />
-    <!-- `!`: the ghost variant sets its own text/hover colors -->
     <Button
         icon="fa-solid fa-square-pen"
         type="ghost"
-        class="!text-info hover:!bg-info-subtle"
+        action="update"
         :aria-label="name(t('common.edit'))"
         :title="t('common.edit')"
         @click="emit('edit')"
@@ -40,7 +40,7 @@ const name = verb => `${verb} ${props.label}`.trim()
     <Button
         icon="fa-solid fa-copy"
         type="ghost"
-        class="!text-success hover:!bg-success-subtle"
+        action="clone"
         :aria-label="name(t('common.duplicate'))"
         :title="t('common.duplicate')"
         @click="emit('duplicate')"
@@ -48,7 +48,7 @@ const name = verb => `${verb} ${props.label}`.trim()
     <Button
         icon="fa-solid fa-trash"
         type="ghost"
-        class="!text-danger hover:!bg-danger-subtle"
+        action="delete"
         :aria-label="name(t('common.delete'))"
         :title="t('common.delete')"
         :disabled="props.deleteDisabled"

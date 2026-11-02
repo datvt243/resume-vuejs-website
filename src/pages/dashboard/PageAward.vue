@@ -123,7 +123,7 @@ function showModalDuplicateDoc(doc) {
     </div>
     <LoadingGate v-else :error="loadError" @retry="getData">
       <NoData :title="$t('crud.award.empty')">
-        <Button icon="fa-solid fa-plus" :text="$t('crud.award.add')" @click="showModalCreateDoc()" />
+        <Button icon="fa-solid fa-plus" action="add" :text="$t('crud.award.add')" @click="showModalCreateDoc()" />
       </NoData>
     </LoadingGate>
   </div>

@@ -307,6 +307,14 @@ Don't nest cards inside cards. Use dividers or `bg-surface-2` blocks instead.
 | ghost | `text-fg-2 hover:bg-surface-2 hover:text-fg` |
 | danger | `bg-danger text-white` (destructive confirms only) |
 
+**Action colors** (`<Button action="…">`, `buttonClass({ action })`). Applies to secondary and ghost buttons and sets their text and hover tint. Solid variants keep their fill:
+| Action | Token | Used for |
+|---|---|---|
+| add | `success` (green) | "Thêm" buttons, add-tag |
+| update | `warning` (orange) | edit / rename |
+| delete | `danger` (red) | row delete, delete group |
+| clone, view | `info` (blue) | duplicate, view details, view public CV |
+
 Shared: `inline-flex items-center gap-2 h-8 px-3 rounded text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-50 disabled:pointer-events-none`.
 - At most one primary button per view.
 - Labels are specific verbs ("Lưu thay đổi", "Tải CV"), never "Submit" or "OK".

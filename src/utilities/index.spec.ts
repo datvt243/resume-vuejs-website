@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatDate, formatDateToInput, getLocalizedText, splitLocalizedText, localizedToForm, localizedFromForm, sanitizeHtml, escapeHtml } from './index'
+import { formatDate, formatDateToInput, getLocalizedText, splitLocalizedText, localizedToForm, localizedFromForm, sanitizeHtml, escapeHtml, groupSkills } from './index'
 
 describe('formatDate', () => {
     it('returns the placeholder for a falsy date', () => {
@@ -115,5 +115,27 @@ describe('escapeHtml', () => {
 
     it('leaves plain names unchanged', () => {
         expect(escapeHtml('Đạt Võ')).toBe('Đạt Võ')
+    })
+})
+
+describe('groupSkills', () => {
+    it('puts tag groups first in tag order (kept when empty), then other groups by first use, then no-group skills', () => {
+        const items = [
+            { name: 'Vue', group: 'Frontend' },
+            { name: 'Git' },
+            { name: 'Go', group: 'Not a tag' },
+            { name: 'Node', group: 'Backend' },
+            { name: 'React', group: 'Frontend' },
+            { name: 'Jira', group: '' },
+        ]
+        expect(groupSkills(items, ['Backend', 'Frontend', 'Empty'])).toEqual([
+            { name: 'Backend', skills: [{ name: 'Node', group: 'Backend', index: 3 }] },
+            { name: 'Frontend', skills: [{ name: 'Vue', group: 'Frontend', index: 0 }, { name: 'React', group: 'Frontend', index: 4 }] },
+            { name: 'Empty', skills: [] },
+            { name: 'Not a tag', skills: [{ name: 'Go', group: 'Not a tag', index: 2 }] },
+            { name: null, skills: [{ name: 'Git', index: 1 }, { name: 'Jira', group: '', index: 5 }] },
+        ])
+        expect(groupSkills([], ['A'])).toEqual([{ name: 'A', skills: [] }])
+        expect(groupSkills([], [])).toEqual([])
     })
 })

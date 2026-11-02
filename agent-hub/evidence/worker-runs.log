@@ -80,3 +80,13 @@
 2026-11-01T15:08:23Z role=verifier outcome=SEAL node=issue-370-remove-header-lang-switch rerun=none hub_bytes_before=85529 hub_bytes_after=85209
 2026-11-01T15:16:19Z role=verifier outcome=REOPEN node=issue-372-skills-page rerun=none hub_bytes_before=85209 hub_bytes_after=85615
 2026-11-01T15:20:24Z role=verifier outcome=SEAL node=issue-372-skills-page rerun=none hub_bytes_before=85209 hub_bytes_after=85369
+2026-11-01T15:42:01Z role=verifier outcome=REOPEN node=issue-374-skill-badges rerun=none hub_bytes_before=85369 hub_bytes_after=85974
+2026-11-01T15:43:25Z role=verifier outcome=SEAL node=issue-374-skill-badges rerun=none hub_bytes_before=85369 hub_bytes_after=85531
+2026-11-01T15:53:08Z role=verifier outcome=SEAL node=issue-374-skill-group-actions rerun=none hub_bytes_before=85531 hub_bytes_after=85553
+2026-11-01T15:56:50Z role=verifier outcome=SEAL node=issue-374-skill-name-emphasis rerun=partial hub_bytes_before=85553 hub_bytes_after=85557
+2026-11-01T16:00:20Z role=verifier outcome=REOPEN node=issue-374-skill-edit-rename rerun=none hub_bytes_before=85557 hub_bytes_after=86089
+2026-11-01T16:01:40Z role=verifier outcome=SEAL node=issue-374-skill-edit-rename rerun=none hub_bytes_before=85557 hub_bytes_after=85561
+2026-11-01T16:09:16Z role=verifier outcome=REOPEN node=issue-374-main-skills rerun=none hub_bytes_before=85561 hub_bytes_after=86155
+2026-11-01T16:12:05Z role=verifier outcome=SEAL node=issue-374-main-skills rerun=none hub_bytes_before=85561 hub_bytes_after=84597
+2026-11-01T19:56:52Z role=verifier outcome=REOPEN node=issue-374-nodata-box rerun=none hub_bytes_before=84597 hub_bytes_after=85094
+2026-11-01T19:58:28Z role=verifier outcome=SEAL node=issue-374-nodata-box rerun=none hub_bytes_before=84597 hub_bytes_after=84581

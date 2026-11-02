@@ -160,7 +160,7 @@ async function handleUpdate(values, action = 'create') {
 <template>
     <FormSection :title="props.heading" :description="props.description" :card="false">
         <template v-if="props.hasButtonAdd" #actions>
-            <Button icon="fa-solid fa-plus" :text="t('common.add')" size="sm" @click="showModalCreateDoc()" />
+            <Button icon="fa-solid fa-plus" action="add" :text="t('common.add')" size="sm" @click="showModalCreateDoc()" />
         </template>
 
         <div class="space-y-4">
@@ -180,7 +180,7 @@ async function handleUpdate(values, action = 'create') {
                     </template>
                     <template #tbodyMore="{ doc }">
                         <td class="w-12 text-right">
-                            <Button icon="fa-solid fa-trash" type="ghost" size="sm" :aria-label="`${t('common.delete')} ${doc.name || doc.language || ''}`.trim()" @click="handleUpdate({ ...doc }, 'delete')" />
+                            <Button icon="fa-solid fa-trash" type="ghost" action="delete" size="sm" :aria-label="`${t('common.delete')} ${doc.name || doc.language || ''}`.trim()" @click="handleUpdate({ ...doc }, 'delete')" />
                         </td>
                     </template>
                 </TableDefault>

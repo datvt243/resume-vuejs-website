@@ -40,7 +40,8 @@ Every data section has a `src/models/*.model.ts` file — an array of `modelItem
 
 ### 4. Global Components
 All `src/components/global/*.vue` are auto-registered globally via `src/plugins/GlobalComponents.js`. Use without import: `<Heading>`, `<Button>`, `<NoData>`, `<ListTransition>`, `<Box>`, `<Dropdown>`, `<ItemTemplate>`, `<ItemActions>`, `<LoadingGate>`, `<FormSection>`, `<SegmentedControl>`, `<Tabs>`.
-- `ItemActions` — CRUD row buttons shared by every list page: edit (`info`), duplicate (`success`), delete (`danger`); pass `viewable` to add an eye button that emits `view` (only Experience uses it so far). The colors use `!` modifiers because the ghost `Button` variant sets its own text/hover colors.
+- `ItemActions` — CRUD row buttons shared by every list page: edit (`action="update"`, orange), duplicate (`clone`, blue), delete (`delete`, red); pass `viewable` to add an eye button (`view`, blue) that emits `view` (only Experience uses it so far).
+- `Button` `action` prop (`add` green · `update` orange · `delete` red · `clone`/`view` blue) colors secondary/ghost buttons by what they do — use it for every action button instead of ad-hoc color classes (DESIGN.md §5.3).
 
 ## API
 - Base: `http://localhost:3001/` (dev) or `https://nodejs-resume-api-ts.onrender.com/` (prod)

@@ -51,7 +51,7 @@ async function submit() {
 <template>
     <FormSection :title="title" :description="description" :card="false">
         <template #actions>
-            <Button icon="fa-solid fa-plus" :text="$t('common.add')" size="sm" @click="open()" />
+            <Button icon="fa-solid fa-plus" action="add" :text="$t('common.add')" size="sm" @click="open()" />
         </template>
 
         <ul v-if="modelValue.length" class="m-0 flex list-none flex-wrap gap-2 p-0">

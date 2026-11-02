@@ -75,6 +75,7 @@ const statusMeta = {
   rejected: { text: 'option.applicationStatus.rejected', badge: 'bg-danger-subtle text-danger', dot: 'bg-danger' },
 }
 const linkBtn = buttonClass({ variant: 'ghost', iconOnly: true })
+const viewBtn = buttonClass({ variant: 'ghost', iconOnly: true, action: 'view' })
 function getStatusMeta(status) {
   return statusMeta[status] || statusMeta.applied
 }
@@ -158,7 +159,7 @@ function showModalDuplicateDoc(doc) {
                 <span :class="[badgeBase, 'bg-surface-2 text-fg-2']">
                   <FontAwesomeIcon icon="fa-solid fa-layer-group" aria-hidden="true" />{{ getProfileLinks(item).name }}
                 </span>
-                <a :class="linkBtn" :href="getProfileLinks(item).publicLink" target="_blank" rel="noopener" :aria-label="t('crud.application.viewPublicCv')" :title="t('crud.application.viewPublicCvShort')">
+                <a :class="viewBtn" :href="getProfileLinks(item).publicLink" target="_blank" rel="noopener" :aria-label="t('crud.application.viewPublicCv')" :title="t('crud.application.viewPublicCvShort')">
                   <FontAwesomeIcon icon="fa-solid fa-eye" aria-hidden="true" />
                 </a>
                 <a :class="linkBtn" :href="getProfileLinks(item).pdfLink" target="_blank" rel="noopener" :aria-label="t('crud.application.downloadPdf')" :title="t('crud.application.downloadPdfShort')">
@@ -177,7 +178,7 @@ function showModalDuplicateDoc(doc) {
     </div>
     <LoadingGate v-else :error="loadError" @retry="getData">
       <NoData :title="t('crud.application.empty')" :description="t('crud.application.emptyDescription')">
-        <Button icon="fa-solid fa-plus" :text="t('crud.application.add')" @click="showModalCreateDoc()" />
+        <Button icon="fa-solid fa-plus" action="add" :text="t('crud.application.add')" @click="showModalCreateDoc()" />
       </NoData>
     </LoadingGate>
   </div>

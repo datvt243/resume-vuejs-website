@@ -210,7 +210,7 @@ function showModalDuplicateDoc(doc) {
         </div>
         <LoadingGate v-else :error="loadError" @retry="getData">
             <NoData :title="$t('crud.experience.empty')" :description="$t('crud.experience.emptyDescription')">
-                <Button icon="fa-solid fa-plus" :text="$t('crud.experience.add')" @click="showModalCreateDoc()" />
+                <Button icon="fa-solid fa-plus" action="add" :text="$t('crud.experience.add')" @click="showModalCreateDoc()" />
             </NoData>
         </LoadingGate>
     </div>
@@ -267,7 +267,7 @@ function showModalDuplicateDoc(doc) {
             <dd class="post-content m-0 sm:col-span-3 break-words text-sm text-fg" v-html="viewDescription"></dd>
         </dl>
         <template #footer>
-            <Button type="primary" icon="fa-solid fa-square-pen" :text="$t('common.edit')" @click="editFromView" />
+            <Button action="update" icon="fa-solid fa-square-pen" :text="$t('common.edit')" @click="editFromView" />
         </template>
     </Modal>
 </template>

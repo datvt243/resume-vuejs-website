@@ -16,6 +16,9 @@ import { candidateStore } from '@/stores/candidate'
 import { useVisitStats } from '@/composables/useVisitStats'
 import { t } from '@/i18n'
 import { buttonClass } from '@/lib/button.lib'
+import { confirmDelete } from '@/lib/swal.lib'
+import { useHelper } from '@/composables/useHelper'
+import { handleBase } from '@/services/base'
 
 const candidate = candidateStore()
 const dataList = computed(() => candidate.getCandidate?.visits || [])
@@ -28,6 +31,19 @@ function retry() {
     if (statsError.value) reloadStats()
     if (visitsError.value) reloadVisits?.()
 }
+const { loading, toast } = useHelper()
+function deleteAll() {
+    confirmDelete({
+        title: t('visits.deleteAllTitle'),
+        getHtml: () => t('visits.deleteAllText', { count: numberFormat.format(dataList.value.length) }),
+        callback: () =>
+            handleBase({ method: 'delete', url: 'candidate/visits' }, { loading, toast }, () => {
+                reloadVisits?.()
+                reloadStats()
+            }),
+    })
+}
+
 const INTERVAL_OPTIONS = computed(() => ['day', 'week', 'month'].map(value => ({ value, label: t(`visits.interval.${value}`) })))
 const rangeText = computed(() => t(`visits.range.${interval.value}`))
 
@@ -85,6 +101,7 @@ const pagerBtn = buttonClass({ variant: 'secondary', size: 'sm' })
 <template>
     <Heading :level="1" :text="t('visits.title')" :description="t('visits.description')">
         <SegmentedControl v-model="interval" :options="INTERVAL_OPTIONS" :aria-label="t('visits.timeRange')" />
+        <Button icon="fa-solid fa-trash" :text="t('visits.deleteAll')" action="delete" :disabled="loadError || !dataList.length" @click="deleteAll" />
     </Heading>
 
     <div v-if="loadError" role="alert">

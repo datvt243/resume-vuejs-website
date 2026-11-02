@@ -178,11 +178,9 @@ function showModalDuplicateDoc(doc) {
             </ListTransition>
         </div>
         <LoadingGate v-else :error="loadError" @retry="getData">
-            <div class="rounded-md border border-line bg-surface">
-                <NoData :title="$t('profileCv.empty')" :description="$t('profileCv.emptyDescription')">
-                    <Button icon="fa-solid fa-plus" :text="$t('profileCv.add')" @click="showModalCreateDoc()" />
-                </NoData>
-            </div>
+            <NoData :title="$t('profileCv.empty')" :description="$t('profileCv.emptyDescription')">
+                <Button icon="fa-solid fa-plus" :text="$t('profileCv.add')" @click="showModalCreateDoc()" />
+            </NoData>
         </LoadingGate>
     </div>
 

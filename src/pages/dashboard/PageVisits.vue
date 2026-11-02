@@ -87,7 +87,7 @@ const pagerBtn = buttonClass({ variant: 'secondary', size: 'sm' })
         <SegmentedControl v-model="interval" :options="INTERVAL_OPTIONS" :aria-label="t('visits.timeRange')" />
     </Heading>
 
-    <div v-if="loadError" class="rounded-md border border-line bg-surface" role="alert">
+    <div v-if="loadError" role="alert">
         <NoData icon="fa-solid fa-triangle-exclamation" :title="t('error.loadList')" :description="t('error.loadListDescription')">
             <Button icon="fa-solid fa-rotate-right" :text="t('common.retry')" @click="retry" />
         </NoData>

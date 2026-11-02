@@ -91,3 +91,4 @@
 2026-11-01T19:56:52Z role=verifier outcome=REOPEN node=issue-374-nodata-box rerun=none hub_bytes_before=84597 hub_bytes_after=85094
 2026-11-01T19:58:28Z role=verifier outcome=SEAL node=issue-374-nodata-box rerun=none hub_bytes_before=84597 hub_bytes_after=84581
 2026-11-02T00:26:33Z role=verifier outcome=SEAL node=issue-377-familiar-skills rerun=none hub_bytes_before=84915 hub_bytes_after=84577
+2026-11-02T00:32:42Z role=verifier outcome=SEAL node=nodata-dashed-border rerun=none hub_bytes_before=84577 hub_bytes_after=84569

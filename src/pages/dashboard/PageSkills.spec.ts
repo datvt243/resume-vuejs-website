@@ -79,14 +79,14 @@ const listStubs = {
         template: '<div><slot name="list" :items="listItems" :remove="() => {}" :add="() => {}" :edit="() => {}" /></div>',
     },
 }
-const boxed = (wrapper: ReturnType<typeof mount>) => wrapper.find('.no-data').element.parentElement!.className
 
 describe('PageSkills — empty professional list', () => {
-    it('shows the empty state inside a bordered box', () => {
+    it('shows the empty state on its own (NoData draws the box)', () => {
         listItems = []
         setActivePinia(createPinia())
         const wrapper = mount(PageSkills, { global: { plugins: [i18n], stubs: listStubs } })
-        expect(boxed(wrapper)).toContain('border border-line')
+        expect(wrapper.find('.no-data').exists()).toBe(true)
+        expect(wrapper.find('.border-line .no-data').exists()).toBe(false)
     })
 
     it('shows the grouped skills and no empty box when there are skills', () => {

@@ -339,7 +339,7 @@ Shared: `inline-flex items-center gap-2 h-8 px-3 rounded text-sm font-medium foc
 ### 5.8 Empty state (`NoData.vue`)
 Replaces the current yellow `alert-warning`:
 ```
-<div class="flex flex-col items-center text-center py-12 px-4">
+<div class="flex flex-col items-center text-center py-12 px-4 rounded-md border border-dashed border-line bg-surface-2">
   <FontAwesomeIcon icon="fa-regular fa-folder-open" class="text-fg-3 text-2xl" />
   <p class="text-md font-semibold mt-3">Chưa có học vấn nào</p>
   <p class="text-sm text-fg-2 mt-1 max-w-sm">Thêm trường học để nhà tuyển dụng thấy nền tảng của bạn.</p>

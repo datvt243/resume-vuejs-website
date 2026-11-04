@@ -399,6 +399,9 @@ const vi = {
         ip: 'Địa chỉ IP',
         empty: 'Chưa có lượt truy cập',
         emptyDescription: 'Chia sẻ link hồ sơ công khai để bắt đầu ghi nhận.',
+        deleteAll: 'Xóa tất cả',
+        deleteAllTitle: 'Xóa tất cả lượt truy cập?',
+        deleteAllText: '{count} lượt truy cập sẽ bị xóa vĩnh viễn và không thể khôi phục.',
     },
     home: {
         noName: 'Chưa cập nhật tên',
@@ -907,6 +910,9 @@ const en: typeof vi = {
         ip: 'IP address',
         empty: 'No visits yet',
         emptyDescription: 'Share your public profile link to start tracking.',
+        deleteAll: 'Delete all',
+        deleteAllTitle: 'Delete all visits?',
+        deleteAllText: '{count} visits will be deleted permanently and cannot be recovered.',
     },
     home: {
         noName: 'Name not set',

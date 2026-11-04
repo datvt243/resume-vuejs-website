@@ -24,14 +24,14 @@ const MODEL: modelItem[] = [
         name: 'positionDesired',
         label: 'field.positionDesired',
         type: 'text',
-        valid: yup => yup.string().max(50, withParams('validation.maxChars', { max: 50 })).trim().required(_mesRequired),
+        valid: yup => yup.string().max(100, withParams('validation.maxChars', { max: 100 })).trim().required(_mesRequired),
         default: '',
     },
     ...withEnglish({
         name: 'career',
         label: 'field.career',
         type: 'text',
-        valid: yup => yup.string().max(50, withParams('validation.maxChars', { max: 50 })).trim().required(_mesRequired),
+        valid: yup => yup.string().trim().required(_mesRequired),
         default: '',
     }),
     {

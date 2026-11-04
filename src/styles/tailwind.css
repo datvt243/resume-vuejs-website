@@ -273,6 +273,10 @@
     .form-label {
         @apply mb-1 inline-block text-sm font-medium text-fg;
     }
+    .is-required .form-label::after {
+        content: ' *';
+        @apply text-danger;
+    }
     .form-text {
         @apply mt-1 text-xs text-fg-3;
     }

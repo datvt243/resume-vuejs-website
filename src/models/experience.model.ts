@@ -103,7 +103,7 @@ const MODEL: modelItem[] = [
         valid: yup =>
             yup
                 .string()
-                .max(50, withParams('validation.maxChars', { max: 50 }))
+                .max(100, withParams('validation.maxChars', { max: 100 }))
                 .when('isCareerBreak', { is: true, otherwise: (s: any) => s.required(_mesRequired) }),
         default: '',
         showIf: (values: Record<string, any>) => !isCareerBreak(values),

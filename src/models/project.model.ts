@@ -16,14 +16,14 @@ const MODEL: modelItem[] = [
         name: 'name',
         label: 'field.projectName',
         type: 'text',
-        valid: yup => yup.string().max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
+        valid: yup => yup.string().max(50, withParams('validation.maxChars', { max: 50 })).required(_mesRequired),
         default: '',
     },
     {
         name: 'position',
         label: 'field.position',
         type: 'text',
-        valid: yup => yup.string().max(50, withParams('validation.maxChars', { max: 50 })).required(_mesRequired),
+        valid: yup => yup.string().max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
         default: '',
     },
     {

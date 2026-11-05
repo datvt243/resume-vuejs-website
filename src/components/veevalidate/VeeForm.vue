@@ -179,7 +179,8 @@ const objComponent = {
 </script>
 
 <template>
-    <form class="form" @focusin="onFocusIn">
+    <!-- scroll-mb keeps a focused control clear of the sticky button bar when focus scrolls it into view. -->
+    <form class="form [&_*]:scroll-mb-20" @focusin="onFocusIn">
         <div v-if="hasLocalizedFields" class="mb-4 inline-flex rounded bg-surface-2 p-0.5" role="radiogroup" :aria-label="t('form.contentLang')">
             <button
                 v-for="l in LANGS"
@@ -203,6 +204,8 @@ const objComponent = {
             </template>
         </div>
         <FrmInput v-if="getFieldId" key="_id" v-bind="getFieldId" type="hidden" label="" class="mb-0" />
+        <!-- Extra non-field content (e.g. a checklist) between the fields and the sticky button bar. -->
+        <slot></slot>
         <div class="sticky bottom-0 z-10 flex flex-wrap items-center gap-2 border-t border-line bg-surface py-3" :class="justify[props.buttonPosition] || 'justify-start'">
             <slot name="cancel"></slot>
             <button v-if="props.cancelable" type="button" :class="cancelClass" :disabled="submitting" @click="loadDocument(props.document)">{{ t('common.cancel') }}</button>

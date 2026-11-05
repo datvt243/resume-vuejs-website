@@ -105,3 +105,5 @@
 2026-11-05T16:55:05Z role=verifier outcome=REOPEN node=issue-405-cv-filename rerun=none hub_bytes_before=84553 hub_bytes_after=85159
 2026-11-05T16:57:57Z role=verifier outcome=REOPEN node=issue-405-cv-filename rerun=partial hub_bytes_before=84553 hub_bytes_after=85363
 2026-11-05T17:02:40Z role=verifier outcome=SEAL node=issue-405-cv-filename rerun=partial hub_bytes_before=84553 hub_bytes_after=84539
+2026-11-05T17:23:42Z role=verifier outcome=REOPEN node=issue-409-profile-modal-layout rerun=none hub_bytes_before=84539 hub_bytes_after=84891
+2026-11-05T17:28:41Z role=verifier outcome=SEAL node=issue-409-profile-modal-layout rerun=none hub_bytes_before=84539 hub_bytes_after=84527

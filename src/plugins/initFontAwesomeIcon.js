@@ -58,6 +58,8 @@ import {
     faCircleExclamation,
     faSpinner,
     faRotateRight,
+    faLanguage,
+    faChevronDown,
 } from '@fortawesome/free-solid-svg-icons'
 
 export default {
@@ -117,6 +119,8 @@ export default {
             faCircleExclamation,
             faSpinner,
             faRotateRight,
+            faLanguage,
+            faChevronDown,
         )
 
         app.component('FontAwesomeIcon', FontAwesomeIcon)

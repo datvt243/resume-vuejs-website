@@ -123,6 +123,8 @@ const LANGS = ['vi', 'en']
 const formLang = ref('vi')
 const hasLocalizedFields = computed(() => getFields.value.some(f => f.lang))
 const hiddenByCondition = computed(() => new Set(props.fields.filter(f => f.showIf && !f.showIf(values)).map(f => f.name)))
+// resolved against current values so `.when(...)` rules (experience company/position) mark correctly
+const requiredFields = computed(() => new Set(props.fields.filter(f => f.valid && !f.valid(yup).describe({ value: values[f.name], parent: values }).optional).map(f => f.name)))
 function langHasError(lang) {
     return getFields.value.some(f => f.lang === lang && errors.value[f.name])
 }
@@ -194,7 +196,7 @@ const objComponent = {
         </div>
         <div class="row">
             <template v-for="el in getFields.filter(f => f.type !== 'hidden')" :key="el.name">
-                <div v-show="(!el.lang || el.lang === formLang) && !hiddenByCondition.has(el.name)" :class="['col-12', el?.col || 'col-md-12']">
+                <div v-show="(!el.lang || el.lang === formLang) && !hiddenByCondition.has(el.name)" :class="['col-12', el?.col || 'col-md-12', { 'is-required': requiredFields.has(el.name) }]">
                     <component :is="objComponent?.[`${el.type}`] || objComponent['default']" :key="el?.name" v-bind="el" />
                 </div>
             </template>

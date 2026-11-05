@@ -34,10 +34,22 @@ watch(navOpen, open => {
     if (open) document.addEventListener('keydown', onKeydown)
     else document.removeEventListener('keydown', onKeydown)
 })
+// nav sub-groups the user toggled; reset on navigation so a group shows open only while one of its pages is active
+const toggledGroups = ref({})
 watch(
     () => route.path,
-    () => (navOpen.value = false),
+    () => {
+        navOpen.value = false
+        toggledGroups.value = {}
+    },
 )
+function isGroupOpen(item) {
+    return toggledGroups.value[item.key] ?? item.children.some(c => c.to === route.path)
+}
+// eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
+function toggleGroup(item) {
+    toggledGroups.value = { ...toggledGroups.value, [item.key]: !isGroupOpen(item) }
+}
 onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown))
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
@@ -55,12 +67,19 @@ const navGroups = [
             { key: 'nav.information', to: '/dashboard/information', icon: 'fa-solid fa-user' },
             { key: 'nav.generalInformation', to: '/dashboard/general-information', icon: 'fa-solid fa-id-card' },
             { key: 'nav.skills', to: '/dashboard/skills', icon: 'fa-solid fa-code' },
+            { key: 'nav.languages', to: '/dashboard/languages', icon: 'fa-solid fa-language' },
             { key: 'nav.education', to: '/dashboard/education', icon: 'fa-solid fa-graduation-cap' },
             { key: 'nav.experience', to: '/dashboard/experience', icon: 'fa-solid fa-briefcase' },
             { key: 'nav.project', to: '/dashboard/project', icon: 'fa-solid fa-layer-group' },
-            { key: 'nav.award', to: '/dashboard/award', icon: 'fa-solid fa-award' },
-            { key: 'nav.certificate', to: '/dashboard/certificate', icon: 'fa-solid fa-certificate' },
-            { key: 'nav.reference', to: '/dashboard/reference', icon: 'fa-solid fa-address-book' },
+            {
+                key: 'nav.achievements',
+                icon: 'fa-solid fa-award',
+                children: [
+                    { key: 'nav.award', to: '/dashboard/award', icon: 'fa-solid fa-award' },
+                    { key: 'nav.certificate', to: '/dashboard/certificate', icon: 'fa-solid fa-certificate' },
+                    { key: 'nav.reference', to: '/dashboard/reference', icon: 'fa-solid fa-address-book' },
+                ],
+            },
         ],
     },
     {
@@ -93,8 +112,29 @@ const settingsItem = { key: 'nav.accountSettings', to: '/dashboard/account-setti
             div(v-for="g in navGroups" :key="g.label")
                 p.mb-1.px-2.text-xs.text-fg-3 {{ $t(g.label) }}
                 ul.space-y-1
-                    li(v-for="r in g.items" :key="r.to")
-                        RouterLink.nav-item(:to="r.to" :class="{ active: r.to === $route.path }" :aria-current="r.to === $route.path ? 'page' : undefined")
+                    li(v-for="r in g.items" :key="r.key")
+                        template(v-if="r.children")
+                            button.nav-item.w-full(
+                                type="button"
+                                :aria-expanded="isGroupOpen(r) ? 'true' : 'false'"
+                                :aria-controls="`nav-group-${r.key}`"
+                                @click="toggleGroup(r)"
+                            )
+                                span.nav-item-icon
+                                    FontAwesomeIcon(:icon="r.icon")
+                                span.truncate {{ $t(r.key) }}
+                                FontAwesomeIcon.ms-auto.text-xs.text-fg-3(
+                                    icon="fa-solid fa-chevron-down"
+                                    :class="{ 'rotate-180': isGroupOpen(r) }"
+                                    class="motion-safe:transition-transform"
+                                )
+                            ul.mt-1.space-y-1.pl-4(v-show="isGroupOpen(r)" :id="`nav-group-${r.key}`")
+                                li(v-for="c in r.children" :key="c.to")
+                                    RouterLink.nav-item(:to="c.to" :class="{ active: c.to === $route.path }" :aria-current="c.to === $route.path ? 'page' : undefined")
+                                        span.nav-item-icon
+                                            FontAwesomeIcon(:icon="c.icon")
+                                        span.truncate {{ $t(c.key) }}
+                        RouterLink.nav-item(v-else :to="r.to" :class="{ active: r.to === $route.path }" :aria-current="r.to === $route.path ? 'page' : undefined")
                             span.nav-item-icon
                                 FontAwesomeIcon(:icon="r.icon")
                             span.truncate {{ $t(r.key) }}

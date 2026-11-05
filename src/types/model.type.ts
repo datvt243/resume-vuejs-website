@@ -113,7 +113,7 @@ export const defaultLink = function (props: Part): modelItem {
         name: props.name,
         label: props.label,
         type: 'text',
-        valid: yup => yup.string().url('validation.urlInvalid').nullable(),
+        valid: yup => yup.string().trim().url('validation.urlInvalid').max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
         col: props?.col || 'col-md-12',
         default: '',
     }

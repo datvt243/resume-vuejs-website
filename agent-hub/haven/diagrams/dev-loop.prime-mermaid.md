@@ -105,7 +105,6 @@ flowchart TD
 
 Any regression must be a **new node** (LAI-13) — never edit an old node's
 PM status directly to "undo" an existing SEAL.
-| `issue-355-education-major-min` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-355-education-major-min-seal.md` |
 | `issue-347-veeform-hidden-lang-flag` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-347-veeform-hidden-lang-flag-seal.md` |
 | `issue-352-import-modal-close` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-352-import-modal-close-seal.md` |
 | `issue-353-stale-header-email` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-353-stale-header-email-seal.md` |
@@ -125,3 +124,4 @@ PM status directly to "undo" an existing SEAL.
 | `nodata-dashed-border` | SEALED | 2026-11-02 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-02/nodata-dashed-border-seal.md` |
 | `issue-383-button-colors` | SEALED | 2026-11-02 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-02/issue-383-button-colors-seal.md` |
 | `issue-375-delete-all-visits` | SEALED | 2026-11-02 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-02/issue-375-delete-all-visits-seal.md` |
+| `issue-394-languages-page-nav-group` | SEALED | 2026-11-05 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-05/issue-394-languages-page-nav-group-seal.md` |

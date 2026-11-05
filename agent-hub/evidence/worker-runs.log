@@ -95,3 +95,6 @@
 2026-11-02T00:47:08Z role=verifier outcome=SEAL node=issue-383-button-colors rerun=none hub_bytes_before=84569 hub_bytes_after=84563
 2026-11-02T15:12:20Z role=verifier outcome=REOPEN node=issue-375-delete-all-visits rerun=none hub_bytes_before=84563 hub_bytes_after=84870
 2026-11-02T15:14:43Z role=verifier outcome=SEAL node=issue-375-delete-all-visits rerun=none hub_bytes_before=84563 hub_bytes_after=84561
+2026-11-05T02:08:58Z role=verifier outcome=REOPEN node=issue-394-languages-page-nav-group rerun=none hub_bytes_before=84561 hub_bytes_after=85404
+2026-11-05T02:10:48Z role=verifier outcome=REOPEN node=issue-394-languages-page-nav-group rerun=none hub_bytes_before=84561 hub_bytes_after=85593
+2026-11-05T02:12:36Z role=verifier outcome=SEAL node=issue-394-languages-page-nav-group rerun=none hub_bytes_before=84561 hub_bytes_after=84571

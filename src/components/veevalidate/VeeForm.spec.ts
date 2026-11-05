@@ -59,6 +59,19 @@ describe('VeeForm', () => {
         expect(wrapper.findAll('input[type="checkbox"]')).toHaveLength(1)
     })
 
+    it('renders default-slot content after the fields and before the button bar', () => {
+        const wrapper = mount(VeeForm, {
+            props: { fields },
+            slots: { default: '<div class="extra">extra</div>' },
+            global: { stubs: { FontAwesomeIcon: true } },
+        })
+        const children = Array.from(wrapper.find('form').element.children)
+        const extra = children.findIndex(el => el.classList.contains('extra'))
+
+        expect(extra).toBeGreaterThan(children.findIndex(el => el.classList.contains('row')))
+        expect(extra).toBeLessThan(children.findIndex(el => el.querySelector('[data-submit]')))
+    })
+
     it('submit button is NOT disabled on a pristine form, even with a required field still empty', async () => {
         // Real, verified behavior, not an assumption: vee-validate's `meta.valid`
         // defaults to `true` until a field is actually validated (typically on

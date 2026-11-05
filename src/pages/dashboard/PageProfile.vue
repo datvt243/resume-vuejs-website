@@ -189,40 +189,35 @@ function showModalDuplicateDoc(doc) {
         :title="isDuplicating ? $t('form.duplicateTitle', { name: document.name }) : document._id ? $t('form.editTitle', { name: document.name }) : $t('profileCv.add')"
         is-hidden-footer>
         <div class="block-container">
-            <!--
-                Checklist lives OUTSIDE VeeForm on purpose: VeeForm.vue has
-                no default slot (only #button — see its template), so
-                content passed as its default slot is silently dropped,
-                never rendered. `selectedIds` is plain component state, not
-                part of vee-validate's own form values — VeeForm only owns
-                `name`; `handleUpdate` (VeeForm's submit-fn) merges both
-                before calling updateDoc.
-            -->
-            <div v-for="s in sections" :key="s.key" class="profile-section mb-4">
-                <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
-                    <p class="m-0 text-sm font-medium text-fg">
-                        {{ $t(s.label) }} <span class="tabular-nums text-fg-3">{{ selectedIds[s.key].length }}/{{ s.items.length }}</span>
-                    </p>
-                    <div class="flex gap-1">
-                        <Button :text="$t('profileCv.selectAll')" type="ghost" size="sm" @click="selectAll(s.key)" />
-                        <Button :text="$t('profileCv.clearAll')" type="ghost" size="sm" @click="clearAll(s.key)" />
-                    </div>
-                </div>
-                <p v-if="!s.items.length" class="m-0 text-sm text-fg-3">{{ $t('profileCv.noItems') }}</p>
-                <div v-else class="profile-checklist">
-                    <label v-for="opt in s.items" :key="opt._id" class="form-check profile-checklist-item">
-                        <input class="form-check-input" type="checkbox" :checked="selectedIds[s.key].includes(opt._id)"
-                            @change="toggleId(s.key, opt._id)" />
-                        <span class="form-check-label">
-                            {{ s.title(opt) }}
-                            <span v-if="s.subTitle(opt)" class="text-fg-3"> — {{ s.subTitle(opt) }}</span>
-                        </span>
-                    </label>
-                </div>
-            </div>
-
             <VeeForm ref="refVeeForm" :fields="formFields" :document="document" :submit-fn="handleUpdate"
                 button-position="end">
+                <!--
+                    Default slot sits between the `name` field and VeeForm's sticky
+                    button bar. `selectedIds` is plain component state, not part of
+                    vee-validate's form values; `handleUpdate` merges both on submit.
+                -->
+                <div v-for="s in sections" :key="s.key" class="profile-section mb-4">
+                    <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+                        <p class="m-0 text-sm font-medium text-fg">
+                            {{ $t(s.label) }} <span class="tabular-nums text-fg-3">{{ selectedIds[s.key].length }}/{{ s.items.length }}</span>
+                        </p>
+                        <div class="flex gap-1">
+                            <Button :text="$t('profileCv.selectAll')" type="ghost" size="sm" @click="selectAll(s.key)" />
+                            <Button :text="$t('profileCv.clearAll')" type="ghost" size="sm" @click="clearAll(s.key)" />
+                        </div>
+                    </div>
+                    <p v-if="!s.items.length" class="m-0 text-sm text-fg-3">{{ $t('profileCv.noItems') }}</p>
+                    <div v-else class="rounded-md border border-line px-3 py-2">
+                        <label v-for="opt in s.items" :key="opt._id" class="form-check py-0.5">
+                            <input class="form-check-input" type="checkbox" :checked="selectedIds[s.key].includes(opt._id)"
+                                @change="toggleId(s.key, opt._id)" />
+                            <span class="form-check-label">
+                                {{ s.title(opt) }}
+                                <span v-if="s.subTitle(opt)" class="text-fg-3"> — {{ s.subTitle(opt) }}</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
                 <template #cancel>
                     <Button :text="$t('common.cancel')" type="ghost" data-bs-dismiss="modal" />
                 </template>
@@ -231,16 +226,3 @@ function showModalDuplicateDoc(doc) {
     </Modal>
 </template>
 
-<style scoped>
-.profile-checklist {
-    max-height: 12rem;
-    overflow-y: auto;
-    border: 1px solid var(--bs-border-color);
-    border-radius: 0.375rem;
-    padding: 0.5rem 0.75rem;
-}
-.profile-checklist-item {
-    display: block;
-    padding: 0.125rem 0;
-}
-</style>

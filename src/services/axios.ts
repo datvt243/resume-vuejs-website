@@ -14,7 +14,7 @@ import { i18n, t } from '@/i18n'
  * NOT cookies: the API is cross-site from github.io, so its cookies are
  * third-party and blocked by most browsers (see stores/auth.ts).
  */
-const instanceAxios = axios.create({
+export const instanceAxios = axios.create({
     baseURL: API,
     // ends a hung request; longer than a Render free-tier cold start
     timeout: 90_000,
@@ -36,7 +36,7 @@ instanceAxios.interceptors.request.use(async config => {
  * reload trang, access token chỉ nằm trong memory), đổi refresh token
  * (sessionStorage) lấy cặp token mới trước khi force logout.
  */
-let _refreshPromise = null
+let _refreshPromise: Promise<void> | null = null
 
 const refreshTokens = async () => {
     const store = authStore()
@@ -60,7 +60,7 @@ const refreshOnce = () => {
 export const TOKEN_ERROR_CODES = ['NO_TOKEN', 'INVALID_TOKEN', 'TOKEN_EXPIRED', 'TOKEN_REVOKED']
 
 /** new envelope `error.code`, legacy `errorCode` (API-STANDARD C6) */
-export const errorCodeOf = body => body?.error?.code ?? body?.errorCode
+export const errorCodeOf = (body?: { error?: { code?: string }; errorCode?: string }) => body?.error?.code ?? body?.errorCode ?? ''
 
 instanceAxios.interceptors.response.use(
     res => res,
@@ -85,7 +85,7 @@ instanceAxios.interceptors.response.use(
     },
 )
 
-export const _axios = async props => {
+export const _axios = async (props: import('axios').AxiosRequestConfig & { customURL?: string | null }) => {
     const { url, method, params, data, customURL = null, responseType } = props
     // FormData (e.g. the LinkedIn-export import upload) must NOT get a
     // forced 'application/json' Content-Type — axios/the browser need to

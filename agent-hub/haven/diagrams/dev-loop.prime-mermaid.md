@@ -105,7 +105,6 @@ flowchart TD
 
 Any regression must be a **new node** (LAI-13) — never edit an old node's
 PM status directly to "undo" an existing SEAL.
-| `issue-353-stale-header-email` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-353-stale-header-email-seal.md` |
 | `issue-354-public-cv-experience-order` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-354-public-cv-experience-order-seal.md` |
 | `issue-356-editor-datepicker-i18n` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-356-editor-datepicker-i18n-seal.md` |
 | `issue-364-form-length-rules` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-364-form-length-rules-seal.md` |
@@ -125,3 +124,4 @@ PM status directly to "undo" an existing SEAL.
 | `issue-394-languages-page-nav-group` | SEALED | 2026-11-05 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-05/issue-394-languages-page-nav-group-seal.md` |
 | `issue-399-form-lang-sync` | SEALED | 2026-11-05 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-05/issue-399-form-lang-sync-seal.md` |
 | `issue-398-languages-view-edit` | SEALED | 2026-11-05 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-05/issue-398-languages-view-edit-seal.md` |
+| `issue-405-cv-filename` | SEALED | 2026-11-06 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-06/issue-405-cv-filename-seal.md` |

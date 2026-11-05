@@ -6,18 +6,11 @@
  */
 
 import VeeForm from '@/components/veevalidate/VeeForm.vue'
-import VeeFormGeneralInformationUpdate from '@/components/veevalidate/VeeFormGeneralInformationUpdate.vue'
 
-import { ref, shallowRef, onMounted, watch, provide, computed } from 'vue'
+import { shallowRef, watch } from 'vue'
 import { useDocument } from '@/composables/useDocument'
 import { useCandidate } from '@/composables/useCandidate'
 import { localizedToForm, localizedFromForm } from '@/utilities/index'
-import { withParams } from '@/i18n'
-
-/**
- *
- */
-const isLoading = ref(false)
 
 /**
  * store
@@ -29,7 +22,6 @@ const candidate = candidateStore()
  * import
  */
 import model from '@/models/generalInformation.model'
-const _mesRequired = 'validation.required'
 const formFields = shallowRef(model)
 
 /**
@@ -38,17 +30,10 @@ const formFields = shallowRef(model)
 const { generalInformation, getData } = useCandidate({ field: 'generalInformation', collection: 'general-information' })
 const { document, updateDoc } = useDocument({ collection: 'general-information', fields: formFields.value })
 
-const candidateProvide = computed(() => ({
-  _id: candidate.getGeneralInformation?._id || '',
-}))
-provide('candidate', candidateProvide)
 // `career` tuy là field `text` thường nhưng backend cũng lưu dạng
 // object { vi, en }, giống careerGoal
 const LOCALIZED_FIELDS = ['careerGoal', 'career']
 
-onMounted(() => {
-  isLoading.value = true
-})
 watch(generalInformation, val => {
   const _val = Array.isArray(val) ? val?.[0] || {} : val
   for (const [key, value] of Object.entries(_val)) {
@@ -64,31 +49,6 @@ async function handleUpdate(values) {
     candidate.setCandidateByField({ generalInformation: [data] })
   })
 }
-
-const foreignLanguageFields = computed(() => {
-  return [
-    {
-      name: 'language',
-      label: 'generalInfo.language',
-      type: 'text',
-      valid: yup => yup.string().trim().max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
-      default: '',
-    },
-    {
-      name: 'level',
-      label: 'generalInfo.level',
-      type: 'select',
-      options: [
-        { value: 'basic', text: 'option.languageLevel.basic' },
-        { value: 'intermediate', text: 'option.languageLevel.intermediate' },
-        { value: 'advanced', text: 'option.languageLevel.advanced' },
-        { value: 'expert', text: 'option.languageLevel.expert' },
-      ],
-      valid: yup => yup.string().trim().max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
-      default: '',
-    },
-  ]
-})
 </script>
 
 <template>
@@ -103,11 +63,5 @@ const foreignLanguageFields = computed(() => {
           button-position="end" cancelable />
       </LoadingGate>
     </FormSection>
-
-    <template v-if="isLoading">
-      <VeeFormGeneralInformationUpdate key="foreignLanguages" :model-value="generalInformation" :heading="$t('generalInfo.foreignLanguages')"
-        :description="$t('generalInfo.foreignLanguagesDescription')" :field-key="'foreignLanguages'" :has-button-add="true"
-        :fields="foreignLanguageFields" />
-    </template>
   </div>
 </template>

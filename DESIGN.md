@@ -225,7 +225,7 @@ Color rules:
 - **Sidebar (≥1024px):** fixed, full height, `w-60 bg-surface border-r border-line`. No floating card boxes inside it.
   - Group the nav (`text-xs text-fg-3` group label, sentence case):
     - *Tổng quan:* Dashboard, Lượt truy cập
-    - *Hồ sơ:* Thông tin cơ bản, Thông tin chung, Học vấn, Kinh nghiệm, Dự án, Giải thưởng, Chứng chỉ, Người tham khảo
+    - *Hồ sơ:* Thông tin cơ bản, Thông tin chung, Kỹ năng, Ngoại ngữ, Học vấn, Kinh nghiệm, Dự án, and a collapsible *Thành tích & tham khảo* item holding Giải thưởng, Chứng chỉ, Người tham khảo (open while one of them is the current page)
     - *Công cụ:* Ứng tuyển, Nhập CV, Kiểm tra ATS, Profile CV, Xem trước / Xuất PDF
     - Pinned at the bottom: Cài đặt tài khoản
   - Nav item: `h-8 px-2 rounded flex items-center gap-2 text-sm text-fg-2` plus a 16px icon. Hover: `bg-surface-2 text-fg`. Active: `bg-surface-2 text-fg font-medium` plus a 2px `bg-brand` indicator on the left edge. **No solid green fill.**

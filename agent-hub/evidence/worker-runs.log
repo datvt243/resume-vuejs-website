@@ -98,3 +98,4 @@
 2026-11-05T02:08:58Z role=verifier outcome=REOPEN node=issue-394-languages-page-nav-group rerun=none hub_bytes_before=84561 hub_bytes_after=85404
 2026-11-05T02:10:48Z role=verifier outcome=REOPEN node=issue-394-languages-page-nav-group rerun=none hub_bytes_before=84561 hub_bytes_after=85593
 2026-11-05T02:12:36Z role=verifier outcome=SEAL node=issue-394-languages-page-nav-group rerun=none hub_bytes_before=84561 hub_bytes_after=84571
+2026-11-05T12:55:54Z role=verifier outcome=SEAL node=issue-399-form-lang-sync rerun=none hub_bytes_before=84571 hub_bytes_after=84551

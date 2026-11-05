@@ -8,7 +8,7 @@ import { inject } from 'vue'
 
 export const useHelper = () => {
     const refSpinner = inject('spinner')
-    const refToast = inject('toast')
+    const refToast = inject<(_opts: { message: string; bg?: string }) => void>('toast')
 
     return {
         loading: refSpinner,

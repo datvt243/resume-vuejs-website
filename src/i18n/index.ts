@@ -160,6 +160,7 @@ const vi = {
         positive: 'Giá trị phải lớn hơn 0',
         slugFormat: 'Slug chỉ được chứa chữ thường, số và dấu gạch ngang',
         slugLength: 'Slug phải từ 3-50 ký tự',
+        cvFileNameChars: 'Tên file không được chứa dấu gạch chéo hoặc dấu ngoặc kép',
     },
     field: {
         startDate: 'Ngày bắt đầu',
@@ -498,6 +499,10 @@ const vi = {
         appLanguage: 'Ngôn ngữ ứng dụng',
         appLanguageDescription: 'Ngôn ngữ của menu, nút và thông báo. Không đổi ngôn ngữ CV.',
         cvLanguageDescription: 'Dùng cho xem trước, link CV công khai và file PDF tải về.',
+        cvFileName: 'Tên file CV',
+        cvFileNameDescription: 'Tên file khi tải CV về.',
+        cvFileNameHint: 'Không cần đuôi .pdf. Để trống để dùng tên mặc định.',
+        cvFileNamePlaceholder: 'VD: Nguyen Van A - Frontend CV…',
     },
     preview: {
         title: 'Xem trước CV',
@@ -673,6 +678,7 @@ const en: typeof vi = {
         positive: 'Must be greater than 0',
         slugFormat: 'Slug may only contain lowercase letters, numbers and hyphens',
         slugLength: 'Slug must be 3 to 50 characters',
+        cvFileNameChars: 'File name can\'t contain slashes or double quotes',
     },
     field: {
         startDate: 'Start date',
@@ -1011,6 +1017,10 @@ const en: typeof vi = {
         appLanguage: 'App language',
         appLanguageDescription: 'The language of menus, buttons and messages. Doesn\'t change your CV language.',
         cvLanguageDescription: 'Used for the preview, the public CV link and the downloaded PDF.',
+        cvFileName: 'CV file name',
+        cvFileNameDescription: 'The file name used when you download your CV.',
+        cvFileNameHint: 'No .pdf extension needed. Leave empty for the default name.',
+        cvFileNamePlaceholder: 'e.g. John Doe - Frontend CV…',
     },
     preview: {
         title: 'CV preview',

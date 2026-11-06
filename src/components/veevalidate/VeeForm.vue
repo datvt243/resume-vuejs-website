@@ -10,6 +10,7 @@ import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 import { buttonClass } from '@/lib/button.lib'
 import { t } from '@/i18n'
+import { useFormLang } from '@/composables/useFormLang'
 
 import {
     FrmInput,
@@ -120,7 +121,7 @@ defineExpose({
  * values and validation are kept; the toggle flags a language with errors.
  */
 const LANGS = ['vi', 'en']
-const formLang = ref('vi')
+const { formLang } = useFormLang()
 const hasLocalizedFields = computed(() => getFields.value.some(f => f.lang))
 const hiddenByCondition = computed(() => new Set(props.fields.filter(f => f.showIf && !f.showIf(values)).map(f => f.name)))
 // resolved against current values so `.when(...)` rules (experience company/position) mark correctly
@@ -178,7 +179,8 @@ const objComponent = {
 </script>
 
 <template>
-    <form class="form" @focusin="onFocusIn">
+    <!-- scroll-mb keeps a focused control clear of the sticky button bar when focus scrolls it into view. -->
+    <form class="form [&_*]:scroll-mb-20" @focusin="onFocusIn">
         <div v-if="hasLocalizedFields" class="mb-4 inline-flex rounded bg-surface-2 p-0.5" role="radiogroup" :aria-label="t('form.contentLang')">
             <button
                 v-for="l in LANGS"
@@ -187,7 +189,7 @@ const objComponent = {
                 role="radio"
                 :aria-checked="formLang === l ? 'true' : 'false'"
                 class="inline-flex h-7 items-center gap-1 rounded-sm px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-                :class="formLang === l ? 'bg-surface text-fg shadow-sm' : 'text-fg-2 hover:text-fg'"
+                :class="formLang === l ? 'bg-accent-subtle font-semibold text-accent shadow-sm' : 'text-fg-2 hover:text-fg'"
                 :data-lang="l"
                 @click="formLang = l"
             >
@@ -202,6 +204,8 @@ const objComponent = {
             </template>
         </div>
         <FrmInput v-if="getFieldId" key="_id" v-bind="getFieldId" type="hidden" label="" class="mb-0" />
+        <!-- Extra non-field content (e.g. a checklist) between the fields and the sticky button bar. -->
+        <slot></slot>
         <div class="sticky bottom-0 z-10 flex flex-wrap items-center gap-2 border-t border-line bg-surface py-3" :class="justify[props.buttonPosition] || 'justify-start'">
             <slot name="cancel"></slot>
             <button v-if="props.cancelable" type="button" :class="cancelClass" :disabled="submitting" @click="loadDocument(props.document)">{{ t('common.cancel') }}</button>

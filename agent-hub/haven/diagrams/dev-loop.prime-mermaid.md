@@ -105,10 +105,6 @@ flowchart TD
 
 Any regression must be a **new node** (LAI-13) — never edit an old node's
 PM status directly to "undo" an existing SEAL.
-| `issue-347-veeform-hidden-lang-flag` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-347-veeform-hidden-lang-flag-seal.md` |
-| `issue-352-import-modal-close` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-352-import-modal-close-seal.md` |
-| `issue-353-stale-header-email` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-353-stale-header-email-seal.md` |
-| `issue-354-public-cv-experience-order` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-354-public-cv-experience-order-seal.md` |
 | `issue-356-editor-datepicker-i18n` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-356-editor-datepicker-i18n-seal.md` |
 | `issue-364-form-length-rules` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-364-form-length-rules-seal.md` |
 | `issue-370-language-in-settings` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-370-language-in-settings-seal.md` |
@@ -125,3 +121,7 @@ PM status directly to "undo" an existing SEAL.
 | `issue-383-button-colors` | SEALED | 2026-11-02 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-02/issue-383-button-colors-seal.md` |
 | `issue-375-delete-all-visits` | SEALED | 2026-11-02 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-02/issue-375-delete-all-visits-seal.md` |
 | `issue-394-languages-page-nav-group` | SEALED | 2026-11-05 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-05/issue-394-languages-page-nav-group-seal.md` |
+| `issue-399-form-lang-sync` | SEALED | 2026-11-05 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-05/issue-399-form-lang-sync-seal.md` |
+| `issue-398-languages-view-edit` | SEALED | 2026-11-05 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-05/issue-398-languages-view-edit-seal.md` |
+| `issue-405-cv-filename` | SEALED | 2026-11-06 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-06/issue-405-cv-filename-seal.md` |
+| `issue-409-profile-modal-layout` | SEALED | 2026-11-06 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-06/issue-409-profile-modal-layout-seal.md` |

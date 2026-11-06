@@ -12,18 +12,61 @@
  * BLOCKED_ON_BACKEND như issue #8, không dựng form giả gọi API không tồn
  * tại.
  */
+import { reactive, watchPostEffect } from 'vue'
 import { useRouter } from 'vue-router'
+import VeeForm from '@/components/veevalidate/VeeForm.vue'
 import { authStore } from '@/stores/auth'
+import { candidateStore } from '@/stores/candidate'
 import { useHelper } from '@/composables/useHelper'
+import { useDocument } from '@/composables/useDocument'
 import { handleBase } from '@/services/base'
 import { confirmDelete } from '@/lib/swal.lib'
-import { t, uiLang, setUiLang } from '@/i18n'
+import { t, uiLang, setUiLang, withParams } from '@/i18n'
 import { useCvLang, LANG_OPTIONS } from '@/composables/useCvLang'
 
 const router = useRouter()
 const auth = authStore()
+const candidate = candidateStore()
 const { loading, toast } = useHelper()
 const { selectedLang, setLang } = useCvLang()
+
+// same rules as the backend's `schemaCandidatePatch.cvFileName`
+const cvFileNameFields = [
+    {
+        name: 'cvFileName',
+        label: 'account.cvFileName',
+        type: 'text',
+        placeholder: 'account.cvFileNamePlaceholder',
+        text: 'account.cvFileNameHint',
+        autocomplete: 'off',
+        spellcheck: 'false',
+        default: '',
+        col: 'col-md-12',
+        valid: yup =>
+            yup
+                .string()
+                .trim()
+                .max(100, withParams('validation.maxChars', { max: 100 }))
+                .matches(/^[^\\/"\r\n]*$/, 'validation.cvFileNameChars'),
+    },
+]
+// `_id` makes VeeForm `setValues()` the seeded value instead of resetting it
+const cvFileNameDocument = reactive({ _id: '', cvFileName: '' })
+// post: VeeForm's document watcher only exists after mount; re-seeds when App.vue's fetch lands late
+watchPostEffect(() => {
+    cvFileNameDocument._id = candidate.getId || ''
+    cvFileNameDocument.cvFileName = candidate.getCandidate?.cvFileName || ''
+})
+const { updatePatchDoc } = useDocument({ collection: 'candidate', fields: [] })
+
+async function handleUpdateCvFileName(values) {
+    const _id = candidate.getId
+    if (!_id) return false
+
+    await updatePatchDoc({ _id, cvFileName: values.cvFileName }, ({ data }) => {
+        candidate.setCandidateByField({ cvFileName: data.cvFileName || '' })
+    })
+}
 
 function handleDeleteAccount() {
     confirmDelete({
@@ -75,6 +118,20 @@ function handleDeleteAccount() {
             <div class="pb-4">
                 <SegmentedControl :model-value="uiLang" :options="LANG_OPTIONS" :aria-label="$t('account.appLanguage')" @update:model-value="setUiLang" />
             </div>
+        </FormSection>
+
+        <FormSection :title="$t('account.cvFileName')" :description="$t('account.cvFileNameDescription')">
+            <LoadingGate variant="form">
+                <VeeForm
+                    :key="'frm-cv-file-name'"
+                    :fields="cvFileNameFields"
+                    :document="cvFileNameDocument"
+                    :submit-fn="handleUpdateCvFileName"
+                    :submit-text="$t('common.saveChanges')"
+                    button-position="end"
+                    cancelable
+                />
+            </LoadingGate>
         </FormSection>
 
         <FormSection :title="$t('preview.cvLanguage')" :description="$t('account.cvLanguageDescription')">

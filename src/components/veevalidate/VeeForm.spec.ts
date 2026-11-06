@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import VeeForm from './VeeForm.vue'
 import type { modelItem } from '@/types/model.type'
 import { withEnglish } from '@/types/model.type'
+import { useFormLang } from '@/composables/useFormLang'
 
 // VeeForm.vue imports every Frm* child unconditionally (not just the ones
 // a given `fields` prop actually uses) via the `@/components/veevalidate`
@@ -56,6 +57,19 @@ describe('VeeForm', () => {
         // branch, not the main v-for loop.
         expect(wrapper.findAll('input[type="text"]')).toHaveLength(2)
         expect(wrapper.findAll('input[type="checkbox"]')).toHaveLength(1)
+    })
+
+    it('renders default-slot content after the fields and before the button bar', () => {
+        const wrapper = mount(VeeForm, {
+            props: { fields },
+            slots: { default: '<div class="extra">extra</div>' },
+            global: { stubs: { FontAwesomeIcon: true } },
+        })
+        const children = Array.from(wrapper.find('form').element.children)
+        const extra = children.findIndex(el => el.classList.contains('extra'))
+
+        expect(extra).toBeGreaterThan(children.findIndex(el => el.classList.contains('row')))
+        expect(extra).toBeLessThan(children.findIndex(el => el.querySelector('[data-submit]')))
     })
 
     it('submit button is NOT disabled on a pristine form, even with a required field still empty', async () => {
@@ -233,6 +247,10 @@ describe('VeeForm', () => {
 
         const isVisible = (el: Element) => (el.closest('[class*="col-"]') as HTMLElement).style.display !== 'none'
 
+        beforeEach(() => {
+            useFormLang().formLang.value = 'vi'
+        })
+
         it('is not rendered for a form without localized fields', () => {
             expect(mountForm().find('[data-lang]').exists()).toBe(false)
         })
@@ -261,6 +279,16 @@ describe('VeeForm', () => {
 
             expect(submitFn).toHaveBeenCalledTimes(1)
             expect(submitFn.mock.calls[0][0]).toMatchObject({ summary: 'tóm tắt', summary_en: 'summary' })
+        })
+
+        it('keeps the chosen language for the next form mounted (shared across forms)', async () => {
+            const first = mountForm({ fields: localizedFields })
+            await first.find('[data-lang="en"]').trigger('click')
+            first.unmount()
+
+            const second = mountForm({ fields: localizedFields })
+            expect(second.find('[data-lang="en"]').attributes('aria-checked')).toBe('true')
+            expect(second.find('[data-lang="vi"]').attributes('aria-checked')).toBe('false')
         })
 
         it('flags the hidden language that has a validation error', async () => {

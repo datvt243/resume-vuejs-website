@@ -54,7 +54,10 @@ hit a blocker (red build, currently on `main`/`staging`, PR blocked...).
       (matches this repo's existing merge-commit convention). If `gh pr
       merge` reports the PR is blocked (pending checks, conflicts) — stop,
       report the real `gh` output, don't force-merge.
-   f. Delete the local (and now-merged remote) branch depending on its
+   f. `git checkout staging && git pull --ff-only` — leave the session on
+      the freshly merged `staging` (also required: `git branch -d` can't
+      delete the checked-out branch).
+   g. Delete the local (and now-merged remote) branch depending on its
       kind:
       - Name starts with `fix/...` (bugfix) → `git branch -d <branch>` +
         `git push origin --delete <branch>` (delete — a fix branch's

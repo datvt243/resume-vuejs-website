@@ -49,7 +49,7 @@ yet (still lint + build only) — noted as follow-up, not done here.
 | HTTP | Axios (`src/services/axios.js`), base URL from `src/config/api.config.js` |
 
 ## The default way to work
-`/boot` → `/worker implementer "<task>"` → verifier auto-spawned as a
+`/boot` → (`feat`, or a fix with no feature doc: `/worker analyst "<task>"`) → `/worker implementer "<task>"` → verifier auto-spawned as a
 subagent right after implementer seals (don't wait for the operator to
 type a separate `/worker verifier` request — that ceremony is no longer
 needed; just launch it). Never skip step 1 on a cold session, never skip
@@ -79,6 +79,7 @@ the verifier pass.
 ## Workers
 | wid | Role | Actions | Seal actions |
 |---|---|---|---|
+| analyst | Business analyst | spec_feature | — |
 | implementer | Implementer | pick_next, implement | — |
 | verifier | Verifier | verify_seal | SEAL, REOPEN |
 

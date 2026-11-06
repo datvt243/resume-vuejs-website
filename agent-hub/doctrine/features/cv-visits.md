@@ -1,8 +1,8 @@
 # Visit analytics
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/cv-visits-spec.md`
 - Source: backfill from code
-- Issues: -
+- Issues: #454, #455, #456, datvt243/resume-nodejs-api#396
 - Anchors: `src/pages/dashboard/PageVisits.vue`, `src/composables/useVisits.ts`, `src/composables/useVisitStats.ts`, `src/components/visits/VisitChart.vue`, `src/pages/_layouts/LayoutDefault.vue`, `src/pages/public/PagePublicResume.vue`
 
 ## Goal
@@ -35,13 +35,14 @@ The candidate sees how often their public CV was opened, from where, and when �
 - Exporting visit data.
 
 ## Open questions
-1. The table shows the IP address of every visitor. Is showing raw IPs to the CV owner intended (privacy)?
-2. If the API paginates `GET candidate/visits`, the table only shows the first page while the "all-time" hint uses `meta.total`. Does the endpoint return all visits?
-3. Dates and numbers always use `vi-VN` formatting, even in the English UI. Intended?
-4. "Delete all" has a normal confirm only, though it cannot be undone. Should it require typing, like skill deletion?
-5. The cached visit list is loaded once per session; new visits appear only after a reload or a retry. Intended?
+1. The table shows the IP address of every visitor. Is showing raw IPs to the CV owner intended (privacy)? → **Answer (operator 2026-11-07):** Intended (owner's own analytics)
+2. If the API paginates `GET candidate/visits`, the table only shows the first page while the "all-time" hint uses `meta.total`. Does the endpoint return all visits? → **Answer (operator 2026-11-07):** Change: use the API pagination once datvt243/resume-nodejs-api#396 lands — #454
+3. Dates and numbers always use `vi-VN` formatting, even in the English UI. Intended? → **Answer (operator 2026-11-07):** Bug: format by app language — #455
+4. "Delete all" has a normal confirm only, though it cannot be undone. Should it require typing, like skill deletion? → **Answer (operator 2026-11-07):** Change: typed `delete` — #456
+5. The cached visit list is loaded once per session; new visits appear only after a reload or a retry. Intended? → **Answer (operator 2026-11-07):** Intended
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-visits-spec.md` | - |

@@ -1,8 +1,8 @@
 # ATS check
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/ats-check-spec.md`
 - Source: backfill from code
-- Issues: #159
+- Issues: #159, #448, datvt243/resume-nodejs-api#400, datvt243/resume-nodejs-api#407
 - Anchors: `src/pages/dashboard/PageAtsCheck.vue`, `src/types/ats.type.ts`, `src/composables/useDownloadCv.ts`, `src/composables/useCvLang.ts`
 
 ## Goal
@@ -36,11 +36,12 @@ The candidate checks whether applicant tracking systems can read their CV PDF an
 - Editing the CV from the result (the user goes to the section pages).
 
 ## Open questions
-1. Check messages are shown exactly as the API returns them. Are they localized by the backend for `lang`, or always in one language?
-2. The check runs on the full CV — the active CV profile is not sent. Should it check the profile-filtered CV?
-3. The job description has no length limit on the client. Is there a backend limit the UI should show?
+1. Check messages are shown exactly as the API returns them. Are they localized by the backend for `lang`, or always in one language? → **Answer (operator 2026-11-07):** No: the backend hard-codes English in `src/services/atsChecks.ts` (resume-nodejs-api). Bug: localize every check message — datvt243/resume-nodejs-api#407 (scope extended)
+2. The check runs on the full CV — the active CV profile is not sent. Should it check the profile-filtered CV? → **Answer (operator 2026-11-07):** Change: send it once datvt243/resume-nodejs-api#400 lands — #448
+3. The job description has no length limit on the client. Is there a backend limit the UI should show? → **Answer (operator 2026-11-07):** Intended (backend has none either)
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/ats-check-spec.md` | - |

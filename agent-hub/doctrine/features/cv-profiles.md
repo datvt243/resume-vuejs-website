@@ -1,8 +1,8 @@
 # CV profiles (named variants)
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/cv-profiles-spec.md`
 - Source: backfill from code
-- Issues: #116
+- Issues: #116, #448, #449, datvt243/resume-nodejs-api#400
 - Anchors: `src/pages/dashboard/PageProfile.vue`, `src/models/profile.model.ts`, `src/composables/useActiveProfile.ts`, `src/pages/dashboard/PagePreview.vue`, `src/pages/dashboard/PageInformation.vue`, `src/pages/public/PagePublicResume.vue`
 
 ## Goal
@@ -33,11 +33,12 @@ The candidate keeps one set of CV data but makes named variants (e.g. "Frontend"
 - Per-profile theme or language.
 
 ## Open questions
-1. "Download CV" (server PDF from Header/Home) ignores the active profile, while Preview and the public link apply it. Intended?
-2. Deleting an entry (e.g. an experience) does not remove its id from profiles; the profile summary count then includes the stale id. Intended?
-3. New entries added later are never in any profile automatically — a profile silently omits them. Intended?
+1. "Download CV" (server PDF from Header/Home) ignores the active profile, while Preview and the public link apply it. Intended? → **Answer (operator 2026-11-07):** Change: use the owner export with `?profile=` once datvt243/resume-nodejs-api#400 lands — #448
+2. Deleting an entry (e.g. an experience) does not remove its id from profiles; the profile summary count then includes the stale id. Intended? → **Answer (operator 2026-11-07):** Bug: count only existing entries — #449
+3. New entries added later are never in any profile automatically — a profile silently omits them. Intended? → **Answer (operator 2026-11-07):** Intended
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-profiles-spec.md` | - |

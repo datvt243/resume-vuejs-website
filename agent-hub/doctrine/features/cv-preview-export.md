@@ -1,8 +1,8 @@
 # CV preview, theme, language and export (incl. Download CV)
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/cv-preview-export-spec.md`
 - Source: backfill from code
-- Issues: #55, #116, #119, #182
+- Issues: #55, #116, #119, #182, #440, #448, #451, #452
 - Anchors: `src/pages/dashboard/PagePreview.vue`, `src/components/cv/CvResumeLayout.vue`, `src/composables/useCvTheme.ts`, `src/composables/useCvLang.ts`, `src/composables/useActiveProfile.ts`, `src/composables/useDownloadCv.ts`, `src/utilities/jsonResume.ts`, `src/pages/_layouts/Header.vue`, `src/pages/home/PageHome.vue`
 
 ## Goal
@@ -41,15 +41,16 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 - Attaching an uploaded CV file (Home "coming soon").
 
 ## Open questions
-1. "Export PDF" here prints the browser preview (theme + profile applied), while "Download CV" fetches a server PDF that gets no theme and no profile. The two PDFs can differ. Intended?
-2. The layout has no Skills or Languages section, so neither appears in the preview, the print or the JSON's layout data. Intended?
-3. Theme and active profile are per-page refs (not shared live like the CV language): changing them on one page does not update another open page until it re-mounts. Intended?
-4. JSON export is always `resume.json` (no name, no language suffix), unlike the PDF. Intended?
-5. The Classic/ATS template choice exists on Home and on the ATS check page; the header button always downloads Classic. Intended?
-6. The header Download button is hidden below the `sm` breakpoint, and the account menu has no download entry — no download on small phones except via Home. Intended?
+1. "Export PDF" here prints the browser preview (theme + profile applied), while "Download CV" fetches a server PDF that gets no theme and no profile. The two PDFs can differ. Intended? → **Answer (operator 2026-11-07):** Intended (two kinds of export); the profile part is tracked in #448
+2. The layout has no Skills or Languages section, so neither appears in the preview, the print or the JSON's layout data. Intended? → **Answer (operator 2026-11-07):** Change — #440
+3. Theme and active profile are per-page refs (not shared live like the CV language): changing them on one page does not update another open page until it re-mounts. Intended? → **Answer (operator 2026-11-07):** Intended
+4. JSON export is always `resume.json` (no name, no language suffix), unlike the PDF. Intended? → **Answer (operator 2026-11-07):** Bug: same base name as the PDF + `_VI`/`_EN` — #451
+5. The Classic/ATS template choice exists on Home and on the ATS check page; the header button always downloads Classic. Intended? → **Answer (operator 2026-11-07):** Intended
+6. The header Download button is hidden below the `sm` breakpoint, and the account menu has no download entry — no download on small phones except via Home. Intended? → **Answer (operator 2026-11-07):** Change: add "Download CV" to the account menu — #452
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-06 | Review corrections (see note) | independent review vs code+live, `evidence/spec-backfill/2026-11-06/review.md` | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-preview-export-spec.md` | - |

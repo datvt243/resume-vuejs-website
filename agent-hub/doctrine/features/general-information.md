@@ -1,6 +1,6 @@
 # General information (job preferences)
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/general-information-spec.md`
 - Source: backfill from code
 - Issues: -
 - Anchors: `src/pages/dashboard/PageGeneralInformation.vue`, `src/models/generalInformation.model.ts`, `src/composables/useCandidate.ts`, `src/composables/useDocument.ts`, `src/services/base.ts`
@@ -38,12 +38,13 @@ The candidate states what job they want and their current level, shown in the CV
 - Showing desired level, desired salary or "open to work" on the CV (the layout shows career, current level, education level, years of experience, employment type, work location, career goal).
 
 ## Open questions
-1. Desired salary is required (and must be positive), so a candidate cannot save without stating a salary. Intended?
-2. "Remote" is listed as an employment type alongside Full-time/Part-time, though it is a work arrangement. Intended?
-3. ~~Career has no English input~~ — withdrawn by review 2026-11-06: `generalInformation.model.ts:30` wraps `career` in `withEnglish`, so the form has an optional English input (`careerEn`) and saves send what it holds.
+1. Desired salary is required (and must be positive), so a candidate cannot save without stating a salary. Intended? → **Answer (operator 2026-11-07):** Intended (keep required)
+2. "Remote" is listed as an employment type alongside Full-time/Part-time, though it is a work arrangement. Intended? → **Answer (operator 2026-11-07):** Intended (backend enum)
+3. ~~Career has no English input~~ — withdrawn by review 2026-11-06: `generalInformation.model.ts:30` wraps `career` in `withEnglish`, so the form has an optional English input (`careerEn`) and saves send what it holds. → **Withdrawn — no answer needed.**
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-06 | Review corrections (see note) | independent review vs code+live, `evidence/spec-backfill/2026-11-06/review.md` | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/general-information-spec.md` | - |

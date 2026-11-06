@@ -1,8 +1,8 @@
 # Sign in, register, sign out, route guard
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/auth-login-spec.md`
 - Source: backfill from code
-- Issues: -
+- Issues: #422, #424, #425, #426, #427, #428
 - Anchors: `src/pages/auth/PageLogin.vue`, `src/pages/auth/PageRegister.vue`, `src/services/auth.ts`, `src/stores/auth.ts`, `src/services/axios.ts`, `src/routers/index.ts`, `src/pages/_layouts/Header.vue`
 
 ## Goal
@@ -46,15 +46,16 @@ Every dashboard page is reachable only while signed in.
 - Cookie-based auth — deliberately not used (the API is a different site; third-party cookies are blocked).
 
 ## Open questions
-1. "Remember me" is shown but its value is never used — the session is always tab-scoped. Intended placeholder, or should it change token storage?
-2. Register (and forgot/reset) toast on failure reads only `err.message`; the newer API envelope puts the reason in `error.message`, so the toast may be empty. Login already handles both. Should register use the same logic?
-3. Register sends the email untrimmed while login trims it. Intended?
-4. When the silent refresh fails, `logOut()` is called without a router, so local state is cleared but the page does not move to `/login` until the next navigation. Intended?
-5. Login has no link to Register (only the header has one). Intended?
-6. "View API" picks a localhost base only when `window.location.host === 'localhost'`; a dev server on a port (`localhost:5173`) never matches. Intended?
-7. Successful login always goes to `/dashboard/information`, not to the page the user first tried to open. Intended?
+1. "Remember me" is shown but its value is never used — the session is always tab-scoped. Intended placeholder, or should it change token storage? → **Answer (operator 2026-11-07):** Change: remove the checkbox, show an info note that the session is tab-only — #424
+2. Register (and forgot/reset) toast on failure reads only `err.message`; the newer API envelope puts the reason in `error.message`, so the toast may be empty. Login already handles both. Should register use the same logic? → **Answer (operator 2026-11-07):** Bug — #422
+3. Register sends the email untrimmed while login trims it. Intended? → **Answer (operator 2026-11-07):** Bug: trim — #425
+4. When the silent refresh fails, `logOut()` is called without a router, so local state is cleared but the page does not move to `/login` until the next navigation. Intended? → **Answer (operator 2026-11-07):** Bug: navigate right away — #426
+5. Login has no link to Register (only the header has one). Intended? → **Answer (operator 2026-11-07):** Change: add links both ways login ↔ register — #424
+6. "View API" picks a localhost base only when `window.location.host === 'localhost'`; a dev server on a port (`localhost:5173`) never matches. Intended? → **Answer (operator 2026-11-07):** Bug — #427
+7. Successful login always goes to `/dashboard/information`, not to the page the user first tried to open. Intended? → **Answer (operator 2026-11-07):** Change: return to the originally requested page (internal paths only) — #428
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/auth-login-spec.md` | - |

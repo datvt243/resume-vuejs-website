@@ -1,6 +1,6 @@
 # App dark / light theme
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/app-theme-spec.md`
 - Source: backfill from code
 - Issues: #62
 - Anchors: `src/composables/useTheme.ts`, `src/pages/_layouts/Header.vue`, `src/main.ts`, `index.html`
@@ -29,10 +29,11 @@ The user picks a dark or light interface, and the choice sticks.
 - A "system" option.
 
 ## Open questions
-1. Once the user toggles, the OS preference is never followed again (no way back to "system"). Intended?
+1. Once the user toggles, the OS preference is never followed again (no way back to "system"). Intended? → **Answer (operator 2026-11-07):** Intended
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-06 | Review corrections (see note) | independent review vs code+live, `evidence/spec-backfill/2026-11-06/review.md` | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/app-theme-spec.md` | - |

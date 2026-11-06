@@ -1,8 +1,8 @@
 # Timeline sections: Experience, Education, Project
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/cv-timeline-sections-spec.md`
 - Source: backfill from code
-- Issues: #57, #60
+- Issues: #57, #60, #402, #442, #443, #444, #445, #446, datvt243/resume-nodejs-api#413, datvt243/resume-nodejs-api#414
 - Anchors: `src/pages/dashboard/PageExperience.vue`, `src/pages/dashboard/PageEducation.vue`, `src/pages/dashboard/PageProject.vue`, `src/components/experience/ExperienceItem.vue`, `src/components/education/EducationItem.vue`, `src/components/project/ProjectItem.vue`, `src/models/experience.model.ts`, `src/models/education.model.ts`, `src/models/project.model.ts`, `src/composables/useManualOrder.ts`, `src/composables/useCandidate.ts`, `src/composables/useDocument.ts`, `src/lib/swal.lib.js`
 
 ## Goal
@@ -38,15 +38,16 @@ Per section:
 - Images on projects (field disabled in the model).
 
 ## Open questions
-1. The manual order is per browser only and is not used by the CV preview, public page or PDF (they sort by date / API order). Is the manual order meant to affect the CV?
-2. Newly saved or duplicated entries are appended to the end of the list until reload (the date sort runs only on load). Intended?
-3. Reordering is mouse drag only (HTML5 drag events) — no keyboard or touch alternative. Is that acceptable?
-4. Only Experience has the read-only "View" modal. Should Education and Project get one?
-5. End date is sent as a timestamp even when "current" is checked (empty date becomes `NaN`/`0`). Should it be `null`?
-6. Education requires a major of at least 3 characters (e.g. "IT" is rejected). Intended?
+1. The manual order is per browser only and is not used by the CV preview, public page or PDF (they sort by date / API order). Is the manual order meant to affect the CV? → **Answer (operator 2026-11-07):** Change: persist the order to the backend for Education and Project and use it on the CV; Experience excluded — always sorted by date, no manual order — #442, datvt243/resume-nodejs-api#413
+2. Newly saved or duplicated entries are appended to the end of the list until reload (the date sort runs only on load). Intended? → **Answer (operator 2026-11-07):** Bug: re-sort after save — #443
+3. Reordering is mouse drag only (HTML5 drag events) — no keyboard or touch alternative. Is that acceptable? → **Answer (operator 2026-11-07):** Intended (for now)
+4. Only Experience has the read-only "View" modal. Should Education and Project get one? → **Answer (operator 2026-11-07):** Change: Project #402, Education #444
+5. End date is sent as a timestamp even when "current" is checked (empty date becomes `NaN`/`0`). Should it be `null`? → **Answer (operator 2026-11-07):** Bug: send null — #445
+6. Education requires a major of at least 3 characters (e.g. "IT" is rejected). Intended? → **Answer (operator 2026-11-07):** Bug: min 1 — #446, datvt243/resume-nodejs-api#414
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-06 | Review corrections (see note) | independent review vs code+live, `evidence/spec-backfill/2026-11-06/review.md` | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-timeline-sections-spec.md` | - |

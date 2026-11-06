@@ -1,8 +1,8 @@
 # Forgot / reset password
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/auth-password-reset-spec.md`
 - Source: backfill from code
-- Issues: #61
+- Issues: #61, #422, #429, #430
 - Anchors: `src/pages/auth/PageForgotPassword.vue`, `src/pages/auth/PageResetPassword.vue`, `src/services/auth.ts`
 
 ## Goal
@@ -32,12 +32,13 @@ A user who forgot their password requests a reset link, then sets a new password
 - Changing the password while signed in (see `account-settings.md`).
 
 ## Open questions
-1. Error toast reads only `err.message`; the newer API envelope puts the reason in `error.message`, so the toast may be empty. Should it match login's handling?
-2. Without a token, the form is still submittable and sends `token: undefined`. Should the form be hidden or disabled?
-3. The page's source comment says the UI must disclose that no real email is sent, but the shown description ("Enter your registered email to receive a password reset link.") does not. Should it?
-4. Signed-in users can open both pages (no redirect, unlike `/login` and `/register`). Intended?
+1. Error toast reads only `err.message`; the newer API envelope puts the reason in `error.message`, so the toast may be empty. Should it match login's handling? → **Answer (operator 2026-11-07):** Bug — #422
+2. Without a token, the form is still submittable and sends `token: undefined`. Should the form be hidden or disabled? → **Answer (operator 2026-11-07):** Bug: disable the form — #429
+3. The page's source comment says the UI must disclose that no real email is sent, but the shown description ("Enter your registered email to receive a password reset link.") does not. Should it? → **Answer (operator 2026-11-07):** Change: show a note on /forgot-password — #429
+4. Signed-in users can open both pages (no redirect, unlike `/login` and `/register`). Intended? → **Answer (operator 2026-11-07):** Change: redirect to /dashboard/information like /login — #430
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/auth-password-reset-spec.md` | - |

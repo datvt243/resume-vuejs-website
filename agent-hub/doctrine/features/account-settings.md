@@ -1,8 +1,8 @@
 # Account settings and app language
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/account-settings-spec.md`
 - Source: backfill from code
-- Issues: #63, #182
+- Issues: #63, #182, #431, datvt243/resume-nodejs-api#412
 - Anchors: `src/pages/dashboard/PageAccountSettings.vue`, `src/i18n/index.ts` (`uiLang`, `setUiLang`), `src/composables/useCvLang.ts`, `src/composables/useDownloadCv.ts`, `src/stores/auth.ts`
 
 ## Goal
@@ -32,11 +32,12 @@ The candidate manages account-level settings: interface language, CV file name a
 - Notification or privacy settings.
 
 ## Open questions
-1. Deleting the account uses the normal confirm dialog, while deleting a single skill requires typing `delete`. Should account deletion require typing (or the password)?
-2. App language is only switchable here; signed-out pages (login/register) have no language switch. Intended?
-3. Email and password "coming soon" buttons — is there a backend issue to link, so they are not forgotten?
+1. Deleting the account uses the normal confirm dialog, while deleting a single skill requires typing `delete`. Should account deletion require typing (or the password)? → **Answer (operator 2026-11-07):** Change: require typing `delete` — #431
+2. App language is only switchable here; signed-out pages (login/register) have no language switch. Intended? → **Answer (operator 2026-11-07):** Intended
+3. Email and password "coming soon" buttons — is there a backend issue to link, so they are not forgotten? → **Answer (operator 2026-11-07):** Change: backend issue datvt243/resume-nodejs-api#412
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/account-settings-spec.md` | - |

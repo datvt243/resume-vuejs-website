@@ -1,8 +1,8 @@
 # Foreign languages
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/cv-languages-spec.md`
 - Source: backfill from code
-- Issues: -
+- Issues: #438, #440, #441
 - Anchors: `src/pages/dashboard/PageLanguages.vue`, `src/components/veevalidate/VeeFormGeneralInformationUpdate.vue`, `src/components/table/TableDefault.vue`
 
 ## Goal
@@ -28,11 +28,12 @@ The candidate lists the foreign languages they speak and at what level.
 - Showing languages on the CV preview/public page (the shared layout has no languages section).
 
 ## Open questions
-1. Edit mode has no way to edit an existing language (only add and delete) — the table rows are not clickable here. Intended?
-2. Adding a language when the general-information document has no `_id` yet returns silently. Intended?
-3. Languages are not shown on the CV layout or counted in profile completion. Intended?
+1. Edit mode has no way to edit an existing language (only add and delete) — the table rows are not clickable here. Intended? → **Answer (operator 2026-11-07):** Change: click a row to edit — #441
+2. Adding a language when the general-information document has no `_id` yet returns silently. Intended? → **Answer (operator 2026-11-07):** Bug — #438
+3. Languages are not shown on the CV layout or counted in profile completion. Intended? → **Answer (operator 2026-11-07):** Change: show them and count them — #440
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-languages-spec.md` | - |

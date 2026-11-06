@@ -1,8 +1,8 @@
 # Simple list sections: Award, Certificate, Reference
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/cv-simple-sections-spec.md`
 - Source: backfill from code
-- Issues: #60
+- Issues: #60, #446, #447, datvt243/resume-nodejs-api#414
 - Anchors: `src/pages/dashboard/PageAward.vue`, `src/pages/dashboard/PageCertificate.vue`, `src/pages/dashboard/PageReference.vue`, `src/models/award.model.ts`, `src/models/certificate.model.ts`, `src/models/reference.model.ts`, `src/components/global/ItemActions.vue`, `src/components/table/TableDefault.vue`, `src/composables/useDocument.ts`
 
 ## Goal
@@ -34,13 +34,14 @@ Per section:
 - Manual ordering (only the timeline sections have it).
 
 ## Open questions
-1. An award requires a link and a description — awards without a URL cannot be saved. Intended?
-2. Award/certificate lists are sorted by `startDate` on load, but awards have only `issueDate`, so their order is effectively the API order. Should awards sort by issue date?
-3. Reference has no email field, only phone. Intended?
-4. Reference is a table while Award/Certificate are cards. Intended difference?
+1. An award requires a link and a description — awards without a URL cannot be saved. Intended? → **Answer (operator 2026-11-07):** Change: link optional (URL when filled) — #446, datvt243/resume-nodejs-api#414
+2. Award/certificate lists are sorted by `startDate` on load, but awards have only `issueDate`, so their order is effectively the API order. Should awards sort by issue date? → **Answer (operator 2026-11-07):** Bug: sort by issueDate — #447
+3. Reference has no email field, only phone. Intended? → **Answer (operator 2026-11-07):** Intended
+4. Reference is a table while Award/Certificate are cards. Intended difference? → **Answer (operator 2026-11-07):** Intended
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-06 | Review corrections (see note) | independent review vs code+live, `evidence/spec-backfill/2026-11-06/review.md` | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-simple-sections-spec.md` | - |

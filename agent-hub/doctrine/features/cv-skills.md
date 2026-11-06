@@ -1,8 +1,8 @@
 # Skills
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/cv-skills-spec.md`
 - Source: backfill from code
-- Issues: -
+- Issues: #437, #438, #439, #440
 - Anchors: `src/pages/dashboard/PageSkills.vue`, `src/components/PickedSkills.vue`, `src/components/GroupTags.vue`, `src/components/veevalidate/VeeFormGeneralInformationUpdate.vue`, `src/utilities/index.ts` (`groupSkills`)
 
 ## Goal
@@ -41,13 +41,14 @@ The candidate lists their professional skills (grouped, with years), picks their
 - Counting skills in profile completion.
 
 ## Open questions
-1. Main/familiar skills are stored by name. Renaming or deleting a skill (or deleting its group) does not update `mainSkills`/`familiarSkills`, which can then hold names that no longer exist. Intended?
-2. If the general-information document has no `_id` yet (new account that never saved General information), add/delete returns silently with no message. Intended?
-3. Typing `delete` is required to remove one skill, but deleting a whole group (with all its skills) only needs a normal confirm. Intended?
-4. The typed confirm word is always the English `delete`, even in the Vietnamese UI. Intended?
-5. Skills are not rendered anywhere on the CV layout. Should they be?
+1. Main/familiar skills are stored by name. Renaming or deleting a skill (or deleting its group) does not update `mainSkills`/`familiarSkills`, which can then hold names that no longer exist. Intended? → **Answer (operator 2026-11-07):** Bug: keep them in sync — #437
+2. If the general-information document has no `_id` yet (new account that never saved General information), add/delete returns silently with no message. Intended? → **Answer (operator 2026-11-07):** Bug: show a message — #438
+3. Typing `delete` is required to remove one skill, but deleting a whole group (with all its skills) only needs a normal confirm. Intended? → **Answer (operator 2026-11-07):** Change: typed `delete` — #439
+4. The typed confirm word is always the English `delete`, even in the Vietnamese UI. Intended? → **Answer (operator 2026-11-07):** Intended
+5. Skills are not rendered anywhere on the CV layout. Should they be? → **Answer (operator 2026-11-07):** Change: show them on the CV layout — #440
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-skills-spec.md` | - |

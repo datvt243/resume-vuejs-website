@@ -1,8 +1,8 @@
 # Import CV (LinkedIn export, PDF, JSON Resume)
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/import-cv-spec.md`
 - Source: backfill from code
-- Issues: -
+- Issues: #457
 - Anchors: `src/pages/dashboard/PageImportLinkedin.vue`, `src/utilities/jsonResume.ts` (`fromJsonResume`), `src/services/base.ts`, `src/models/education.model.ts`, `src/models/experience.model.ts`
 
 ## Goal
@@ -34,13 +34,14 @@ A new user fills Education and Experience quickly from a file they already have,
 - Saving without review (no "add all").
 
 ## Open questions
-1. The 5MB PDF limit is only in the hint text; the browser does not check file size before uploading. Should it?
-2. No duplicate detection: importing the same file twice lets the user add the same entries again. Intended?
-3. Imported experiences skip the career-break normalisation the Experience page applies (`careerBreakPayload`). Can a parsed item be a career break, and should it be normalised?
-4. JSON Resume also carries projects, skills, languages, awards and certificates — only education and experience are offered. Intended scope?
-5. Route and file are named "import-linkedin" while the feature covers three sources. Rename, or keep for link stability?
+1. The 5MB PDF limit is only in the hint text; the browser does not check file size before uploading. Should it? → **Answer (operator 2026-11-07):** Bug: check size before upload — #457
+2. No duplicate detection: importing the same file twice lets the user add the same entries again. Intended? → **Answer (operator 2026-11-07):** Intended
+3. Imported experiences skip the career-break normalisation the Experience page applies (`careerBreakPayload`). Can a parsed item be a career break, and should it be normalised? → **Answer (operator 2026-11-07):** Intended (the parser never produces a career break)
+4. JSON Resume also carries projects, skills, languages, awards and certificates — only education and experience are offered. Intended scope? → **Answer (operator 2026-11-07):** Intended (current scope)
+5. Route and file are named "import-linkedin" while the feature covers three sources. Rename, or keep for link stability? → **Answer (operator 2026-11-07):** Intended (keep link stability)
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/import-cv-spec.md` | - |

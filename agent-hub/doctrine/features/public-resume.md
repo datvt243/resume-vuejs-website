@@ -1,8 +1,8 @@
 # Public resume share link
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/public-resume-spec.md`
 - Source: backfill from code
-- Issues: #56, #116, #117, #119, #182
+- Issues: #56, #116, #117, #119, #182, #440, #442, #453, datvt243/resume-nodejs-api#399, datvt243/resume-nodejs-api#413
 - Anchors: `src/pages/public/PagePublicResume.vue`, `src/components/cv/CvResumeLayout.vue`, `src/routers/index.ts`, `src/composables/useCvTheme.ts`, `src/composables/useCvLang.ts`
 
 ## Goal
@@ -37,11 +37,12 @@ Anyone with the candidate's share link can read their CV without an account — 
 - Generating or copying the link (see `personal-information.md`).
 
 ## Open questions
-1. The layout has no Skills or Languages section, so the public CV never shows them. Intended?
-2. The visitor's own visit is recorded on every load, including reloads and the owner viewing their own link. Is deduplication expected (frontend or backend)?
-3. Education, Projects, Awards and Certificates render in API order; only Experience is sorted newest-first. The dashboard has manual ordering for Education/Experience/Project — should the public page honour it?
+1. The layout has no Skills or Languages section, so the public CV never shows them. Intended? → **Answer (operator 2026-11-07):** Change — #440
+2. The visitor's own visit is recorded on every load, including reloads and the owner viewing their own link. Is deduplication expected (frontend or backend)? → **Answer (operator 2026-11-07):** Dedup within 24h is backend datvt243/resume-nodejs-api#399; Change: no visit when the viewer is the owner — #453
+3. Education, Projects, Awards and Certificates render in API order; only Experience is sorted newest-first. The dashboard has manual ordering for Education/Experience/Project — should the public page honour it? → **Answer (operator 2026-11-07):** Change: Education/Project use the stored manual order (#442, datvt243/resume-nodejs-api#413); Experience keeps date order
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/public-resume-spec.md` | - |

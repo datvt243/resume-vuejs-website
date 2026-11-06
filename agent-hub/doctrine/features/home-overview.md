@@ -1,8 +1,8 @@
 # Home overview
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/home-overview-spec.md`
 - Source: backfill from code
-- Issues: #59
+- Issues: #59, #440, #455
 - Anchors: `src/pages/home/PageHome.vue`, `src/composables/useProfileCompletion.ts`, `src/composables/useVisitStats.ts`, `src/composables/useVisits.ts`, `src/components/visits/VisitChart.vue`
 
 ## Goal
@@ -36,12 +36,13 @@ After signing in, the candidate sees at a glance how complete their CV is, how o
 - Full visit analytics (see `cv-visits.md`).
 
 ## Open questions
-1. Completion counts 8 sections; Skills and Languages are not counted. Intended?
-2. KPI and chart numbers always use `vi-VN` formatting, even when the app language is English. Intended?
-3. The code notes "backend has no avatar field yet" — the avatar here only appears once the backend sends `avatar`. Is that still the state? (Information page's avatar block is "coming soon".)
-4. The Classic/ATS template choice resets to Classic on every visit and is not shared with the header's Download button (which uses no template). Intended?
+1. Completion counts 8 sections; Skills and Languages are not counted. Intended? → **Answer (operator 2026-11-07):** Change: count both — #440
+2. KPI and chart numbers always use `vi-VN` formatting, even when the app language is English. Intended? → **Answer (operator 2026-11-07):** Bug — #455
+3. The code notes "backend has no avatar field yet" — the avatar here only appears once the backend sends `avatar`. Is that still the state? (Information page's avatar block is "coming soon".) → **Answer (operator 2026-11-07):** Intended (still "coming soon")
+4. The Classic/ATS template choice resets to Classic on every visit and is not shared with the header's Download button (which uses no template). Intended? → **Answer (operator 2026-11-07):** Intended
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/home-overview-spec.md` | - |

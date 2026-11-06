@@ -1,8 +1,8 @@
 # Job applications tracker
 
-- Status: draft
+- Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/job-applications-spec.md`
 - Source: backfill from code
-- Issues: -
+- Issues: #423, #427, #447, #448, #450, datvt243/resume-nodejs-api#400, datvt243/resume-nodejs-api#410
 - Anchors: `src/pages/dashboard/PageApplication.vue`, `src/models/application.model.ts`, `src/composables/useCandidate.ts`, `src/composables/useDocument.ts`
 
 ## Goal
@@ -33,12 +33,15 @@ The candidate tracks the jobs they applied to, which CV profile they sent, and w
 - The owner-only PDF endpoint with profile filtering (backend does not support `?profile=` there yet).
 
 ## Open questions
-1. The per-application PDF and public CV go through the PUBLIC endpoints, so they only work while the CV is public (code shortcut note). For a private CV both links fail. Acceptable until the backend's owner `download-pdf` supports `?profile=`?
-2. The per-application PDF is always the ATS template and never passes the CV language (`lang`). Intended?
-3. The list is not sorted by applied date (the shared sort uses `startDate`, which applications don't have) — order is the API's. Should it sort newest applied first?
-4. Same `window.location.host === 'localhost'` check as the header (never true with a port), so dev always uses the real API host. Intended?
+1. The per-application PDF and public CV go through the PUBLIC endpoints, so they only work while the CV is public (code shortcut note). For a private CV both links fail. Acceptable until the backend's owner `download-pdf` supports `?profile=`? → **Answer (operator 2026-11-07):** Change: owner endpoint once datvt243/resume-nodejs-api#400 lands — #448
+2. The per-application PDF is always the ATS template and never passes the CV language (`lang`). Intended? → **Answer (operator 2026-11-07):** Bug: pass the CV language — #450
+3. The list is not sorted by applied date (the shared sort uses `startDate`, which applications don't have) — order is the API's. Should it sort newest applied first? → **Answer (operator 2026-11-07):** Bug: newest applied first — #447
+4. Same `window.location.host === 'localhost'` check as the header (never true with a port), so dev always uses the real API host. Intended? → **Answer (operator 2026-11-07):** Bug — #427
+
+Note (operator 2026-11-07): follow-up — add status `accepted` + status transition rules — #423 (backend datvt243/resume-nodejs-api#410).
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
+| 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/job-applications-spec.md` | - |

@@ -55,6 +55,7 @@ diff (even one line):
      `fix/issue-34-converttotruncate-length`).
    - New feature → `feature/<slug>` (e.g. `feature/export-cv-pdf`).
    - Other (docs/chore/tooling) → `chore/<slug>` or `docs/<slug>`.
+   Branch naming: `fix/issue-<n>-<slug>` | `feature/<slug>` | `chore/<slug>` | `docs/<slug>` (kept over kit default)
    The prefix decides whether the branch survives after merge (see
    `/ship` — `.claude/skills/ship/SKILL.md`): `fix/*` gets deleted,
    `feature/*` is KEPT, everything else deleted by default.

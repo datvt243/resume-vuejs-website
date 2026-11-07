@@ -1,6 +1,6 @@
 ---
 name: ship
-description: "Commit any pending changes on the current task branch, open a PR into `staging`, and merge it — for resume-vuejs-website. Usage: /ship [\"<commit message>\"]. Refuses to run directly on `main` OR `staging` (both are GitHub branch-protected as of 2026-08-30 — no raw git push works on either anymore). Requires npm run build green first. Deletes fix/* branches after merge, keeps feature/* branches. Invoking /ship IS the seal-gate approval, no extra confirmation asked. `main` only ever receives code via `/release`, never `/ship` — see `.claude/skills/release/SKILL.md`."
+description: "Commit any pending changes on the current task branch, open a PR into `staging`, and merge it — for resume-vuejs-website. Usage: /ship [\"[commit message]\"]. Refuses to run directly on `main` OR `staging` (both are GitHub branch-protected as of 2026-08-30 — no raw git push works on either anymore). Requires npm run build green first. Deletes fix/* branches after merge, keeps feature/* branches. Invoking /ship IS the seal-gate approval, no extra confirmation asked. `main` only ever receives code via `/release`, never `/ship` — see `.claude/skills/release/SKILL.md`."
 ---
 
 # /ship ["<commit message>"] — commit, PR + merge branch → staging

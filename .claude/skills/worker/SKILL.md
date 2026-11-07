@@ -63,7 +63,9 @@ From here on you ARE `<wid>` — speak from the identity in `SOUL.md`, obey
    is a citeable trail: `recipes/verify_seal.md` step 1b has the verifier
    record proof of this separate spawn into the verdict note's
    `## Isolation proof` line, so a later audit can check it instead of
-   trusting it happened.
+   trusting it happened. Only exception to a fresh spawn: `/todo`'s
+   REOPEN rounds resume the same verifier subagent (`todo` step 4) —
+   still never the implementer's context.
 
 ### If wid = verifier
 1. REFUSE IMMEDIATELY if this same conversation session just wrote the

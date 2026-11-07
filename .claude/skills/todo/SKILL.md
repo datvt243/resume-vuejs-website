@@ -107,12 +107,19 @@ argument-hint: "<task>|#<issue-number> [--ship]"
    isolation "since it's the same `/todo` call" — the isolation is what
    makes the verdict mean anything, and it's identical to what a human
    typing `/worker verifier` by hand would get. (The verifier recipe
-   itself already logs the verdict to `evidence/worker-runs.log`.)
+   itself already logs the verdict to `evidence/worker-runs.log`.) Keep
+   the verifier's agent id from the Agent tool result — step 4 reuses it.
 4. **On REOPEN**: read the REOPEN reason from the verifier's evidence
    note, then repeat from step 2 — implementer gets the REOPEN note as
    additional context for what to fix. Track the retry count. (Issue and
    branch from step 1 stay the same across REOPEN cycles — never
-   re-resolve.)
+   re-resolve.) Pass 2 of a REOPEN round: resume the SAME verifier with
+   `SendMessage` to its agent id — "round <N>: re-read
+   `<note path>` from disk, re-run `verify_seal` steps 2-12, write a new
+   verdict note + log line" — instead of a fresh spawn. It never saw the
+   implementer's reasoning, so isolation holds; it skips the bundle
+   reload. Resume fails (no id, agent gone, error) → fresh spawn as in
+   step 3.
 5. **Retry limit**: default 3 REOPEN cycles. On reaching the limit without
    a SEAL, stop and report the situation to the user (last REOPEN reason,
    how many attempts) instead of trying a 4th time — repeated REOPEN on
@@ -122,7 +129,11 @@ argument-hint: "<task>|#<issue-number> [--ship]"
    line from step 3/verify_seal — grep the node's slug in
    `worker-runs.log` to see the full retry history.)
 6. **On SEAL**: report the result (node, evidence note paths, issue +
-   branch from step 1).
+   branch from step 1) plus one spawn line read back from
+   `grep "role=verifier.*node=<slug> " evidence/worker-runs.log`:
+   `spawns: verifier <N> (<F> fresh, <R> resumed), REOPEN <k>`. A REOPEN
+   round logged `fresh` means step 4's resume fell back — say why. Same
+   line on a retry-limit stop (step 5).
    - **`--ship` NOT passed** (default): stop here. Do NOT proceed to
      commit/push — that's `/ship`'s job, a separate explicit step the
      user runs themselves.
@@ -165,6 +176,7 @@ verifier manifests declare | `SealedOnly`/`NoForce`/`ReadBackBeforeClaim`
 | Analyst returns `needs_input` on pass 0 | Ask the operator, wait, re-run pass 0 with the answers — no pass 1 before that |
 | Implementer reports `blocked` on pass 1 | Stop immediately, report the blocker — don't loop |
 | Retry limit reached still REOPEN | Stop, report attempt count + latest REOPEN reason, hand back to the user |
+| `SendMessage` resume of the verifier fails on a REOPEN round | Fresh verifier spawn as in step 3 — never verify inline |
 | Verifier can't find the evidence note from pass 1 | Stop, report — don't guess what pass 1 did |
 | `--ship` passed but the loop stopped on `blocked`/`failed`/retry-limit (no SEAL) | Don't call `/ship` — there's nothing sealed to ship |
 | `--ship` passed, SEAL reached, but `/ship` itself then refuses (e.g. push rejected, or a project-specific guard in a hand-patched `/ship`) | Report `/ship`'s real failure — the SEAL from step 6 still stands, only the ship step failed |

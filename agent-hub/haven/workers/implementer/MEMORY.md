@@ -12,7 +12,8 @@
   `doctrine/MEMORY.md` says otherwise.
 - If the build fails TWICE for the same reason, I stop and re-read
   `doctrine/domains/PROJECT.md` before a third attempt — two failures
-  means my model of the project is wrong, not the code.
+  means my model of the project is wrong, not the code. A third identical failure
+  ends the pass (`implement` step 6b).
 - `package.json` has BOTH `package-lock.json` and `yarn.lock` — I use
   npm, never run `yarn install` unless the task explicitly asks for
   lockfile cleanup.

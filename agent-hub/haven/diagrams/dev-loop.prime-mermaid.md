@@ -3,9 +3,10 @@
 DNA: 'smallest_diff / edit_x_read_back_proof_x_independent_verdict'
 Auth: 65537 | Version: 1.0.0
 Law: LAI-13 - monotonic ratchet (PENDING -> IN_PROGRESS -> SEALED, never demote)
+States: PENDING, IN_PROGRESS, BLOCKED_<reason> (<-> IN_PROGRESS), SEALED (verifier only, final). REOPEN is a verdict (row stays IN_PROGRESS); DRAFT is creating a row (lands PENDING).
 
-> Every change to the code repo enters here and exits as SEALED or
-> REOPENED — no state in between.
+> Every change to the code repo enters here and exits as SEALED; a
+> REOPEN verdict sends it back to implement, still IN_PROGRESS.
 
 ```mermaid
 flowchart TD
@@ -63,48 +64,17 @@ flowchart TD
 > [note, 4th pass] same limitation as the 3rd pass's note — the 5
 > non-SEALED nodes are the floor, every SEALED row is already a pointer
 > again after this pass.
+>
+> Any regression must be a **new node** (LAI-13) — never edit an old node's
+> PM status directly to "undo" an existing SEAL.
+>
+> The table below is the LAST block of this file: a new row is appended
+> at end-of-file (`AppendOnly`), a removed row is deleted with its line —
+> no blank lines, no text after the table.
 
 | Node | State | Notes |
 |---|---|---|
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 | `issue-122-ai-cv-suggestions-pending` | PENDING | Operator (2026-10-05): "#122 chuyển status thành PENDING". Deliberately deferred, not started — waiting on an owner decision: shared app AI key vs BYOK (BYOK needs new two-way encryption on the backend; only `bcrypt` exists today) + a consent checkbox for sending CV data out. Checked: no branch/PR/evidence for #122; backend `origin/staging` (`f05930a`) has no AI-provider code. Partly overlapped by #159's non-AI JD keyword match. GitHub label `status: pending` applied. Evidence: `evidence/implementer/2026-10-05-issue-122-158-status-rows.md`. |
-
-Any regression must be a **new node** (LAI-13) — never edit an old node's
-PM status directly to "undo" an existing SEAL.
 | `issue-356-editor-datepicker-i18n` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-356-editor-datepicker-i18n-seal.md` |
 | `issue-364-form-length-rules` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-364-form-length-rules-seal.md` |
 | `issue-370-language-in-settings` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-370-language-in-settings-seal.md` |

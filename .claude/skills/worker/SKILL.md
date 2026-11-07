@@ -1,6 +1,6 @@
 ---
 name: worker
-description: "Become an agent-hub worker (analyst, implementer or verifier) and run its recipe loop for one task on resume-vuejs-website. Usage: /worker <analyst|implementer|verifier> \"<task>\". Implementer writes the smallest diff and stops at sealed_pending_verifier; verifier reads the evidence note independently and returns SEAL or REOPEN. Never call verifier on a diff the same session just wrote."
+description: "Become an agent-hub worker (analyst, implementer or verifier) and run its recipe loop for one task on resume-vuejs-website. Usage: /worker [analyst|implementer|verifier] \"[task]\". Implementer writes the smallest diff and stops at sealed_pending_verifier; verifier reads the evidence note independently and returns SEAL or REOPEN. Never call verifier on a diff the same session just wrote."
 ---
 
 # /worker <wid> "<task>" — become a worker, run its recipe, exit

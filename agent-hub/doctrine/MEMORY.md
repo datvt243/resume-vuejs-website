@@ -44,7 +44,7 @@ yet (still lint + build only) — noted as follow-up, not done here.
 | Language/runtime | Node.js ≥ 18 (per README) · Vue 3 (Composition API + `<script setup>`) · TypeScript (partial, mixed with `.js`) |
 | Package manager | npm (`package-lock.json` is the source of truth) — NOTE: `yarn.lock` also exists in parallel, this is a trap, see `domains/PROJECT.md` |
 | Build tool | Vite 5, alias `@` → `src/` (declared in both `vite.config.ts` and `tsconfig.json`) |
-| Test runner | None |
+| Test runner | Vitest (command: Commands table above) |
 | State management | Pinia (`src/stores/auth.js`, `src/stores/candidate.js`) |
 | HTTP | Axios (`src/services/axios.js`), base URL from `src/config/api.config.js` |
 
@@ -91,7 +91,8 @@ skill text.
 - No LLM API key anywhere in the hub — Claude Code IS the runtime.
 - `haven/` is memory, not code.
 - `evidence/` is committed; "bad" notes are kept too.
-- Monotonic ratchet: PENDING → IN_PROGRESS → SEALED, never backward.
+- Monotonic ratchet: PENDING → IN_PROGRESS → SEALED, never backward;
+  `BLOCKED_<reason>` ↔ IN_PROGRESS. REOPEN is a verdict, not a state.
 - Verifier owns PM status; implementer never sets it itself.
 - Backend API (`https://nodejs-resume-api-ts.onrender.com/api/v1/`) runs
   on Render's free tier — cold start ~30s on first call, don't mistake

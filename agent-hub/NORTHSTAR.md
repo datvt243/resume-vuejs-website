@@ -44,8 +44,8 @@ Missing (3) or (5) → forbidden state `EDIT_UNVERIFIED`.
 - Doesn't take a real action without an evidence note → `NO_EVIDENCE`
 
 ## The success picture (3 months out)
-- ≥ 5 recipes in `haven/workers/*/recipes/` replayed at least once
-  ("Times replayed" column > 0).
+- REOPEN rate trending down in `/hub-health`'s verifier line (the old
+  "Times replayed" metric was dropped 2026-11-07 — nothing ever counted it).
 - 0 forbidden states in the last 20 evidence notes.
 - `doctrine/MEMORY.md` has no `<<FILL>>` left in the command table.
 - All 10 known traps in `doctrine/domains/PROJECT.md` are either fixed

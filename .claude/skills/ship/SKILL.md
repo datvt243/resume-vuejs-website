@@ -49,7 +49,9 @@ hit a blocker (red build, currently on `main`/`staging`, PR blocked...).
       2 branches reject direct pushes).
    d. `gh pr create --base staging --head <branch> --title "<commit
       title>" --body "<short summary>"` — target is `staging`, never
-      `main`.
+      `main`. Branch `fix/issue-<n>-<slug>` → append `Closes #<n>` to the
+      body (`/release` + `/issues-ls` link issues only via that keyword);
+      no number in the branch → no line, never invent one.
    e. `gh pr merge <PR#> --merge` — real merge commit, not squash/rebase
       (matches this repo's existing merge-commit convention). If `gh pr
       merge` reports the PR is blocked (pending checks, conflicts) — stop,

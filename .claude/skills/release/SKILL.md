@@ -1,6 +1,6 @@
 ---
 name: release
-description: "Release staging -> main for resume-vuejs-website: real build+lint gate, semver bump, annotated git tag, relies on the existing gh-pages deploy workflow, syncs the bump back to staging, closes issues actually shipped in this release. Usage: /release [major|minor|patch] (default: minor). Both main and staging are GitHub branch-protected (PR required, 0 approvals needed, enforce_admins on) — every step here goes through `gh pr create`/`gh pr merge`, never a raw `git push` to either branch."
+description: "Release staging → main for resume-vuejs-website: real build+lint gate, semver bump, annotated git tag, relies on the existing gh-pages deploy workflow, syncs the bump back to staging, closes issues actually shipped in this release. Usage: /release [major|minor|patch] (default: minor). Both main and staging are GitHub branch-protected (PR required, 0 approvals needed, enforce_admins on) — every step here goes through `gh pr create`/`gh pr merge`, never a raw `git push` to either branch."
 argument-hint: "[major|minor|patch]"
 ---
 

@@ -129,12 +129,29 @@ disable-model-invocation: true
    reason, no SEAL to ship. (Each REOPEN round already has its own logged
    line from step 3/verify_seal — grep the node's slug in
    `worker-runs.log` to see the full retry history.)
-6. **On SEAL**: report the result (node, evidence note paths, issue +
-   branch from step 1) plus one spawn line read back from
-   `grep "role=verifier.*node=<slug> " evidence/worker-runs.log`:
-   `spawns: verifier <N> (<F> fresh, <R> resumed), REOPEN <k>`. A REOPEN
-   round logged `fresh` means step 4's resume fell back — say why. Same
-   line on a retry-limit stop (step 5).
+6. **On SEAL**: print exactly this report, nothing else (no diff, no
+   recap of the work — the evidence note has it):
+   ```
+   ✅ SEALED <slug> — <task>
+   issue #<n> <url> · branch <branch>
+   evidence: <note path>[, <note path>…]
+   spawns: verifier <N> (<F> fresh, <R> resumed), REOPEN <k>
+   next: /ship "<task>"
+   ```
+   `spawns:` is read back from
+   `grep "role=verifier.*node=<slug> " evidence/worker-runs.log`, never
+   counted from memory. A REOPEN round logged `fresh` means step 4's
+   resume fell back — append ` (fresh: <why>)` to that line. With
+   `--ship`, `next:` becomes `next: running /ship "<task>"`.
+   Every non-SEAL stop (step 1 failure, `blocked`, `failed`, retry limit)
+   uses the same shape:
+   ```
+   ⛔ STOPPED <slug|-> — <task> (<blocked|failed|retry-limit|issue/branch>)
+   issue #<n> <url> · branch <branch>   (omit if step 1 failed)
+   reason: <blocker | latest REOPEN reason | real error, verbatim>
+   spawns: verifier <N> (<F> fresh, <R> resumed), REOPEN <k>   (omit if no verifier ran)
+   next: <the one decision the user must make>
+   ```
    - **`--ship` NOT passed** (default): stop here. Do NOT proceed to
      commit/push — that's `/ship`'s job, a separate explicit step the
      user runs themselves.

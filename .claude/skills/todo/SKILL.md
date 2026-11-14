@@ -1,6 +1,6 @@
 ---
 name: todo
-description: "Resolve/create a GitHub issue and checkout its dedicated branch, then run analyst (feat, or fix with no feature doc) → implementer → verifier as one command — still two isolated passes internally (verifier as a separate subagent), auto-repeating the implementer pass on REOPEN up to a retry limit. Usage: /todo \"[task]\"|#[issue-number] [--ship]. Stops at SEAL or the retry limit, never auto-commits — unless --ship was passed, in which case it chains a call to /ship after SEAL (which still shows its own git commands and waits for approval, same as running /ship by hand)."
+description: "Resolve/create a GitHub issue and checkout its dedicated branch, then run analyst (feat, or fix with no feature doc) → implementer → verifier as one command — still two isolated passes internally (verifier as a separate subagent), auto-repeating the implementer pass on REOPEN up to a retry limit. Usage: /todo \"[task]\"|#[issue-number] [--ship]. Stops at SEAL or the retry limit, never auto-commits — unless --ship was passed, in which case it chains a call to /ship after SEAL (which shows its git commands and runs them at once — passing --ship is the approval)."
 argument-hint: "<task>|#<issue-number> [--ship]"
 disable-model-invocation: true
 ---
@@ -74,8 +74,8 @@ disable-model-invocation: true
       the operator's behalf.
    6. **Report** the resolved issue (`#<number>`, URL) and branch name to
       the user before continuing (`ReadBackBeforeClaim` applies to this
-      resolution too) — this is a report, not a second approval gate; the
-      only real approval gate in this whole chain is `/ship`'s push, at
+      resolution too) — this is a report, not an approval gate; the only
+      approval in this chain is the operator's `/ship`/`--ship`, at
       "On SEAL" below.
 1b. **Pass 0 — analyst**: call `/worker analyst "<task>"` (separate
    subagent) when (`<type>` = step 1.2's type rules, applied even when
@@ -160,11 +160,10 @@ disable-model-invocation: true
      here, just invoke it with the task text as the note. `/ship` still
      runs its OWN full contract unmodified: `SealedOnly` (trivially
      satisfied, this SEAL just happened), showing the real `git add`/
-     `git commit`/`git push` commands and waiting for operator approval
-     before running them, `NoForce`, `ReadBackBeforeClaim`, its own
+     `git commit`/`git push` commands then running them at once
+     (`AutoCommitNoGate` — `--ship` was the approval), `NoForce`, `ReadBackBeforeClaim`, its own
      evidence note. `--ship` on `/todo` only removes the need to type
-     `/ship` as a second command — it does NOT skip `/ship`'s approval
-     gate. If the operator wants `--merge` too, they still call
+     `/ship` as a second command. If the operator wants `--merge` too, they still call
      `/todo "<task>" --ship` and then use `/ship --merge` for a
      subsequent merge, or invoke `/ship` by hand after — `--ship` here
      never implies `--merge`.

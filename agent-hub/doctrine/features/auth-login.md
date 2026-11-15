@@ -17,7 +17,7 @@ Every dashboard page is reachable only while signed in.
 5. On failure: tokens are cleared and a red toast shows the API's own reason (`error.message`, else `message` when `success === false`), else the generic "login failed" text.
 6. Opening `/login` or `/register` while signed in redirects to `/dashboard/information`.
 7. `/register` shows Email (required, valid), Password (required, at least 12 characters with a lowercase letter, an uppercase letter, a digit and a special character), Confirm password (must match). No name fields — names are set later on the Information page.
-8. On register submit the app sends `POST api/v1/auth/register` with `email`, `password`, `repassword` (not trimmed). Success: green toast with the API message, then navigate to `/login`. Failure: red toast with the rejected body's `message`.
+8. On register submit the submit button shows its submitting state until the request settles; the app sends `POST api/v1/auth/register` with `email` trimmed and `password`, `repassword` untrimmed. Success: green toast with the API message, then navigate to `/login`. Failure: red toast with the API's own reason (same extraction as login, #5), else the generic "something went wrong" text.
 9. "Signed in" means: a cached user with an email AND a refresh token in this tab. A cached user without a refresh token (e.g. a new tab) counts as signed out.
 10. Route guard: every route with `meta.requiresAuth` (`/` and all `/dashboard/*`) sends a signed-out user to `/login`. `/login`, `/register`, `/forgot-password`, `/reset-password`, `/resume/:slug` and the 404 route are open.
 11. After a page reload only the refresh token survives; the first API request first calls `POST api/v1/auth/refresh` once. Any 401 whose error code is missing or one of `NO_TOKEN`, `INVALID_TOKEN`, `TOKEN_EXPIRED`, `TOKEN_REVOKED` triggers one refresh and one retry; concurrent requests share a single refresh call. If the refresh fails, the user is signed out.
@@ -59,3 +59,4 @@ Every dashboard page is reachable only while signed in.
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/auth-login-spec.md` | - |
+| 2026-11-15 | Behavior #8: register shows submitting state, trims email, error toast uses login's extraction | #420 #422 #425 (operator answers to open questions 2-3) | `issue-420-auth-form-fixes` |

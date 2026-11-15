@@ -29,7 +29,7 @@ const formFields = [
         type: 'email',
         placeholder: 'auth.emailPlaceholder',
         autocomplete: 'email',
-        valid: yup => yup.string().email('validation.emailInvalid').required('validation.emailRequired'),
+        valid: yup => yup.string().trim().email('validation.emailInvalid').required('validation.emailRequired'),
     },
     {
         name: 'password',
@@ -70,11 +70,7 @@ const formFields = [
             <Heading :level="1" :text="$t('auth.registerTitle')" />
             <VeeForm
                 :fields="formFields"
-                :submit-fn="
-                    values => {
-                        handleRegister(values, { toast: refToast, loading: refSpinner, router })
-                    }
-                "
+                :submit-fn="values => handleRegister(values, { toast: refToast, loading: refSpinner, router })"
                 :submit-text="$t('auth.createAccount')"
             />
         </div>

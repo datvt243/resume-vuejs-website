@@ -9,12 +9,12 @@
 A user who forgot their password requests a reset link, then sets a new password from that link.
 
 ## Behavior
-1. `/forgot-password` shows a heading, a description, an Email field (required, valid email), a "Send request" button and a "Back to login" link.
+1. `/forgot-password` shows a heading, a description, a note that password reset emails are not sent yet, an Email field (required, valid email), a "Send request" button and a "Back to login" link.
 2. Submit shows a spinner and sends `POST api/v1/auth/forgot-password` with the trimmed email.
-3. Success → green toast with the API message (the backend answers the same generic message whether or not the email exists). Failure → red toast with the rejected body's `message`.
-4. `/reset-password` reads `token` from the query string. Without a token it shows the "invalid link" text in red above the form (the form is still shown).
+3. Success → green toast with the API message (the backend answers the same generic message whether or not the email exists). Failure → red toast with the API's own reason (`error.message`, else `message` when `success === false`), else the generic "something went wrong" text.
+4. `/reset-password` reads `token` from the query string. Without a token it shows only the "invalid link" text in red and a "Back to login" link — no form.
 5. The form asks for a new password (same rule as registration: at least 12 characters, a lowercase letter, an uppercase letter, a digit and a special character) and a confirmation that must match.
-6. Submit sends `POST api/v1/auth/reset-password` with `token`, `password`, `repassword`. Success → green toast, then navigate to `/login`. Failure → red toast with the rejected body's `message`.
+6. Submit sends `POST api/v1/auth/reset-password` with `token`, `password`, `repassword`. Success → green toast, then navigate to `/login`. Failure → red toast, same message rule as #3.
 7. Both pages are open to signed-out users (no route guard).
 
 ## Acceptance criteria
@@ -42,3 +42,4 @@ A user who forgot their password requests a reset link, then sets a new password
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/auth-password-reset-spec.md` | - |
+| 2026-11-15 | Behavior #1, #3, #4, #6: no-email note, error toast uses login's extraction, form hidden without a token | #422 #429 (operator answers to open questions 1-3) | `issue-420-auth-form-fixes` |

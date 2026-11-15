@@ -35,6 +35,7 @@ async function _handleForgotPassword(values) {
     <div class="flex justify-center py-12">
         <div class="w-full max-w-md rounded-md border border-line bg-surface p-6">
             <Heading :level="1" :text="$t('auth.forgotTitle')" :description="$t('auth.forgotDescription')" />
+            <p class="mb-4 text-sm text-fg-2">{{ $t('auth.forgotNoEmailNote') }}</p>
             <VeeForm :fields="formFields" :submit-fn="_handleForgotPassword" :submit-text="$t('auth.sendRequest')">
                 <template #button>
                     <RouterLink to="/login" class="ms-auto self-center whitespace-nowrap text-sm">{{ $t('auth.backToLogin') }}</RouterLink>

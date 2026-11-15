@@ -11,6 +11,13 @@ import { toValue } from 'vue'
 import { subURL } from '@/config/api.config'
 import { t } from '@/i18n'
 
+// the API's own reason (wrong credentials, too many requests, unreachable) beats a generic line
+const apiErrorMessage = (err: unknown, fallback: string) => {
+    const body = err as { success?: boolean; message?: string; error?: { message?: string } } | undefined
+    // || not ??: an empty message must still fall back
+    return body?.error?.message || (body?.success === false && body.message) || fallback
+}
+
 export const handleLogin = async (values, props) => {
     const { email, password } = values
     const { loading = null, toast = null, router = null } = props
@@ -53,12 +60,7 @@ export const handleLogin = async (values, props) => {
         router?.push('/dashboard/information')
     } catch (err) {
         authStore().setTokens()
-        // the API's own reason (wrong credentials, too many requests, unreachable) beats a generic line
-        const body = err as { success?: boolean; message?: string; error?: { message?: string } } | undefined
-        toast?.({
-            message: body?.error?.message ?? (body?.success === false ? body.message : undefined) ?? t('error.loginFailed'),
-            bg: 'danger',
-        })
+        toast?.({ message: apiErrorMessage(err, t('error.loginFailed')), bg: 'danger' })
     } finally {
         /**
          * spinner hide
@@ -90,11 +92,7 @@ export const handleForgotPassword = async (values, props) => {
             bg: 'success',
         })
     } catch (err) {
-        const { message = '' } = err
-        toast?.({
-            message: message + '',
-            bg: 'danger',
-        })
+        toast?.({ message: apiErrorMessage(err, t('error.generic')), bg: 'danger' })
     } finally {
         /**
          * spinner hide
@@ -130,11 +128,7 @@ export const handleResetPassword = async (values, props) => {
 
         router?.push('/login')
     } catch (err) {
-        const { message = '' } = err
-        toast?.({
-            message: message + '',
-            bg: 'danger',
-        })
+        toast?.({ message: apiErrorMessage(err, t('error.generic')), bg: 'danger' })
     } finally {
         /**
          * spinner hide
@@ -157,7 +151,7 @@ export const handleRegister = async (values, props) => {
             method: 'post',
             url: `${subURL}auth/register`,
             data: {
-                email,
+                email: email.trim(),
                 password,
                 repassword,
             },
@@ -170,11 +164,7 @@ export const handleRegister = async (values, props) => {
 
         router?.push('/login')
     } catch (err) {
-        const { message = '' } = err
-        toast?.({
-            message: message + '',
-            bg: 'danger',
-        })
+        toast?.({ message: apiErrorMessage(err, t('error.generic')), bg: 'danger' })
     } finally {
         /**
          * spinner hide

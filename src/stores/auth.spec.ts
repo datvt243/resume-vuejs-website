@@ -77,6 +77,15 @@ describe('authStore', () => {
         expect(options).toMatchObject({ headers: { Authorization: 'Bearer at' } })
     })
 
+    it('logOut sends the refresh token so the backend can revoke it (issue #459)', async () => {
+        const store = authStore()
+        store.setTokens({ token: 'at', tokenRefresh: 'rt' })
+
+        await store.logOut()
+
+        expect(vi.mocked(axios.post).mock.calls[0][1]).toEqual({ refreshToken: 'rt' })
+    })
+
     it('logOut clears localStorage, resets user, and cleans the candidate store', async () => {
         const store = authStore()
         store.setUser({ email: 'dat@example.com' })

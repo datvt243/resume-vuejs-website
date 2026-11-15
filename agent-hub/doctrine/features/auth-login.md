@@ -2,7 +2,7 @@
 
 - Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/auth-login-spec.md`
 - Source: backfill from code
-- Issues: #422, #424, #425, #426, #427, #428
+- Issues: #422, #424, #425, #426, #427, #428, #459
 - Anchors: `src/pages/auth/PageLogin.vue`, `src/pages/auth/PageRegister.vue`, `src/services/auth.ts`, `src/stores/auth.ts`, `src/services/axios.ts`, `src/routers/index.ts`, `src/pages/_layouts/Header.vue`
 
 ## Goal
@@ -20,9 +20,9 @@ Every dashboard page is reachable only while signed in.
 8. On register submit the submit button shows its submitting state until the request settles; the app sends `POST api/v1/auth/register` with `email` trimmed and `password`, `repassword` untrimmed. Success: green toast with the API message, then navigate to `/login`. Failure: red toast with the API's own reason (same extraction as login, #5), else the generic "something went wrong" text.
 9. "Signed in" means: a cached user with an email AND a refresh token in this tab. A cached user without a refresh token (e.g. a new tab) counts as signed out.
 10. Route guard: every route with `meta.requiresAuth` (`/` and all `/dashboard/*`) sends a signed-out user to `/login`. `/login`, `/register`, `/forgot-password`, `/reset-password`, `/resume/:slug` and the 404 route are open.
-11. After a page reload only the refresh token survives; the first API request first calls `POST api/v1/auth/refresh` once. Any 401 whose error code is missing or one of `NO_TOKEN`, `INVALID_TOKEN`, `TOKEN_EXPIRED`, `TOKEN_REVOKED` triggers one refresh and one retry; concurrent requests share a single refresh call. If the refresh fails, the user is signed out.
+11. After a page reload only the refresh token survives; the first API request first calls `POST api/v1/auth/refresh` once. Any 401 whose error code is missing or one of `NO_TOKEN`, `INVALID_TOKEN`, `TOKEN_EXPIRED`, `TOKEN_REVOKED` triggers one refresh and one retry; concurrent requests share a single refresh call. If the refresh fails, the user is signed out and sent to `/login` right away.
 12. Signed-in header shows a user menu labelled with the candidate's first + last name, else the email, else "Account" (HTML-escaped). The menu has "View API" (opens `<API>api/me/<email>` in a new tab) and "Log out".
-13. Log out: calls `POST api/v1/auth/logout` with the access token (best effort — local state is cleared even if it fails), removes `user` from `localStorage`, clears tokens and the candidate store, and navigates to `/login`.
+13. Log out: calls `POST api/v1/auth/logout` with the access token and body `{ refreshToken }` so the API can revoke both (best effort — local state is cleared even if it fails), removes `user` from `localStorage`, clears tokens and the candidate store, and navigates to `/login`.
 
 ## Acceptance criteria
 - `npx vitest run src/stores/auth.spec.ts` passes (store: tokens, `isAuthenticated`, logOut).
@@ -60,3 +60,4 @@ Every dashboard page is reachable only while signed in.
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/auth-login-spec.md` | - |
 | 2026-11-15 | Behavior #8: register shows submitting state, trims email, error toast uses login's extraction | #420 #422 #425 (operator answers to open questions 2-3) | `issue-420-auth-form-fixes` |
+| 2026-11-15 | Behavior #11: failed refresh navigates to `/login`; #13: logout body sends `refreshToken` | #426 (operator answer to open question 4), #459 | `issue-459-logout-refresh-token` |

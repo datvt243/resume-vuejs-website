@@ -84,6 +84,7 @@ export const useCandidate = (props: Props) => {
         } else {
             result.value.push(data)
         }
+        result.value = sortData(result.value)
 
         candidate.setCandidateByField({
             [field.value]: toValue(result),
@@ -102,9 +103,12 @@ export const useCandidate = (props: Props) => {
         candidate.setGeneralInformation(value)
     }
 
+    // awards only have issueDate, applications only appliedDate
+    const sortDate = (e: Record<string, any>) => e.startDate ?? e.issueDate ?? e.appliedDate ?? 0
+
     function sortData(data: any) {
       if (Array.isArray(data)) {
-        return [...data].sort((a, b) => b.startDate - a.startDate)
+        return [...data].sort((a, b) => sortDate(b) - sortDate(a))
       }
       return data
     }

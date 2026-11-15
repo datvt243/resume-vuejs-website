@@ -102,6 +102,32 @@ describe('useCandidate', () => {
         expect(result.educations.value.map((e: { _id: string }) => e._id)).toEqual(['new', 'mid', 'old'])
     })
 
+    it.each([
+        ['awards', 'issueDate'],
+        ['applications', 'appliedDate'],
+    ])('sorts %s by %s descending', async (field, key) => {
+        handleBaseMock.mockImplementation(async (_opt, _props, cb) =>
+            cb({ success: true, message: '', data: [{ _id: 'old', [key]: 100 }, { _id: 'new', [key]: 300 }, { _id: 'mid', [key]: 200 }] }),
+        )
+        const { result } = withUseCandidate(field)
+        await flushPromises()
+
+        expect(result[field].value.map((e: { _id: string }) => e._id)).toEqual(['new', 'mid', 'old'])
+    })
+
+    it('addRecordToList re-sorts the list after adding or updating a record', async () => {
+        candidateStore().setCandidateByField({ educations: [{ _id: 'a', startDate: 300 }, { _id: 'b', startDate: 100 }] })
+        const { result } = withUseCandidate('educations')
+        await flushPromises()
+
+        result.addRecordToList({ _id: 'c', startDate: 200 })
+        expect(result.educations.value.map((e: { _id: string }) => e._id)).toEqual(['a', 'c', 'b'])
+
+        result.addRecordToList({ _id: 'b', startDate: 400 })
+        expect(result.educations.value.map((e: { _id: string }) => e._id)).toEqual(['b', 'a', 'c'])
+        expect(candidateStore().getCandidateByField('educations').map((e: { _id: string }) => e._id)).toEqual(['b', 'a', 'c'])
+    })
+
     it('addRecordToList pushes a brand-new record (no _id)', async () => {
         handleBaseMock.mockImplementation(async (_opt, _props, cb) => cb({ success: true, message: '', data: [] }))
         const { result } = withUseCandidate('educations')

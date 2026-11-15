@@ -9,7 +9,7 @@
 The candidate tracks the jobs they applied to, which CV profile they sent, and where each application stands.
 
 ## Behavior
-1. `/dashboard/application` lists applications (`GET api/v1/application/`, cached). Empty → empty state with "Add"; load failure → error + retry. The count also appears as the Applications KPI on Home.
+1. `/dashboard/application` lists applications (`GET api/v1/application/`, cached), newest `appliedDate` first, re-sorted after each save. Empty → empty state with "Add"; load failure → error + retry. The count also appears as the Applications KPI on Home.
 2. Each card: company (title), position, applied date `DD/MM/YYYY`, note, a status badge — Applied (grey, also the fallback for unknown statuses), Interview (amber), Offer (green), Rejected (red) — and actions.
 3. Form (Add / Edit / Duplicate): company (required, max 100), position (required, max 100), applied date (required, sent as timestamp), status (required select), CV profile (optional select of existing profiles), job link (optional valid URL, max 500), note (optional, max 1000).
 4. Save: `POST application/create` or `PUT application/update`; Duplicate creates a new application. If the chosen profile no longer exists, `profileId` is left out of the request (the backend keeps the stored link). Delete: confirm, then `DELETE application/delete/<id>`.
@@ -45,3 +45,4 @@ Note (operator 2026-11-07): follow-up — add status `accepted` + status transit
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/job-applications-spec.md` | - |
+| 2026-11-15 | Behavior #1: sorted by `appliedDate`, newest first | #447 (operator answer to open question 3) | `issue-443-list-date-sort` |

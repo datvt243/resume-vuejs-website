@@ -10,7 +10,7 @@ The candidate keeps a dated list of jobs (and career breaks), schools and projec
 
 ## Behavior
 Shared by all three pages (`/dashboard/experience`, `/dashboard/education`, `/dashboard/project`):
-1. The list loads once per session from `GET api/v1/<collection>/` (cached in the candidate store), sorted by start date, newest first. Empty → empty state with "Add"; load failure → error + retry.
+1. The list loads once per session from `GET api/v1/<collection>/` (cached in the candidate store), sorted by start date, newest first; re-sorted after each save (new, edited or duplicated entry). Empty → empty state with "Add"; load failure → error + retry.
 2. "Add" (heading and empty state) opens a modal form. Save: no `_id` → `POST <collection>/create`, else `PUT <collection>/update`. Dates are sent as timestamps (ms); the "current" checkbox is sent as `false` when unchecked; the description is sent as `{ vi, en }`. On success the entry is added/replaced in the list and the modal closes; the API message shows as a toast.
 3. Each entry has Edit (modal pre-filled), Duplicate (modal pre-filled, title "Duplicate …", saving creates a NEW entry and leaves the original), and Delete (confirm dialog naming the entry, then `DELETE <collection>/delete/<id>`).
 4. Drag-and-drop reorder (a hint "drag to sort" above the list). The order is saved only in this browser: `localStorage['cv-manual-order:<collection>:<candidateId>']`. Entries not in the saved order (new ones) go to the end.
@@ -51,3 +51,4 @@ Per section:
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-06 | Review corrections (see note) | independent review vs code+live, `evidence/spec-backfill/2026-11-06/review.md` | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-timeline-sections-spec.md` | - |
+| 2026-11-15 | Behavior #1: list re-sorted after each save | #443 (operator answer to open question 2) | `issue-443-list-date-sort` |

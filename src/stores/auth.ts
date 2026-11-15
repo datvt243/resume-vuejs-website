@@ -59,9 +59,9 @@ export const authStore = defineStore('auth', () => {
 
     async function logOut(opt = {}) {
         try {
-            // revokes the refresh token server-side
+            // revokes both tokens server-side; the API needs the access token to accept the call
             if (_token.value) {
-                await axios.post(`${API}${subURL}auth/logout`, {}, { headers: { Authorization: `Bearer ${_token.value}` } })
+                await axios.post(`${API}${subURL}auth/logout`, { refreshToken: _refreshToken.value }, { headers: { Authorization: `Bearer ${_token.value}` } })
             }
         } catch (e) {
             // best-effort: still clear local state below even if this fails

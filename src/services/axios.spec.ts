@@ -5,6 +5,7 @@ const { store } = vi.hoisted(() => ({
     store: { getToken: 'old', getRefreshToken: 'refresh', setTokens: vi.fn(), logOut: vi.fn() },
 }))
 vi.mock('@/stores/auth', () => ({ authStore: () => store }))
+vi.mock('@/routers', () => ({ default: { push: vi.fn() } }))
 
 // every request (instance + the plain axios.post refresh) goes through this fake adapter
 const adapter = vi.fn()
@@ -49,6 +50,12 @@ describe('_axios 401 interceptor', () => {
         await expect(_axios({ method: 'get', url: 'api/v1/education/' })).resolves.toEqual({ success: true, data: 'ok' })
         expect(refreshCalls()).toBe(1)
         expect(store.setTokens).toHaveBeenCalledWith({ token: 'new' })
+    })
+
+    it('401 whose refresh fails logs out and sends the user to /login (issue #426)', async () => {
+        adapter.mockImplementation(config => reply(config, 401, { success: false, error: { code: 'TOKEN_REVOKED', message: 'revoked' } }))
+        await expect(_axios({ method: 'get', url: 'api/v1/education/' })).rejects.toBeTruthy()
+        expect(store.logOut).toHaveBeenCalledWith({ router: (await import('@/routers')).default })
     })
 
     it('rejects with the new-shape NETWORK_ERROR body when there is no response', async () => {

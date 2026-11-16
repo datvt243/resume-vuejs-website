@@ -1,99 +1,120 @@
 # Contributing
 
-## Branch model (2 tiers, both GitHub branch-protected)
+Thanks for helping. This file is the human summary of how changes land
+here. The agent-side source of truth is `agent-hub/doctrine/domains/PROJECT.md`
+— if the two ever disagree, PROJECT.md wins and this file gets fixed.
 
+## Ways to contribute
+- **Report a bug** — open an issue (see below). Security problems: do NOT
+  open a public issue; contact the maintainer privately.
+- **Suggest a feature** — open an issue describing the problem first, not
+  just the solution.
+- **Fix / build something** — every change starts from an issue, so each
+  branch, PR and release note traces back to one.
+
+## Opening an issue
+- Title: `[<GROUP>] short summary`, where `<GROUP>` is the area or
+  campaign (`[AUTH]`, `[QC]`, …) — `/issues-ls` groups by it.
+- Priority: label `priority: highest|high|medium|low|lowest` (or a title
+  tag `[P0]`–`[P4]`). Status beyond open/closed: `status: <value>` label.
+- Bugs: steps to reproduce, expected vs. actual, browser/environment,
+  logs/screenshots.
+
+## Development setup
+Node.js 20 (CI), npm.
+
+| What | Command |
+|---|---|
+| Install | `npm ci` |
+| Run locally | `npm run dev` → http://localhost:5173 |
+| Lint | `npm run lint` — clean (0 errors); any error fails |
+| Typecheck | `npm run typecheck` (`vue-tsc --noEmit`) — known baseline of 78 inherited errors; add none, especially in files you touch |
+| Test | `npm run test` (coverage: `npm run test:coverage`; one file: `npx vitest run <path>`) |
+| Build | `npm run build` (output `dist/`) |
+
+Run lint, typecheck, test and build before opening a PR — CI runs lint + build.
+
+## Branch model
 ```
-fix/feature/hotfix branches  →  staging  →  main
-        (PR, any merge type)      (PR, --merge only)
+fix/feature/chore/docs branch  →  PR  →  staging  →  release PR (/release)  →  main  →  deploy (gh-pages)
+```
+- **`staging`** — integration. Every branch is cut from it and its PR
+  targets it.
+- **`main`** — production. Only receives the release PR from `staging`.
+  Nobody branches off it; no other PR targets it.
+
+Always branch from a freshly pulled base:
+```bash
+git checkout staging && git pull
+git checkout -b fix/issue-<n>-<slug>   # or feature/<slug>, chore/<slug>, docs/<slug>
 ```
 
-- **`staging`** — integration branch. Every `fix/*`/`feature/*`/`hotfix/*`
-  branch is cut from `staging`, and its PR targets `staging`.
-- **`main`** — production. Only ever receives code from `staging`, via
-  the `/release` step (see below). Nobody branches off `main` directly
-  and no PR targets `main` except the `staging → main` release PR.
+### Branch naming
+`fix/issue-<n>-<slug>` | `feature/<slug>` | `chore/<slug>` | `docs/<slug>`
+— e.g. `fix/issue-34-converttotruncate-length`.
+- `<slug>`: kebab-case, short.
+- The prefix decides what `/ship` does after merge: `fix/*` is deleted,
+  `feature/*` is kept, everything else deleted.
+- Put the issue number in the name when there is one
+  (`feature/issue-405-cv-filename`) — `/ship` turns it into `Closes #<n>`
+  in the PR body; without it the issue won't close on release.
 
-Both `main` and `staging` are GitHub branch-protected (set up
-2026-08-30): `enforce_admins: true`, PR required, no force-push, no
-branch deletion. **A direct `git push` to either branch is rejected**
-(`GH006`) — verified for real, not just configured on paper. Every
-change lands through a merged pull request.
+## Commit messages
+[Conventional Commits](https://www.conventionalcommits.org/):
+`<type>(<scope>): <summary>` — e.g. `fix(cv): keep section order on save`.
+`feat` → minor bump, `fix`/`perf` → patch, `!` or `BREAKING CHANGE:` → major.
+
+## Pull requests
+- Target `staging`; body contains `Closes #<n>`.
+- One issue per PR; keep it reviewable.
+- CI (`.github/workflows/ci.yml`: `npm run lint` + `npm run build`) runs on
+  every PR into `main`/`staging` — keep it green. It is not yet a
+  *required* check (see Branch protection), so don't merge on red.
+- Never `--force` push a shared branch, never `--no-verify`. A failing
+  hook or check gets fixed, not bypassed.
+- Merge with a real merge commit (`gh pr merge --merge`), on feature PRs
+  and the release PR alike.
+
+## Branch protection
+Both `main` and `staging` are GitHub branch-protected (2026-08-30):
+`enforce_admins: true`, PR required, no force-push, no deletion. A
+direct `git push` is rejected (`GH006`), owner included — verified for
+real. No required status checks yet: CI runs but doesn't block a merge.
 
 ### Why `required_approving_review_count: 0`
-
-This is a solo-operator project — there is no second human reviewer to
-approve PRs, and GitHub does not allow an author to approve their own PR.
-Setting the required review count to `1`+ would have made every PR
-permanently unmergeable (locked out even the repo owner). `0` still
-forces every change through the PR mechanism (audit trail, CI gate,
-protection against an accidental direct push) without requiring a
-reviewer that doesn't exist. If a second contributor ever joins, raise
-this number then — it's a config value, not an architectural commitment.
-
-### Why the `staging → main` release merges with `--merge`, never squash
-
-`main` is meant to read as a real history of what shipped in each
-release, not one giant commit per release. A `--merge` (not `--squash`,
-not `--rebase`) commit preserves every commit that was already reviewed
-and merged into `staging`, visible on `main`, tied to the release tag
-that bundled them. Squashing at release time would throw that traceability
-away for no benefit — the individual commits already went through their
-own PR into `staging`.
-
-## Day-to-day workflow
-
-```bash
-git checkout staging
-git pull
-git checkout -b feature/my-thing   # or fix/..., hotfix/...
-# ... work ...
-/ship "feat: my thing"             # commits, PRs into staging, merges
-```
-
-`/ship` (`.claude/skills/ship/SKILL.md`) never touches `main` — it only
-ever opens/merges a PR into `staging`.
+Solo-maintainer repo, and GitHub won't let an author approve their own
+PR — `1`+ would make every PR unmergeable. `0` still forces every change
+through a PR (diff, CI, audit trail). Raise it when a second maintainer joins.
 
 ## Releasing `staging` → `main`
+`/release [major|minor|patch]` (default `minor`) runs, in order:
+1. Gate: `npm run lint` + `npm run build` on `staging` — red stops here.
+2. Version bump via its own small PR into `staging`, so `staging` carries
+   the bump before it reaches `main`.
+3. Release PR merged with `--merge` (real merge commit), annotated tag `vX.Y.Z`.
+4. Push to `main` triggers deploy: `.github/workflows/deploy.yml` → `gh-pages`
+   (lint + build + publish `dist/`). `/release` confirms the run started.
+5. Close the issues this release actually shipped (`Closes`/`Fixes`/
+   `Resolves #n`, checked against each issue's current state).
 
-```bash
-/release           # minor bump (default)
-/release patch
-/release major
-```
+### Why the release merges with `--merge`, never squash
+Squash collapses every commit of the release into one, losing which
+change did what. A merge commit keeps each reviewed commit on `main`,
+tied to the release tag, so `git bisect` / `git blame` / audits stay precise.
 
-`/release` (`.claude/skills/release/SKILL.md`) does, in order: a real
-`npm run lint` + `npm run build` gate on `staging` (won't proceed if
-red), a semver version bump (via its own tiny PR into `staging` first,
-so `staging` carries the bump before it ever reaches `main`), a real
-`staging → main` PR merged with `--merge`, an annotated git tag
-(`vX.Y.Z`), and closes whatever GitHub issues the shipped commits
-actually reference (`Closes #n`/`Fixes #n`/`Resolves #n` — checked
-against each issue's real current state first, never blindly re-closed).
+### Why issues don't close when a PR merges into `staging`
+GitHub only auto-closes `Closes #n` on a merge into the **default**
+branch (`main`). Issues merged into `staging` stay open (shown as
+`done-dev` by `/issues-ls`) until the release PR carries them to production.
 
-Deploy is not a separate step here — `.github/workflows/deploy.yml`
-already auto-triggers on every push to `main` (build, lint, publish
-`dist/` to `gh-pages`). `/release` confirms that run started; it doesn't
-call a separate deploy hook, because none exists for this project
-(confirmed 2026-08-30 — if that changes, `/release`'s own SKILL.md is the
-place to add it, not this doc).
-
-### First release under this workflow
-
-If a version has never been tagged at all, `/release` skips the bump
-step and just tags whatever `package.json` currently says. This repo
-already had a `v1.0.0` tag from before this workflow existed, so its
-first `/release` run bumps normally (`v1.0.0` → `v1.1.0`, the default
-minor bump) rather than hitting that special case — it only matters for
-a project that has genuinely never been tagged.
-
-## Commands reference
-
-| Command | Does |
+## Working with Claude Code (agent-hub)
+| Task | Command |
 |---|---|
-| `/ship ["msg"]` | commit → PR → merge into `staging` |
-| `/release [major\|minor\|patch]` | `staging` → `main`, tag, close shipped issues |
-| `/boot` | read-only orientation for the `agent-hub/` memory system |
-| `/worker implementer/verifier "<task>"` | the implement → verify loop this repo's `agent-hub/` runs on |
+| Orient a session | `/boot` |
+| Issue → branch → implement → verify | `/todo "<task>"` or `/todo #<n>` (`--ship` to ship after SEAL) |
+| Commit → PR → merge into `staging` | `/ship ["message"]` (needs `npm run build` green) |
+| List issues, fix-first order | `/issues-ls --group` |
+| Release to production | `/release [major\|minor\|patch]` |
 
-See `agent-hub/CLAUDE.md` for the full agent contract (forbidden states,
-seal gate, four lenses) that governs how changes get made here.
+`/ship` refuses to run on `main`/`staging`. Agent rules (forbidden
+states, seal gate, verifier): `agent-hub/CLAUDE.md`.

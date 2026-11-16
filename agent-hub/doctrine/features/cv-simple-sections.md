@@ -16,7 +16,7 @@ Shared by all three pages (`/dashboard/award`, `/dashboard/certificate`, `/dashb
 4. No drag-and-drop ordering on these pages.
 
 Per section:
-5. Award (item cards): name (required, max 50), organization (required, max 50), issue date (required, month picker, sent as timestamp), link (required, valid URL, max 100), description (Vietnamese required, English optional — `withEnglish` makes every `*En` field `notRequired`, `src/types/model.type.ts:106`).
+5. Award (item cards): name (required, max 50), organization (required, max 50), issue date (required, month picker, sent as timestamp), link (optional; when filled, a valid URL, max 100), description (Vietnamese required, English optional — `withEnglish` makes every `*En` field `notRequired`, `src/types/model.type.ts:106`).
 6. Certificate (item cards): name (required, max 50), organization (required, max 50), start/end dates, "no expiration" checkbox (sent as `false` when unchecked; when checked, the card shows "No expiration" instead of the end date), description vi/en (optional).
 7. Reference (table, not cards): full name (required, 3–50), company (required, max 100), position (required, max 100), phone. Delete is disabled for a row without `_id`.
 
@@ -46,3 +46,4 @@ Per section:
 | 2026-11-06 | Review corrections (see note) | independent review vs code+live, `evidence/spec-backfill/2026-11-06/review.md` | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-simple-sections-spec.md` | - |
 | 2026-11-15 | Behavior #1: awards sorted by `issueDate`, re-sort after save | #447, #443 | `issue-443-list-date-sort` |
+| 2026-11-16 | Behavior #5: award link optional (URL ≤ 100 when filled) | #446 (operator answer to open question 1) | `issue-446-short-major-optional-award-link` |

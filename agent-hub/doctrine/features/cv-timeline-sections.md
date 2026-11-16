@@ -17,7 +17,7 @@ Shared by all three pages (`/dashboard/experience`, `/dashboard/education`, `/da
 
 Per section:
 5. Experience: "Add" first asks "Experience or career break?". Experience fields: company (required, max 100), position (required), start date (required), end date, "currently working" checkbox, description (Vietnamese required, English optional — `withEnglish`, `src/types/model.type.ts:106`). Career break: break type (required, one of 12 LinkedIn types: career transition, caregiving, full-time parenting, gap year, health, layoff, personal goal, professional development, relocation, retirement, travel, voluntary work), dates, "currently on break", description. Saving a break clears company/position; saving a job clears the break type. A break's title is "Career break — <type>". Experience also has a read-only "View" modal (dates `MM/YYYY - MM/YYYY` or "Present", sanitized description) with an Edit button.
-6. Education: school (Vietnamese required, max 255), major (Vietnamese required, 3–255); the English variants are optional but, when filled, follow the same max/min rules, start/end dates, "currently studying", description vi/en (optional).
+6. Education: school (Vietnamese required, max 255), major (Vietnamese required, 1–255); the English variants are optional but, when filled, follow the same max/min rules, start/end dates, "currently studying", description vi/en (optional).
 7. Project: name (required, max 50), position (required, max 100), technology (required; typed comma-separated, stored as a trimmed array, shown joined by ", "), start/end dates, "still working on it", link, description vi/en.
 
 ## Acceptance criteria
@@ -52,3 +52,4 @@ Per section:
 | 2026-11-06 | Review corrections (see note) | independent review vs code+live, `evidence/spec-backfill/2026-11-06/review.md` | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-timeline-sections-spec.md` | - |
 | 2026-11-15 | Behavior #1: list re-sorted after each save | #443 (operator answer to open question 2) | `issue-443-list-date-sort` |
+| 2026-11-16 | Behavior #6: education major min 1 (was 3) | #446 (operator answer to open question 6) | `issue-446-short-major-optional-award-link` |

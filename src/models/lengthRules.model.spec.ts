@@ -13,10 +13,8 @@ const schemaOf = (model: typeof MODEL, name: string) => model.find(f => f.name =
 const major = schemaOf(MODEL, 'major')
 
 describe('education major', () => {
-    // the API rejects majors shorter than 3 characters with a 400
-    it('rejects fewer than 3 characters', () => {
-        expect(major.isValidSync('QA')).toBe(false)
-        expect(major.isValidSync('CNTT')).toBe(true)
+    it('accepts a short major like "IT"', () => {
+        expect(major.isValidSync('IT')).toBe(true)
     })
 })
 
@@ -30,8 +28,8 @@ describe('education school/major EN fields', () => {
     })
 
     it('still apply the VI length rules once filled', () => {
-        expect(majorEn.isValidSync('CS')).toBe(false)
-        expect(majorEn.isValidSync('Computer Science')).toBe(true)
+        expect(majorEn.isValidSync('CS')).toBe(true)
+        expect(majorEn.isValidSync('a'.repeat(256))).toBe(false)
         expect(schoolEn.isValidSync('a'.repeat(256))).toBe(false)
     })
 
@@ -50,7 +48,7 @@ describe.each([
     ['information lastName', schemaOf(INFORMATION, 'lastName'), 1, 35],
     ['information address', schemaOf(INFORMATION, 'address'), 1, 255],
     ['education school', schemaOf(MODEL, 'school'), 1, 255],
-    ['education major', major, 3, 255],
+    ['education major', major, 1, 255],
     ['project name', schemaOf(PROJECT, 'name'), 1, 50],
     ['project position', schemaOf(PROJECT, 'position'), 1, 100],
     ['certificate name', schemaOf(CERTIFICATE, 'name'), 1, 50],
@@ -75,13 +73,21 @@ describe('experience position', () => {
 })
 
 // API requires a link of at most 100 characters
-describe.each([
-    ['project link', schemaOf(PROJECT, 'link')],
-    ['award link', schemaOf(AWARD, 'link')],
-])('%s', (_, schema) => {
-    const url = 'https://a.co/' + 'a'.repeat(87)
+const url = 'https://a.co/' + 'a'.repeat(87)
+describe('project link', () => {
+    const schema = schemaOf(PROJECT, 'link')
     it('is required and max 100 characters', () => {
         expect(schema.isValidSync('')).toBe(false)
+        expect(schema.isValidSync(url)).toBe(true)
+        expect(schema.isValidSync(url + 'a')).toBe(false)
+    })
+})
+
+describe('award link', () => {
+    const schema = schemaOf(AWARD, 'link')
+    it('is optional, but a valid URL of max 100 characters when filled', () => {
+        expect(schema.isValidSync('')).toBe(true)
+        expect(schema.isValidSync('not-a-url')).toBe(false)
         expect(schema.isValidSync(url)).toBe(true)
         expect(schema.isValidSync(url + 'a')).toBe(false)
     })

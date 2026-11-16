@@ -75,7 +75,6 @@ flowchart TD
 | Node | State | Notes |
 |---|---|---|
 | `issue-122-ai-cv-suggestions-pending` | PENDING | Operator (2026-10-05): "#122 chuyển status thành PENDING". Deliberately deferred, not started — waiting on an owner decision: shared app AI key vs BYOK (BYOK needs new two-way encryption on the backend; only `bcrypt` exists today) + a consent checkbox for sending CV data out. Checked: no branch/PR/evidence for #122; backend `origin/staging` (`f05930a`) has no AI-provider code. Partly overlapped by #159's non-AI JD keyword match. GitHub label `status: pending` applied. Evidence: `evidence/implementer/2026-10-05-issue-122-158-status-rows.md`. |
-| `issue-370-remove-header-lang-switch` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-370-remove-header-lang-switch-seal.md` |
 | `issue-374-skill-badges` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-374-skill-badges-seal.md` |
 | `issue-374-skill-group-actions` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-374-skill-group-actions-seal.md` |
 | `issue-374-skill-name-emphasis` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-374-skill-name-emphasis-seal.md` |
@@ -95,3 +94,4 @@ flowchart TD
 | `issue-459-logout-refresh-token` | SEALED | 2026-11-15 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-15/issue-459-logout-refresh-token-seal.md` |
 | `issue-443-list-date-sort` | SEALED | 2026-11-15 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-15/issue-443-list-date-sort-seal.md` |
 | `issue-445-enddate-null-current` | SEALED | 2026-11-16 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-16/issue-445-enddate-null-current-seal.md` |
+| `issue-446-short-major-optional-award-link` | SEALED | 2026-11-16 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-16/issue-446-short-major-optional-award-link-seal.md` |

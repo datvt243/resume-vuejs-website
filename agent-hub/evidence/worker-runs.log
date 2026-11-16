@@ -112,3 +112,4 @@
 2026-11-15T13:06:50Z role=verifier outcome=SEAL node=issue-443-list-date-sort rerun=none spawn=fresh hub_bytes_before=99521 hub_bytes_after=99250
 2026-11-16T07:35:21Z role=verifier outcome=REOPEN node=issue-445-enddate-null-current rerun=none spawn=fresh hub_bytes_before=99250 hub_bytes_after=99678
 2026-11-16T07:37:10Z role=verifier outcome=SEAL node=issue-445-enddate-null-current rerun=none spawn=resumed hub_bytes_before=99250 hub_bytes_after=99250
+2026-11-16T07:46:33Z role=verifier outcome=SEAL node=issue-446-short-major-optional-award-link rerun=none spawn=fresh hub_bytes_before=99250 hub_bytes_after=99262

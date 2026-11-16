@@ -1,39 +1,39 @@
 # agent-hub — resume-vuejs-website
 
-Đây là "bộ nhớ chân cất" của project **resume-vuejs-website** (Resume/CV
-management SPA, Vue 3 + Vite). KHÔNG phải code — đây là markdown thuần:
-doctrine (sự thật đã verify), haven (memory + convention của 2 AI worker),
-evidence (audit trail). Code thật nằm ở `../src/` như bình thường.
+This is the "persistent memory" of the **resume-vuejs-website** project (Resume/CV
+management SPA, Vue 3 + Vite). It is NOT code — it is plain markdown:
+doctrine (verified facts), haven (memory + conventions of the 2 AI workers),
+evidence (audit trail). The real code lives in `../src/` as usual.
 
-## Triết lý
-Trí tuệ không nằm trong model — model là nhân lực thuê theo phiên, reset mỗi
-lần mở lại. Trí tuệ nằm trong `doctrine/` (sự thật), `haven/*/recipes/`
-(quy trình đã lưu), và `haven/*/MEMORY.md` (craft tích luỹ riêng của từng
-worker) — những thứ được LƯU LẠI, không mất khi phiên kết thúc.
+## Philosophy
+The intelligence is not in the model — the model is labor hired per session,
+reset every time it reopens. The intelligence lives in `doctrine/` (facts),
+`haven/*/recipes/` (saved processes), and `haven/*/MEMORY.md` (each worker's
+own accumulated craft) — things that are SAVED, not lost when the session ends.
 
-## Bắt đầu từ đâu
-1. Người mới đọc: `NORTHSTAR.md` → `doctrine/domains/PROJECT.md` → file này.
-2. Agent bắt đầu phiên: chạy lệnh `/boot` (không đọc file này thủ công).
+## Where to start
+1. Human reader: `NORTHSTAR.md` → `doctrine/domains/PROJECT.md` → this file.
+2. Agent starting a session: run `/boot` (don't read this file by hand).
 
-## Vòng lặp hằng ngày
+## Daily loop
 ```
-/boot                              # 60 giây, chỉ đọc, không sửa gì
+/boot                              # 60 seconds, read-only, changes nothing
 /worker implementer "<task>"       # implement + evidence note
-/worker verifier "<task>"          # SEAL hoặc REOPEN
+/worker verifier "<task>"          # SEAL or REOPEN
 ```
-Hoặc gộp 2 lệnh trên: `/todo "<task>"` — vẫn chạy 2 lượt implementer →
-verifier tách biệt bên trong, chỉ khác cách gõ lệnh.
+Or combine the two: `/todo "<task>"` — still runs separate implementer →
+verifier passes inside, only the command you type differs.
 
-## Cấu trúc
+## Structure
 ```
 agent-hub/
 ├── NORTHSTAR.md, CLAUDE.md, BOOT.md, INDEX.md, README.md
-├── doctrine/        # sự thật đã verify
-├── haven/           # memory + convention của implementer/verifier
-└── evidence/        # audit trail, commit vào git, append-only
+├── doctrine/        # verified facts
+├── haven/           # memory + conventions of implementer/verifier
+└── evidence/        # audit trail, committed to git, append-only
 
-.claude/skills/       # harness thật: /boot, /worker, /todo
+.claude/skills/       # the real harness: /boot, /worker, /todo
 ```
 
-Chi tiết đầy đủ: `INDEX.md` (map file) · `doctrine/domains/PROJECT.md`
-(ground truth project) · `doctrine/MEMORY.md` (lệnh chính xác).
+Full details: `INDEX.md` (file map) · `doctrine/domains/PROJECT.md`
+(project ground truth) · `doctrine/MEMORY.md` (exact commands).

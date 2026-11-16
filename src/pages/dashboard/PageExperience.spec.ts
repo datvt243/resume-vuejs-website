@@ -6,13 +6,14 @@ import PageExperience from './PageExperience.vue'
 import { i18n } from '@/i18n'
 import VeeForm from '@/components/veevalidate/VeeForm.vue'
 
+const updateDoc = vi.hoisted(() => vi.fn())
 const breakEntry = { _id: 'e2', isCareerBreak: true, careerBreakType: 'travel', startDate: 1641038400000, endDate: 1657022400000 }
 
 vi.mock('@/composables/useCandidate', () => ({
     useCandidate: () => ({ experiences: ref([breakEntry]), removeRecordById: vi.fn(), addRecordToList: vi.fn() }),
 }))
 vi.mock('@/composables/useDocument', () => ({
-    useDocument: () => ({ document: reactive({}), updateDoc: vi.fn(), deleteDoc: vi.fn() }),
+    useDocument: () => ({ document: reactive({}), updateDoc, deleteDoc: vi.fn() }),
 }))
 
 const stubs = {
@@ -27,7 +28,7 @@ const stubs = {
         template: '<div><i class="exp" @click="$emit(\'onEdit\', modelValue)" /><i class="view" @click="$emit(\'onView\', modelValue)" /></div>',
     },
     Modal: { props: ['title'], template: '<div><h2>{{ title }}</h2><slot /><slot name="footer" /></div>', methods: { show() {}, hide() {} } },
-    VeeForm: { props: ['fields', 'document'], template: '<div />', methods: { reset() {} } },
+    VeeForm: { props: ['fields', 'document', 'submitFn'], template: '<div />', methods: { reset() {} } },
     FontAwesomeIcon: true,
 }
 
@@ -67,5 +68,12 @@ describe('PageExperience — experience or career break', () => {
         expect(view.textContent).toContain('01/2022 - 07/2022')
         await w.findAll('button').find(b => b.text() === 'Sửa')!.trigger('click')
         expect(w.findComponent(VeeForm).props('document')._id).toBe('e2')
+    })
+
+    it('sends endDate null when "currently working" is checked', async () => {
+        const w = mountPage()
+        await w.find('.exp').trigger('click')
+        await w.findComponent(VeeForm).props('submitFn')({ _id: 'e1', startDate: 1641038400000, endDate: 1657022400000, isCurrent: true })
+        expect(updateDoc.mock.calls[0][0]).toMatchObject({ endDate: null, isCurrent: true })
     })
 })

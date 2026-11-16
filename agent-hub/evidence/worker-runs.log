@@ -110,3 +110,5 @@
 2026-11-15T11:15:43Z role=verifier outcome=SEAL node=issue-420-auth-form-fixes rerun=none spawn=fresh hub_bytes_before=99072 hub_bytes_after=99058
 2026-11-15T11:58:20Z role=verifier outcome=SEAL node=issue-459-logout-refresh-token rerun=none spawn=fresh hub_bytes_before=99387 hub_bytes_after=99244
 2026-11-15T13:06:50Z role=verifier outcome=SEAL node=issue-443-list-date-sort rerun=none spawn=fresh hub_bytes_before=99521 hub_bytes_after=99250
+2026-11-16T07:35:21Z role=verifier outcome=REOPEN node=issue-445-enddate-null-current rerun=none spawn=fresh hub_bytes_before=99250 hub_bytes_after=99678
+2026-11-16T07:37:10Z role=verifier outcome=SEAL node=issue-445-enddate-null-current rerun=none spawn=resumed hub_bytes_before=99250 hub_bytes_after=99250

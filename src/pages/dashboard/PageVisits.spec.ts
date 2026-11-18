@@ -7,6 +7,7 @@ import Heading from '@/components/global/Heading.vue'
 import SegmentedControl from '@/components/global/SegmentedControl.vue'
 import Button from '@/components/global/Button.vue'
 import { candidateStore } from '@/stores/candidate'
+import { uiLang } from '@/i18n'
 
 const interval = ref('day')
 const stats = ref<any>(null)
@@ -85,6 +86,28 @@ describe('PageVisits', () => {
         expect(text).toContain('Trực tiếp / không rõ')
         expect(text).toContain('Không rõ')
         expect(wrapper.findComponent({ name: 'VisitChart' }).exists()).toBe(true)
+    })
+
+    it('formats numbers and visit times in the app language', async () => {
+        stats.value = { interval: 'day', total: 1234, series: [], sources: [], countries: [] }
+        candidateStore().setCandidateByField({ visits: [{ _id: 'v1', createdAt: '2026-10-19T10:00:00.000Z' }] })
+        const wrapper = mountPage()
+        const at = new Date('2026-10-19T10:00:00.000Z')
+        const time = () => wrapper.find('tbody tr td').text()
+        const expected = (locale: string) =>
+            `${new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: 'numeric' }).format(at)} ${new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(at)}`
+
+        expect(wrapper.text()).toContain('1.234')
+        expect(time()).toBe(expected('vi-VN'))
+
+        uiLang.value = 'en'
+        await wrapper.vm.$nextTick()
+        try {
+            expect(wrapper.text()).toContain('1,234')
+            expect(time()).toBe(expected('en-US'))
+        } finally {
+            uiLang.value = 'vi'
+        }
     })
 
     it('shows an empty message for a breakdown with no rows', () => {

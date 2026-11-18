@@ -16,7 +16,7 @@ The candidate sees how often their public CV was opened, from where, and when �
 5. KPIs for the range: views (hint shows the all-time total from the cached list); top source and top country, each with its share of views as a rounded percent, or "—" / "no data".
 6. Chart of views per bucket (pulsing placeholder while loading).
 7. Breakdowns: sources and countries, sorted by count descending, with share bars; no recorded referrer shows as "Direct / unknown", no geo match as "Unknown"; an empty range shows "no views in range".
-8. Detail table of the cached visit list, 25 per page, with Prev/Next and a "from–to of total" label: time (`dd/mm/yyyy hh:mm`, `vi-VN` format; invalid → "—"), location (or "—"), IP (or "—"). Empty → empty state. If the page count shrinks, the current page moves back to the last page.
+8. Detail table of the cached visit list, 25 per page, with Prev/Next and a "from–to of total" label: time (date + `hh:mm` in the app language's format — `vi-VN` or `en-US`, like every number on the page; invalid → "—"), location (or "—"), IP (or "—"). Empty → empty state. If the page count shrinks, the current page moves back to the last page.
 9. Either load failing → the whole page shows an error block with "Retry", which reloads only what failed.
 10. Delete all: confirm dialog stating the number of visits, then `DELETE api/v1/candidate/visits`; on success both the list and the stats reload.
 
@@ -46,3 +46,4 @@ The candidate sees how often their public CV was opened, from where, and when �
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-visits-spec.md` | - |
+| 2026-11-18 | Behavior #8: dates/numbers follow the app language (`vi-VN`/`en-US`), not always `vi-VN` | Open question 3, operator answer: bug — #455 | `issue-455-format-by-app-lang` |

@@ -2,7 +2,7 @@
  * UI language, chosen in Account settings. Separate from the CV language
  * (`useCvLang`).
  */
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
 import { resolveCvLang, type CvLang } from '@/composables/useCvLang'
 
@@ -1048,6 +1048,9 @@ const UI_LANG_KEY = 'uiLang'
 
 // no stored choice yet → keep the language the old shared VI | EN switch left in `cvLang`
 export const uiLang = ref<CvLang>(resolveCvLang(localStorage.getItem(UI_LANG_KEY) ?? localStorage.getItem('cvLang')))
+
+/** `Intl` locale for dates and numbers, following the UI language. */
+export const uiLocale = computed(() => (uiLang.value === 'en' ? 'en-US' : 'vi-VN'))
 
 export function setUiLang(value: unknown) {
     uiLang.value = resolveCvLang(value)

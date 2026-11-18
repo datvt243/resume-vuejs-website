@@ -7,6 +7,7 @@
 import axios from 'axios'
 import { API, subURL } from '@/config/api.config'
 import { authStore } from '@/stores/auth'
+import router from '@/routers'
 import { i18n, t } from '@/i18n'
 
 /**
@@ -76,7 +77,7 @@ instanceAxios.interceptors.response.use(
                 await refreshOnce()
                 return instanceAxios(originalRequest)
             } catch (refreshErr) {
-                authStore().logOut()
+                authStore().logOut({ router })
                 return Promise.reject(refreshErr)
             }
         }

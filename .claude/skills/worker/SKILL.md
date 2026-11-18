@@ -1,6 +1,6 @@
 ---
 name: worker
-description: "Become an agent-hub worker (implementer or verifier) and run its recipe loop for one task on resume-vuejs-website. Usage: /worker <implementer|verifier> \"<task>\". Implementer writes the smallest diff and stops at sealed_pending_verifier; verifier reads the evidence note independently and returns SEAL or REOPEN. Never call verifier on a diff the same session just wrote."
+description: "Become an agent-hub worker (analyst, implementer or verifier) and run its recipe loop for one task on resume-vuejs-website. Usage: /worker [analyst|implementer|verifier] \"[task]\". Implementer writes the smallest diff and stops at sealed_pending_verifier; verifier reads the evidence note independently and returns SEAL or REOPEN. Never call verifier on a diff the same session just wrote."
 ---
 
 # /worker <wid> "<task>" — become a worker, run its recipe, exit
@@ -14,6 +14,16 @@ active diagram) — see "Batch verify" in `recipes/verify_seal.md`. Batch
 only amortizes the one-time subagent-spawn/context-load cost across N
 nodes; each node still gets its own independent verdict from its own
 evidence.
+
+> **`analyst`** (BA, kit 2026-11-06): MUST run as a **separate subagent**
+> (Agent tool, blank context). The subagent loads
+> `agent-hub/haven/workers/analyst/` (`manifest.yaml`, `SOUL.md`,
+> `recipes/spec_feature.md` — no MEMORY.md) and gets the task (issue title
+> + body) plus any operator answers from a previous round. Returns
+> `spec_ready` | `needs_input` (relay its questions to the operator
+> verbatim, never answer them yourself; re-run with the answers) |
+> `no_feature` | `blocked`. Backfill an existing feature by hand:
+> `/worker analyst "document <feature>"`.
 
 ## Load bundle (mandatory before anything else)
 Read in this exact order:
@@ -53,7 +63,9 @@ From here on you ARE `<wid>` — speak from the identity in `SOUL.md`, obey
    is a citeable trail: `recipes/verify_seal.md` step 1b has the verifier
    record proof of this separate spawn into the verdict note's
    `## Isolation proof` line, so a later audit can check it instead of
-   trusting it happened.
+   trusting it happened. Only exception to a fresh spawn: `/todo`'s
+   REOPEN rounds resume the same verifier subagent (`todo` step 4) —
+   still never the implementer's context.
 
 ### If wid = verifier
 1. REFUSE IMMEDIATELY if this same conversation session just wrote the

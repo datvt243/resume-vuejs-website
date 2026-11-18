@@ -87,7 +87,7 @@ async function handleUpdate(values) {
      */
     const data = (val => {
         val.startDate = +new Date(val.startDate)
-        val.endDate = +new Date(val.endDate)
+        val.endDate = val.isCurrent ? null : +new Date(val.endDate)
         !val.isCurrent && (val.isCurrent = false)
         return localizedFromForm(careerBreakPayload(val), ['description'])
     })({ ...values })

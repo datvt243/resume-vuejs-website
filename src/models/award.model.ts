@@ -47,7 +47,7 @@ const MODEL: modelItem[] = [
         name: 'link',
         label: 'Link',
         type: 'text',
-        valid: yup => yup.string().trim().url('validation.urlInvalid').max(100, withParams('validation.maxChars', { max: 100 })).required(_mesRequired),
+        valid: yup => yup.string().trim().url('validation.urlInvalid').max(100, withParams('validation.maxChars', { max: 100 })),
         col: 'col-md-12',
         default: '',
     },

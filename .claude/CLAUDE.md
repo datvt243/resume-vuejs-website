@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+Always respond in English.
+
 ## Project
 **resume-vuejs-website** — Resume/CV management SPA. Users manage structured resume data (education, experience, projects, awards, certificates, references) via a Node.js REST API.
 

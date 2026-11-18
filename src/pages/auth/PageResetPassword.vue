@@ -11,7 +11,7 @@
  */
 import VeeForm from '@/components/veevalidate/VeeForm.vue'
 
-import { inject } from 'vue'
+import { computed, inject } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { handleResetPassword } from '@/services/auth'
 
@@ -19,6 +19,8 @@ const route = useRoute()
 const router = useRouter()
 const refSpinner = inject('spinner')
 const refToast = inject('toast')
+// a repeated ?token= gives an array — treat it as no token
+const token = computed(() => (typeof route.query.token === 'string' ? route.query.token : ''))
 
 const formFields = [
     {
@@ -49,7 +51,7 @@ const formFields = [
 ]
 
 async function _handleResetPassword(values) {
-    await handleResetPassword({ ...values, token: route.query.token }, { loading: refSpinner, toast: refToast, router })
+    await handleResetPassword({ ...values, token: token.value }, { loading: refSpinner, toast: refToast, router })
 }
 </script>
 
@@ -57,10 +59,11 @@ async function _handleResetPassword(values) {
     <div class="flex justify-center py-12">
         <div class="w-full max-w-md rounded-md border border-line bg-surface p-6">
             <Heading :level="1" :text="$t('auth.resetTitle')" />
-            <p v-if="!route.query.token" class="text-sm text-danger">
-                {{ $t('auth.resetInvalidLink') }}
-            </p>
-            <VeeForm :fields="formFields" :submit-fn="_handleResetPassword" :submit-text="$t('auth.resetTitle')" />
+            <VeeForm v-if="token" :fields="formFields" :submit-fn="_handleResetPassword" :submit-text="$t('auth.resetTitle')" />
+            <template v-else>
+                <p class="text-sm text-danger">{{ $t('auth.resetInvalidLink') }}</p>
+                <RouterLink to="/login" class="text-sm">{{ $t('auth.backToLogin') }}</RouterLink>
+            </template>
         </div>
     </div>
 </template>

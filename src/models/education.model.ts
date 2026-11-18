@@ -23,7 +23,7 @@ const MODEL: modelItem[] = [
         name: 'major',
         label: 'field.major',
         type: 'text',
-        valid: yup => yup.string().min(3, withParams('validation.minChars', { min: 3 })).max(255, withParams('validation.maxChars', { max: 255 })).required(_mesRequired),
+        valid: yup => yup.string().max(255, withParams('validation.maxChars', { max: 255 })).required(_mesRequired),
         default: '',
     }),
     ...defaultDateStartEnd(true),

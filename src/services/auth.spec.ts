@@ -5,7 +5,7 @@ vi.mock('@/services/axios', () => ({ _axios: axiosMock }))
 vi.mock('@/stores/auth', () => ({ authStore: () => ({ setTokens: vi.fn(), setUser: setUserMock }) }))
 vi.mock('@/stores/candidate', () => ({ candidateStore: () => ({ setCandidate: vi.fn() }) }))
 
-import { handleLogin, handleRegister } from './auth'
+import { handleLogin, handleRegister, handleForgotPassword, handleResetPassword } from './auth'
 import { t } from '@/i18n'
 
 const login = async () => {
@@ -63,5 +63,39 @@ describe('handleRegister', () => {
         await handleRegister({ email: 'a@b.c', password: 'p', repassword: 'p', firstName: 'X' }, { toast: vi.fn(), router })
         expect(axiosMock.mock.calls[0][0].data).toEqual({ email: 'a@b.c', password: 'p', repassword: 'p' })
         expect(router.push).toHaveBeenCalledWith('/login')
+    })
+
+    it('trims the email but not the passwords', async () => {
+        axiosMock.mockResolvedValue({ message: 'ok' })
+        await handleRegister({ email: ' a@b.c ', password: ' p ', repassword: ' p ' }, { toast: vi.fn() })
+        expect(axiosMock.mock.calls[0][0].data).toEqual({ email: 'a@b.c', password: ' p ', repassword: ' p ' })
+    })
+})
+
+describe('register / forgot / reset errors', () => {
+    beforeEach(() => {
+        axiosMock.mockReset()
+    })
+
+    const values = { email: 'a@b.c', password: 'p', repassword: 'p', token: 't' }
+    it.each([
+        ['handleRegister', handleRegister],
+        ['handleForgotPassword', handleForgotPassword],
+        ['handleResetPassword', handleResetPassword],
+    ])('%s shows the reason from the new API envelope', async (_, fn) => {
+        axiosMock.mockRejectedValue({ success: false, error: { code: 'X', message: 'Email already exists' } })
+        const toast = vi.fn()
+        await fn(values, { toast })
+        expect(toast).toHaveBeenLastCalledWith({ message: 'Email already exists', bg: 'danger' })
+    })
+
+    it.each([
+        ['a non-API error', new TypeError('boom')],
+        ['an empty API message', { success: false, error: { code: 'X', message: '' } }],
+    ])('falls back to the generic message for %s', async (_, err) => {
+        axiosMock.mockRejectedValue(err)
+        const toast = vi.fn()
+        await handleForgotPassword(values, { toast })
+        expect(toast).toHaveBeenLastCalledWith({ message: t('error.generic'), bg: 'danger' })
     })
 })

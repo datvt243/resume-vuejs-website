@@ -1,6 +1,7 @@
 ---
+name: issues-ls
 description: "List open GitHub issues for this repo, if it's hosted on GitHub. Read-only, no side effects."
-argument-hint: "[--state open|closed|all] [gh issue list flags...]"
+argument-hint: "[--group] [--state open|closed|all] [gh issue list flags...]"
 ---
 
 # /issues-ls — list GitHub issues for this repo
@@ -18,7 +19,9 @@ a GitHub repo — no writes, no approval gate needed.
    report the exact output plus a one-line hint (`gh auth login`) — don't
    work around it (no calling the GitHub REST API directly with a token).
 3. **List issues.** `gh issue list --state open --limit 50 --json
-   number,title,labels,state,updatedAt` by default. If `$ARGUMENTS`
+   number,title,labels,state,updatedAt` by default. Remove `--group`
+   (alias `--ground`) from `$ARGUMENTS` first — it's this skill's flag
+   (step 5), never passed to `gh`. If the remaining `$ARGUMENTS`
    is given, pass it through verbatim as extra flags to `gh issue list`
    instead of `--state open --limit 50` (e.g. `/issues-ls --state all`,
    `/issues-ls --label bug --assignee @me`), still adding the `--json`
@@ -45,9 +48,14 @@ a GitHub repo — no writes, no approval gate needed.
      (`[QC]`, `[TEST]`, `[ENHANCEMENT]`…) — it marks a campaign/feature, so
      related issues (e.g. a QC round's findings) sit together. Each group
      gets its own `### <TAG>` heading + table, in order of first appearance;
-     titles without a tag go last under `### Other`. No title has a tag →
-     one plain table, no headings. Strip the group tag and the priority tag
+     titles without a tag go under `### Other`. No title has a tag →
+     one plain table, no headings (besides `done-dev` below). Strip the group tag and the priority tag
      from the Title cell (the heading/Priority column already show them).
+   - **`done-dev` issues (step 4) are pulled out of their tag group** into
+     one `### done-dev` group, placed after every other group (incl.
+     `Other`) — they're finished, not active work. In that group keep the
+     group tag in the Title cell (no heading shows it). Only `done-dev`
+     issues → that one group, still with its heading.
    - **Issue number** is plain `#123` — no URL column, no markdown link.
    - **Priority**, first match wins:
      1. A `priority: <level>` label (case-insensitive) → Jira's levels
@@ -65,10 +73,24 @@ a GitHub repo — no writes, no approval gate needed.
      Labels column so they aren't listed twice.
    - **State** is raw `OPEN`/`CLOSED`, or `done-dev` per step 4.
    - Don't re-fetch per issue — steps 3-4 already pulled everything.
+   - **`--group` (alias `--ground`) → fix-first order.** Same groups and
+     columns as above, plus:
+     - Untagged issues: group by their first label that isn't
+       `priority: *`/`status: *` (e.g. `bug`, `frontend`) instead of
+       `Other`; no such label → `Other`.
+     - Rank each issue: `Highest`/`P0`/`critical` = 0, `High`/`P1`/`high`
+       = 1, `Medium`/`P2`/`medium` = 2, `Low`/`P3`/`low` = 3,
+       `Lowest`/`P4` = 4, `—` = 5.
+     - Inside a group, sort by rank, then `bug`-labelled first, then
+       lowest issue number (oldest) first.
+     - Order groups by their best (lowest) rank, ties by issue count
+       (more first); `Other` after ranked groups of equal rank;
+       `done-dev` stays last.
+     - Heading shows the count: `### <TAG> (n)`.
 6. **No writes.** Never close/comment/edit/label an issue from this
    command — that's a separate manual `gh issue` call (or `/release`'s
    own issue-closing step), out of scope here. Step 4's `done-dev` is a
-   relabel in THIS command's output only, not a GitHub mutation.
+   relabel in THIS skill's output only, not a GitHub mutation.
 
 ## Runtime
 Requires `gh` CLI authenticated against the project's GitHub remote. If

@@ -3,9 +3,10 @@
 DNA: 'smallest_diff / edit_x_read_back_proof_x_independent_verdict'
 Auth: 65537 | Version: 1.0.0
 Law: LAI-13 - monotonic ratchet (PENDING -> IN_PROGRESS -> SEALED, never demote)
+States: PENDING, IN_PROGRESS, BLOCKED_<reason> (<-> IN_PROGRESS), SEALED (verifier only, final). REOPEN is a verdict (row stays IN_PROGRESS); DRAFT is creating a row (lands PENDING).
 
-> Every change to the code repo enters here and exits as SEALED or
-> REOPENED — no state in between.
+> Every change to the code repo enters here and exits as SEALED; a
+> REOPEN verdict sends it back to implement, still IN_PROGRESS.
 
 ```mermaid
 flowchart TD
@@ -53,7 +54,7 @@ flowchart TD
 > has each row's full original text verbatim. The compact rows below
 > point to it; open the archive only when you need the full story
 > behind an old node. `pick_next` only needs non-archived rows. Run
-> `/hub-tokens` periodically — if this file flags >15KB again, repeat
+> `/hub-health` periodically — if this file flags >15KB again, repeat
 > this archiving pass for nodes older than the current work session.
 > [note, 3rd pass] after this pass the active file is still ~17.8KB, over
 > the 15KB threshold — every remaining SEALED row is now a pointer, the
@@ -63,54 +64,17 @@ flowchart TD
 > [note, 4th pass] same limitation as the 3rd pass's note — the 5
 > non-SEALED nodes are the floor, every SEALED row is already a pointer
 > again after this pass.
+>
+> Any regression must be a **new node** (LAI-13) — never edit an old node's
+> PM status directly to "undo" an existing SEAL.
+>
+> The table below is the LAST block of this file: a new row is appended
+> at end-of-file (`AppendOnly`), a removed row is deleted with its line —
+> no blank lines, no text after the table.
 
 | Node | State | Notes |
 |---|---|---|
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 | `issue-122-ai-cv-suggestions-pending` | PENDING | Operator (2026-10-05): "#122 chuyển status thành PENDING". Deliberately deferred, not started — waiting on an owner decision: shared app AI key vs BYOK (BYOK needs new two-way encryption on the backend; only `bcrypt` exists today) + a consent checkbox for sending CV data out. Checked: no branch/PR/evidence for #122; backend `origin/staging` (`f05930a`) has no AI-provider code. Partly overlapped by #159's non-AI JD keyword match. GitHub label `status: pending` applied. Evidence: `evidence/implementer/2026-10-05-issue-122-158-status-rows.md`. |
-
-Any regression must be a **new node** (LAI-13) — never edit an old node's
-PM status directly to "undo" an existing SEAL.
-| `issue-356-editor-datepicker-i18n` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-356-editor-datepicker-i18n-seal.md` |
-| `issue-364-form-length-rules` | SEALED | 2026-10-31 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-10-31-issue-364-form-length-rules-seal.md` |
-| `issue-370-language-in-settings` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-370-language-in-settings-seal.md` |
-| `issue-370-remove-header-lang-switch` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-370-remove-header-lang-switch-seal.md` |
-| `issue-372-skills-page` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-372-skills-page-seal.md` |
-| `issue-374-skill-badges` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-374-skill-badges-seal.md` |
 | `issue-374-skill-group-actions` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-374-skill-group-actions-seal.md` |
 | `issue-374-skill-name-emphasis` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-374-skill-name-emphasis-seal.md` |
 | `issue-374-skill-edit-rename` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-374-skill-edit-rename-seal.md` |
@@ -125,3 +89,9 @@ PM status directly to "undo" an existing SEAL.
 | `issue-398-languages-view-edit` | SEALED | 2026-11-05 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-05/issue-398-languages-view-edit-seal.md` |
 | `issue-405-cv-filename` | SEALED | 2026-11-06 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-06/issue-405-cv-filename-seal.md` |
 | `issue-409-profile-modal-layout` | SEALED | 2026-11-06 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-06/issue-409-profile-modal-layout-seal.md` |
+| `issue-420-auth-form-fixes` | SEALED | 2026-11-15 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-15/issue-420-auth-form-fixes-seal.md` |
+| `issue-459-logout-refresh-token` | SEALED | 2026-11-15 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-15/issue-459-logout-refresh-token-seal.md` |
+| `issue-443-list-date-sort` | SEALED | 2026-11-15 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-15/issue-443-list-date-sort-seal.md` |
+| `issue-445-enddate-null-current` | SEALED | 2026-11-16 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-16/issue-445-enddate-null-current-seal.md` |
+| `issue-446-short-major-optional-award-link` | SEALED | 2026-11-16 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-16/issue-446-short-major-optional-award-link-seal.md` |
+| `issue-477-translate-md-english` | SEALED | 2026-11-16 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-16/issue-477-translate-md-english-seal.md` |

@@ -1,30 +1,30 @@
-# INDEX.md — inventory của agent-hub
+# INDEX.md — agent-hub inventory
 
-> Không lặp nội dung — chỉ trỏ tới. Đọc file thật khi cần chi tiết.
+> No duplicated content — pointers only. Read the real file when you need details.
 
-| File | Lý do tồn tại |
+| File | Why it exists |
 |---|---|
-| `NORTHSTAR.md` | "Done" nghĩa là gì cho hub này (6 điều kiện) + success picture 3 tháng |
-| `CLAUDE.md` | Hợp đồng agent — forbidden states, seal gate, 4 lenses, Master Equation |
-| `BOOT.md` | 5 sự thật định hướng cho `/boot`, launchpad 60 giây |
-| `README.md` | Entry point cho người đọc (không phải agent) |
-| `.gitignore` | Loại scratch/secrets; `evidence/` KHÔNG bị ignore |
-| `doctrine/INDEX.md` | Map của doctrine + 3 loại kiến thức |
-| `doctrine/SOUL.md` | Identity của hub agent + 7 invariants |
-| `doctrine/MEMORY.md` ★ | Path, stack, LỆNH CHÍNH XÁC — authority cao nhất |
-| `doctrine/domains/PROJECT.md` ★ | Ground truth riêng resume-vuejs-website: invariants, traps, decisions |
-| `doctrine/standards/edit-verification.md` | Luật không claim thứ chưa quan sát |
-| `doctrine/standards/recipes.md` | Recipe là gì, khi nào viết, format bắt buộc |
-| `haven/diagrams/dev-loop.prime-mermaid.md` ★ | Nguồn trạng thái DUY NHẤT cho mọi task |
-| `haven/workers/implementer/` | Identity + memory + recipes của implementer |
-| `haven/workers/verifier/` | Identity + recipes của verifier |
-| `evidence/README.md` ★ | Format audit trail + 3 quy tắc |
-| `../.claude/skills/boot/SKILL.md` | Harness thật cho `/boot` |
-| `../.claude/skills/worker/SKILL.md` | Harness thật cho `/worker <implementer\|verifier> "<task>"` |
-| `../.claude/skills/todo/SKILL.md` | Harness thật cho `/todo "<task>"` |
+| `NORTHSTAR.md` | What "done" means for this hub (6 conditions) + the 3-month success picture |
+| `CLAUDE.md` | Agent contract — forbidden states, seal gate, 4 lenses, Master Equation |
+| `BOOT.md` | 5 orienting facts for `/boot`, 60-second launchpad |
+| `README.md` | Entry point for human readers (not agents) |
+| `.gitignore` | Excludes scratch/secrets; `evidence/` is NOT ignored |
+| `doctrine/INDEX.md` | Map of doctrine + the 3 kinds of knowledge |
+| `doctrine/SOUL.md` | Hub agent identity + 7 invariants |
+| `doctrine/MEMORY.md` ★ | Paths, stack, EXACT COMMANDS — highest authority |
+| `doctrine/domains/PROJECT.md` ★ | resume-vuejs-website ground truth: invariants, traps, decisions |
+| `doctrine/standards/edit-verification.md` | Rule: never claim what wasn't observed |
+| `doctrine/standards/recipes.md` | What a recipe is, when to write one, required format |
+| `haven/diagrams/dev-loop.prime-mermaid.md` ★ | The ONLY status source for every task |
+| `haven/workers/implementer/` | Implementer identity + memory + recipes |
+| `haven/workers/verifier/` | Verifier identity + recipes |
+| `evidence/README.md` ★ | Audit trail format + 3 rules |
+| `../.claude/skills/boot/SKILL.md` | Real harness for `/boot` |
+| `../.claude/skills/worker/SKILL.md` | Real harness for `/worker <implementer\|verifier> "<task>"` |
+| `../.claude/skills/todo/SKILL.md` | Real harness for `/todo "<task>"` |
 
-★ = 4 file load-bearing — đọc 4 file này là đủ hiểu 80% cơ chế.
+★ = the 4 load-bearing files — reading these 4 covers 80% of how it works.
 
 ## Not here (deliberately)
-`laws/`, `architecture/`, `uplifts/`, `training/` — chưa thêm vì chưa có bài
-học thật cần đến chúng (xem `doctrine/INDEX.md` → "Deliberately absent").
+`laws/`, `architecture/`, `uplifts/`, `training/` — not added yet because no
+real lesson has needed them (see `doctrine/INDEX.md` → "Deliberately absent").

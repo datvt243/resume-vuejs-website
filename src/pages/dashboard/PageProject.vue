@@ -71,7 +71,7 @@ async function handleUpdate(values) {
      */
     const data = (val => {
         val.startDate = +new Date(val.startDate)
-        val.endDate = +new Date(val.endDate)
+        val.endDate = val.isWorking ? null : +new Date(val.endDate)
         val.technology = val.technology?.split(',').map(s => s.trim()).filter(Boolean)
 
         !val.isWorking && (val.isWorking = false)

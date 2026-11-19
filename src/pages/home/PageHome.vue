@@ -18,10 +18,10 @@ import { useCvLang } from '@/composables/useCvLang'
 import { useDownloadCv } from '@/composables/useDownloadCv'
 import { buttonClass } from '@/lib/button.lib'
 import VisitChart from '@/components/visits/VisitChart.vue'
-import { t } from '@/i18n'
+import { t, uiLocale } from '@/i18n'
 
 const candidate = candidateStore()
-const numberFormat = new Intl.NumberFormat('vi-VN')
+const numberFormat = computed(() => new Intl.NumberFormat(uiLocale.value))
 
 /* profile strip */
 const info = computed(() => candidate.getCandidate)
@@ -45,7 +45,7 @@ const { applications } = useCandidate({ field: 'applications', collection: 'appl
 const kpis = computed(() => [
     {
         label: t('home.kpiViews'),
-        value: info.value?.visitsLoadError ? '—' : numberFormat.format(info.value?.visitCount ?? 0),
+        value: info.value?.visitsLoadError ? '—' : numberFormat.value.format(info.value?.visitCount ?? 0),
         hint: t('home.kpiViewsHint'),
         to: '/dashboard/visits',
     },
@@ -57,7 +57,7 @@ const kpis = computed(() => [
     },
     {
         label: t('home.kpiApplications'),
-        value: numberFormat.format(applications.value?.length ?? 0),
+        value: numberFormat.value.format(applications.value?.length ?? 0),
         hint: t('home.kpiApplicationsHint'),
         to: '/dashboard/application',
     },

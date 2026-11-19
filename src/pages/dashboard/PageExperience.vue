@@ -13,6 +13,7 @@ import { ref, computed } from 'vue'
 import { useCandidate } from '@/composables/useCandidate'
 import { useDocument } from '@/composables/useDocument'
 import { useManualOrder } from '@/composables/useManualOrder'
+import { useFormLang } from '@/composables/useFormLang'
 import { localizedToForm, localizedFromForm, formatDate, getLocalizedText, sanitizeHtml } from '@/utilities/index'
 import { t } from '@/i18n'
 
@@ -151,7 +152,10 @@ const viewDate = computed(() => {
     const { startDate, endDate, isCurrent } = viewDoc.value
     return `${formatDate(startDate, 'MM/YYYY')} - ${isCurrent ? t('common.present') : formatDate(endDate, 'MM/YYYY')}`
 })
-const viewDescription = computed(() => sanitizeHtml(getLocalizedText(viewDoc.value.description)))
+// shares the forms' VI | EN toggle, so the view and the forms stay on one language
+const { formLang } = useFormLang()
+const VIEW_LANGS = ['vi', 'en']
+const viewDescription = computed(() => sanitizeHtml(getLocalizedText(viewDoc.value.description, formLang.value)))
 
 function showModalViewDoc(doc) {
     viewDoc.value = doc
@@ -250,6 +254,21 @@ function showModalDuplicateDoc(doc) {
     </Modal>
 
     <Modal ref="refViewModal" :title="viewDoc.position || experienceTitle(viewDoc)">
+        <div class="mb-4 inline-flex rounded bg-surface-2 p-0.5" role="radiogroup" :aria-label="$t('form.contentLang')">
+            <button
+                v-for="l in VIEW_LANGS"
+                :key="l"
+                type="button"
+                role="radio"
+                :aria-checked="formLang === l ? 'true' : 'false'"
+                class="inline-flex h-7 items-center rounded-sm px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                :class="formLang === l ? 'bg-accent-subtle font-semibold text-accent shadow-sm' : 'text-fg-2 hover:text-fg'"
+                :data-lang="l"
+                @click="formLang = l"
+            >
+                {{ l.toUpperCase() }}
+            </button>
+        </div>
         <dl class="m-0 grid gap-x-4 gap-y-3 sm:grid-cols-4">
             <template v-if="viewDoc.isCareerBreak">
                 <dt class="text-sm text-fg-3">{{ $t('field.careerBreakType') }}</dt>

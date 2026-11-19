@@ -14,7 +14,7 @@ import { computed, inject, ref, watch } from 'vue'
 import VisitChart from '@/components/visits/VisitChart.vue'
 import { candidateStore } from '@/stores/candidate'
 import { useVisitStats } from '@/composables/useVisitStats'
-import { t } from '@/i18n'
+import { t, uiLocale } from '@/i18n'
 import { buttonClass } from '@/lib/button.lib'
 import { confirmDelete } from '@/lib/swal.lib'
 import { useHelper } from '@/composables/useHelper'
@@ -35,7 +35,7 @@ const { loading, toast } = useHelper()
 function deleteAll() {
     confirmDelete({
         title: t('visits.deleteAllTitle'),
-        getHtml: () => t('visits.deleteAllText', { count: numberFormat.format(dataList.value.length) }),
+        getHtml: () => t('visits.deleteAllText', { count: numberFormat.value.format(dataList.value.length) }),
         callback: () =>
             handleBase({ method: 'delete', url: 'candidate/visits' }, { loading, toast }, () => {
                 reloadVisits?.()
@@ -47,7 +47,7 @@ function deleteAll() {
 const INTERVAL_OPTIONS = computed(() => ['day', 'week', 'month'].map(value => ({ value, label: t(`visits.interval.${value}`) })))
 const rangeText = computed(() => t(`visits.range.${interval.value}`))
 
-const numberFormat = new Intl.NumberFormat('vi-VN')
+const numberFormat = computed(() => new Intl.NumberFormat(uiLocale.value))
 
 // null = no referrer recorded (direct visit, or recorded before referrer tracking) / no geo match.
 const breakdowns = computed(() => {
@@ -66,7 +66,7 @@ const kpis = computed(() => {
     const [sources, countries] = breakdowns.value
     const top = rows => (rows[0] ? { value: rows[0].label, hint: t('visits.shareOfViews', { share: Math.round(rows[0].share) }) } : { value: '—', hint: t('common.noData') })
     return [
-        { label: t('visits.kpiViews', { range: rangeText.value }), value: numberFormat.format(stats.value?.total ?? 0), hint: t('visits.kpiViewsHint', { total: numberFormat.format(dataList.value.length) }) },
+        { label: t('visits.kpiViews', { range: rangeText.value }), value: numberFormat.value.format(stats.value?.total ?? 0), hint: t('visits.kpiViewsHint', { total: numberFormat.value.format(dataList.value.length) }) },
         { label: t('visits.kpiTopSource', { range: rangeText.value }), ...top(sources.rows) },
         { label: t('visits.kpiTopCountry', { range: rangeText.value }), ...top(countries.rows) },
     ]
@@ -82,17 +82,17 @@ const rangeLabel = computed(() => {
     if (!total) return ''
     const from = (page.value - 1) * PAGE_SIZE + 1
     const to = Math.min(page.value * PAGE_SIZE, total)
-    return t('common.rowRange', { from: numberFormat.format(from), to: numberFormat.format(to), total: numberFormat.format(total) })
+    return t('common.rowRange', { from: numberFormat.value.format(from), to: numberFormat.value.format(to), total: numberFormat.value.format(total) })
 })
 watch(pageCount, n => {
     if (page.value > n) page.value = n
 })
 
-const dateFormat = new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
-const timeFormat = new Intl.DateTimeFormat('vi-VN', { hour: '2-digit', minute: '2-digit' })
+const dateFormat = computed(() => new Intl.DateTimeFormat(uiLocale.value, { day: '2-digit', month: '2-digit', year: 'numeric' }))
+const timeFormat = computed(() => new Intl.DateTimeFormat(uiLocale.value, { hour: '2-digit', minute: '2-digit' }))
 function formatVisitTime(value) {
     const d = new Date(value)
-    return Number.isNaN(d.getTime()) ? '—' : `${dateFormat.format(d)} ${timeFormat.format(d)}`
+    return Number.isNaN(d.getTime()) ? '—' : `${dateFormat.value.format(d)} ${timeFormat.value.format(d)}`
 }
 
 const pagerBtn = buttonClass({ variant: 'secondary', size: 'sm' })

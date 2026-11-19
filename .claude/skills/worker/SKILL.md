@@ -1,6 +1,6 @@
 ---
 name: worker
-description: "Become an agent-hub worker (analyst, implementer or verifier) and run its recipe loop for one task on resume-vuejs-website. Usage: /worker [analyst|implementer|verifier] \"[task]\". Implementer writes the smallest diff and stops at sealed_pending_verifier; verifier reads the evidence note independently and returns SEAL or REOPEN. Never call verifier on a diff the same session just wrote."
+description: "Become an agent-hub worker (analyst, implementer or verifier) and run its recipe loop for one task on resume-vuejs-website. Usage: /worker [analyst|implementer|verifier] \"[task]\". Implementer writes the smallest diff and stops at sealed_pending_verifier; verifier reads the evidence note independently and returns SEAL or REOPEN. Never call verifier on a diff the same session just wrote. Use when running one loop role by hand instead of /todo."
 ---
 
 # /worker <wid> "<task>" — become a worker, run its recipe, exit
@@ -63,7 +63,14 @@ From here on you ARE `<wid>` — speak from the identity in `SOUL.md`, obey
    is a citeable trail: `recipes/verify_seal.md` step 1b has the verifier
    record proof of this separate spawn into the verdict note's
    `## Isolation proof` line, so a later audit can check it instead of
-   trusting it happened. Only exception to a fresh spawn: `/todo`'s
+   trusting it happened.
+   Spawn it with `model: "sonnet"` (it checks cited evidence against
+   criteria, doesn't design). The spawn prompt names the absolute hub
+   path, the note path(s) and node slug(s) — never make the subagent `ls`
+   around to find its inputs, and never add re-run instructions ("re-run
+   the checks yourself") — `verify_seal.md`'s "Re-run scope" alone
+   decides. (kit 2026-11-18)
+   Only exception to a fresh spawn: `/todo`'s
    REOPEN rounds resume the same verifier subagent (`todo` step 4) —
    still never the implementer's context.
 

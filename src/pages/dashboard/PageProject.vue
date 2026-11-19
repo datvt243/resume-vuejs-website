@@ -10,11 +10,13 @@ import Modal from '@/components/Modal.vue'
 
 import ProjectItem from '@/components/project/ProjectItem.vue'
 
-import { ref, shallowRef } from 'vue'
+import { ref, shallowRef, computed } from 'vue'
 import { useCandidate } from '@/composables/useCandidate'
 import { useDocument } from '@/composables/useDocument'
 import { useManualOrder } from '@/composables/useManualOrder'
-import { localizedToForm, localizedFromForm } from '@/utilities/index'
+import { useFormLang } from '@/composables/useFormLang'
+import { localizedToForm, localizedFromForm, formatDate, getLocalizedText, sanitizeHtml } from '@/utilities/index'
+import { t } from '@/i18n'
 
 import model from '@/models/project.model.ts'
 
@@ -119,6 +121,30 @@ function showModalCreateDoc() {
     refVeeForm.value?.reset()
 }
 
+/**
+ *  view details (read-only)
+ */
+const refViewModal = ref()
+const viewDoc = ref({})
+const viewDate = computed(() => {
+    const { startDate, endDate, isWorking } = viewDoc.value
+    return `${formatDate(startDate, 'MM/YYYY')} - ${isWorking ? t('common.present') : formatDate(endDate, 'MM/YYYY')}`
+})
+// shares the forms' VI | EN toggle, so the view and the forms stay on one language
+const { formLang } = useFormLang()
+const VIEW_LANGS = ['vi', 'en']
+const viewDescription = computed(() => sanitizeHtml(getLocalizedText(viewDoc.value.description, formLang.value)))
+
+function showModalViewDoc(doc) {
+    viewDoc.value = doc
+    refViewModal.value?.show()
+}
+
+function editFromView() {
+    refViewModal.value?.hide()
+    showModalEditDoc(viewDoc.value)
+}
+
 function showModalDuplicateDoc(doc) {
     isDuplicating.value = true
     const fields = formFields.value.map(e => e.name)
@@ -156,6 +182,7 @@ function showModalDuplicateDoc(doc) {
                         <ProjectItem
                             :model-value="edu"
                             icon="fa-code"
+                            @on-view="showModalViewDoc"
                             @on-edit="showModalEditDoc"
                             @on-delete="handleDelete"
                             @on-duplicate="showModalDuplicateDoc"
@@ -193,6 +220,44 @@ function showModalDuplicateDoc(doc) {
                 </template>
             </VeeForm>
         </div>
+    </Modal>
+
+    <Modal ref="refViewModal" :title="viewDoc.name">
+        <div class="mb-4 inline-flex rounded bg-surface-2 p-0.5" role="radiogroup" :aria-label="$t('form.contentLang')">
+            <button
+                v-for="l in VIEW_LANGS"
+                :key="l"
+                type="button"
+                role="radio"
+                :aria-checked="formLang === l ? 'true' : 'false'"
+                class="inline-flex h-7 items-center rounded-sm px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                :class="formLang === l ? 'bg-accent-subtle font-semibold text-accent shadow-sm' : 'text-fg-2 hover:text-fg'"
+                :data-lang="l"
+                @click="formLang = l"
+            >
+                {{ l.toUpperCase() }}
+            </button>
+        </div>
+        <dl class="m-0 grid gap-x-4 gap-y-3 sm:grid-cols-4">
+            <dt class="text-sm text-fg-3">{{ $t('field.projectName') }}</dt>
+            <dd class="m-0 sm:col-span-3 text-sm text-fg">{{ viewDoc.name }}</dd>
+            <dt class="text-sm text-fg-3">{{ $t('field.position') }}</dt>
+            <dd class="m-0 sm:col-span-3 text-sm text-fg">{{ viewDoc.position || '—' }}</dd>
+            <dt class="text-sm text-fg-3">{{ $t('field.technology') }}</dt>
+            <dd class="m-0 sm:col-span-3 text-sm text-fg">{{ viewDoc.technology?.join(', ') || '—' }}</dd>
+            <dt class="text-sm text-fg-3">{{ $t('field.startDate') }} - {{ $t('field.endDate') }}</dt>
+            <dd class="m-0 sm:col-span-3 text-sm tabular-nums text-fg">{{ viewDate }}</dd>
+            <dt class="text-sm text-fg-3">{{ $t('field.link') }}</dt>
+            <dd class="m-0 sm:col-span-3 break-all text-sm text-fg">
+                <a v-if="/^https?:\/\//i.test(viewDoc.link)" class="text-accent hover:underline" :href="viewDoc.link" target="_blank" rel="noopener">{{ viewDoc.link }}</a>
+                <template v-else>{{ viewDoc.link || '—' }}</template>
+            </dd>
+            <dt class="text-sm text-fg-3">{{ $t('field.description') }}</dt>
+            <dd class="post-content m-0 sm:col-span-3 break-words text-sm text-fg" v-html="viewDescription"></dd>
+        </dl>
+        <template #footer>
+            <Button action="update" icon="fa-solid fa-square-pen" :text="$t('common.edit')" @click="editFromView" />
+        </template>
     </Modal>
 </template>
 

@@ -75,7 +75,6 @@ flowchart TD
 | Node | State | Notes |
 |---|---|---|
 | `issue-122-ai-cv-suggestions-pending` | PENDING | Operator (2026-10-05): "#122 chuyển status thành PENDING". Deliberately deferred, not started — waiting on an owner decision: shared app AI key vs BYOK (BYOK needs new two-way encryption on the backend; only `bcrypt` exists today) + a consent checkbox for sending CV data out. Checked: no branch/PR/evidence for #122; backend `origin/staging` (`f05930a`) has no AI-provider code. Partly overlapped by #159's non-AI JD keyword match. GitHub label `status: pending` applied. Evidence: `evidence/implementer/2026-10-05-issue-122-158-status-rows.md`. |
-| `issue-374-skill-edit-rename` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-374-skill-edit-rename-seal.md` |
 | `issue-374-main-skills` | SEALED | 2026-11-01 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-01/issue-374-main-skills-seal.md` |
 | `issue-374-nodata-box` | SEALED | 2026-11-02 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-02/issue-374-nodata-box-seal.md` |
 | `issue-377-familiar-skills` | SEALED | 2026-11-02 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-02/issue-377-familiar-skills-seal.md` |
@@ -95,3 +94,4 @@ flowchart TD
 | `issue-477-translate-md-english` | SEALED | 2026-11-16 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-16/issue-477-translate-md-english-seal.md` |
 | `issue-455-format-by-app-lang` | SEALED | 2026-11-18 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-18/issue-455-format-by-app-lang-seal.md` |
 | `issue-400-experience-view-lang` | SEALED | 2026-11-19 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-19/issue-400-experience-view-lang-seal.md` |
+| `issue-402-project-view-modal` | SEALED | 2026-11-19 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-19/issue-402-project-view-modal-seal.md` |

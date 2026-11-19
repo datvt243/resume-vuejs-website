@@ -56,3 +56,121 @@
 2026-09-26T15:48:31Z role=implementer outcome=blocked node=issue-120-import-cv-pdf-linkedin-recheck-20260926 hub_bytes_before=147702 verifier_rerun=n/a
 2026-09-26T23:35:44Z role=verifier outcome=SEAL node=docs-readme-roadmap-sync rerun=partial hub_bytes_before=147702 hub_bytes_after=129743
 2026-09-28T17:09:32Z role=verifier outcome=SEAL node=issue-120-linkedin-import rerun=none hub_bytes_before=148884 hub_bytes_after=157570
+2026-10-03T18:55:36Z role=verifier outcome=SEAL node=issue-159-ats-export-self-check rerun=none hub_bytes_before=152891 hub_bytes_after=158170
+2026-10-09T16:20:43Z role=verifier outcome=SEAL node=issue-176-178-sanitize-html rerun=none hub_bytes_before=169591 hub_bytes_after=170247
+2026-10-09T17:01:16Z role=verifier outcome=SEAL node=issue-177-forced-logout-redirect rerun=none hub_bytes_before=170247 hub_bytes_after=170859
+2026-10-09T17:46:49Z role=verifier outcome=SEAL node=issue-179-veeform-key-reset rerun=none hub_bytes_before=170859 hub_bytes_after=171352
+2026-10-09T17:56:26Z role=verifier outcome=SEAL node=issue-180-usecandidate-cleanup rerun=none hub_bytes_before=170859 hub_bytes_after=171540
+2026-10-09T17:56:34Z role=verifier outcome=SEAL node=issue-181-delete-confirm-message rerun=none hub_bytes_before=170859 hub_bytes_after=171366
+2026-10-09T19:15:25Z role=verifier outcome=SEAL node=issue-182-bilingual-cv rerun=none hub_bytes_before=172540 hub_bytes_after=173271
+2026-10-10T13:49:11Z role=verifier outcome=REOPEN node=issue-187-unsaved-modal-warning rerun=none hub_bytes_before=173447 hub_bytes_after=173652
+2026-10-10T13:52:11Z role=verifier outcome=SEAL node=issue-187-unsaved-modal-warning rerun=none hub_bytes_before=173447 hub_bytes_after=173835
+2026-10-10T14:06:21Z role=verifier outcome=SEAL node=issue-186-visit-stats rerun=none hub_bytes_before=174011 hub_bytes_after=174390
+2026-10-16T09:57:31Z role=verifier outcome=SEAL node=issue-158-import-cv-pdf rerun=none hub_bytes_before=174390 hub_bytes_after=175022
+2026-10-16T10:07:04Z role=verifier outcome=SEAL node=issue-183-cold-start-wakeup rerun=none hub_bytes_before=175022 hub_bytes_after=175519
+2026-10-16T11:17:24Z role=implementer outcome=blocked node=issue-184-application-profile hub_bytes_before=175519 verifier_rerun=n/a
+2026-10-16T11:56:22Z role=verifier outcome=SEAL node=issue-185-json-resume rerun=none hub_bytes_before=176255 hub_bytes_after=176797
+2026-10-18T13:40:50Z role=verifier outcome=SEAL node=issue-184-application-profile-unblocked-20261018 rerun=partial hub_bytes_before=176797 hub_bytes_after=177499
+2026-10-18T20:41:43Z role=verifier outcome=SEAL node=issue-212-form-select-dark rerun=none hub_bytes_before=177499 hub_bytes_after=178204
+2026-10-18T20:56:40Z role=verifier outcome=SEAL node=issue-226-dev-port rerun=none hub_bytes_before=178204 hub_bytes_after=179436
+2026-10-18T21:06:33Z role=verifier outcome=SEAL node=issue-213-preview-raw-html rerun=none hub_bytes_before=179436 hub_bytes_after=180387
+2026-10-18T21:12:21Z role=verifier outcome=SEAL node=issue-214-sidebar-visits rerun=none hub_bytes_before=179436 hub_bytes_after=180022
+2026-10-19T09:47:36Z role=verifier outcome=SEAL node=issue-216-ui-tokens rerun=none hub_bytes_before=181149 hub_bytes_after=181901
+2026-10-19T09:54:31Z role=verifier outcome=SEAL node=issue-217-app-shell rerun=none hub_bytes_before=182077 hub_bytes_after=182842
+2026-10-19T10:07:37Z role=verifier outcome=SEAL node=issue-218-global-components rerun=none hub_bytes_before=183018 hub_bytes_after=184841
+2026-10-19T10:07:37Z role=verifier outcome=REOPEN node=fix-header-user-menu-style-prop rerun=none hub_bytes_before=183018 hub_bytes_after=184841
+2026-10-19T10:09:37Z role=verifier outcome=SEAL node=fix-header-user-menu-style-prop rerun=none hub_bytes_before=183018 hub_bytes_after=185171
+2026-10-19T10:26:34Z role=verifier outcome=SEAL node=issue-219-home-overview rerun=none hub_bytes_before=185347 hub_bytes_after=186302
+2026-10-19T10:31:21Z role=verifier outcome=SEAL node=issue-220-visits-analytics rerun=none hub_bytes_before=186478 hub_bytes_after=187442
+2026-10-19T14:43:43Z role=verifier outcome=SEAL node=issue-221-table-default rerun=none hub_bytes_before=185601 hub_bytes_after=188952
+2026-10-19T15:20:08Z role=verifier outcome=SEAL node=issue-222-forms rerun=none hub_bytes_before=188574 hub_bytes_after=190882
+2026-10-19T15:40:17Z role=verifier outcome=SEAL node=issue-223-crud-lists rerun=none hub_bytes_before=191562 hub_bytes_after=193971
+2026-10-19T16:01:30Z role=verifier outcome=REOPEN node=issue-224-remaining-pages rerun=none hub_bytes_before=193466 hub_bytes_after=195307
+2026-10-19T16:04:24Z role=verifier outcome=REOPEN node=issue-224-remaining-pages rerun=none hub_bytes_before=193466 hub_bytes_after=195307
+2026-10-19T16:10:09Z role=verifier outcome=SEAL node=issue-224-remaining-pages rerun=none hub_bytes_before=193466 hub_bytes_after=195918
+2026-10-19T16:32:59Z role=verifier outcome=REOPEN node=issue-235-career-break rerun=partial hub_bytes_before=195918 hub_bytes_after=196699
+2026-10-20T10:53:24Z role=verifier outcome=SEAL node=issue-235-career-break rerun=partial hub_bytes_before=195918 hub_bytes_after=196770
+2026-10-20T11:10:10Z role=verifier outcome=REOPEN node=issue-211-epic-review rerun=full hub_bytes_before=196770 hub_bytes_after=197881
+2026-10-20T11:23:00Z role=verifier outcome=SEAL node=issue-211-epic-review rerun=full hub_bytes_before=196770 hub_bytes_after=198298
+2026-10-20T11:36:44Z role=verifier outcome=SEAL node=issue-249-experience-unsaved-warning rerun=none hub_bytes_before=188717 hub_bytes_after=198915
+2026-10-20T11:49:23Z role=verifier outcome=SEAL node=issue-251-header-language-switch rerun=none hub_bytes_before=198915 hub_bytes_after=199605
+2026-10-20T17:40:39Z role=verifier outcome=SEAL node=issue-251-lang-switch-left-tooltip rerun=partial hub_bytes_before=199605 hub_bytes_after=200289
+2026-10-20T17:52:11Z role=verifier outcome=SEAL node=issue-251-ci-lockfile rerun=partial hub_bytes_before=200289 hub_bytes_after=200908
+2026-10-20T18:23:51Z role=verifier outcome=SEAL node=issue-260-texteditor-list-style rerun=none hub_bytes_before=200908 hub_bytes_after=201533
+2026-10-20T18:32:14Z role=verifier outcome=SEAL node=issue-262-cv-lang-cleanup rerun=none hub_bytes_before=201533 hub_bytes_after=202237
+2026-10-21T12:01:58Z role=verifier outcome=SEAL node=issue-266-i18n-phase1-shared-auth rerun=none hub_bytes_before=198075 hub_bytes_after=203019
+2026-10-21T13:00:58Z role=verifier outcome=SEAL node=issue-271-cold-start-overlay rerun=none hub_bytes_before=198836 hub_bytes_after=203521
+2026-10-21T13:16:54Z role=verifier outcome=SEAL node=issue-252-api-response-standard rerun=none hub_bytes_before=199404 hub_bytes_after=199399
+2026-10-21T13:41:14Z role=verifier outcome=REOPEN node=issue-266-i18n-phase2-4-remaining rerun=none hub_bytes_before=204611 hub_bytes_after=204611
+2026-10-21T14:00:53Z role=verifier outcome=REOPEN node=issue-281-experience-add-type rerun=none hub_bytes_before=195030 hub_bytes_after=195030
+2026-10-21T14:04:37Z role=verifier outcome=SEAL node=issue-281-experience-add-type rerun=partial hub_bytes_before=195030 hub_bytes_after=205237
+2026-10-24T03:26:31Z role=verifier outcome=SEAL node=issue-266-i18n-dashboard-browser-check rerun=none hub_bytes_before=205237 hub_bytes_after=206159
+2026-10-24T03:50:06Z role=verifier outcome=SEAL node=issue-291-download-cv rerun=partial hub_bytes_before=205237 hub_bytes_after=207092
+2026-10-24T15:05:56Z role=verifier outcome=REOPEN node=issue-295-typecheck-script rerun=none hub_bytes_before=85021 hub_bytes_after=85154
+2026-10-24T15:07:07Z role=verifier outcome=SEAL node=issue-295-typecheck-script rerun=none hub_bytes_before=85021 hub_bytes_after=84847
+2026-10-25T08:01:48Z role=verifier outcome=SEAL node=issue-307-modal-save-close rerun=none hub_bytes_before=82009 hub_bytes_after=81827
+2026-10-25T08:14:15Z role=verifier outcome=SEAL node=issue-308-visits-count rerun=none hub_bytes_before=82009 hub_bytes_after=84639
+2026-10-25T08:15:37Z role=verifier outcome=REOPEN node=issue-309-cv-technology rerun=none hub_bytes_before=82009 hub_bytes_after=85093
+2026-10-25T08:16:56Z role=verifier outcome=SEAL node=issue-309-cv-technology rerun=none hub_bytes_before=82009 hub_bytes_after=85011
+2026-10-25T09:06:55Z role=verifier outcome=SEAL node=issue-316-404-page rerun=none hub_bytes_before=82257 hub_bytes_after=85145
+2026-10-25T09:05:40Z role=verifier outcome=SEAL node=issue-315-user-menu-label rerun=none hub_bytes_before=82257 hub_bytes_after=84653
+2026-10-25T09:08:15Z role=verifier outcome=SEAL node=issue-314-public-cv-slug-reload rerun=none hub_bytes_before=82257 hub_bytes_after=84665
+2026-10-25T09:18:08Z role=verifier outcome=SEAL node=issue-311-redundant-requests rerun=none hub_bytes_before=82257 hub_bytes_after=84659
+2026-10-25T09:15:38Z role=verifier outcome=SEAL node=issue-312-load-login-errors rerun=none hub_bytes_before=82257 hub_bytes_after=84639
+2026-10-25T09:12:06Z role=verifier outcome=SEAL node=issue-310-toast-language rerun=none hub_bytes_before=82257 hub_bytes_after=84651
+2026-10-25T09:10:15Z role=verifier outcome=SEAL node=issue-317-reload-redirect rerun=none hub_bytes_before=82257 hub_bytes_after=84635
+2026-10-26T12:46:49Z role=verifier outcome=SEAL node=issue-336-social-media-update rerun=none hub_bytes_before=85721 hub_bytes_after=84562
+2026-10-26T12:58:41Z role=verifier outcome=SEAL node=issue-340-input-cannot-clear rerun=none hub_bytes_before=84562 hub_bytes_after=84736
+2026-10-26T13:16:20Z role=verifier outcome=SEAL node=issue-344-reload-empty-form rerun=none hub_bytes_before=84736 hub_bytes_after=84908
+2026-10-26T13:29:37Z role=verifier outcome=SEAL node=issue-335-register-names rerun=none hub_bytes_before=84908 hub_bytes_after=85074
+2026-10-26T13:39:25Z role=verifier outcome=SEAL node=issue-312-load-error-retry rerun=none hub_bytes_before=85074 hub_bytes_after=84519
+2026-10-26T18:12:05Z role=verifier outcome=SEAL node=issue-312-visits-error-retry rerun=none hub_bytes_before=2550745 hub_bytes_after=2559584
+2026-10-31T13:14:50Z role=verifier outcome=REOPEN node=issue-355-education-major-min rerun=none hub_bytes_before=2559584 hub_bytes_after=2566138
+2026-10-31T13:15:50Z role=verifier outcome=SEAL node=issue-355-education-major-min rerun=none hub_bytes_before=2559584 hub_bytes_after=2568964
+2026-10-31T13:23:04Z role=verifier outcome=SEAL node=issue-347-veeform-hidden-lang-flag rerun=none hub_bytes_before=2568964 hub_bytes_after=2577631
+2026-10-31T14:22:31Z role=verifier outcome=SEAL node=issue-352-import-modal-close rerun=none hub_bytes_before=2577631 hub_bytes_after=2583911
+2026-10-31T14:31:35Z role=verifier outcome=SEAL node=issue-353-stale-header-email rerun=none hub_bytes_before=2583911 hub_bytes_after=2590620
+2026-10-31T14:33:58Z role=verifier outcome=SEAL node=issue-354-public-cv-experience-order rerun=none hub_bytes_before=2590620 hub_bytes_after=2597590
+2026-10-31T14:47:22Z role=verifier outcome=SEAL node=issue-356-editor-datepicker-i18n rerun=none hub_bytes_before=2597590 hub_bytes_after=2606357
+2026-10-31T14:57:25Z role=verifier outcome=SEAL node=issue-364-form-length-rules rerun=none hub_bytes_before=2606357 hub_bytes_after=2614012
+2026-11-01T14:58:47Z role=verifier outcome=SEAL node=issue-370-language-in-settings rerun=none hub_bytes_before=84843 hub_bytes_after=85021
+2026-11-01T15:04:12Z role=verifier outcome=REOPEN node=issue-370-app-language-split rerun=none hub_bytes_before=85021 hub_bytes_after=85529
+2026-11-01T15:08:23Z role=verifier outcome=SEAL node=issue-370-remove-header-lang-switch rerun=none hub_bytes_before=85529 hub_bytes_after=85209
+2026-11-01T15:16:19Z role=verifier outcome=REOPEN node=issue-372-skills-page rerun=none hub_bytes_before=85209 hub_bytes_after=85615
+2026-11-01T15:20:24Z role=verifier outcome=SEAL node=issue-372-skills-page rerun=none hub_bytes_before=85209 hub_bytes_after=85369
+2026-11-01T15:42:01Z role=verifier outcome=REOPEN node=issue-374-skill-badges rerun=none hub_bytes_before=85369 hub_bytes_after=85974
+2026-11-01T15:43:25Z role=verifier outcome=SEAL node=issue-374-skill-badges rerun=none hub_bytes_before=85369 hub_bytes_after=85531
+2026-11-01T15:53:08Z role=verifier outcome=SEAL node=issue-374-skill-group-actions rerun=none hub_bytes_before=85531 hub_bytes_after=85553
+2026-11-01T15:56:50Z role=verifier outcome=SEAL node=issue-374-skill-name-emphasis rerun=partial hub_bytes_before=85553 hub_bytes_after=85557
+2026-11-01T16:00:20Z role=verifier outcome=REOPEN node=issue-374-skill-edit-rename rerun=none hub_bytes_before=85557 hub_bytes_after=86089
+2026-11-01T16:01:40Z role=verifier outcome=SEAL node=issue-374-skill-edit-rename rerun=none hub_bytes_before=85557 hub_bytes_after=85561
+2026-11-01T16:09:16Z role=verifier outcome=REOPEN node=issue-374-main-skills rerun=none hub_bytes_before=85561 hub_bytes_after=86155
+2026-11-01T16:12:05Z role=verifier outcome=SEAL node=issue-374-main-skills rerun=none hub_bytes_before=85561 hub_bytes_after=84597
+2026-11-01T19:56:52Z role=verifier outcome=REOPEN node=issue-374-nodata-box rerun=none hub_bytes_before=84597 hub_bytes_after=85094
+2026-11-01T19:58:28Z role=verifier outcome=SEAL node=issue-374-nodata-box rerun=none hub_bytes_before=84597 hub_bytes_after=84581
+2026-11-02T00:26:33Z role=verifier outcome=SEAL node=issue-377-familiar-skills rerun=none hub_bytes_before=84915 hub_bytes_after=84577
+2026-11-02T00:32:42Z role=verifier outcome=SEAL node=nodata-dashed-border rerun=none hub_bytes_before=84577 hub_bytes_after=84569
+2026-11-02T00:47:08Z role=verifier outcome=SEAL node=issue-383-button-colors rerun=none hub_bytes_before=84569 hub_bytes_after=84563
+2026-11-02T15:12:20Z role=verifier outcome=REOPEN node=issue-375-delete-all-visits rerun=none hub_bytes_before=84563 hub_bytes_after=84870
+2026-11-02T15:14:43Z role=verifier outcome=SEAL node=issue-375-delete-all-visits rerun=none hub_bytes_before=84563 hub_bytes_after=84561
+2026-11-05T02:08:58Z role=verifier outcome=REOPEN node=issue-394-languages-page-nav-group rerun=none hub_bytes_before=84561 hub_bytes_after=85404
+2026-11-05T02:10:48Z role=verifier outcome=REOPEN node=issue-394-languages-page-nav-group rerun=none hub_bytes_before=84561 hub_bytes_after=85593
+2026-11-05T02:12:36Z role=verifier outcome=SEAL node=issue-394-languages-page-nav-group rerun=none hub_bytes_before=84561 hub_bytes_after=84571
+2026-11-05T12:55:54Z role=verifier outcome=SEAL node=issue-399-form-lang-sync rerun=none hub_bytes_before=84571 hub_bytes_after=84551
+2026-11-05T16:03:11Z role=verifier outcome=REOPEN node=issue-398-languages-view-edit rerun=none hub_bytes_before=84551 hub_bytes_after=85160
+2026-11-05T16:07:45Z role=verifier outcome=SEAL node=issue-398-languages-view-edit rerun=none hub_bytes_before=84551 hub_bytes_after=84553
+2026-11-05T16:50:07Z role=verifier outcome=REOPEN node=issue-405-cv-filename rerun=none hub_bytes_before=84553 hub_bytes_after=84948
+2026-11-05T16:55:05Z role=verifier outcome=REOPEN node=issue-405-cv-filename rerun=none hub_bytes_before=84553 hub_bytes_after=85159
+2026-11-05T16:57:57Z role=verifier outcome=REOPEN node=issue-405-cv-filename rerun=partial hub_bytes_before=84553 hub_bytes_after=85363
+2026-11-05T17:02:40Z role=verifier outcome=SEAL node=issue-405-cv-filename rerun=partial hub_bytes_before=84553 hub_bytes_after=84539
+2026-11-05T17:23:42Z role=verifier outcome=REOPEN node=issue-409-profile-modal-layout rerun=none hub_bytes_before=84539 hub_bytes_after=84891
+2026-11-05T17:28:41Z role=verifier outcome=SEAL node=issue-409-profile-modal-layout rerun=none hub_bytes_before=84539 hub_bytes_after=84527
+2026-11-15T11:15:43Z role=verifier outcome=SEAL node=issue-420-auth-form-fixes rerun=none spawn=fresh hub_bytes_before=99072 hub_bytes_after=99058
+2026-11-15T11:58:20Z role=verifier outcome=SEAL node=issue-459-logout-refresh-token rerun=none spawn=fresh hub_bytes_before=99387 hub_bytes_after=99244
+2026-11-15T13:06:50Z role=verifier outcome=SEAL node=issue-443-list-date-sort rerun=none spawn=fresh hub_bytes_before=99521 hub_bytes_after=99250
+2026-11-16T07:35:21Z role=verifier outcome=REOPEN node=issue-445-enddate-null-current rerun=none spawn=fresh hub_bytes_before=99250 hub_bytes_after=99678
+2026-11-16T07:37:10Z role=verifier outcome=SEAL node=issue-445-enddate-null-current rerun=none spawn=resumed hub_bytes_before=99250 hub_bytes_after=99250
+2026-11-16T07:46:33Z role=verifier outcome=SEAL node=issue-446-short-major-optional-award-link rerun=none spawn=fresh hub_bytes_before=99250 hub_bytes_after=99262
+2026-11-16T07:54:02Z role=verifier outcome=REOPEN node=issue-477-translate-md-english rerun=none spawn=fresh hub_bytes_before=99262 hub_bytes_after=99609
+2026-11-16T07:55:07Z role=verifier outcome=SEAL node=issue-477-translate-md-english rerun=none spawn=resumed hub_bytes_before=99262 hub_bytes_after=98994
+2026-11-18T09:29:43Z role=verifier outcome=SEAL node=issue-455-format-by-app-lang rerun=none spawn=fresh hub_bytes_before=98994 hub_bytes_after=98992

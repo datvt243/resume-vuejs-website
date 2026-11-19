@@ -5,9 +5,10 @@ import { setActivePinia, createPinia } from 'pinia'
 import PageExperience from './PageExperience.vue'
 import { i18n } from '@/i18n'
 import VeeForm from '@/components/veevalidate/VeeForm.vue'
+import { useFormLang } from '@/composables/useFormLang'
 
 const updateDoc = vi.hoisted(() => vi.fn())
-const breakEntry = { _id: 'e2', isCareerBreak: true, careerBreakType: 'travel', startDate: 1641038400000, endDate: 1657022400000 }
+const breakEntry: Record<string, any> = { _id: 'e2', isCareerBreak: true, careerBreakType: 'travel', startDate: 1641038400000, endDate: 1657022400000 }
 
 vi.mock('@/composables/useCandidate', () => ({
     useCandidate: () => ({ experiences: ref([breakEntry]), removeRecordById: vi.fn(), addRecordToList: vi.fn() }),
@@ -68,6 +69,31 @@ describe('PageExperience — experience or career break', () => {
         expect(view.textContent).toContain('01/2022 - 07/2022')
         await w.findAll('button').find(b => b.text() === 'Sửa')!.trigger('click')
         expect(w.findComponent(VeeForm).props('document')._id).toBe('e2')
+    })
+
+    it('switches the view description VI | EN on the shared form language', async () => {
+        const { formLang } = useFormLang()
+        formLang.value = 'vi'
+        breakEntry.description = { vi: 'Mô tả', en: 'Desc' }
+        try {
+            const w = mountPage()
+            await w.find('.view').trigger('click')
+            const desc = () => w.find('dd.post-content').text()
+            expect(desc()).toBe('Mô tả')
+
+            await w.find('[role="radiogroup"] [data-lang="en"]').trigger('click')
+            expect(desc()).toBe('Desc')
+            expect(formLang.value).toBe('en')
+
+            // EN empty → falls back to VI (fresh mount: the stub list isn't reactive)
+            breakEntry.description = { vi: 'Mô tả', en: '' }
+            const w2 = mountPage()
+            await w2.find('.view').trigger('click')
+            expect(w2.find('dd.post-content').text()).toBe('Mô tả')
+        } finally {
+            delete breakEntry.description
+            formLang.value = 'vi'
+        }
     })
 
     it('sends endDate null when "currently working" is checked', async () => {

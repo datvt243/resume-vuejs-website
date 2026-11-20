@@ -1,2 +1,3 @@
 2026-11-19T09:52:35Z role=verifier outcome=SEAL node=issue-400-experience-view-lang rerun=none spawn=fresh hub_bytes_before=100249 hub_bytes_after=100251
 2026-11-19T10:06:03Z role=verifier outcome=SEAL node=issue-402-project-view-modal rerun=none spawn=fresh hub_bytes_before=100642 hub_bytes_after=100253
+2026-11-20T13:17:04Z role=verifier outcome=SEAL node=issue-419-table-row-keys rerun=none spawn=fresh hub_bytes_before=100253 hub_bytes_after=100259

@@ -15,7 +15,7 @@ import { t, tr } from '@/i18n'
 /**
  *
  */
-import { toRef, defineProps, computed, defineComponent, h, useSlots, reactive, ref, watch } from 'vue'
+import { toRef, toRaw, defineProps, computed, defineComponent, h, useSlots, reactive, ref, watch } from 'vue'
 const slots = useSlots()
 const props = defineProps({
     modelValue: { type: Array, default: () => [] },
@@ -75,6 +75,16 @@ const rows = computed(() => {
         return diff * sign
     })
 })
+
+// foreignLanguages / personalSkills items have no _id: key by object identity, so a delete doesn't patch the wrong row
+const rowIds = new WeakMap()
+let nextRowId = 0
+const rowKey = doc => {
+    if (doc._id) return `doc_${doc._id}`
+    const raw = toRaw(doc)
+    if (!rowIds.has(raw)) rowIds.set(raw, nextRowId++)
+    return `row_${rowIds.get(raw)}`
+}
 
 /**
  * pagination
@@ -142,7 +152,7 @@ const renderCellContent = defineComponent({
                 </TableHead>
                 <TableBody>
                     <template v-if="pageRows.length">
-                        <template v-for="(doc, index) in pageRows" :key="`doc_${doc._id}`">
+                        <template v-for="(doc, index) in pageRows" :key="rowKey(doc)">
                             <TableRow :model-value="doc">
                                 <TableCell class="text-right tabular-nums text-fg-3">{{ pageStart + index + 1 }}</TableCell>
                                 <template

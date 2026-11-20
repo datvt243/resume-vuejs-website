@@ -13,6 +13,7 @@ import { ref, defineProps, computed, onBeforeMount, reactive, watch, inject } fr
 
 import { useDocument } from '@/composables/useDocument'
 import Swal from 'sweetalert2'
+import { typedDeleteInput } from '@/lib/swal.lib'
 import { buttonClass } from '@/lib/button.lib'
 import { candidateStore } from '@/stores/candidate'
 import { t } from '@/i18n'
@@ -100,10 +101,8 @@ async function handleUpdate(values, action = 'create') {
         const { value } = await Swal.fire({
             title: t('confirm.deleteSure'),
             icon: 'question',
-            input: 'text',
+            ...typedDeleteInput(),
             html: t('confirm.typeDelete'),
-            inputValue: '',
-            inputPlaceholder: t('confirm.typeDeletePlaceholder'),
             showCancelButton: true,
             reverseButtons: true,
             cancelButtonText: t('common.cancel'),
@@ -113,11 +112,6 @@ async function handleUpdate(values, action = 'create') {
                 cancelButton: buttonClass({ variant: 'secondary' }),
             },
             buttonsStyling: false,
-            inputValidator: value => {
-                if (value !== 'delete') {
-                    return t('confirm.typeDelete')
-                }
-            },
         })
 
         // remove

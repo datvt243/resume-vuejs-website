@@ -2,7 +2,7 @@
 
 - Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/cv-visits-spec.md`
 - Source: backfill from code
-- Issues: #454, #455, #456, datvt243/resume-nodejs-api#396
+- Issues: #454, #455, #456, #489, datvt243/resume-nodejs-api#396
 - Anchors: `src/pages/dashboard/PageVisits.vue`, `src/composables/useVisits.ts`, `src/composables/useVisitStats.ts`, `src/components/visits/VisitChart.vue`, `src/pages/_layouts/LayoutDefault.vue`, `src/pages/public/PagePublicResume.vue`
 
 ## Goal
@@ -19,9 +19,11 @@ The candidate sees how often their public CV was opened, from where, and when �
 8. Detail table of the cached visit list, 25 per page, with Prev/Next and a "from–to of total" label: time (date + `hh:mm` in the app language's format — `vi-VN` or `en-US`, like every number on the page; invalid → "—"), location (or "—"), IP (or "—"). Empty → empty state. If the page count shrinks, the current page moves back to the last page.
 9. Either load failing → the whole page shows an error block with "Retry", which reloads only what failed.
 10. Delete all: confirm dialog stating the number of visits, then `DELETE api/v1/candidate/visits`; on success both the list and the stats reload.
+    *(#456 / #489 — spec complete, not yet implemented/sealed)* Typed confirm: the dialog keeps its current title and warning text and adds a text input (placeholder `confirm.typeDeletePlaceholder`) with the prompt `confirm.typeDelete` — the same typed confirm single-skill delete uses (`VeeFormGeneralInformationUpdate.vue`), shared by all four dialogs rather than copied. The Delete button only proceeds when the input is exactly `delete` (case-sensitive, not trimmed, English in both UI languages); anything else keeps the dialog open and shows `confirm.typeDelete` as the validation message. Cancel, × or Esc closes it and sends no request. The title and the "{count} visits will be deleted permanently" text stay. `DELETE api/v1/candidate/visits` is sent only after a valid `delete`.
 
 ## Acceptance criteria
 - `npx vitest run src/pages/dashboard/PageVisits.spec.ts` passes.
+- *(#456)* Delete all: inputs `''`, `delet`, `Delete` and `delete ` are rejected (validation message, dialog stays open, no request); `delete` sends exactly one `DELETE api/v1/candidate/visits` and reloads list + stats; Cancel sends none. Asserted in `src/pages/dashboard/PageVisits.spec.ts`; the existing assertion that the dialog text contains `vĩnh viễn` still passes.
 - `npx vitest run src/composables/useVisits.spec.ts src/composables/useVisitStats.spec.ts src/components/visits/VisitChart.spec.ts` passes (`formatBucket`, `visitStatsFrom`).
 - With 26 cached visits the table shows 25 rows and a second page.
 - When the stats request fails, the page shows the error block, not "0 views".
@@ -47,3 +49,4 @@ The candidate sees how often their public CV was opened, from where, and when �
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-visits-spec.md` | - |
 | 2026-11-18 | Behavior #8: dates/numbers follow the app language (`vi-VN`/`en-US`), not always `vi-VN` | Open question 3, operator answer: bug — #455 | `issue-455-format-by-app-lang` |
+| 2026-11-20 | Behavior (draft): typed `delete` confirm on visits "Delete all" | #456 / umbrella #489 | - |

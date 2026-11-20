@@ -15,6 +15,9 @@ vi.mock('@/composables/useDocument', () => ({
     useDocument: () => ({ updatePatchDoc: (...args: unknown[]) => updatePatchDoc(...args) }),
 }))
 
+const confirmDelete = vi.fn()
+vi.mock('@/lib/swal.lib', () => ({ confirmDelete: (opts: unknown) => confirmDelete(opts) }))
+
 const PickedStub = { name: 'PickedSkills', props: ['title', 'modelValue', 'skills', 'groups', 'max', 'save'], template: '<div />' }
 
 function mountPage() {
@@ -98,3 +101,21 @@ describe('PageSkills — empty professional list', () => {
     })
 })
 
+describe('PageSkills — delete group', () => {
+    it('asks for the typed `delete`, then patches the group and its skills away', async () => {
+        listItems = [{ name: 'Vue', group: 'FE' }]
+        setActivePinia(createPinia())
+        confirmDelete.mockReset()
+        updatePatchDoc.mockReset()
+        const wrapper = mount(PageSkills, { global: { plugins: [i18n], stubs: listStubs } })
+        const label = i18n.global.t('generalInfo.deleteGroup', { name: 'FE' })
+        await wrapper.find(`[aria-label="${label}"]`).trigger('click')
+
+        const opts = confirmDelete.mock.calls[0][0]
+        expect(opts.typed).toBe(true)
+        expect(updatePatchDoc).not.toHaveBeenCalled()
+        await opts.callback()
+        expect(updatePatchDoc).toHaveBeenCalledTimes(1)
+        expect(updatePatchDoc.mock.calls[0][0]).toMatchObject({ professionalSkills: [] })
+    })
+})

@@ -2,7 +2,7 @@
 
 - Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/cv-skills-spec.md`
 - Source: backfill from code
-- Issues: #437, #438, #439, #440
+- Issues: #437, #438, #439, #440, #489
 - Anchors: `src/pages/dashboard/PageSkills.vue`, `src/components/PickedSkills.vue`, `src/components/GroupTags.vue`, `src/components/veevalidate/VeeFormGeneralInformationUpdate.vue`, `src/utilities/index.ts` (`groupSkills`)
 
 ## Goal
@@ -22,6 +22,7 @@ The candidate lists their professional skills (grouped, with years), picks their
    - Click a skill to edit it; × deletes it after typing `delete` in a confirm dialog.
    - Rename group: a prompt (required, must not clash with another group) renames the tag and moves all its skills, in one save.
    - Delete group: confirm, then removes the tag and every skill in it (the API rejects skills without a group).
+     *(#439 / #489 — spec complete, not yet implemented/sealed)* Typed confirm: the dialog keeps its current title and warning text and adds a text input (placeholder `confirm.typeDeletePlaceholder`) with the prompt `confirm.typeDelete` — the same typed confirm single-skill delete uses (`VeeFormGeneralInformationUpdate.vue`), shared by all four dialogs rather than copied. The Delete button only proceeds when the input is exactly `delete` (case-sensitive, not trimmed, English in both UI languages); anything else keeps the dialog open and shows `confirm.typeDelete` as the validation message. Cancel, × or Esc closes it and sends no request. The group-name title and the "{count} skills will be deleted" text stay. The PATCH is sent only after a valid `delete`; this applies to every group, including one with 0 skills.
 5. Personal tab: a list of personal skills (name, required, max 100) with add and delete, same confirm-by-typing-`delete`.
 6. Every save patches only the changed field(s) and updates the store from the response; success/failure toasts come from the API message.
 
@@ -31,6 +32,8 @@ The candidate lists their professional skills (grouped, with years), picks their
 - With 5 main skills selected, the 6th option in the picker is disabled.
 - `#/dashboard/skills?tab=personal` opens on the Personal tab.
 - Deleting a skill is not sent unless the confirm input is exactly `delete`.
+- *(#439)* Delete group: inputs `''`, `delet`, `Delete` and `delete ` are rejected (validation message, dialog stays open, no request); `delete` sends exactly one `PATCH api/v1/general-information/update` without the group and its skills; Cancel sends none. Asserted in `src/pages/dashboard/PageSkills.spec.ts` (`npx vitest run src/pages/dashboard/PageSkills.spec.ts` passes).
+- Single-skill and personal-skill delete still behave as before: `npx vitest run src/components/veevalidate/VeeFormGeneralInformationUpdate.spec.ts` passes.
 
 ## Edge cases
 - No groups yet → the group select is empty, so no professional skill can be added until a group exists.
@@ -52,3 +55,4 @@ The candidate lists their professional skills (grouped, with years), picks their
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-skills-spec.md` | - |
+| 2026-11-20 | Behavior (draft): typed `delete` confirm on skill-group delete | #439 / umbrella #489 | - |

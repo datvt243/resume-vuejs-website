@@ -2,7 +2,7 @@
 
 - Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/account-settings-spec.md`
 - Source: backfill from code
-- Issues: #63, #182, #431, datvt243/resume-nodejs-api#412
+- Issues: #63, #182, #431, #489, datvt243/resume-nodejs-api#412
 - Anchors: `src/pages/dashboard/PageAccountSettings.vue`, `src/i18n/index.ts` (`uiLang`, `setUiLang`), `src/composables/useCvLang.ts`, `src/composables/useDownloadCv.ts`, `src/stores/auth.ts`
 
 ## Goal
@@ -13,6 +13,7 @@ The candidate manages account-level settings: interface language, CV file name a
 2. Email: shows the signed-in email (or "—"). "Change email" is disabled, marked "coming soon".
 3. Password: "Change password" is disabled, marked "coming soon" (no backend endpoint for a signed-in user yet).
 4. Delete account (danger section, "cannot be undone"): confirm dialog warning that all CV data and uploaded files are deleted permanently → `DELETE api/v1/candidate` → on success, sign out and go to `/login`. Failure → red toast.
+   - *(#431 / #489 — spec complete, not yet implemented/sealed)* Typed confirm: the dialog keeps its current title and warning text and adds a text input (placeholder `confirm.typeDeletePlaceholder`) with the prompt `confirm.typeDelete` — the same typed confirm single-skill delete uses (`VeeFormGeneralInformationUpdate.vue`), shared by all four dialogs rather than copied. The Delete button only proceeds when the input is exactly `delete` (case-sensitive, not trimmed, English in both UI languages); anything else keeps the dialog open and shows `confirm.typeDelete` as the validation message. Cancel, × or Esc closes it and sends no request. `DELETE api/v1/candidate` is sent only after a valid `delete`.
 5. App language: Tiếng Việt / English. Changes menus, buttons and messages immediately, sets `<html lang>`, and is saved in `localStorage.uiLang`. Without a saved choice it starts from the old `cvLang` value, else Vietnamese. It does not change the CV language.
 6. CV file name: optional text, trimmed, max 100 characters, must not contain `\`, `/`, `"` or line breaks; no `.pdf` needed; empty = default name. Saved with `PATCH api/v1/candidate/update` (`cvFileName`); the store takes the server value. How the name is used: see `cv-preview-export.md`.
 7. CV language: the same shared CV-language setting as Preview, Home and Header (`localStorage.cvLang`); see `cv-preview-export.md`.
@@ -21,6 +22,7 @@ The candidate manages account-level settings: interface language, CV file name a
 - `npx vitest run src/i18n/index.spec.ts` passes.
 - Switching App language to English changes the page's labels to English and `document.documentElement.lang` to `en`, while the CV language stays as it was.
 - CV file name `a/b` shows the invalid-characters error and sends no request.
+- *(#431)* In the Delete account dialog, inputs `''`, `delet`, `Delete` and `delete ` are rejected (validation message, dialog stays open, no request); `delete` is accepted and sends exactly one `DELETE api/v1/candidate`; Cancel sends none. Covered by a spec (new `src/pages/dashboard/PageAccountSettings.spec.ts` and/or the shared confirm's spec), passing with `npx vitest run <that path>`.
 - After a successful account delete, the app is on `#/login` and `localStorage.user` is gone.
 
 ## Edge cases
@@ -28,6 +30,7 @@ The candidate manages account-level settings: interface language, CV file name a
 - Hard reload on this page → the file-name field fills once the candidate loads.
 
 ## Out of scope
+- Asking for the password on account delete (#431 chose typed `delete`).
 - Changing email or password while signed in (blocked on backend).
 - Notification or privacy settings.
 
@@ -41,3 +44,4 @@ The candidate manages account-level settings: interface language, CV file name a
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/account-settings-spec.md` | - |
+| 2026-11-20 | Behavior (draft): typed `delete` confirm on account delete | #431 / umbrella #489 | - |

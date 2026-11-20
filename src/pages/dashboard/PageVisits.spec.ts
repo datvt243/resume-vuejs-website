@@ -168,6 +168,7 @@ describe('PageVisits', () => {
             await deleteButton(mountWithVisits(reloadVisits)).trigger('click')
 
             expect(confirmDelete.mock.calls[0][0].getHtml()).toContain('vĩnh viễn')
+            expect(confirmDelete.mock.calls[0][0].typed).toBe(true)
             expect(handleBase.mock.calls[0][0]).toEqual({ method: 'delete', url: 'candidate/visits' })
             expect(reloadVisits).toHaveBeenCalledTimes(1)
             expect(reloadStats).toHaveBeenCalledTimes(1)

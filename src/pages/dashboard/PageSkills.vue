@@ -78,6 +78,7 @@ function deleteGroup(group) {
     confirmDelete({
         title: t('generalInfo.deleteGroupTitle', { name: group.name }),
         getHtml: () => t('generalInfo.deleteGroupText', { count: group.skills.length }),
+        typed: true,
         callback: async () => {
             const payload = {
                 _id: candidate.getGeneralInformation?._id,

@@ -15,7 +15,7 @@ The candidate tracks the jobs they applied to, which CV profile they sent, and w
 4. Save: `POST application/create` or `PUT application/update`; Duplicate creates a new application. If the chosen profile no longer exists, `profileId` is left out of the request (the backend keeps the stored link). Delete: confirm, then `DELETE application/delete/<id>`.
 5. When the application's profile exists and the candidate has a slug or email, the card shows the profile name badge plus:
    - "View public CV" → opens `#/resume/<slug or email>?profile=<id>` in a new tab.
-   - "Download PDF" → opens `<API>api/me/<slug or email>/download-pdf?template=ats&profile=<id>` in a new tab.
+   - "Download PDF" → opens `<API>api/me/<slug or email>/download-pdf?template=ats&profile=<id>&lang=<CV language>` in a new tab (language = the shared CV language setting, `useCvLang`).
 6. "Open job" (only when a job link exists) opens the link in a new tab.
 
 ## Acceptance criteria
@@ -46,3 +46,4 @@ Note (operator 2026-11-07): follow-up — add status `accepted` + status transit
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/job-applications-spec.md` | - |
 | 2026-11-15 | Behavior #1: sorted by `appliedDate`, newest first | #447 (operator answer to open question 3) | `issue-443-list-date-sort` |
+| 2026-11-21 | Behavior #5: PDF link passes `lang` from the shared CV language | #450 (operator answer to open question 2) | `issue-427-450-dev-host-pdf-lang` |

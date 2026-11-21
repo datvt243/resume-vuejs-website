@@ -5,6 +5,7 @@ import { setActivePinia, createPinia } from 'pinia'
 import { candidateStore } from '@/stores/candidate'
 import PageApplication from './PageApplication.vue'
 import VeeForm from '@/components/veevalidate/VeeForm.vue'
+import { useCvLang } from '@/composables/useCvLang'
 
 const { updateDoc } = vi.hoisted(() => ({ updateDoc: vi.fn() }))
 
@@ -58,9 +59,16 @@ describe('PageApplication — CV profile per application', () => {
         expect(items[0].text()).toContain('Frontend CV')
         expect(links).toHaveLength(2)
         expect(links[0]).toBe('#/cv/dat-vo?profile=p1')
-        expect(links[1]).toMatch(/api\/me\/dat-vo\/download-pdf\?template=ats&profile=p1$/)
+        expect(links[1]).toMatch(/api\/me\/dat-vo\/download-pdf\?template=ats&profile=p1&lang=vi$/)
         expect(items[1].findAll('a[target="_blank"]')).toHaveLength(0)
         expect(items[2].findAll('a[target="_blank"]')).toHaveLength(0)
+    })
+
+    it('passes the shared CV language to the PDF link', () => {
+        useCvLang().setLang('en')
+        const href = mountPage().findAll('.item')[0].findAll('a[target="_blank"]')[1].attributes('href')
+        useCvLang().setLang('vi')
+        expect(href).toMatch(/&lang=en$/)
     })
 
     it('falls back to the email when no slug is set', () => {

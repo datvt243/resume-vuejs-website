@@ -14,7 +14,7 @@ import { useDocument } from '@/composables/useDocument'
 import { useCandidate } from '@/composables/useCandidate'
 import { candidateStore } from '@/stores/candidate'
 import { t, withParams } from '@/i18n'
-import { confirmDelete } from '@/lib/swal.lib'
+import { confirmDelete, requireGeneralInformation } from '@/lib/swal.lib'
 import { buttonClass } from '@/lib/button.lib'
 import Swal from 'sweetalert2'
 import { groupSkills } from '@/utilities/index'
@@ -25,7 +25,9 @@ const MAIN_SKILLS_MAX = 5
 const candidate = candidateStore()
 
 const { generalInformation, getData } = useCandidate({ field: 'generalInformation', collection: 'general-information' })
-const { updatePatchDoc } = useDocument({ collection: 'general-information', fields: [] })
+const { updatePatchDoc: patchDoc } = useDocument({ collection: 'general-information', fields: [] })
+// a new account has no general-information document to patch until General information is saved
+const updatePatchDoc = (payload, callback) => (payload._id ? patchDoc(payload, callback) : requireGeneralInformation())
 
 provide(
     'candidate',
@@ -62,6 +64,24 @@ watch(
 // tags plus group names skills already use (accounts can have groups that were never tags)
 const groupNames = computed(() => groupSkills(skills.value, skillsGroup.value).flatMap(g => (g.name ? [g.name] : [])))
 
+/**
+ * Main/familiar skills are stored by name: follow renames (old → new name) and drop names no longer in `list`.
+ * Returns only the fields that changed, to save in the same PATCH as the skills.
+ */
+function syncPicked(list, renamed = {}) {
+    const names = new Set(list.map(skill => skill.name))
+    const changed = {}
+    for (const field of ['mainSkills', 'familiarSkills']) {
+        const before = info.value[field] || []
+        const after = before
+            .map(item => ({ ...item, name: renamed[item.name] ?? item.name }))
+            // a rename onto an already-picked name would list it twice
+            .filter((item, i, all) => names.has(item.name) && all.findIndex(other => other.name === item.name) === i)
+        if (JSON.stringify(after) !== JSON.stringify(before)) changed[field] = after
+    }
+    return changed
+}
+
 // the add modal fills itself from field defaults, so the clicked group goes in as the default for one open;
 // kept for one more tick because opening the modal re-runs the form reset on the next flush
 const presetGroup = ref('')
@@ -80,13 +100,20 @@ function deleteGroup(group) {
         getHtml: () => t('generalInfo.deleteGroupText', { count: group.skills.length }),
         typed: true,
         callback: async () => {
+            const professionalSkills = skills.value.filter(skill => skill.group !== group.name)
+            const picked = syncPicked(professionalSkills)
             const payload = {
                 _id: candidate.getGeneralInformation?._id,
                 professionalSkillsGroup: skillsGroup.value.filter(name => name !== group.name),
-                professionalSkills: skills.value.filter(skill => skill.group !== group.name),
+                professionalSkills,
+                ...picked,
             }
             await updatePatchDoc(payload, ({ data }) => {
-                candidate.setGeneralInformation({ professionalSkills: data.professionalSkills, professionalSkillsGroup: data.professionalSkillsGroup })
+                candidate.setGeneralInformation({
+                    professionalSkills: data.professionalSkills,
+                    professionalSkillsGroup: data.professionalSkillsGroup,
+                    ...Object.fromEntries(Object.keys(picked).map(field => [field, data[field]])),
+                })
             })
         },
     })
@@ -210,6 +237,7 @@ const personalSkillFields = [
                     field-key="professionalSkills"
                     has-button-add
                     :fields="professionalSkillFields"
+                    :sync-payload="syncPicked"
                 >
                     <template #group>
                         <GroupTags :title="$t('generalInfo.skillGroups')" v-model="skillsGroup" :handle-action="handleUpdateGroup" />

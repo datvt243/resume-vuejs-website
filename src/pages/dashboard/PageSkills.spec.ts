@@ -7,8 +7,10 @@ import { i18n } from '@/i18n'
 import { candidateStore } from '@/stores/candidate'
 
 vi.mock('vue-router', () => ({ useRoute: () => ({ query: {} }), useRouter: () => ({ replace: vi.fn() }) }))
+const doc = vi.hoisted(() => ({ value: {} as Record<string, unknown> }))
+const baseDoc = () => ({ _id: 'g1', professionalSkills: [{ name: 'Vue', group: 'FE' }], mainSkills: [] })
 vi.mock('@/composables/useCandidate', () => ({
-    useCandidate: () => ({ generalInformation: ref([{ _id: 'g1', professionalSkills: [{ name: 'Vue', group: 'FE' }], mainSkills: [] }]), getData: vi.fn() }),
+    useCandidate: () => ({ generalInformation: ref([doc.value]), getData: vi.fn() }),
 }))
 const updatePatchDoc = vi.fn()
 vi.mock('@/composables/useDocument', () => ({
@@ -16,12 +18,18 @@ vi.mock('@/composables/useDocument', () => ({
 }))
 
 const confirmDelete = vi.fn()
-vi.mock('@/lib/swal.lib', () => ({ confirmDelete: (opts: unknown) => confirmDelete(opts) }))
+const requireGeneralInformation = vi.fn()
+vi.mock('@/lib/swal.lib', () => ({ confirmDelete: (opts: unknown) => confirmDelete(opts), requireGeneralInformation: () => requireGeneralInformation() }))
+
+// the page reads the document `_id` from the store, so seed it like a loaded account
+function freshStore(id = 'g1') {
+    setActivePinia(createPinia())
+    candidateStore().setCandidate({ generalInformation: { _id: id } })
+}
 
 const PickedStub = { name: 'PickedSkills', props: ['title', 'modelValue', 'skills', 'groups', 'max', 'save'], template: '<div />' }
 
 function mountPage() {
-    setActivePinia(createPinia())
     return mount(PageSkills, {
         global: {
             plugins: [i18n],
@@ -31,7 +39,11 @@ function mountPage() {
 }
 
 describe('PageSkills — main skills save', () => {
-    beforeEach(() => updatePatchDoc.mockReset())
+    beforeEach(() => {
+        updatePatchDoc.mockReset()
+        doc.value = baseDoc()
+        freshStore()
+    })
 
     it('patches mainSkills, updates the store in place and reports success', async () => {
         updatePatchDoc.mockImplementation(async (_payload, cb) => cb?.({ data: { mainSkills: [{ name: 'Vue' }] } }))
@@ -86,7 +98,7 @@ const listStubs = {
 describe('PageSkills — empty professional list', () => {
     it('shows the empty state on its own (NoData draws the box)', () => {
         listItems = []
-        setActivePinia(createPinia())
+        freshStore()
         const wrapper = mount(PageSkills, { global: { plugins: [i18n], stubs: listStubs } })
         expect(wrapper.find('.no-data').exists()).toBe(true)
         expect(wrapper.find('.border-line .no-data').exists()).toBe(false)
@@ -94,7 +106,7 @@ describe('PageSkills — empty professional list', () => {
 
     it('shows the grouped skills and no empty box when there are skills', () => {
         listItems = [{ name: 'Vue', group: 'FE' }]
-        setActivePinia(createPinia())
+        freshStore()
         const wrapper = mount(PageSkills, { global: { plugins: [i18n], stubs: listStubs } })
         expect(wrapper.find('.no-data').exists()).toBe(false)
         expect(wrapper.find('h3').text()).toBe('FE')
@@ -104,7 +116,8 @@ describe('PageSkills — empty professional list', () => {
 describe('PageSkills — delete group', () => {
     it('asks for the typed `delete`, then patches the group and its skills away', async () => {
         listItems = [{ name: 'Vue', group: 'FE' }]
-        setActivePinia(createPinia())
+        doc.value = baseDoc()
+        freshStore()
         confirmDelete.mockReset()
         updatePatchDoc.mockReset()
         const wrapper = mount(PageSkills, { global: { plugins: [i18n], stubs: listStubs } })
@@ -117,5 +130,56 @@ describe('PageSkills — delete group', () => {
         await opts.callback()
         expect(updatePatchDoc).toHaveBeenCalledTimes(1)
         expect(updatePatchDoc.mock.calls[0][0]).toMatchObject({ professionalSkills: [] })
+    })
+})
+
+describe('PageSkills — main/familiar skills follow skill changes (#437)', () => {
+    beforeEach(() => {
+        updatePatchDoc.mockReset()
+        doc.value = { ...baseDoc(), professionalSkills: [{ name: 'Vue', group: 'FE' }, { name: 'Go', group: 'BE' }], mainSkills: [{ name: 'Vue' }, { name: 'Go' }], familiarSkills: [{ name: 'Go' }] }
+        freshStore()
+    })
+
+    const syncPayload = () =>
+        mount(PageSkills, { global: { plugins: [i18n], stubs: { ...listStubs, VeeFormGeneralInformationUpdate: { name: 'VeeFormStub', props: ['syncPayload', 'fieldKey'], template: '<div />' } } } })
+            .findAllComponents({ name: 'VeeFormStub' })
+            .find(c => c.props('fieldKey') === 'professionalSkills')!
+            .props('syncPayload')
+
+    it('rename: the new name replaces the old one', () => {
+        const list = [{ name: 'Vue.js', group: 'FE' }, { name: 'Go', group: 'BE' }]
+        expect(syncPayload()(list, { Vue: 'Vue.js' })).toEqual({ mainSkills: [{ name: 'Vue.js' }, { name: 'Go' }] })
+    })
+
+    it('rename onto an already-picked name keeps it once', () => {
+        expect(syncPayload()([{ name: 'Go', group: 'FE' }, { name: 'Go', group: 'BE' }], { Vue: 'Go' })).toEqual({ mainSkills: [{ name: 'Go' }] })
+    })
+
+    it('delete: the name is removed from both, unchanged fields are not sent', () => {
+        expect(syncPayload()([{ name: 'Vue', group: 'FE' }], {})).toEqual({ mainSkills: [{ name: 'Vue' }], familiarSkills: [] })
+        expect(syncPayload()([{ name: 'Vue', group: 'FE' }, { name: 'Go', group: 'BE' }], {})).toEqual({})
+    })
+
+    it('delete group: its skills leave main/familiar skills in the same PATCH', async () => {
+        listItems = doc.value.professionalSkills as unknown[]
+        confirmDelete.mockReset()
+        const wrapper = mount(PageSkills, { global: { plugins: [i18n], stubs: listStubs } })
+        await wrapper.find(`[aria-label="${i18n.global.t('generalInfo.deleteGroup', { name: 'BE' })}"]`).trigger('click')
+        await confirmDelete.mock.calls[0][0].callback()
+        expect(updatePatchDoc).toHaveBeenCalledTimes(1)
+        expect(updatePatchDoc.mock.calls[0][0]).toMatchObject({ professionalSkills: [{ name: 'Vue', group: 'FE' }], mainSkills: [{ name: 'Vue' }], familiarSkills: [] })
+    })
+})
+
+describe('PageSkills — General information never saved (#438)', () => {
+    it('shows the message instead of patching when the document has no _id', async () => {
+        updatePatchDoc.mockReset()
+        requireGeneralInformation.mockReset()
+        doc.value = baseDoc()
+        freshStore('')
+        const main = mountPage().findAllComponents(PickedStub)[0]
+        await main.props('save')([{ name: 'Vue' }])
+        expect(requireGeneralInformation).toHaveBeenCalledTimes(1)
+        expect(updatePatchDoc).not.toHaveBeenCalled()
     })
 })

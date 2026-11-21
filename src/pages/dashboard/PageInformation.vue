@@ -185,6 +185,7 @@ async function handleUpdate(values) {
             message: t('error.generic'),
             bg: 'danger',
         })
+        return
     }
     const data = (val => {
         val.gender = !!val.gender

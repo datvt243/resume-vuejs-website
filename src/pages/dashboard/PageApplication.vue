@@ -15,6 +15,7 @@ import { useCandidate } from '@/composables/useCandidate'
 import { useDocument } from '@/composables/useDocument'
 import { candidateStore } from '@/stores/candidate'
 import { API } from '@/config/api.config'
+import { useCvLang } from '@/composables/useCvLang'
 
 import model from '@/models/application.model.ts'
 
@@ -41,7 +42,7 @@ const formFields = computed(() =>
 
 const router = useRouter()
 const candidate = candidateStore()
-const _host = window.location.host === 'localhost' ? 'http://localhost:3001/' : API
+const { selectedLang } = useCvLang()
 
 /**
  * Public CV link and PDF for the profile an application was sent with.
@@ -55,7 +56,7 @@ function getProfileLinks(item) {
   return {
     name: profile.name,
     publicLink: router.resolve({ name: 'public-resume', params: { slug: identifier }, query: { profile: profile._id } }).href,
-    pdfLink: `${_host}api/me/${encodeURIComponent(identifier)}/download-pdf?template=ats&profile=${profile._id}`,
+    pdfLink: `${API}api/me/${encodeURIComponent(identifier)}/download-pdf?template=ats&profile=${profile._id}&lang=${selectedLang.value}`,
   }
 }
 

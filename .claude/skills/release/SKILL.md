@@ -142,10 +142,18 @@ merge it) rather than silently ignoring the mismatch.
 `Closes #n`/`Fixes #n`/`Resolves #n` in "Closes #n" don't auto-close
 anything here, because those commits merged into `staging` first, not
 `main` — GitHub only auto-closes on a merge into the repo's **default**
-branch. Do it by hand instead:
+branch. Do it by hand instead, scanning both commit messages AND the
+bodies of every PR merged in the range — `/ship` puts `Closes #n` in the
+PR body, which never reaches the merge commit message (v1.43.0: a
+commit-only scan missed 10 of 14 issues):
 ```bash
-git log <PREVIOUS_TAG>..vX.Y.Z --format="%B" \
-  | grep -iEo "(close[sd]?|fix(e[sd])?|resolve[sd]?) #[0-9]+" \
+{
+  git log <PREVIOUS_TAG>..vX.Y.Z --format="%B"
+  for pr in $(git log <PREVIOUS_TAG>..vX.Y.Z --merges --format=%s \
+      | grep -Eo "^Merge pull request #[0-9]+" | grep -Eo "[0-9]+$"); do
+    gh pr view "$pr" --json body -q .body
+  done
+} | grep -iEo "(close[sd]?|fix(e[sd])?|resolve[sd]?) #[0-9]+" \
   | grep -Eo "[0-9]+" | sort -un
 ```
 For each number found: `gh issue view <n> --json state` first — if
@@ -157,7 +165,7 @@ re-open/re-close/error. If `OPEN`, close it for real:
 gh issue close <n> --comment "Released in vX.Y.Z."
 ```
 Never close an issue just because its number appears somewhere in a
-commit message without one of those 3 keywords right before it — that's
+commit message or PR body without one of those 3 keywords right before it — that's
 how a stray "#7" mentioned in prose would get misread as a close.
 
 ### 9. Report

@@ -57,3 +57,19 @@ export const confirmDiscardChanges = async () => {
     })
     return result.isConfirmed
 }
+
+// Skills / Languages patch the general-information document, which only exists once General information is saved
+export const requireGeneralInformation = async () => {
+    const { isConfirmed } = await Swal.fire({
+        title: t('generalInfo.saveFirstTitle'),
+        text: t('generalInfo.saveFirstText'),
+        icon: 'info',
+        showCancelButton: true,
+        reverseButtons: true,
+        cancelButtonText: t('common.close'),
+        confirmButtonText: t('generalInfo.goToGeneralInfo'),
+        customClass: { confirmButton: buttonClass({ variant: 'primary' }), cancelButton: buttonClass({ variant: 'secondary' }) },
+        buttonsStyling: false,
+    })
+    if (isConfirmed) location.hash = '#/dashboard/general-information'
+}

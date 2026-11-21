@@ -13,7 +13,7 @@ import { ref, defineProps, computed, onBeforeMount, reactive, watch, inject } fr
 
 import { useDocument } from '@/composables/useDocument'
 import Swal from 'sweetalert2'
-import { typedDeleteInput } from '@/lib/swal.lib'
+import { typedDeleteInput, requireGeneralInformation } from '@/lib/swal.lib'
 import { buttonClass } from '@/lib/button.lib'
 import { candidateStore } from '@/stores/candidate'
 import { t } from '@/i18n'
@@ -27,6 +27,8 @@ const props = defineProps({
     fields: { type: Array, default: () => [] },
     hasButtonAdd: { type: Boolean, default: false },
     modelValue: { type: [Array, Object], default: () => ({}) },
+    // (list, renamed: { oldName: newName }) => extra fields saved in the same PATCH
+    syncPayload: { type: Function, default: null },
 })
 
 /**
@@ -37,6 +39,7 @@ const refModal02 = ref()
 const refVeeForm02 = ref()
 
 function showModalCreateDoc() {
+    if (!candidate.value._id) return requireGeneralInformation()
     editIndex.value = null
     document._id = null
     for (const k of generalInformationField.value) {
@@ -85,11 +88,14 @@ const { document, updatePatchDoc } = useDocument({ collection: 'general-informat
 async function handleUpdate(values, action = 'create') {
     const _id = candidate.value._id
 
-    if (!_id) return
+    if (!_id) return requireGeneralInformation()
 
+    let renamed = {}
     const { _flag, _list } = await (async () => {
         let _list = []
         if (action === 'create') {
+            const old = generalInformationField.value[editIndex.value]
+            renamed = old && old.name !== values.name ? { [old.name]: values.name } : {}
             const _document = { ...values }
             _list =
                 editIndex.value === null
@@ -128,11 +134,13 @@ async function handleUpdate(values, action = 'create') {
         }
     })()
 
+    const extra = (_flag && props.syncPayload?.(_list, renamed)) || {}
     _flag &&
         (await updatePatchDoc(
             {
                 _id,
                 [props.fieldKey]: _list,
+                ...extra,
             },
             res => {
                 const { data } = res
@@ -142,6 +150,7 @@ async function handleUpdate(values, action = 'create') {
                     const candidate = candidateStore()
                     candidate.setGeneralInformation({ [props.fieldKey]: generalInformation[props.fieldKey] })
                 }
+                for (const key of Object.keys(extra)) candidateStore().setGeneralInformation({ [key]: data[key] })
                 if (action === 'create') {
                     editIndex.value = null
                     refModal02.value?.hide()

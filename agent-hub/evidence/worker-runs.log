@@ -5,3 +5,4 @@
 2026-11-21T10:05:35Z role=verifier outcome=SEAL node=issue-421-451-export-json rerun=none spawn=fresh hub_bytes_before=100277 hub_bytes_after=100277
 2026-11-21T10:33:51Z role=verifier outcome=SEAL node=issue-432-433-personal-info-select rerun=none spawn=fresh hub_bytes_before=100277 hub_bytes_after=  100461
 2026-11-21T10:40:28Z role=verifier outcome=SEAL node=issue-427-450-dev-host-pdf-lang rerun=none spawn=fresh hub_bytes_before=100303 hub_bytes_after=100317
+2026-11-21T10:44:59Z role=verifier outcome=SEAL node=issue-457-import-size-limit rerun=none spawn=fresh hub_bytes_before=100317 hub_bytes_after=  100315

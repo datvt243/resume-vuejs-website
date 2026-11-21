@@ -116,6 +116,32 @@ describe('PageImportLinkedin', () => {
         expect(wrapper.text()).toContain('Nguồn: LinkedIn')
     })
 
+    it('rejects a PDF over 5MB or a .zip over 20MB with a toast, without uploading', async () => {
+        const wrapper = mountPage()
+        for (const [accept, name, mb] of [['.pdf,application/pdf', 'cv.pdf', 5], ['.zip', 'export.zip', 20]] as const) {
+            const input = wrapper.find(`input[accept="${accept}"]`)
+            const file = new File(['x'], name)
+            Object.defineProperty(file, 'size', { value: mb * 1024 * 1024 + 1 })
+            Object.defineProperty(input.element, 'files', { value: [file], configurable: true })
+            await input.trigger('change')
+            await flushPromises()
+            expect(toastMock).toHaveBeenLastCalledWith({ message: `File quá lớn, tối đa ${mb}MB`, bg: 'danger' })
+        }
+        expect(handleBaseMock).not.toHaveBeenCalled()
+    })
+
+    it('uploads a PDF of exactly 5MB', async () => {
+        handleBaseMock.mockImplementation(async (_opts, _props, cb) => cb({ data: parsed }))
+        const wrapper = mountPage()
+        const input = wrapper.find('input[accept=".pdf,application/pdf"]')
+        const file = new File(['x'], 'cv.pdf')
+        Object.defineProperty(file, 'size', { value: 5 * 1024 * 1024 })
+        Object.defineProperty(input.element, 'files', { value: [file], configurable: true })
+        await input.trigger('change')
+        await flushPromises()
+        expect(handleBaseMock).toHaveBeenCalledTimes(1)
+    })
+
     it('parses a JSON Resume in the browser (no backend call) and lists work/education for review', async () => {
         const wrapper = mountPage()
         await selectJson(wrapper, JSON.stringify({ work: [{ name: 'Acme', position: 'Dev', startDate: '2020-01' }], education: [{ institution: 'HCMUS', area: 'CS' }] }))

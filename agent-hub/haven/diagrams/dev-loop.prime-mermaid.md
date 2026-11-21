@@ -75,7 +75,6 @@ flowchart TD
 | Node | State | Notes |
 |---|---|---|
 | `issue-122-ai-cv-suggestions-pending` | PENDING | Operator (2026-10-05): "#122 chuyển status thành PENDING". Deliberately deferred, not started — waiting on an owner decision: shared app AI key vs BYOK (BYOK needs new two-way encryption on the backend; only `bcrypt` exists today) + a consent checkbox for sending CV data out. Checked: no branch/PR/evidence for #122; backend `origin/staging` (`f05930a`) has no AI-provider code. Partly overlapped by #159's non-AI JD keyword match. GitHub label `status: pending` applied. Evidence: `evidence/implementer/2026-10-05-issue-122-158-status-rows.md`. |
-| `issue-377-familiar-skills` | SEALED | 2026-11-02 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-02/issue-377-familiar-skills-seal.md` |
 | `nodata-dashed-border` | SEALED | 2026-11-02 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-02/nodata-dashed-border-seal.md` |
 | `issue-383-button-colors` | SEALED | 2026-11-02 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-02/issue-383-button-colors-seal.md` |
 | `issue-375-delete-all-visits` | SEALED | 2026-11-02 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-02/issue-375-delete-all-visits-seal.md` |
@@ -95,3 +94,4 @@ flowchart TD
 | `issue-402-project-view-modal` | SEALED | 2026-11-19 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-19/issue-402-project-view-modal-seal.md` |
 | `issue-419-table-row-keys` | SEALED | 2026-11-20 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-20/issue-419-table-row-keys-seal.md` |
 | `issue-489-typed-delete-confirm` | SEALED | 2026-11-20 — archived, see dev-loop-archive.md. Evidence: evidence/verifier/2026-11-20/issue-489-typed-delete-confirm-seal.md |
+| `issue-421-451-export-json` | SEALED | 2026-11-21 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-21/issue-421-451-export-json-seal.md` |

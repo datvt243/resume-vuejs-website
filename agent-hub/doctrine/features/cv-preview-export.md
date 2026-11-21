@@ -2,7 +2,7 @@
 
 - Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/cv-preview-export-spec.md`
 - Source: backfill from code
-- Issues: #55, #116, #119, #182, #440, #448, #451, #452
+- Issues: #55, #116, #119, #182, #421, #440, #448, #451, #452
 - Anchors: `src/pages/dashboard/PagePreview.vue`, `src/components/cv/CvResumeLayout.vue`, `src/composables/useCvTheme.ts`, `src/composables/useCvLang.ts`, `src/composables/useActiveProfile.ts`, `src/composables/useDownloadCv.ts`, `src/utilities/jsonResume.ts`, `src/pages/_layouts/Header.vue`, `src/pages/home/PageHome.vue`
 
 ## Goal
@@ -16,7 +16,7 @@ The candidate sees their CV exactly as others will, picks how it looks and which
    - CV profile (shown only if profiles exist): "All profiles" or one profile. Stored in `localStorage.cvActiveProfileId`. With a profile chosen, each list section shows only that profile's selected entries (filtered in the browser). An id that no longer exists means no filter.
 3. The layout shows the localized half (`vi`/`en`) of each bilingual field and its fixed labels in the chosen CV language. The email shown is the signed-in user's email.
 4. "Export PDF" opens the browser print dialog (`window.print()`). While this page is open, printing hides the header, footer, sidebar and controls; leaving the page removes that print mode.
-5. "Export JSON" downloads `resume.json` in JSON Resume format, built from the same filtered data, the chosen CV language and the social links.
+5. "Export JSON" downloads `<computed CV file name>_VI|_EN.json` (#8 name with `.json`, suffix per #7) in JSON Resume format, built from the same filtered data, the chosen CV language and the social links.
 6. "Download CV" (header button on wider screens, and the Home CV card) downloads the server-rendered PDF: `GET api/v1/download-pdf` with the Bearer token, `template=ats` only when ATS is chosen (the Home CV card and the ATS check page offer that choice; the header button always uses Classic), `lang=en` only when the CV language is English. A second click while downloading is ignored; the button shows a spinner.
 7. Downloaded file name: the server's `Content-Disposition` name if present, else the computed CV file name; then `_VI` or `_EN` is added before the extension unless the name already ends with `_vi`/`_en` (any case).
 8. Computed CV file name: the custom name from Account settings + `.pdf` if set (trimmed), else `<firstName>_<lastName>.pdf` with spaces turned into `_`, else `CV.pdf`.
@@ -54,3 +54,4 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-06 | Review corrections (see note) | independent review vs code+live, `evidence/spec-backfill/2026-11-06/review.md` | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-preview-export-spec.md` | - |
+| 2026-11-21 | Behavior #5: JSON file named like the PDF (#451); object URL revoke deferred (#421) | operator decision 2026-11-07 (open question 4) | issue-421-451-export-json |

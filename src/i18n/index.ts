@@ -453,6 +453,7 @@ const vi = {
         addEducationFrom: 'Thêm học vấn (từ {source})',
         addExperienceFrom: 'Thêm kinh nghiệm (từ {source})',
         invalidJson: 'File JSON không hợp lệ',
+        fileTooLarge: 'File quá lớn, tối đa {max}MB',
         invalidJsonResume: 'File không phải JSON Resume hợp lệ',
     },
     ats: {
@@ -973,6 +974,7 @@ const en: typeof vi = {
         addEducationFrom: 'Add education (from {source})',
         addExperienceFrom: 'Add experience (from {source})',
         invalidJson: 'Invalid JSON file',
+        fileTooLarge: 'File is too large, up to {max}MB',
         invalidJsonResume: 'This file is not a valid JSON Resume',
     },
     ats: {

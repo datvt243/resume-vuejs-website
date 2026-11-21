@@ -7,12 +7,24 @@ const actionClasses = {
     cancelButton: buttonClass({ variant: 'secondary' }),
 }
 
+// Typed confirm input: "Xóa" only proceeds once the user types exactly `delete`
+export const typedDeleteInput = () => ({
+    input: 'text',
+    inputValue: '',
+    inputPlaceholder: t('confirm.typeDeletePlaceholder'),
+    inputValidator: value => (value !== 'delete' ? t('confirm.typeDelete') : undefined),
+})
+
+const escapeHtml = text => Object.assign(document.createElement('div'), { textContent: text }).innerHTML
+
 /**
  * Delete confirm (DESIGN.md §4.4): a specific question, "Xóa" / "Hủy".
  * `getHtml` is shown as plain text — it often carries user-entered names.
+ * `typed` adds the typed `delete` input, for deletes with no undo.
  */
 export const confirmDelete = (props = {}) => {
-    const { title = t('confirm.deleteItem'), getHtml = null, callback = () => {} } = props
+    const { title = t('confirm.deleteItem'), getHtml = null, typed = false, callback = () => {} } = props
+    const text = getHtml ? getHtml?.() : ''
     Swal.fire({
         title,
         icon: 'warning',
@@ -24,7 +36,7 @@ export const confirmDelete = (props = {}) => {
         allowOutsideClick: false,
         customClass: actionClasses,
         buttonsStyling: false,
-        text: getHtml ? getHtml?.() : '',
+        ...(typed ? { ...typedDeleteInput(), html: `${escapeHtml(text)}<br>${t('confirm.typeDelete')}` } : { text }),
     }).then(async (result) => {
         if (result.isConfirmed) {
             await callback?.()
@@ -44,4 +56,20 @@ export const confirmDiscardChanges = async () => {
         buttonsStyling: false,
     })
     return result.isConfirmed
+}
+
+// Skills / Languages patch the general-information document, which only exists once General information is saved
+export const requireGeneralInformation = async () => {
+    const { isConfirmed } = await Swal.fire({
+        title: t('generalInfo.saveFirstTitle'),
+        text: t('generalInfo.saveFirstText'),
+        icon: 'info',
+        showCancelButton: true,
+        reverseButtons: true,
+        cancelButtonText: t('common.close'),
+        confirmButtonText: t('generalInfo.goToGeneralInfo'),
+        customClass: { confirmButton: buttonClass({ variant: 'primary' }), cancelButton: buttonClass({ variant: 'secondary' }) },
+        buttonsStyling: false,
+    })
+    if (isConfirmed) location.hash = '#/dashboard/general-information'
 }

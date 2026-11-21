@@ -87,6 +87,15 @@ describe('TableDefault', () => {
         i18n.global.locale.value = 'vi'
     })
 
+    it('keys rows without _id by identity, so removing one keeps the next row\'s element', async () => {
+        const rows = [{ name: 'English' }, { name: 'French' }, { name: 'German' }]
+        const wrapper = mountTable(rows)
+        const germanRow = wrapper.findAll('tbody tr')[2].element
+        await wrapper.setProps({ modelValue: [rows[0], rows[2]] })
+        expect(bodyCol(wrapper, 1)).toEqual(['English', 'German'])
+        expect(wrapper.findAll('tbody tr')[1].element).toBe(germanRow)
+    })
+
     it('hides the pager when everything fits on one page', () => {
         expect(mountTable([{ _id: '1', name: 'a', exp: 1 }]).find('footer').exists()).toBe(false)
     })

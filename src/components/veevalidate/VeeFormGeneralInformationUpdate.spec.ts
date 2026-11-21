@@ -24,11 +24,11 @@ const TableStub = defineComponent({
     },
 })
 
-function mountComponent() {
+function mountComponent({ id = 'c1', props = {} } = {}) {
     return mount(VeeFormGeneralInformationUpdate, {
-        props: { fieldKey: 'personalSkills', modelValue: { personalSkills: [{ name: 'a' }] } },
+        props: { fieldKey: 'personalSkills', modelValue: { personalSkills: [{ name: 'a' }] }, ...props },
         global: {
-            provide: { candidate: ref({ _id: 'c1' }) },
+            provide: { candidate: ref({ _id: id }) },
             components: { Button, FormSection },
             stubs: { TableDefault: TableStub, Modal: true, FontAwesomeIcon: true },
         },
@@ -65,5 +65,37 @@ describe('VeeFormGeneralInformationUpdate — delete confirmation', () => {
 
         expect(updatePatchDoc).toHaveBeenCalledTimes(1)
         expect(updatePatchDoc.mock.calls[0][0]).toEqual({ _id: 'c1', personalSkills: [] })
+    })
+})
+
+describe('VeeFormGeneralInformationUpdate — save hooks', () => {
+    beforeEach(() => {
+        setActivePinia(createPinia())
+        swalFire.mockReset()
+        updatePatchDoc.mockReset()
+    })
+
+    it('#437: merges syncPayload fields into the same PATCH', async () => {
+        swalFire.mockResolvedValue({ value: 'delete' })
+        const syncPayload = vi.fn(() => ({ mainSkills: [] }))
+        const wrapper = mountComponent({ props: { syncPayload } })
+
+        await wrapper.find('button[aria-label^="Xóa"]').trigger('click')
+        await flushPromises()
+
+        expect(syncPayload).toHaveBeenCalledWith([], {})
+        expect(updatePatchDoc.mock.calls[0][0]).toEqual({ _id: 'c1', personalSkills: [], mainSkills: [] })
+    })
+
+    it('#438: no document _id → shows the "save General information first" message, no PATCH', async () => {
+        swalFire.mockResolvedValue({ isConfirmed: false })
+        const wrapper = mountComponent({ id: '' })
+
+        await wrapper.find('button[aria-label^="Xóa"]').trigger('click')
+        await flushPromises()
+
+        expect(swalFire).toHaveBeenCalledTimes(1)
+        expect(swalFire.mock.calls[0][0].title).toBe('Chưa lưu Thông tin chung')
+        expect(updatePatchDoc).not.toHaveBeenCalled()
     })
 })

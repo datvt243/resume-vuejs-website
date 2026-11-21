@@ -35,8 +35,9 @@ const { document: educationDoc, updateDoc: updateEducationDoc } = useDocument({ 
 const { document: experienceDoc, updateDoc: updateExperienceDoc } = useDocument({ collection: 'experience', fields: experienceModel })
 
 const SOURCES = {
-    linkedin: { label: 'LinkedIn', url: 'candidate/parse-linkedin-export' },
-    pdf: { label: 'PDF', url: 'candidate/parse-cv-pdf' },
+    // maxMb mirrors the backend's upload limits (MiB), checked before uploading
+    linkedin: { label: 'LinkedIn', url: 'candidate/parse-linkedin-export', maxMb: 20 },
+    pdf: { label: 'PDF', url: 'candidate/parse-cv-pdf', maxMb: 5 },
     jsonresume: { label: 'JSON Resume', url: null },
 }
 
@@ -89,6 +90,12 @@ async function handleSelectFile(e, sourceKey = 'linkedin') {
         } catch (err) {
             toast?.({ message: err instanceof SyntaxError ? t('importCv.invalidJson') : err.message, bg: 'danger' })
         }
+        return
+    }
+
+    const { maxMb } = SOURCES[sourceKey]
+    if (file.size > maxMb * 1024 * 1024) {
+        toast?.({ message: t('importCv.fileTooLarge', { max: maxMb }), bg: 'danger' })
         return
     }
 

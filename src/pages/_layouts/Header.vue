@@ -34,7 +34,7 @@ const _user = store.getUser
 
 // eslint-disable-next-line no-unused-vars -- dùng trong <template lang="pug">, vue-eslint-parser không phân tích được usage trong pug nên báo false positive
 const _settings = {
-    host: window.location.host === 'localhost' ? 'http://localhost:3001/' : API,
+    host: API,
     getMe() {
         return _user?.email ? `${this.host}api/me/${_user.email}` : '#'
     },

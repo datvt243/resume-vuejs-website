@@ -36,6 +36,7 @@ function deleteAll() {
     confirmDelete({
         title: t('visits.deleteAllTitle'),
         getHtml: () => t('visits.deleteAllText', { count: numberFormat.value.format(dataList.value.length) }),
+        typed: true,
         callback: () =>
             handleBase({ method: 'delete', url: 'candidate/visits' }, { loading, toast }, () => {
                 reloadVisits?.()

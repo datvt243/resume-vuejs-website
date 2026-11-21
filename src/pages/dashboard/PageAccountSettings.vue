@@ -72,6 +72,7 @@ function handleDeleteAccount() {
     confirmDelete({
         title: t('account.deleteConfirmTitle'),
         getHtml: () => t('account.deleteConfirmText'),
+        typed: true,
         callback: async () => {
             await handleBase({ method: 'delete', url: 'candidate' }, { loading, toast }, () => {
                 auth.logOut({ router })

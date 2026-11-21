@@ -18,6 +18,7 @@ import { useCandidate } from '@/composables/useCandidate'
 import { useCvTheme } from '@/composables/useCvTheme'
 import { useCvLang, LANG_OPTIONS } from '@/composables/useCvLang'
 import { useActiveProfile } from '@/composables/useActiveProfile'
+import { useDownloadCv, withLangSuffix } from '@/composables/useDownloadCv'
 import CvResumeLayout from '@/components/cv/CvResumeLayout.vue'
 import { toJsonResume } from '@/utilities/jsonResume'
 import { t } from '@/i18n'
@@ -66,6 +67,7 @@ const cvData = computed(() => ({
 
 const { selectedTheme, setTheme, THEMES } = useCvTheme()
 const { selectedLang, setLang } = useCvLang()
+const { cvFileName } = useDownloadCv()
 
 function handlePrint() {
     window.print()
@@ -76,9 +78,10 @@ function handleExportJsonResume() {
     const url = URL.createObjectURL(new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' }))
     const a = document.createElement('a')
     a.href = url
-    a.download = 'resume.json'
+    a.download = withLangSuffix(cvFileName.value.replace(/\.pdf$/, '.json'), selectedLang.value)
     a.click()
-    URL.revokeObjectURL(url)
+    // revoking in the same tick can cancel the download in some browsers
+    setTimeout(() => URL.revokeObjectURL(url))
 }
 
 // Chỉ bật CSS ẩn header/sidebar/footer khi in TRONG LÚC đang ở trang này

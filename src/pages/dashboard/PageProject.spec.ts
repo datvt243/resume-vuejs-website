@@ -8,13 +8,22 @@ import VeeForm from '@/components/veevalidate/VeeForm.vue'
 import { useFormLang } from '@/composables/useFormLang'
 
 const updateDoc = vi.hoisted(() => vi.fn())
+const setFieldError = vi.hoisted(() => vi.fn())
+const experiences = vi.hoisted(() => [
+    { _id: 'e1', company: 'Acme Corp', position: 'Frontend Developer' },
+    { _id: 'e2', isCareerBreak: true, careerBreakType: 'travel' },
+])
+const extraProjects = vi.hoisted((): Record<string, any>[] => [])
 const project = vi.hoisted((): Record<string, any> => ({
     _id: 'p1', name: 'P1', position: 'Dev', technology: ['Vue', 'TS'], startDate: 1641038400000, endDate: null, isWorking: true, link: 'https://x.dev',
     description: { vi: 'Mô tả', en: 'Desc' },
 }))
 
 vi.mock('@/composables/useCandidate', () => ({
-    useCandidate: () => ({ projects: ref([project]), removeRecordById: vi.fn(), addRecordToList: vi.fn(), loadError: ref(null), getData: vi.fn() }),
+    useCandidate: ({ field }: { field: string }) =>
+        field === 'experiences'
+            ? { experiences: ref(experiences) }
+            : { projects: ref([project, ...extraProjects]), removeRecordById: vi.fn(), addRecordToList: vi.fn(), loadError: ref(null), getData: vi.fn() },
 }))
 vi.mock('@/composables/useDocument', () => ({
     useDocument: () => ({ document: reactive({}), updateDoc, deleteDoc: vi.fn() }),
@@ -26,9 +35,9 @@ const stubs = {
     LoadingGate: { template: '<div><slot /></div>' },
     NoData: true,
     ListTransition: { template: '<ul><slot /></ul>' },
-    ProjectItem: { props: ['modelValue'], emits: ['onView'], template: '<i class="view" @click="$emit(\'onView\', modelValue)" />' },
+    ProjectItem: { props: ['modelValue'], emits: ['onView'], template: '<div class="card"><i class="view" @click="$emit(\'onView\', modelValue)" /><slot name="sub" /></div>' },
     Modal: { props: ['title'], template: '<div><h2>{{ title }}</h2><slot /><slot name="footer" /></div>', methods: { show() {}, hide() {} } },
-    VeeForm: { props: ['fields', 'document', 'submitFn'], template: '<div />', methods: { reset() {} } },
+    VeeForm: { props: ['fields', 'document', 'submitFn'], template: '<div />', methods: { reset() {}, setFieldError } },
     FontAwesomeIcon: true,
 }
 
@@ -92,5 +101,73 @@ describe('PageProject — save payload', () => {
         const w = mountPage()
         await w.findComponent(VeeForm).props('submitFn')({ _id: 'x1', startDate: 1641038400000, endDate: 1657022400000, isWorking: true })
         expect(updateDoc.mock.calls[0][0]).toMatchObject({ endDate: null, isWorking: true })
+    })
+})
+
+describe('PageProject — type / linked experience (#401)', () => {
+    const submit = (w: ReturnType<typeof mountPage>, values: Record<string, any>) =>
+        w.findComponent(VeeForm).props('submitFn')({ _id: 'x1', startDate: 1, endDate: 2, isWorking: false, ...values })
+
+    it('offers only real jobs as "Company — Position"', () => {
+        const w = mountPage()
+        const field = w.findComponent(VeeForm).props('fields').find((f: any) => f.name === 'experienceId')
+        expect(field.options).toEqual([{ text: 'Acme Corp — Frontend Developer', value: 'e1' }])
+    })
+
+    it('sends experienceId null for a personal project and keeps it for a company one', async () => {
+        updateDoc.mockClear()
+        const w = mountPage()
+        await submit(w, { type: 'personal', experienceId: 'e1' })
+        expect(updateDoc.mock.calls[0][0]).toMatchObject({ type: 'personal', experienceId: null })
+        await submit(w, { type: 'company', experienceId: 'e1' })
+        expect(updateDoc.mock.calls[1][0]).toMatchObject({ type: 'company', experienceId: 'e1' })
+    })
+
+    it('opens a legacy project as personal and drops a link to a missing experience', async () => {
+        const w = mountPage()
+        const vm = w.vm as any
+        vm.showModalEditDoc({ ...project, type: undefined, experienceId: undefined })
+        expect(w.findComponent(VeeForm).props('document').type).toBe('personal')
+        vm.showModalEditDoc({ ...project, type: 'company', experienceId: 'gone' })
+        expect(w.findComponent(VeeForm).props('document')).toMatchObject({ type: 'company', experienceId: '' })
+        vm.showModalDuplicateDoc({ ...project, type: 'company', experienceId: 'e1' })
+        expect(w.findComponent(VeeForm).props('document')).toMatchObject({ type: 'company', experienceId: 'e1' })
+    })
+
+    it('puts experience save errors under the field instead of a toast', async () => {
+        updateDoc.mockClear()
+        setFieldError.mockClear()
+        const w = mountPage()
+        await submit(w, { type: 'company', experienceId: 'e1' })
+        const onError = updateDoc.mock.calls[0][2]
+        expect(onError({ success: false, error: { code: 'BAD_REQUEST', message: 'X' } })).toBe(true)
+        expect(setFieldError).toHaveBeenLastCalledWith('experienceId', 'X')
+        expect(onError({ success: false, error: { code: 'VALIDATION_ERROR', message: 'v', details: [{ field: 'experienceId', message: 'Y' }] } })).toBe(true)
+        expect(setFieldError).toHaveBeenLastCalledWith('experienceId', 'Y')
+        expect(onError({ success: false, error: { code: 'VALIDATION_ERROR', message: 'v', details: [{ field: 'name', message: 'Z' }] } })).toBe(false)
+        expect(onError({ success: false, error: { code: 'INTERNAL_ERROR', message: 'boom' } })).toBe(false)
+        expect(setFieldError).toHaveBeenCalledTimes(2)
+
+        // a personal project can't hit the experience check — its errors keep toasting
+        await submit(w, { type: 'personal', experienceId: '' })
+        expect(updateDoc.mock.calls[1][2]({ success: false, error: { code: 'BAD_REQUEST', message: 'X' } })).toBe(false)
+    })
+
+    it('shows the type badge and the linked experience on each card', () => {
+        extraProjects.push(
+            { ...project, _id: 'p2', type: 'company', experienceId: 'e1' },
+            { ...project, _id: 'p3', type: 'company', experienceId: 'gone' },
+        )
+        try {
+            const cards = mountPage().findAll('.card')
+            expect(cards[0].find('[data-project-type]').text()).toBe('Cá nhân')
+            expect(cards[1].find('[data-project-type]').text()).toBe('Công ty')
+            expect(cards[1].text()).toContain('Acme Corp · Frontend Developer')
+            expect(cards[2].find('[data-project-type]').text()).toBe('Công ty')
+            expect(cards[2].text()).toContain('Kinh nghiệm liên kết đã bị xoá')
+            expect(cards[0].text()).not.toContain('Kinh nghiệm liên kết đã bị xoá')
+        } finally {
+            extraProjects.length = 0
+        }
     })
 })

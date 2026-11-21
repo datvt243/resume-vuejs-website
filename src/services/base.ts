@@ -27,7 +27,7 @@ export const handleBase = async (axiosOptions, props, callback) => {
         })()
 
         // `toastError` lets a silent fetch (toast: null) still report a failure
-        const __helper = _helper({ toast, toastError: props.toastError ?? toast })
+        const __helper = _helper({ toast, toastError: props.toastError ?? toast, onError: props.onError })
         await _axios(_props)
             .then(res => {
                 // some endpoints answer 2xx with success:false (API-STANDARD C1)
@@ -64,7 +64,7 @@ const handleFrameFetch = async (axiosOptions, props, callback, action) => {
 }
 
 const _helper = props => {
-    const { toast, toastError } = props
+    const { toast, toastError, onError } = props
     return {
         success: res => {
             const { message = '' } = res
@@ -74,6 +74,8 @@ const _helper = props => {
             })
         },
         error: err => {
+            // a caller that shows the error itself (e.g. under a form field) returns true to skip the toast
+            if (onError?.(err)) return
             // read both the new `error` envelope and the legacy flat body (API-STANDARD C6)
             const message = err?.error?.message ?? err?.message ?? ''
             const errors = err?.error?.details ?? err?.errors ?? {}

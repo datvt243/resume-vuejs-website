@@ -71,4 +71,17 @@ describe('handleBase', () => {
         await handleBase({ method: 'get', url: 'award/' }, { toast: null, toastError }, vi.fn())
         expect(toastError).not.toHaveBeenCalled()
     })
+
+    it('skips the toast only when onError claims the error', async () => {
+        const toast = vi.fn()
+        const onError = vi.fn(() => true)
+        axiosMock.mockRejectedValueOnce(NEW)
+        await handleBase({ method: 'post', url: 'project/create' }, { toast, onError }, vi.fn())
+        expect(onError).toHaveBeenCalledWith(NEW)
+        expect(toast).not.toHaveBeenCalled()
+
+        axiosMock.mockRejectedValueOnce(NEW)
+        await handleBase({ method: 'post', url: 'project/create' }, { toast, onError: () => false }, vi.fn())
+        expect(toast).toHaveBeenCalledWith({ message: 'Dữ liệu không hợp lệ\n- Bắt buộc ', bg: 'danger' })
+    })
 })

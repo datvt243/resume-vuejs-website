@@ -60,7 +60,7 @@ export const useDocument = (props: Props) => {
      * @param values
      * @param callback
      */
-    async function updateDoc(values: ReturnType<typeof documentInterface.value>, callback: (_res: Response) => void) {
+    async function updateDoc(values: ReturnType<typeof documentInterface.value>, callback: (_res: Response) => void, onError?: (_err: any) => boolean) {
         /**
          *
          */
@@ -81,7 +81,7 @@ export const useDocument = (props: Props) => {
             }
         })()
 
-        await handleBase(axiosOpt, { loading, toast }, (res: Response) => {
+        await handleBase(axiosOpt, { loading, toast, onError }, (res: Response) => {
             /**
              *
              */

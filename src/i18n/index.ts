@@ -212,6 +212,8 @@ const vi = {
         note: 'Ghi chú',
         isCareerBreak: 'Nghỉ việc tạm thời (career break)',
         careerBreakType: 'Loại nghỉ việc',
+        projectType: 'Loại dự án',
+        linkedExperience: 'Kinh nghiệm liên kết',
         profileName: 'Tên profile',
         profileNamePlaceholder: 'VD: CV Frontend, CV Backend…',
     },
@@ -256,6 +258,10 @@ const vi = {
             offer: 'Offer',
             rejected: 'Từ chối',
         },
+        projectType: {
+            company: 'Công ty',
+            personal: 'Cá nhân',
+        },
         languageLevel: {
             basic: 'Cơ bản',
             intermediate: 'Trung bình',
@@ -286,6 +292,7 @@ const vi = {
             empty: 'Chưa có dự án nào',
             emptyDescription: 'Thêm dự án để cho thấy bạn đã làm được gì.',
             technologies: 'Công nghệ: {list}',
+            experienceRemoved: 'Kinh nghiệm liên kết đã bị xoá',
         },
         award: {
             add: 'Thêm giải thưởng',
@@ -736,6 +743,8 @@ const en: typeof vi = {
         note: 'Note',
         isCareerBreak: 'Career break',
         careerBreakType: 'Career break type',
+        projectType: 'Project type',
+        linkedExperience: 'Linked experience',
         profileName: 'Profile name',
         profileNamePlaceholder: 'E.g. Frontend CV, Backend CV…',
     },
@@ -780,6 +789,10 @@ const en: typeof vi = {
             offer: 'Offer',
             rejected: 'Rejected',
         },
+        projectType: {
+            company: 'Company',
+            personal: 'Personal',
+        },
         languageLevel: {
             basic: 'Basic',
             intermediate: 'Intermediate',
@@ -810,6 +823,7 @@ const en: typeof vi = {
             empty: 'No projects yet',
             emptyDescription: 'Add projects to show what you have built.',
             technologies: 'Technologies: {list}',
+            experienceRemoved: 'Linked experience removed',
         },
         award: {
             add: 'Add award',

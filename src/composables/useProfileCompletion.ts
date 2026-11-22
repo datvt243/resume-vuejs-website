@@ -31,8 +31,9 @@ import type { modelItem } from '@/types/model.type'
 function isRequiredField(field: modelItem): boolean {
     if (field.name === '_id' || !field.valid) return false
     try {
-        const schema = field.valid(yup)
-        return !!schema?.describe?.()?.tests?.some((t: { name?: string }) => t.name === 'required')
+        // number().required() adds no 'required' test in yup 1.x — only optional: false
+        const described = field.valid(yup)?.describe?.()
+        return described?.optional === false || !!described?.tests?.some((t: { name?: string }) => t.name === 'required')
     } catch {
         return false
     }

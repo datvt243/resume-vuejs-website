@@ -9,3 +9,4 @@
 2026-11-21T11:04:08Z role=verifier outcome=SEAL node=issue-437-438-skills-stale-names rerun=none spawn=fresh hub_bytes_before=100315 hub_bytes_after=  100309
 2026-11-21T12:00:00Z role=verifier outcome=REOPEN node=issue-401-project-type-experience rerun=none spawn=fresh hub_bytes_before=100309 hub_bytes_after=  100764
 2026-11-21T12:30:00Z role=verifier outcome=SEAL node=issue-401-project-type-experience rerun=none spawn=resumed hub_bytes_before=100309 hub_bytes_after=100325
+2026-11-21T15:57:44Z role=verifier outcome=SEAL node=issue-403-salary-range rerun=none spawn=fresh hub_bytes_before=100325 hub_bytes_after=100311

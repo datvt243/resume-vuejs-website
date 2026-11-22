@@ -5,6 +5,7 @@
  */
 
 import DOMPurify from 'dompurify'
+import { t, uiLocale } from '@/i18n'
 
 type StrDate = number | string
 type formatStringDate = 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'MM/YYYY'
@@ -139,4 +140,17 @@ export const groupSkills = <T extends { group?: string }>(items: T[], groups: st
     })
     byGroup.set(null, ungrouped)
     return [...byGroup].map(([name, skills]) => ({ name, skills })).filter(g => g.name !== null || g.skills.length)
+}
+
+/**
+ * Desired salary range for display: "1.000 – 2.000"; equal ends (every legacy
+ * single-value record) → one number; one end → "Từ X" / "Đến Y"; none → ''.
+ */
+export const formatSalaryRange = (from: number | null | undefined, to: number | null | undefined): string => {
+    const fmt = (n: number) => new Intl.NumberFormat(uiLocale.value).format(n)
+    const hasFrom = typeof from === 'number', hasTo = typeof to === 'number'
+    if (hasFrom && hasTo) return from === to ? fmt(from) : `${fmt(from)} – ${fmt(to)}`
+    if (hasFrom) return t('home.salaryFrom', { value: fmt(from) })
+    if (hasTo) return t('home.salaryTo', { value: fmt(to) })
+    return ''
 }

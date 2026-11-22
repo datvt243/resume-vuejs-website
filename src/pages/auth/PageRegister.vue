@@ -73,6 +73,9 @@ const formFields = [
                 :submit-fn="values => handleRegister(values, { toast: refToast, loading: refSpinner, router })"
                 :submit-text="$t('auth.createAccount')"
             />
+            <p class="mt-4 text-sm">
+                {{ $t('auth.haveAccount') }} <RouterLink to="/login">{{ $t('auth.loginTitle') }}</RouterLink>
+            </p>
         </div>
     </div>
 </template>

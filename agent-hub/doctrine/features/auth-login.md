@@ -11,7 +11,7 @@ Every dashboard page is reachable only while signed in.
 
 ## Behavior
 1. Signed-out header shows the "Resume API" logo (links to `/login`), "Login" and "Register" links (the current one highlighted), and the dark/light toggle.
-2. `/login` shows a form: Email (required, valid email), Password (required), "Remember me" checkbox, and a "Forgot password" link to `/forgot-password`.
+2. `/login` shows a form: Email (required, valid email), Password (required), and a "Forgot password" link to `/forgot-password`. There is no "Remember me" checkbox. Below the fields a short note (vi + en, via i18n) says the session is kept only in this tab: closing it or opening a new tab requires signing in again.
 3. On submit, a spinner shows; the app sends `POST api/v1/auth/login` with the email and password both trimmed.
 4. On success: a green toast with the API's message; the access token is kept in memory only, the refresh token in `sessionStorage` (`refreshToken`, this tab only), the user object in `localStorage` (`user`); the app then loads `GET api/v1/candidate/<email>` into the candidate store and navigates to `/dashboard/information`.
 5. On failure: tokens are cleared and a red toast shows the API's own reason (`error.message`, else `message` when `success === false`), else the generic "login failed" text.
@@ -23,6 +23,7 @@ Every dashboard page is reachable only while signed in.
 11. After a page reload only the refresh token survives; the first API request first calls `POST api/v1/auth/refresh` once. Any 401 whose error code is missing or one of `NO_TOKEN`, `INVALID_TOKEN`, `TOKEN_EXPIRED`, `TOKEN_REVOKED` triggers one refresh and one retry; concurrent requests share a single refresh call. If the refresh fails, the user is signed out and sent to `/login` right away.
 12. Signed-in header shows a user menu labelled with the candidate's first + last name, else the email, else "Account" (HTML-escaped). The menu has "View API" (opens `<API>api/me/<email>` in a new tab) and "Log out".
 13. Log out: calls `POST api/v1/auth/logout` with the access token and body `{ refreshToken }` so the API can revoke both (best effort — local state is cleared even if it fails), removes `user` from `localStorage`, clears tokens and the candidate store, and navigates to `/login`.
+14. `/login` shows a "No account? Register" link to `/register`; `/register` shows an "Already have an account? Log in" link to `/login` (vi + en, via i18n).
 
 ## Acceptance criteria
 - `npx vitest run src/stores/auth.spec.ts` passes (store: tokens, `isAuthenticated`, logOut).
@@ -31,6 +32,9 @@ Every dashboard page is reachable only while signed in.
 - Signed out, opening `#/dashboard/skills` lands on `#/login`.
 - Signed in, opening `#/login` lands on `#/dashboard/information`.
 - Register with password `short` shows the min-length error and sends no request.
+- Opening `#/login`: no checkbox in the form; the tab-only note is visible; the link to `#/register` navigates there. Opening `#/register`: the link to `#/login` navigates there. Switching to EN changes both texts.
+- `grep -rn rememberMe src` returns nothing.
+- `npm run build` and `npm run lint` pass.
 - After login, `sessionStorage.refreshToken` is set and `localStorage` holds no token.
 
 ## Edge cases
@@ -61,3 +65,4 @@ Every dashboard page is reachable only while signed in.
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/auth-login-spec.md` | - |
 | 2026-11-15 | Behavior #8: register shows submitting state, trims email, error toast uses login's extraction | #420 #422 #425 (operator answers to open questions 2-3) | `issue-420-auth-form-fixes` |
 | 2026-11-15 | Behavior #11: failed refresh navigates to `/login`; #13: logout body sends `refreshToken` | #426 (operator answer to open question 4), #459 | `issue-459-logout-refresh-token` |
+| 2026-11-22 | Behavior #2: "Remember me" removed, tab-only session note added; #14: login/register cross links | #424 (operator answers to open questions 1 and 5) | - |

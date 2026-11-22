@@ -75,7 +75,6 @@ flowchart TD
 | Node | State | Notes |
 |---|---|---|
 | `issue-122-ai-cv-suggestions-pending` | PENDING | Operator (2026-10-05): "#122 chuyển status thành PENDING". Deliberately deferred, not started — waiting on an owner decision: shared app AI key vs BYOK (BYOK needs new two-way encryption on the backend; only `bcrypt` exists today) + a consent checkbox for sending CV data out. Checked: no branch/PR/evidence for #122; backend `origin/staging` (`f05930a`) has no AI-provider code. Partly overlapped by #159's non-AI JD keyword match. GitHub label `status: pending` applied. Evidence: `evidence/implementer/2026-10-05-issue-122-158-status-rows.md`. |
-| `issue-409-profile-modal-layout` | SEALED | 2026-11-06 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-06/issue-409-profile-modal-layout-seal.md` |
 | `issue-420-auth-form-fixes` | SEALED | 2026-11-15 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-15/issue-420-auth-form-fixes-seal.md` |
 | `issue-459-logout-refresh-token` | SEALED | 2026-11-15 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-15/issue-459-logout-refresh-token-seal.md` |
 | `issue-443-list-date-sort` | SEALED | 2026-11-15 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-15/issue-443-list-date-sort-seal.md` |
@@ -95,3 +94,4 @@ flowchart TD
 | `issue-401-project-type-experience` | SEALED | 2026-11-21 — archived, see dev-loop-archive.md. Evidence: evidence/verifier/2026-11-21/issue-401-project-type-experience-seal.md |
 | `issue-403-salary-range` | SEALED | 2026-11-21 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-21/issue-403-salary-range-seal.md` |
 | `issue-449-profile-stale-ids` | SEALED | 2026-11-22 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-22/issue-449-profile-stale-ids-seal.md` |
+| `issue-424-login-register-links` | SEALED | 2026-11-22 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-22/issue-424-login-register-links-seal.md` |

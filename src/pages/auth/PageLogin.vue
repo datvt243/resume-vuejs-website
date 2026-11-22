@@ -38,11 +38,6 @@ const formFields = [
         /* value: 'david243', */
         valid: yup => yup.string().required('validation.passwordRequired'),
     },
-    {
-        name: 'rememberMe',
-        label: 'auth.rememberMe',
-        type: 'checkbox',
-    },
 ]
 
 async function _handleLogin(values) {
@@ -59,6 +54,10 @@ async function _handleLogin(values) {
                     <RouterLink to="/forgot-password" class="ms-auto self-center whitespace-nowrap text-sm">{{ $t('auth.forgotPasswordLink') }}</RouterLink>
                 </template>
             </VeeForm>
+            <p class="mt-4 text-sm text-fg-2">{{ $t('auth.sessionTabNote') }}</p>
+            <p class="mt-2 text-sm">
+                {{ $t('auth.noAccount') }} <RouterLink to="/register">{{ $t('auth.registerTitle') }}</RouterLink>
+            </p>
         </div>
     </div>
 </template>

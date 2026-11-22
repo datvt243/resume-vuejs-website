@@ -11,7 +11,14 @@
 import VeeForm from '@/components/veevalidate/VeeForm.vue'
 
 import { inject } from 'vue'
+import { useRouter } from 'vue-router'
 import { handleForgotPassword } from '@/services/auth'
+import { authStore } from '@/stores/auth'
+
+const router = useRouter()
+if (authStore().isAuthenticated) {
+    router?.push('/dashboard/information')
+}
 
 const refSpinner = inject('spinner')
 const refToast = inject('toast')

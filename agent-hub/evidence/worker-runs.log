@@ -13,3 +13,4 @@
 2026-11-22T11:45:24Z role=verifier outcome=SEAL node=issue-449-profile-stale-ids rerun=none spawn=fresh hub_bytes_before=100311 hub_bytes_after=100323
 2026-11-22T12:30:00Z role=verifier outcome=SEAL node=issue-424-login-register-links rerun=none spawn=fresh hub_bytes_before=100323 hub_bytes_after=100323
 2026-11-22T12:11:44Z role=verifier outcome=SEAL node=issue-434-436-social-links-copy rerun=none spawn=fresh hub_bytes_before=100323 hub_bytes_after=100333
+2026-11-22T13:37:35Z role=verifier outcome=SEAL node=issue-428-430-auth-redirects rerun=none spawn=fresh hub_bytes_before=100333 hub_bytes_after=  100329

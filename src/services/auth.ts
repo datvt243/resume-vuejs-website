@@ -10,6 +10,7 @@ import { candidateStore } from '@/stores/candidate'
 import { toValue } from 'vue'
 import { subURL } from '@/config/api.config'
 import { t } from '@/i18n'
+import { safeRedirect } from '@/utilities'
 
 // the API's own reason (wrong credentials, too many requests, unreachable) beats a generic line
 const apiErrorMessage = (err: unknown, fallback: string) => {
@@ -21,6 +22,8 @@ const apiErrorMessage = (err: unknown, fallback: string) => {
 export const handleLogin = async (values, props) => {
     const { email, password } = values
     const { loading = null, toast = null, router = null } = props
+    // read now: setTokens swaps the layout, PageLogin remounts and moves off /login before the push below
+    const target = safeRedirect(router?.currentRoute?.value.query.redirect)
 
     /**
      * spinner loading
@@ -57,7 +60,7 @@ export const handleLogin = async (values, props) => {
         const candidateRes = await _axios({ method: 'get', url: `${subURL}candidate/${email.trim()}` })
         candidateStore().setCandidate({ ...candidateRes.data })
 
-        router?.push('/dashboard/information')
+        router?.push(target)
     } catch (err) {
         authStore().setTokens()
         toast?.({ message: apiErrorMessage(err, t('error.loginFailed')), bg: 'danger' })

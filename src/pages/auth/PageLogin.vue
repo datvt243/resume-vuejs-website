@@ -7,17 +7,20 @@
 import VeeForm from '@/components/veevalidate/VeeForm.vue'
 
 import { inject } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { handleLogin } from '@/services/auth'
+import { safeRedirect } from '@/utilities'
 import { authStore } from '@/stores/auth'
 
+const route = useRoute()
 const router = useRouter()
 const refSpinner = inject('spinner')
 const refToast = inject('toast')
 
 const store = authStore()
+// also runs when login itself flips isAuthenticated (the layout swap remounts this page), so honor ?redirect= here too
 if (store.isAuthenticated) {
-    router?.push('/dashboard/information')
+    router?.push(safeRedirect(route.query.redirect))
 }
 
 const formFields = [

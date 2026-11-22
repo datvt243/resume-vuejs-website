@@ -43,7 +43,7 @@ const initials = computed(() => {
 /**
  *
  */
-import { modalDefault as model, socialMediaPayload } from '@/models/information.model'
+import { modalDefault as model, socialMediaPayload, validSocialUrl } from '@/models/information.model'
 const formFields = shallowRef(model)
 /* const socialMediaFields = ref(modalSocial) */
 const socialMediaFields = ref([
@@ -54,6 +54,7 @@ const socialMediaFields = ref([
         placeholder: 'https://github.com/…',
         inputmode: 'url',
         autocomplete: 'url',
+        valid: validSocialUrl,
         default: '',
         col: 'col-md-12',
     },
@@ -64,6 +65,7 @@ const socialMediaFields = ref([
         placeholder: 'https://linkedin.com/in/…',
         inputmode: 'url',
         autocomplete: 'url',
+        valid: validSocialUrl,
         default: '',
         col: 'col-md-12',
     },
@@ -74,6 +76,7 @@ const socialMediaFields = ref([
         placeholder: 'https://…',
         inputmode: 'url',
         autocomplete: 'url',
+        valid: validSocialUrl,
         default: '',
         col: 'col-md-12',
     },
@@ -215,6 +218,16 @@ async function handleUpdateSocialNetwork(values) {
     })
 }
 
+async function copyPublicLink() {
+    try {
+        await navigator.clipboard.writeText(publicLink.value)
+        toast?.({ message: t('information.linkCopied'), bg: 'success' })
+    } catch {
+        // no navigator.clipboard (non-secure context) lands here too, as a TypeError
+        toast?.({ message: t('information.copyLinkFailed'), bg: 'danger' })
+    }
+}
+
 async function handleUpdateSlug(values) {
     const _id = candidate.getId
     if (!_id) return false
@@ -299,7 +312,10 @@ async function handleUpdateSlug(values) {
                 </div>
                 <div v-if="publicLink">
                     <p class="form-label">{{ $t('information.yourLink') }}</p>
-                    <p class="m-0 break-all rounded bg-surface-2 px-3 py-2 font-mono text-sm text-fg-2">{{ publicLink }}</p>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <p class="m-0 min-w-0 flex-1 break-all rounded bg-surface-2 px-3 py-2 font-mono text-sm text-fg-2">{{ publicLink }}</p>
+                        <Button icon="fa-solid fa-copy" :text="$t('information.copyLink')" @click="copyPublicLink" />
+                    </div>
                 </div>
                 <QrCode :value="publicLink" />
             </div>

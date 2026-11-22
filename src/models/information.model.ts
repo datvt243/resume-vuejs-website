@@ -93,6 +93,10 @@ const modalSocial: modelItem[] = [
     },
 ]
 
+// yup's .url() also passes ftp:// and protocol-relative //host, so pin the scheme too
+export const validSocialUrl: modelItem['valid'] = yup =>
+    yup.string().trim().url('validation.urlInvalid').matches(/^https?:\/\//i, { message: 'validation.urlInvalid', excludeEmptyString: true })
+
 // PATCH replaces the whole `socialMedia` object and the form only submits links the user
 // touched (untouched ones are `undefined`) — keep the stored ones, drop cleared ones (the API rejects '', omitting removes it)
 export function socialMediaPayload(stored: Record<string, string> = {}, edited: Record<string, string | undefined> = {}): Record<string, string> {

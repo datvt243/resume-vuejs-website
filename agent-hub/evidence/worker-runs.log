@@ -10,3 +10,4 @@
 2026-11-21T12:00:00Z role=verifier outcome=REOPEN node=issue-401-project-type-experience rerun=none spawn=fresh hub_bytes_before=100309 hub_bytes_after=  100764
 2026-11-21T12:30:00Z role=verifier outcome=SEAL node=issue-401-project-type-experience rerun=none spawn=resumed hub_bytes_before=100309 hub_bytes_after=100325
 2026-11-21T15:57:44Z role=verifier outcome=SEAL node=issue-403-salary-range rerun=none spawn=fresh hub_bytes_before=100325 hub_bytes_after=100311
+2026-11-22T11:45:24Z role=verifier outcome=SEAL node=issue-449-profile-stale-ids rerun=none spawn=fresh hub_bytes_before=100311 hub_bytes_after=100323

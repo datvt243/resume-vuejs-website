@@ -31,6 +31,7 @@ Per section:
    - API errors on save go to the field, not a toast: (a) a `400` with `errorCode: 'BAD_REQUEST'` on saving a project with `type = company` (the backend's field-less "invalid Experience" error) → its message is shown under the Experience select; (b) a `400 VALIDATION_ERROR` whose `error.details[].field` is `experienceId` or `type` → each message under that field. In both cases the form stays open, values kept, NO toast for that error. Every other error keeps today's toast (`handleBase`).
    - Dashboard Project card (`ProjectItem.vue`): a badge "Company" or "Personal" (i18n `vi` + `en`; legacy project without `type` → "Personal"). A company project whose `experienceId` matches an Experience in the store also shows `<company> · <position>` of that Experience (e.g. "Acme Corp · Frontend Developer"). A company project whose linked Experience is not in the store (deleted / missing) keeps the "Company" badge and shows a muted note "Experience removed" (i18n `vi` + `en`) instead.
    - No other display surface changes: CV layouts (`CvResumeLayout.vue`), PagePreview, the public CV, the backend PDF and the JSON Resume export (`toJsonResume`) are untouched.
+11. *(#444 — spec complete, not yet implemented/sealed)* Education "View" modal (read-only), same pattern as Experience (#5, #8) and Project (#9). Each Education card has a View (eye) button (`ItemActions viewable`, `action="view"`, aria-label from i18n naming the school) next to Edit / Duplicate / Delete; `EducationItem.vue` emits `onView` with a copy of the entry. Clicking it opens a modal titled with the school that lists, as label/value rows (`dl`, labels in the UI language): school, major, dates (`MM/YYYY - MM/YYYY`, or `MM/YYYY - <Present>` when "currently studying" is checked), and the description (HTML passed through `sanitizeHtml`). The modal has the same VI | EN content toggle as #8 (radiogroup, `aria-checked`, aria-label `form.contentLang`) bound to the shared `useFormLang().formLang`. School, major and description are all `{ vi, en }` content, so all three (and the modal title) show `getLocalizedText(<field>, formLang)` — the selected language, falling back to the other one when empty. Dates do not change with the toggle. The footer has an Edit button (`Button action="update"`, text `common.edit`) that closes the View modal and opens the normal Edit form pre-filled with that entry (same as Edit on the card). Viewing sends no API request and changes nothing. Any new label is an i18n key in both `vi` and `en`.
 ## Acceptance criteria
 - `npx vitest run src/pages/dashboard/PageExperience.spec.ts` passes.
 - `npx vitest run src/composables/useManualOrder.spec.ts src/composables/useCandidate.spec.ts src/composables/useDocument.spec.ts` passes.
@@ -53,6 +54,10 @@ Per section:
 - (#401) A ProjectItem spec (new, or in `PageProject.spec.ts`) covers: `{ type: 'company', experienceId: 'e1' }` with e1 in the store renders the Company badge and "Acme Corp · Frontend Developer"; `{ type: 'company', experienceId: 'gone' }` renders the Company badge and the "Experience removed" text; `{}` (no type) renders the Personal badge.
 - (#401) `git diff --stat` touches none of `src/components/cv/CvResumeLayout.vue`, `src/pages/dashboard/PagePreview.vue`, `src/pages/public/PagePublicResume.vue`, `src/utilities/jsonResume.ts`.
 - (#401) Every new key exists in both `vi` and `en` of `src/i18n/index.ts`; `npm run lint`, `npm run build`, `npm run test` pass; `npm run typecheck` ≤ 78 errors and none in changed files.
+- (#444) `npx vitest run src/pages/dashboard/PageEducation.spec.ts` covers: with `{ _id: 'ed1', school: { vi: 'ĐH A', en: 'Univ A' }, major: { vi: 'CNTT', en: 'IT' }, isCurrent: true, startDate: <ms>, description: { vi: 'Mô tả', en: 'Desc' } }`, opening View shows "ĐH A", "CNTT", a date ending in the "Present" text and "Mô tả" when `formLang='vi'`; clicking the EN option shows "Univ A", "IT", "Desc" and sets `useFormLang().formLang.value === 'en'`; with `description: { vi: 'Mô tả', en: '' }` and EN selected it shows "Mô tả"; a description containing `<script>` or `onerror=` renders without them; clicking Edit in the modal opens the form with `document._id === 'ed1'`.
+- (#444) `grep -n "viewable" src/components/education/EducationItem.vue` hits and the card emits `onView` with a copy of the entry.
+- (#444) Manual (QA account): on `/dashboard/education` each card shows the blue eye button; View opens the read-only modal; Edit switches to the pre-filled form; the toggle in the Education View, the Experience View and the forms all show the same selection. No network request is sent when opening View.
+- (#444) Every new key exists in both `vi` and `en` of `src/i18n/index.ts`; `npm run lint`, `npm run build`, `npm run test` pass; `npm run typecheck` ≤ 78 errors and none in changed files.
 ## Edge cases
 - Saved order references a deleted entry → that id is skipped.
 - Career-break entry edited back into a job → `careerBreakType` sent as `''`.
@@ -66,6 +71,8 @@ Per section:
 - (#401) Linked Experience deleted (backend has no cascade) or not in the candidate's list → Edit shows `company` with no Experience selected; saving requires a new choice. Card: Company badge + muted "Experience removed" note (Behavior #10).
 - (#401) Candidate has no Experience (or only career breaks, which are excluded) → choosing Company shows an empty select; save is blocked by the required rule. Hint text: not specified (not asked for).
 - (#401) Duplicate of a company project → copy keeps `type` and `experienceId`.
+- (#444) Legacy school/major/description stored as a plain string → same text under VI and EN; empty in both → "—" for school/major, empty description, no error.
+- (#444) `isCurrent` true and `endDate` null → `MM/YYYY - <Present>`.
 ## Out of scope
 - Server-side order (backend has no order field; issue #57).
 - Images on projects (field disabled in the model).
@@ -73,6 +80,7 @@ Per section:
 
 - (#402) Education View modal (#444); editing inside the View modal; showing project images (field disabled).
 - (#401) Any CV / PagePreview / public CV / PDF / JSON Resume export display of type or linked Experience (operator Q8, Q12) — so whether the public API returns `experienceId` is moot; type / Experience in the Project View modal (not asked); importing project type from JSON Resume / LinkedIn (`fromJsonResume` imports no projects today); cascading an Experience delete to its projects.
+- (#444) Editing inside the View modal; showing education images (not in the model display); any CV / PagePreview / public page change.
 ## Open questions
 1. The manual order is per browser only and is not used by the CV preview, public page or PDF (they sort by date / API order). Is the manual order meant to affect the CV? → **Answer (operator 2026-11-07):** Change: persist the order to the backend for Education and Project and use it on the CV; Experience excluded — always sorted by date, no manual order — #442, datvt243/resume-nodejs-api#413
 2. Newly saved or duplicated entries are appended to the end of the list until reload (the date sort runs only on load). Intended? → **Answer (operator 2026-11-07):** Bug: re-sort after save — #443
@@ -102,3 +110,4 @@ Per section:
 | 2026-11-19 | Behavior #9 (draft): Project read-only View modal with Edit + shared VI \| EN toggle | #402 | - |
 | 2026-11-21 | Behavior #10 (draft): project type company/personal + linked Experience; Q8–13 open | #401 | - |
 | 2026-11-21 | Q8–13 answered; Behavior #10 spec complete (dashboard-only display, field-level save errors) | operator answers | - |
+| 2026-11-22 | Behavior #11 (draft): Education read-only View modal with Edit + shared VI \| EN toggle | #444 (operator answer to open question 4) | - |

@@ -5,6 +5,7 @@ import { setActivePinia, createPinia } from 'pinia'
 import VeeFormGeneralInformationUpdate from './VeeFormGeneralInformationUpdate.vue'
 import Button from '@/components/global/Button.vue'
 import FormSection from '@/components/global/FormSection.vue'
+import TableDefault from '@/components/table/TableDefault.vue'
 
 const swalFire = vi.fn()
 vi.mock('sweetalert2', () => ({ default: { fire: (...args: unknown[]) => swalFire(...args) } }))
@@ -15,7 +16,7 @@ vi.mock('@/composables/useDocument', () => ({
 }))
 
 // VeeForm pulls in CKEditor via the veevalidate barrel (not loadable in jsdom)
-vi.mock('@/components/veevalidate/VeeForm.vue', () => ({ default: { name: 'VeeForm', render: () => null } }))
+vi.mock('@/components/veevalidate/VeeForm.vue', () => ({ default: { name: 'VeeForm', props: ['fields', 'document', 'submitFn'], render: () => null } }))
 
 // Renders the per-row action slot so the delete link can be clicked
 const TableStub = defineComponent({
@@ -97,5 +98,64 @@ describe('VeeFormGeneralInformationUpdate — save hooks', () => {
         expect(swalFire).toHaveBeenCalledTimes(1)
         expect(swalFire.mock.calls[0][0].title).toBe('Chưa lưu Thông tin chung')
         expect(updatePatchDoc).not.toHaveBeenCalled()
+    })
+})
+
+describe('VeeFormGeneralInformationUpdate — #441 edit a row', () => {
+    const levelOptions = ['basic', 'advanced', 'expert'].map(value => ({ value, text: `option.languageLevel.${value}` }))
+    const fields = [
+        { name: 'language', label: 'generalInfo.language', type: 'text', default: '' },
+        { name: 'level', label: 'generalInfo.level', type: 'select', options: levelOptions, default: '' },
+    ]
+    const list = () => [
+        { language: 'English', level: 'basic' },
+        { language: 'French', level: 'advanced' },
+    ]
+    const show = vi.fn()
+
+    function mountTable() {
+        return mount(VeeFormGeneralInformationUpdate, {
+            props: { fieldKey: 'foreignLanguages', modelValue: { foreignLanguages: list() }, fields, hasButtonAdd: true },
+            global: {
+                provide: { candidate: ref({ _id: 'c1' }) },
+                components: { Button, FormSection, TableDefault },
+                stubs: { FontAwesomeIcon: true, NoData: true, Modal: { template: '<div><slot /></div>', methods: { show, hide() {} } } },
+            },
+        })
+    }
+    const form = (w: ReturnType<typeof mountTable>) => w.findComponent({ name: 'VeeForm' })
+
+    beforeEach(() => {
+        setActivePinia(createPinia())
+        swalFire.mockReset()
+        updatePatchDoc.mockReset()
+        show.mockReset()
+    })
+
+    it('clicking a row opens the modal pre-filled, and save patches that row in place', async () => {
+        const w = mountTable()
+        await w.findAll('tbody tr')[0].find('td').trigger('click')
+        expect(show).toHaveBeenCalledTimes(1)
+        expect(form(w).props('document')).toMatchObject({ language: 'English', level: 'basic' })
+
+        await form(w).props('submitFn')({ language: 'English', level: 'expert' })
+        expect(updatePatchDoc.mock.calls[0][0]).toEqual({
+            _id: 'c1',
+            foreignLanguages: [
+                { language: 'English', level: 'expert' },
+                { language: 'French', level: 'advanced' },
+            ],
+        })
+    })
+
+    it('the row Edit button opens the same form; Delete does not', async () => {
+        swalFire.mockResolvedValue({ value: undefined })
+        const w = mountTable()
+        await w.find('button[aria-label="Sửa French"]').trigger('click')
+        expect(show).toHaveBeenCalledTimes(1)
+        expect(form(w).props('document')).toMatchObject({ language: 'French', level: 'advanced' })
+
+        await w.find('button[aria-label="Xóa English"]').trigger('click')
+        expect(show).toHaveBeenCalledTimes(1)
     })
 })

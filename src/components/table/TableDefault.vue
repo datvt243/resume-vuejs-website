@@ -24,7 +24,12 @@ const props = defineProps({
     colControl: { type: String, default: 'name' },
     heightAuto: { type: Boolean, default: false },
     pageSize: { type: Number, default: 25 },
+    // `@row-click` binds here, so rows only look clickable when someone listens
+    onRowClick: { type: Function, default: null },
 })
+// gets the modelValue index; a row's own controls keep their action, and selecting text doesn't open anything
+const rowClick = (e, doc) =>
+    props.onRowClick && !e.target.closest('button, a, input, select, textarea, label') && !window.getSelection()?.toString() && props.onRowClick(props.modelValue.indexOf(doc))
 
 const { columns } = useInitTable(toRef(props.settings))
 
@@ -153,7 +158,7 @@ const renderCellContent = defineComponent({
                 <TableBody>
                     <template v-if="pageRows.length">
                         <template v-for="(doc, index) in pageRows" :key="rowKey(doc)">
-                            <TableRow :model-value="doc">
+                            <TableRow :model-value="doc" :class="{ 'cursor-pointer': props.onRowClick }" @click="rowClick($event, doc)">
                                 <TableCell class="text-right tabular-nums text-fg-3">{{ pageStart + index + 1 }}</TableCell>
                                 <template
                                     v-for="{ field, convert, className = '', type, name } in getColsWithHiddenCells"

@@ -378,6 +378,9 @@ const vi = {
         shareDescription: 'Chọn profile cho link, rồi gửi link hoặc mã QR. Ngôn ngữ của link theo ngôn ngữ CV trong Cài đặt tài khoản hoặc trang Xem trước.',
         allProfiles: 'Tất cả (mặc định)',
         yourLink: 'Link CV của bạn',
+        copyLink: 'Sao chép link',
+        linkCopied: 'Đã sao chép link',
+        copyLinkFailed: 'Không sao chép được link. Hãy chọn link và sao chép thủ công.',
     },
     visits: {
         title: 'Lượt truy cập hồ sơ',
@@ -915,6 +918,9 @@ const en: typeof vi = {
         shareDescription: 'Pick a profile for the link, then send the link or QR code. The link language follows the CV language in Account settings or on the Preview page.',
         allProfiles: 'All (default)',
         yourLink: 'Your CV link',
+        copyLink: 'Copy link',
+        linkCopied: 'Link copied',
+        copyLinkFailed: 'Couldn\'t copy the link. Select it and copy it manually.',
     },
     visits: {
         title: 'Profile visits',

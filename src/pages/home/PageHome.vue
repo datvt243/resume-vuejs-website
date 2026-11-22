@@ -19,6 +19,7 @@ import { useDownloadCv } from '@/composables/useDownloadCv'
 import { buttonClass } from '@/lib/button.lib'
 import VisitChart from '@/components/visits/VisitChart.vue'
 import { t, uiLocale } from '@/i18n'
+import { formatSalaryRange } from '@/utilities/index'
 
 const candidate = candidateStore()
 const numberFormat = computed(() => new Intl.NumberFormat(uiLocale.value))
@@ -38,6 +39,7 @@ const initials = computed(() => {
 const avatarUrl = computed(() => info.value?.avatar || '')
 const position = computed(() => generalInfo.value?.positionDesired || '')
 const isOpenToWork = computed(() => !!generalInfo.value?.openToWork)
+const salary = computed(() => formatSalaryRange(generalInfo.value?.salaryDesiredFrom, generalInfo.value?.salaryDesiredTo))
 
 /* KPIs */
 const { percent: profileCompletion, sections, missingSections } = useProfileCompletion()
@@ -97,6 +99,7 @@ const btnGhost = buttonClass({ variant: 'ghost', size: 'sm' })
             <div class="min-w-0 flex-1">
                 <p class="m-0 truncate text-md font-semibold text-fg">{{ fullName }}</p>
                 <p class="m-0 truncate text-sm text-fg-2">{{ position || $t('home.noPosition') }}</p>
+                <p v-if="salary" class="m-0 truncate text-sm text-fg-2">{{ salary }}</p>
             </div>
             <span
                 class="inline-flex h-5 items-center gap-1.5 rounded-sm px-2 text-xs font-medium"

@@ -10,6 +10,8 @@ import { defaultCheckboxBoolean, withEnglish } from '@/types/model.type'
 /* import { formatDateToInput } from '@/utilities/index' */
 
 const _mesRequired = 'validation.required'
+// an empty currency input is '' → treat it as missing so required() reports it, not typeError
+const salary = (yup: any) => yup.number().transform((v: number, raw: unknown) => (raw === '' ? undefined : v)).typeError('validation.number').integer('validation.integer').positive('validation.salaryPositive').required(_mesRequired)
 
 const MODEL: modelItem[] = [
     {
@@ -99,17 +101,20 @@ const MODEL: modelItem[] = [
         col: 'col-md-6',
     },
     {
-        name: 'salaryDesired',
-        label: 'field.salaryDesired',
+        name: 'salaryDesiredFrom',
+        label: 'field.salaryDesiredFrom',
         type: 'currency',
-        valid: yup =>
-            yup
-                .number()
-                .typeError('validation.number')
-                .integer('validation.integer')
-                .positive('validation.salaryPositive')
-                .required(_mesRequired),
+        valid: yup => salary(yup),
         default: '',
+        col: 'col-md-6',
+    },
+    {
+        name: 'salaryDesiredTo',
+        label: 'field.salaryDesiredTo',
+        type: 'currency',
+        valid: yup => salary(yup).test('salaryRange', 'validation.salaryRange', (to: number, ctx: any) => !(to < Number(ctx.parent.salaryDesiredFrom))),
+        default: '',
+        col: 'col-md-6',
     },
     {
         name: 'workForm',

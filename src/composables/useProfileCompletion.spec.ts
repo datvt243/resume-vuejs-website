@@ -52,7 +52,8 @@ const FULL_GENERAL_INFORMATION = {
     levelDesired: 'teamLeader',
     education: 'bachelorDegree',
     yearsOfExperience: 3,
-    salaryDesired: 1000,
+    salaryDesiredFrom: 1000,
+    salaryDesiredTo: 2000,
     workForm: 'fulltime',
     workLocation: 'Remote',
 }
@@ -98,6 +99,15 @@ describe('useProfileCompletion', () => {
 
         const section = result.sections.value.find(s => s.label === 'nav.generalInformation')
         expect(section?.complete).toBe(true)
+    })
+
+    it('counts "Thông tin chung" incomplete while either salary end is null', async () => {
+        for (const missing of ['salaryDesiredFrom', 'salaryDesiredTo']) {
+            candidateStore().setCandidate({ generalInformation: { ...FULL_GENERAL_INFORMATION, [missing]: null } })
+            const { result } = withUseProfileCompletion()
+            await flushPromises()
+            expect(result.sections.value.find(s => s.label === 'nav.generalInformation')?.complete).toBe(false)
+        }
     })
 
     it('treats a list section as complete once it has at least 1 record, regardless of that record\'s own fields', async () => {

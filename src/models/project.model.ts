@@ -10,8 +10,34 @@ import { defaultId, defaultDateStartEnd, defaultDescription, defaultLink, defaul
 
 const _mesRequired = 'validation.required'
 
+export const PROJECT_TYPES = ['company', 'personal']
+
 const MODEL: modelItem[] = [
     defaultId,
+    {
+        name: 'type',
+        label: 'field.projectType',
+        type: 'select',
+        options: PROJECT_TYPES.map(value => ({ value, text: `option.projectType.${value}` })),
+        valid: yup => yup.string().oneOf(PROJECT_TYPES).required(_mesRequired),
+        default: 'personal',
+        col: 'col-md-6',
+    },
+    {
+        // options are filled in at runtime from the candidate's experiences (PageProject)
+        name: 'experienceId',
+        label: 'field.linkedExperience',
+        type: 'select',
+        options: [],
+        valid: yup =>
+            yup
+                .string()
+                .nullable()
+                .when('type', { is: 'company', then: (s: any) => s.required(_mesRequired) }),
+        default: '',
+        col: 'col-md-6',
+        showIf: (values: Record<string, any>) => values.type === 'company',
+    },
     {
         name: 'name',
         label: 'field.projectName',

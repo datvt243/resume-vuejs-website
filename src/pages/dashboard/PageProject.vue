@@ -10,17 +10,27 @@ import Modal from '@/components/Modal.vue'
 
 import ProjectItem from '@/components/project/ProjectItem.vue'
 
-import { ref, shallowRef, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useCandidate } from '@/composables/useCandidate'
 import { useDocument } from '@/composables/useDocument'
 import { useManualOrder } from '@/composables/useManualOrder'
 import { useFormLang } from '@/composables/useFormLang'
 import { localizedToForm, localizedFromForm, formatDate, getLocalizedText, sanitizeHtml } from '@/utilities/index'
 import { t } from '@/i18n'
+import { badgeClass } from '@/lib/badge.lib'
+import { errorCodeOf } from '@/services/axios'
 
 import model from '@/models/project.model.ts'
 
 const { projects: dataList, removeRecordById, addRecordToList, loadError, getData } = useCandidate({ field: 'projects' })
+const { experiences } = useCandidate({ field: 'experiences', collection: 'experience' })
+// a project can only belong to a real job, not a career break
+const experienceOptions = computed(() =>
+    (experiences.value || []).filter(e => !e.isCareerBreak).map(e => ({ text: `${e.company} — ${e.position}`, value: e._id })),
+)
+function linkedExperience(project) {
+    return (experiences.value || []).find(e => e._id === project.experienceId)
+}
 
 // Sắp xếp thủ công (issue #57) — chỉ lưu ở trình duyệt (localStorage),
 // KHÔNG đồng bộ server (backend chưa có field order — xem comment đầu
@@ -53,7 +63,7 @@ const { document, updateDoc, deleteDoc } = useDocument({ collection: 'project', 
  */
 const refModal = ref()
 const refVeeForm = ref()
-const formFields = shallowRef(model)
+const formFields = computed(() => model.map(f => (f.name === 'experienceId' ? { ...f, options: experienceOptions.value } : f)))
 
 // Nhân bản (issue #60): giữ `document._id` = id của bản ghi gốc (KHÔNG
 // để rỗng) trong lúc modal mở — VeeForm.vue có watch(document) tự
@@ -77,6 +87,7 @@ async function handleUpdate(values) {
         val.technology = val.technology?.split(',').map(s => s.trim()).filter(Boolean)
 
         !val.isWorking && (val.isWorking = false)
+        val.type !== 'company' && (val.experienceId = null)
         return localizedFromForm(val, ['description'])
     })({ ...values })
 
@@ -85,11 +96,35 @@ async function handleUpdate(values) {
         isDuplicating.value = false
     }
 
-    await updateDoc(data, res => {
-        const { data } = res
-        addRecordToList(data)
-        refModal.value?.hide()
-    })
+    await updateDoc(
+        data,
+        res => {
+            const { data } = res
+            addRecordToList(data)
+            refModal.value?.hide()
+        },
+        err => {
+            const message = experienceErrorOf(err, data)
+            message && refVeeForm.value?.setFieldError('experienceId', message)
+            return !!message
+        },
+    )
+}
+
+// the backend's "experience not found" 400 names no field; on a company project it can only be about experienceId
+function experienceErrorOf(err, data) {
+    if (data.type !== 'company') return ''
+    const code = errorCodeOf(err)
+    const details = err?.error?.details
+    if (code === 'BAD_REQUEST') return err?.error?.message ?? err?.message ?? ''
+    if (code === 'VALIDATION_ERROR' && details?.length && details.every(d => d.field === 'experienceId')) return details[0].message
+    return ''
+}
+
+// legacy projects have no type; a link to a deleted (or career-break) experience must be re-picked
+function normalizeProjectType() {
+    document.type ||= 'personal'
+    if (!experienceOptions.value.some(o => o.value === document.experienceId)) document.experienceId = ''
 }
 
 async function handleDelete(doc) {
@@ -108,6 +143,7 @@ function showModalEditDoc(doc) {
 
     document.technology = document.technology?.join(', ')
     Object.assign(document, localizedToForm(doc, ['description']))
+    normalizeProjectType()
 
     refModal.value?.show()
 }
@@ -154,6 +190,7 @@ function showModalDuplicateDoc(doc) {
 
     document.technology = document.technology?.join(', ')
     Object.assign(document, localizedToForm(doc, ['description']))
+    normalizeProjectType()
 
     refModal.value?.show()
 }
@@ -188,6 +225,13 @@ function showModalDuplicateDoc(doc) {
                             @on-duplicate="showModalDuplicateDoc"
                         >
                             <template #sub>
+                                <p class="m-0 mt-1 flex flex-wrap items-center gap-2 text-xs text-fg-2">
+                                    <span :class="badgeClass(edu.type === 'company' ? 'info' : 'neutral')" data-project-type>{{ $t(`option.projectType.${edu.type === 'company' ? 'company' : 'personal'}`) }}</span>
+                                    <template v-if="edu.type === 'company'">
+                                        <span v-if="linkedExperience(edu)">{{ linkedExperience(edu).company }} · {{ linkedExperience(edu).position }}</span>
+                                        <span v-else class="text-fg-3">{{ $t('crud.project.experienceRemoved') }}</span>
+                                    </template>
+                                </p>
                                 <p v-if="edu.technology?.length" class="m-0 mt-0.5 text-xs text-fg-2">{{ $t('crud.project.technologies', { list: edu.technology.join(', ') }) }}</p>
                             </template>
                         </ProjectItem>

@@ -7,10 +7,11 @@
 
 import VeeForm from '@/components/veevalidate/VeeForm.vue'
 
-import { shallowRef, watch } from 'vue'
+import { ref, shallowRef, watch } from 'vue'
 import { useDocument } from '@/composables/useDocument'
 import { useCandidate } from '@/composables/useCandidate'
 import { localizedToForm, localizedFromForm } from '@/utilities/index'
+import { errorCodeOf } from '@/services/axios'
 
 /**
  * store
@@ -42,12 +43,24 @@ watch(generalInformation, val => {
   Object.assign(document, localizedToForm(_val, LOCALIZED_FIELDS))
 })
 
+const refVeeForm = ref(null)
+const SALARY_FIELDS = ['salaryDesiredFrom', 'salaryDesiredTo']
+
 async function handleUpdate(values) {
   const document = localizedFromForm(values, LOCALIZED_FIELDS)
-  await updateDoc(document, res => {
-    const { data } = res
-    candidate.setCandidateByField({ generalInformation: [data] })
-  })
+  await updateDoc(
+    document,
+    res => {
+      const { data } = res
+      candidate.setCandidateByField({ generalInformation: [data] })
+    },
+    err => {
+      const details = err?.error?.details
+      const onSalary = errorCodeOf(err) === 'VALIDATION_ERROR' && details?.length && details.every(d => SALARY_FIELDS.includes(d.field))
+      onSalary && details.forEach(d => refVeeForm.value?.setFieldError(d.field, d.message))
+      return !!onSalary
+    },
+  )
 }
 </script>
 
@@ -59,7 +72,7 @@ async function handleUpdate(values) {
 
     <FormSection :title="$t('generalInfo.jobPreferences')" :description="$t('generalInfo.jobPreferencesDescription')">
       <LoadingGate variant="form">
-        <VeeForm :fields="formFields" :document="document" :submit-fn="handleUpdate" :submit-text="$t('common.saveChanges')"
+        <VeeForm ref="refVeeForm" :fields="formFields" :document="document" :submit-fn="handleUpdate" :submit-text="$t('common.saveChanges')"
           button-position="end" cancelable />
       </LoadingGate>
     </FormSection>

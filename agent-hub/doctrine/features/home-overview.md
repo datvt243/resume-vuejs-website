@@ -2,7 +2,7 @@
 
 - Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/home-overview-spec.md`
 - Source: backfill from code
-- Issues: #59, #440, #455
+- Issues: #59, #403, #440, #455
 - Anchors: `src/pages/home/PageHome.vue`, `src/composables/useProfileCompletion.ts`, `src/composables/useVisitStats.ts`, `src/composables/useVisits.ts`, `src/components/visits/VisitChart.vue`
 
 ## Goal
@@ -11,6 +11,7 @@ After signing in, the candidate sees at a glance how complete their CV is, how o
 ## Behavior
 1. Route `/` (signed in only). Four blocks top to bottom: profile strip, KPI row, visits chart + completion checklist, CV card.
 2. Profile strip: avatar image if `avatar` is set, else initials (first letters of first + last name, uppercase, `U` if none); full name or the "no name" text; desired position or the "no position" text; a badge "Open to work" (green) or "Not looking" (grey) from `openToWork`; an "Update profile" link to `/dashboard/information`.
+   *(#403 — draft)* Under the desired position, the desired salary range from General information, formatted as in `general-information.md` Behavior #5g; no line when neither end is set.
 3. KPI row, three cards, each a link:
    - Views: the cached visit count (`—` if the visit load failed) → `/dashboard/visits`.
    - Completion: `<percent>%`, hint "<done>/<total>" → the first missing section, else `/dashboard/information`.
@@ -46,3 +47,4 @@ After signing in, the candidate sees at a glance how complete their CV is, how o
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/home-overview-spec.md` | - |
+| 2026-11-21 | Behavior #2 (draft): salary range line in the profile strip (spec in general-information.md #5) | #403 | - |

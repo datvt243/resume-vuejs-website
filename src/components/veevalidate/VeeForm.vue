@@ -61,7 +61,7 @@ const schema = computed(() => {
 /**
  * Khởi tạo From
  */
-const { values, meta, errors, setValues, resetForm } = useForm({
+const { values, meta, errors, setValues, resetForm, setFieldError } = useForm({
     validationSchema: schema,
     /* initialValues: (() => {
         const keys = props.fields.map(e => ({ name: e.name, default: e.default }))
@@ -113,6 +113,8 @@ onBeforeUnmount(() => modalDirtyGuard?.unregister(isDirty))
 defineExpose({
     reset,
     markSaved,
+    // lets the page put a server-side save error under its field
+    setFieldError,
 })
 
 /**

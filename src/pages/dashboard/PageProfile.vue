@@ -87,13 +87,18 @@ function clearAll(key) {
     selectedIds[key] = []
 }
 
+// Deleting an entry leaves its id in profiles — count only ids that still exist.
+function countExisting(ids, s) {
+    return (ids || []).filter(id => s.items.some(i => i._id === id)).length
+}
+
 function countSelected(item) {
-    return sections.value.reduce((sum, s) => sum + (item[s.key]?.length || 0), 0)
+    return sections.value.reduce((sum, s) => sum + countExisting(item[s.key], s), 0)
 }
 
 function summarize(item) {
     return sections.value
-        .map(s => ({ label: s.label, count: item[s.key]?.length || 0 }))
+        .map(s => ({ label: s.label, count: countExisting(item[s.key], s) }))
         .filter(s => s.count > 0)
         .map(s => t('profileCv.sectionCount', { count: s.count, label: t(s.label).toLowerCase() }))
         .join(' · ')
@@ -199,7 +204,7 @@ function showModalDuplicateDoc(doc) {
                 <div v-for="s in sections" :key="s.key" class="profile-section mb-4">
                     <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
                         <p class="m-0 text-sm font-medium text-fg">
-                            {{ $t(s.label) }} <span class="tabular-nums text-fg-3">{{ selectedIds[s.key].length }}/{{ s.items.length }}</span>
+                            {{ $t(s.label) }} <span class="tabular-nums text-fg-3">{{ countExisting(selectedIds[s.key], s) }}/{{ s.items.length }}</span>
                         </p>
                         <div class="flex gap-1">
                             <Button :text="$t('profileCv.selectAll')" type="ghost" size="sm" @click="selectAll(s.key)" />

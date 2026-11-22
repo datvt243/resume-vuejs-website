@@ -3,7 +3,13 @@
 2026-11-20T13:17:04Z role=verifier outcome=SEAL node=issue-419-table-row-keys rerun=none spawn=fresh hub_bytes_before=100253 hub_bytes_after=100259
 2026-11-20T13:28:38Z role=verifier outcome=SEAL node=issue-489-typed-delete-confirm rerun=none spawn=fresh hub_bytes_before=100259 hub_bytes_after=100277
 2026-11-21T10:05:35Z role=verifier outcome=SEAL node=issue-421-451-export-json rerun=none spawn=fresh hub_bytes_before=100277 hub_bytes_after=100277
-2026-11-21T10:33:51Z role=verifier outcome=SEAL node=issue-432-433-personal-info-select rerun=none spawn=fresh hub_bytes_before=100277 hub_bytes_after=  100461
+2026-11-21T10:33:51Z role=verifier outcome=SEAL node=issue-432-433-personal-info-select rerun=none spawn=fresh hub_bytes_before=100277 hub_bytes_after=100461
 2026-11-21T10:40:28Z role=verifier outcome=SEAL node=issue-427-450-dev-host-pdf-lang rerun=none spawn=fresh hub_bytes_before=100303 hub_bytes_after=100317
-2026-11-21T10:44:59Z role=verifier outcome=SEAL node=issue-457-import-size-limit rerun=none spawn=fresh hub_bytes_before=100317 hub_bytes_after=  100315
-2026-11-21T11:04:08Z role=verifier outcome=SEAL node=issue-437-438-skills-stale-names rerun=none spawn=fresh hub_bytes_before=100315 hub_bytes_after=  100309
+2026-11-21T10:44:59Z role=verifier outcome=SEAL node=issue-457-import-size-limit rerun=none spawn=fresh hub_bytes_before=100317 hub_bytes_after=100315
+2026-11-21T11:04:08Z role=verifier outcome=SEAL node=issue-437-438-skills-stale-names rerun=none spawn=fresh hub_bytes_before=100315 hub_bytes_after=100309
+2026-11-21T12:00:00Z role=verifier outcome=REOPEN node=issue-401-project-type-experience rerun=none spawn=fresh hub_bytes_before=100309 hub_bytes_after=100764
+2026-11-21T12:30:00Z role=verifier outcome=SEAL node=issue-401-project-type-experience rerun=none spawn=resumed hub_bytes_before=100309 hub_bytes_after=100325
+2026-11-21T15:57:44Z role=verifier outcome=SEAL node=issue-403-salary-range rerun=none spawn=fresh hub_bytes_before=100325 hub_bytes_after=100311
+2026-11-22T11:45:24Z role=verifier outcome=SEAL node=issue-449-profile-stale-ids rerun=none spawn=fresh hub_bytes_before=100311 hub_bytes_after=100323
+2026-11-22T12:30:00Z role=verifier outcome=SEAL node=issue-424-login-register-links rerun=none spawn=fresh hub_bytes_before=100323 hub_bytes_after=100323
+2026-11-22T12:11:44Z role=verifier outcome=SEAL node=issue-434-436-social-links-copy rerun=none spawn=fresh hub_bytes_before=100323 hub_bytes_after=100333

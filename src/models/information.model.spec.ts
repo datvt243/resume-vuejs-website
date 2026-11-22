@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { socialMediaPayload } from './information.model'
+import * as yup from 'yup'
+import { socialMediaPayload, validSocialUrl } from './information.model'
 
 const stored = { github: 'https://github.com/a', linkedin: 'https://linkedin.com/in/a', website: 'https://a.dev' }
 
@@ -17,5 +18,19 @@ describe('socialMediaPayload', () => {
     it('handles a candidate with no links yet', () => {
         expect(socialMediaPayload(undefined, { website: 'https://b.dev' })).toEqual({ website: 'https://b.dev' })
         expect(socialMediaPayload(undefined, undefined)).toEqual({})
+    })
+})
+
+describe('validSocialUrl', () => {
+    const schema = validSocialUrl!(yup)
+
+    it('accepts an empty field and http(s) links', () => {
+        for (const v of [undefined, '', 'https://github.com/a', 'http://a.dev', ' https://a.dev ']) expect(schema.isValidSync(v)).toBe(true)
+    })
+
+    it('rejects anything that is not an http(s) link', () => {
+        for (const v of ['github.com/a', 'ftp://a.com', '//a.com', 'javascript:alert(1)', 'abc']) {
+            expect(() => schema.validateSync(v)).toThrow('validation.urlInvalid')
+        }
     })
 })

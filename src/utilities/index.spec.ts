@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { formatDate, formatDateToInput, getLocalizedText, splitLocalizedText, localizedToForm, localizedFromForm, sanitizeHtml, escapeHtml, groupSkills } from './index'
+import { formatDate, formatDateToInput, getLocalizedText, splitLocalizedText, localizedToForm, localizedFromForm, sanitizeHtml, escapeHtml, groupSkills, formatSalaryRange } from './index'
+import { setUiLang } from '@/i18n'
+import { nextTick } from 'vue'
 
 describe('formatDate', () => {
     it('returns the placeholder for a falsy date', () => {
@@ -137,5 +139,21 @@ describe('groupSkills', () => {
         ])
         expect(groupSkills([], ['A'])).toEqual([{ name: 'A', skills: [] }])
         expect(groupSkills([], [])).toEqual([])
+    })
+})
+
+describe('formatSalaryRange', () => {
+    it('formats a range, equal ends as one number, one end with From/To, none as empty', async () => {
+        setUiLang('vi')
+        await nextTick()
+        expect(formatSalaryRange(1000, 2000)).toBe('1.000 – 2.000')
+        expect(formatSalaryRange(1500, 1500)).toBe('1.500')
+        expect(formatSalaryRange(1000, null)).toBe('Từ 1.000')
+        expect(formatSalaryRange(null, null)).toBe('')
+        setUiLang('en')
+        await nextTick() // i18n.global.locale follows uiLang through a watcher
+        expect(formatSalaryRange(null, 2000)).toBe('To 2,000')
+        expect(formatSalaryRange(1000, 2000)).toBe('1,000 – 2,000')
+        setUiLang('vi')
     })
 })

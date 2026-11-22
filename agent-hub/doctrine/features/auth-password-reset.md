@@ -3,7 +3,7 @@
 - Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/auth-password-reset-spec.md`
 - Source: backfill from code
 - Issues: #61, #422, #429, #430
-- Anchors: `src/pages/auth/PageForgotPassword.vue`, `src/pages/auth/PageResetPassword.vue`, `src/services/auth.ts`
+- Anchors: `src/pages/auth/PageForgotPassword.vue`, `src/pages/auth/PageResetPassword.vue`, `src/services/auth.ts`, `src/composables/useAuthRedirect.ts`
 
 ## Goal
 A user who forgot their password requests a reset link, then sets a new password from that link.
@@ -15,16 +15,20 @@ A user who forgot their password requests a reset link, then sets a new password
 4. `/reset-password` reads `token` from the query string. Without a token it shows only the "invalid link" text in red and a "Back to login" link — no form.
 5. The form asks for a new password (same rule as registration: at least 12 characters, a lowercase letter, an uppercase letter, a digit and a special character) and a confirmation that must match.
 6. Submit sends `POST api/v1/auth/reset-password` with `token`, `password`, `repassword`. Success → green toast, then navigate to `/login`. Failure → red toast, same message rule as #3.
-7. Both pages are open to signed-out users (no route guard).
+7. Both pages are open to signed-out users (no route guard). A signed-in user who opens `/forgot-password` or `/reset-password` (with or without `?token=`, by page load or by in-app navigation) is redirected to `/dashboard/information`, the same as `/login` and `/register`; no form is shown and no request is sent.
 
 ## Acceptance criteria
 - `npm run test` passes (the auth handlers are covered by `src/services/auth.spec.ts`).
 - `#/reset-password` without `?token=` shows the invalid-link text.
 - Submitting a valid new password with a valid token ends on `#/login` with a green toast.
+- Signed in, opening `#/forgot-password`, `#/reset-password` and `#/reset-password?token=abc` (fresh load and in-app navigation) each lands on `#/dashboard/information`.
+- `npx vitest run src/composables/useAuthRedirect.spec.ts` passes, with cases for both pages added.
 - A confirmation that differs from the password shows the mismatch error and sends no request.
 
 ## Edge cases
 - Unknown email → same success toast as a known one (backend design, no account enumeration).
+- Signed in in this tab and clicking a reset link from the email → redirected to `/dashboard/information`; to use the link, sign out first (operator decision, #430).
+- Signed out (e.g. a new tab with only a cached `user`) → both pages open normally.
 - Expired/invalid token → red toast with the backend's message; stays on the page.
 
 ## Out of scope
@@ -43,3 +47,4 @@ A user who forgot their password requests a reset link, then sets a new password
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/auth-password-reset-spec.md` | - |
 | 2026-11-15 | Behavior #1, #3, #4, #6: no-email note, error toast uses login's extraction, form hidden without a token | #422 #429 (operator answers to open questions 1-3) | `issue-420-auth-form-fixes` |
+| 2026-11-22 | Behavior #7: signed-in users redirected to `/dashboard/information` | #430 (operator answer to open question 4) | - |

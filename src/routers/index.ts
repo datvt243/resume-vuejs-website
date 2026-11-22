@@ -153,7 +153,7 @@ router?.beforeEach((to, from, next) => {
         const isAuthenticated = store.isAuthenticated
 
         if (!isAuthenticated) {
-            next({ name: 'login' })
+            next({ name: 'login', query: { redirect: to.fullPath } })
         } else {
             next()
         }

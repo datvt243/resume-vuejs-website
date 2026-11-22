@@ -50,6 +50,22 @@ describe('handleLogin success', () => {
         expect(userSetBeforeCandidate).toBe(true)
         expect(setUserMock).toHaveBeenCalledWith({ email: 'b@b.c' })
     })
+
+    it('goes to the safe ?redirect= target of /login, even after the page moved off /login', async () => {
+        axiosMock.mockReset()
+        const router = { push: vi.fn(), currentRoute: { value: { query: { redirect: '/dashboard/preview' } as object } } }
+        axiosMock
+            .mockResolvedValueOnce({ message: 'ok', data: { user: {}, token: 't', tokenRefresh: 'r' } })
+            .mockImplementationOnce(async () => {
+                // the layout swap remounts PageLogin, which leaves /login while the candidate loads
+                router.currentRoute.value = { query: {} }
+                return { data: {} }
+            })
+
+        await handleLogin({ email: 'b@b.c', password: 'x' }, { toast: vi.fn(), router })
+
+        expect(router.push).toHaveBeenCalledWith('/dashboard/preview')
+    })
 })
 
 describe('handleRegister', () => {

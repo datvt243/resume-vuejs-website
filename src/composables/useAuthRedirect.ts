@@ -1,6 +1,7 @@
 import { watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authStore } from '@/stores/auth'
+import { safeRedirect } from '@/utilities'
 
 /**
  * Send the user to /login whenever auth is lost while on a protected route.
@@ -9,10 +10,11 @@ import { authStore } from '@/stores/auth'
  * guard only runs on navigation — without this the dashboard page stays
  * mounted inside LayoutAuth and keeps firing 401ing requests.
  *
- * Also sends an already logged-in user who opens /login or /register to the
+ * Also sends an already logged-in user who opens a guest-only page (login,
+ * register, forgot/reset password) to its safe ?redirect= target, else the
  * dashboard. Any other URL (a reload, a deep link) is kept as loaded.
  */
-const GUEST_ONLY = ['login', 'register']
+const GUEST_ONLY = ['login', 'register', 'forgot-password', 'reset-password']
 
 export const useAuthRedirect = () => {
     const store = authStore()
@@ -27,6 +29,6 @@ export const useAuthRedirect = () => {
     )
 
     router.isReady().then(() => {
-        if (store.isAuthenticated && GUEST_ONLY.includes(String(route.name))) router.push('/dashboard/information')
+        if (store.isAuthenticated && GUEST_ONLY.includes(String(route.name))) router.push(safeRedirect(route.query.redirect))
     })
 }

@@ -2,17 +2,13 @@
 /**
  * Author: Đạt Võ - https://github.com/datvt243
  * Date: `--/--`
- * Description: Trang cài đặt tài khoản — issue #63. Chỉ triển khai phần
- * backend đã hỗ trợ thật: xoá tài khoản (`DELETE /api/v1/candidate`, có
- * sẵn, cascade xoá toàn bộ dữ liệu CV + file đã upload). Đổi email/mật
- * khẩu KHÔNG triển khai ở đây — backend chưa có endpoint nào chấp nhận
- * `email`/`password` cho user đã đăng nhập (`schemaCandidatePatch`/
- * `schemaCandidate` trong resume-nodejs-api không khai báo 2 field này,
- * Joi mặc định `unknown(false)` sẽ reject request) — cùng cách xử lý
- * BLOCKED_ON_BACKEND như issue #8, không dựng form giả gọi API không tồn
- * tại.
+ * Description: Trang cài đặt tài khoản — issue #63. Xoá tài khoản
+ * (`DELETE /api/v1/candidate`, cascade xoá toàn bộ dữ liệu CV + file đã
+ * upload); đổi mật khẩu / đổi email (issue #460, backend
+ * resume-nodejs-api#412) — đổi email chỉ gửi link xác nhận, email thật
+ * đổi ở `PageConfirmEmailChange.vue`.
  */
-import { reactive, watchPostEffect } from 'vue'
+import { reactive, ref, watchPostEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import VeeForm from '@/components/veevalidate/VeeForm.vue'
 import { authStore } from '@/stores/auth'
@@ -68,6 +64,59 @@ async function handleUpdateCvFileName(values) {
     })
 }
 
+// same rules as PageRegister.vue (backend `passwordRegex`, min 12)
+const changePasswordFields = [
+    { name: 'currentPassword', label: 'account.currentPassword', type: 'password', autocomplete: 'current-password', valid: yup => yup.string().required('validation.passwordRequired') },
+    {
+        name: 'password',
+        label: 'auth.newPassword',
+        type: 'password',
+        autocomplete: 'new-password',
+        text: 'auth.passwordHint',
+        valid: yup =>
+            yup
+                .string()
+                .min(12, 'validation.passwordMin')
+                .matches(/[a-z]/, 'validation.passwordLower')
+                .matches(/[A-Z]/, 'validation.passwordUpper')
+                .matches(/[0-9]/, 'validation.passwordDigit')
+                .matches(/[^A-Za-z0-9]/, 'validation.passwordSpecial')
+                .required('validation.passwordRequired'),
+    },
+    {
+        name: 'repassword',
+        label: 'auth.confirmPassword',
+        type: 'password',
+        autocomplete: 'new-password',
+        valid: yup =>
+            yup
+                .string()
+                .oneOf([yup.ref('password')], 'validation.passwordMismatch')
+                .required('validation.confirmPasswordRequired'),
+    },
+]
+const changeEmailFields = [
+    { name: 'email', label: 'account.newEmail', type: 'email', placeholder: 'auth.emailPlaceholder', autocomplete: 'email', valid: yup => yup.string().trim().email('validation.emailInvalid').required('validation.emailRequired') },
+    { name: 'currentPassword', label: 'account.currentPassword', type: 'password', autocomplete: 'current-password', valid: yup => yup.string().required('validation.passwordRequired') },
+]
+// v-if: closing unmounts the form, which clears what was typed
+const isChangingPassword = ref(false)
+const isChangingEmail = ref(false)
+
+async function handleChangePassword({ currentPassword, password, repassword }) {
+    await handleBase({ method: 'post', url: 'auth/change-password', data: { currentPassword, password, repassword } }, { loading, toast }, ({ data }) => {
+        // the backend revoked every older token, this tab's too — store the new pair before any other request
+        data?.token && data?.tokenRefresh && auth.setTokens({ token: data.token, tokenRefresh: data.tokenRefresh })
+        isChangingPassword.value = false
+    })
+}
+
+async function handleChangeEmail({ email, currentPassword }) {
+    await handleBase({ method: 'post', url: 'auth/change-email', data: { currentPassword, email: email.trim() } }, { loading, toast }, () => {
+        isChangingEmail.value = false
+    })
+}
+
 function handleDeleteAccount() {
     confirmDelete({
         title: t('account.deleteConfirmTitle'),
@@ -90,23 +139,27 @@ function handleDeleteAccount() {
             <div class="flex flex-wrap items-end justify-between gap-4 pb-4">
                 <div class="min-w-0">
                     <p class="form-label">Email</p>
-                    <p class="m-0 break-all text-base text-fg">{{ auth.getUser?.email || '—' }}</p>
+                    <p class="m-0 break-all text-base text-fg" data-current-email>{{ auth.getUser?.email || '—' }}</p>
                 </div>
-                <!-- disabled buttons swallow hover, so the tooltip sits on the wrapper -->
-                <span class="inline-flex" :title="$t('common.comingSoon')">
-                    <Button :text="$t('account.changeEmail')" disabled aria-describedby="account-soon" />
-                </span>
+                <Button v-if="!isChangingEmail" :text="$t('account.changeEmail')" data-open-change-email @click="isChangingEmail = true" />
             </div>
+            <VeeForm v-if="isChangingEmail" key="frm-change-email" :fields="changeEmailFields" :submit-fn="handleChangeEmail" :submit-text="$t('account.changeEmail')" button-position="end">
+                <template #cancel>
+                    <Button :text="$t('common.cancel')" type="ghost" @click="isChangingEmail = false" />
+                </template>
+            </VeeForm>
         </FormSection>
 
         <FormSection :title="$t('auth.password')" :description="$t('account.passwordDescription')">
-            <div class="pb-4">
-                <span class="inline-flex" :title="$t('common.comingSoon')">
-                    <Button :text="$t('account.changePassword')" disabled aria-describedby="account-soon" />
-                </span>
+            <div v-if="!isChangingPassword" class="pb-4">
+                <Button :text="$t('account.changePassword')" data-open-change-password @click="isChangingPassword = true" />
             </div>
+            <VeeForm v-else key="frm-change-password" :fields="changePasswordFields" :submit-fn="handleChangePassword" :submit-text="$t('account.changePassword')" button-position="end">
+                <template #cancel>
+                    <Button :text="$t('common.cancel')" type="ghost" @click="isChangingPassword = false" />
+                </template>
+            </VeeForm>
         </FormSection>
-        <span id="account-soon" class="sr-only">{{ $t('common.comingSoon') }}</span>
 
         <FormSection :title="$t('account.delete')" :description="$t('account.deleteDescription')" danger>
             <div class="pb-4">

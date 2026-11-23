@@ -17,10 +17,21 @@ import { t } from '@/i18n'
 export const withLangSuffix = (name: string, lang: string) =>
     /_(vi|en)(\.[^.]*)?$/i.test(name) ? name : name.replace(/(\.[^.]*)?$/, ext => `_${lang.toUpperCase()}${ext}`)
 
+// One download for the whole app: every entry point and DownloadOverlay share it
+export const downloadStatus = ref<'idle' | 'generating' | 'downloading'>('idle')
+export const isDownloading = computed(() => downloadStatus.value !== 'idle')
+let controller: AbortController | null = null
+
+const warnBeforeUnload = (e: BeforeUnloadEvent) => {
+    e.preventDefault()
+    e.returnValue = ''
+}
+
+export const cancelDownload = () => controller?.abort()
+
 export const useDownloadCv = () => {
     const { toast } = useHelper()
     const candidate = candidateStore()
-    const isDownloading = ref(false)
 
     const cvFileName = computed(() => {
         const { firstName = '', lastName = '', cvFileName: custom = '' }: { firstName?: string; lastName?: string; cvFileName?: string } = candidate.getCandidate || {}
@@ -35,16 +46,29 @@ export const useDownloadCv = () => {
      * failure becomes a toast instead of a tab of raw JSON.
      * `classic` and `vi` are the backend defaults, so they're left off.
      * The server's `Content-Disposition` name wins — it's the sanitized one.
+     * Cancel aborts the request; a 401 retry reuses the same config, so it carries the signal too.
      */
     const download = async ({ template = 'classic', lang = 'vi' } = {}) => {
         if (isDownloading.value) return
-        isDownloading.value = true
+        const { signal } = (controller = new AbortController())
+        downloadStatus.value = 'generating'
+        window.addEventListener('beforeunload', warnBeforeUnload)
         try {
             const params = {
                 ...(template === 'ats' && { template }),
                 ...(lang === 'en' && { lang }),
             }
-            const { data, headers } = await instanceAxios.get(`${subURL}download-pdf`, { params, responseType: 'blob' })
+            const { data, headers } = await instanceAxios.get(`${subURL}download-pdf`, {
+                params,
+                responseType: 'blob',
+                signal,
+                // first bytes in = the server finished rendering; axios throttles progress and can
+                // fire a trailing event after the request settles, so never leave `idle` from here
+                onDownloadProgress: () => {
+                    if (downloadStatus.value === 'generating') downloadStatus.value = 'downloading'
+                },
+            })
+            if (signal.aborted) return
             const href = URL.createObjectURL(data)
             const link = document.createElement('a')
             link.href = href
@@ -54,9 +78,11 @@ export const useDownloadCv = () => {
             // revoking in the same tick can cancel the download in some browsers
             setTimeout(() => URL.revokeObjectURL(href))
         } catch {
-            toast?.({ message: t('error.downloadCv'), bg: 'danger' })
+            if (!signal.aborted) toast?.({ message: t('error.downloadCv'), bg: 'danger' })
         } finally {
-            isDownloading.value = false
+            downloadStatus.value = 'idle'
+            controller = null
+            window.removeEventListener('beforeunload', warnBeforeUnload)
         }
     }
 

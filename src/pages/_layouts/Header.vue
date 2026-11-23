@@ -132,6 +132,11 @@ header.sticky.top-0.z-20.flex.h-14.shrink-0.items-center.gap-2.border-b.border-l
                     a.dropdown-item(:href="_settings.getMe()" target="_blank")
                         FontAwesomeIcon.me-2.text-fg-3(icon="fa-solid fa-code")
                         | {{ $t('header.viewApi') }}
+                //- below sm the header Download button is hidden
+                li(class="sm:hidden")
+                    button.dropdown-item(type="button" @click="download({ lang: selectedLang })")
+                        FontAwesomeIcon.me-2.text-fg-3(icon="fa-solid fa-download")
+                        | {{ $t('header.downloadCv') }}
                 li.dropdown-divider
                 li
                     button.dropdown-item(type="button" @click="_handelLogout")

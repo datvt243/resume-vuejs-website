@@ -44,14 +44,15 @@ export const confirmDelete = (props = {}) => {
     })
 }
 
-export const confirmDiscardChanges = async () => {
+// `title`/`confirmText` let other "leave and lose this?" prompts reuse it (the download leave guard)
+export const confirmDiscardChanges = async ({ title = t('confirm.unsavedChanges'), confirmText = t('confirm.closeAnyway') } = {}) => {
     const result = await Swal.fire({
-        title: t('confirm.unsavedChanges'),
+        title,
         icon: 'warning',
         showCancelButton: true,
         reverseButtons: true,
         cancelButtonText: t('confirm.stay'),
-        confirmButtonText: t('confirm.closeAnyway'),
+        confirmButtonText: confirmText,
         customClass: actionClasses,
         buttonsStyling: false,
     })

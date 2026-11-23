@@ -75,7 +75,6 @@ flowchart TD
 | Node | State | Notes |
 |---|---|---|
 | `issue-122-ai-cv-suggestions-pending` | PENDING | Operator (2026-10-05): "#122 chuyển status thành PENDING". Deliberately deferred, not started — waiting on an owner decision: shared app AI key vs BYOK (BYOK needs new two-way encryption on the backend; only `bcrypt` exists today) + a consent checkbox for sending CV data out. Checked: no branch/PR/evidence for #122; backend `origin/staging` (`f05930a`) has no AI-provider code. Partly overlapped by #159's non-AI JD keyword match. GitHub label `status: pending` applied. Evidence: `evidence/implementer/2026-10-05-issue-122-158-status-rows.md`. |
-| `issue-445-enddate-null-current` | SEALED | 2026-11-16 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-16/issue-445-enddate-null-current-seal.md` |
 | `issue-446-short-major-optional-award-link` | SEALED | 2026-11-16 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-16/issue-446-short-major-optional-award-link-seal.md` |
 | `issue-477-translate-md-english` | SEALED | 2026-11-16 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-16/issue-477-translate-md-english-seal.md` |
 | `issue-455-format-by-app-lang` | SEALED | 2026-11-18 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-18/issue-455-format-by-app-lang-seal.md` |
@@ -95,3 +94,4 @@ flowchart TD
 | `issue-434-436-social-links-copy` | SEALED | 2026-11-22 — archived, see dev-loop-archive.md. Evidence: evidence/verifier/2026-11-22/issue-434-436-social-links-copy-seal.md |
 | `issue-428-430-auth-redirects` | SEALED | 2026-11-22 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-22/issue-428-430-auth-redirects-seal.md` |
 | `issue-444-441-education-view-languages-edit` | SEALED | 2026-11-22 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-22/issue-444-441-education-view-languages-edit-seal.md` |
+| `issue-408-452-download-overlay-menu` | SEALED | 2026-11-23 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-23/issue-408-452-download-overlay-menu-seal.md` |

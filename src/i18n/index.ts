@@ -97,6 +97,13 @@ const vi = {
         coldStartNote: 'Gói miễn phí tự ngủ khi không dùng nên lần gọi đầu cần thời gian khởi động lại.',
         overtime: 'Server khởi động lâu hơn dự kiến, vui lòng đợi thêm chút nữa…',
     },
+    download: {
+        title: 'Đang tải CV',
+        generating: 'Đang tạo PDF…',
+        downloading: 'Đang tải xuống…',
+        leaveTitle: 'CV đang được tải. Rời trang và hủy tải?',
+        leave: 'Rời trang',
+    },
     confirm: {
         deleteItem: 'Xóa mục này?',
         unsavedChanges: 'Bạn có thay đổi chưa lưu, vẫn đóng?',
@@ -636,6 +643,13 @@ const en: typeof vi = {
         coldStart: 'The server is starting up, please wait ~{seconds} seconds',
         coldStartNote: 'The free tier sleeps when idle, so the first request needs time to wake it up.',
         overtime: 'The server is taking longer than expected, please wait a little more…',
+    },
+    download: {
+        title: 'Downloading CV',
+        generating: 'Generating PDF…',
+        downloading: 'Downloading…',
+        leaveTitle: 'Your CV is still downloading. Leave and cancel it?',
+        leave: 'Leave',
     },
     confirm: {
         deleteItem: 'Delete this item?',

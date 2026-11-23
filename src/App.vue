@@ -10,6 +10,7 @@ import LayoutAuth from '@/pages/_layouts/LayoutAuth.vue'
 
 import Spinner from '@/components/Spinner.vue'
 import Toasts from '@/components/Toasts.vue'
+import DownloadOverlay from '@/components/DownloadOverlay.vue'
 
 /**
  *
@@ -20,6 +21,7 @@ import { candidateStore } from '@/stores/candidate'
 
 import { handleBase } from '@/services/base'
 import { useAuthRedirect } from '@/composables/useAuthRedirect'
+import { isDownloading } from '@/composables/useDownloadCv'
 
 const store = authStore()
 const candidate = candidateStore()
@@ -73,11 +75,12 @@ function showToast({ message, bg }) {
 
 <template>
     <Spinner ref="refSpinner" />
-    <div class="clearfix" :inert="refSpinner?.isColdStart">
+    <div class="clearfix" :inert="refSpinner?.isColdStart || isDownloading">
         <component :is="store.isAuthenticated ? LayoutDefault : LayoutAuth">
             <RouterView />
         </component>
     </div>
+    <DownloadOverlay />
     <Toasts ref="refToast" v-bind="toastAttrs" />
 </template>
 

@@ -19,6 +19,8 @@ export interface AtsCheckResult {
     passed: boolean
     severity: 'error' | 'warning'
     message: string
+    /** Only sent as `false` (e.g. `template=classic`); left out of the score (#461) */
+    applicable?: false
 }
 
 export interface AtsKeywordMatch {

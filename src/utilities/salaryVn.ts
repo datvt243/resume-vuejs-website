@@ -9,16 +9,15 @@ export type Region = 1 | 2 | 3 | 4
  * Every legal value the calculator uses — update here when the law changes.
  * - Rates: Luật BHXH 58/2024/QH15, Luật BHYT, Luật Việc làm (BHXH 8%, BHYT 1.5%, BHTN 1%)
  * - Base salary 2,530,000 from 01/07/2026: Nghị định 161/2026/NĐ-CP (BHXH/BHYT cap = 20×)
- * - Regional minimum wages from 01/01/2026: Nghị định 293/2025/NĐ-CP (BHTN cap = 20×);
- *   01/01/2027 values (Nghị định 399/2026) are issue #509
+ * - Regional minimum wages from 01/01/2027: Nghị định 399/2026/NĐ-CP (BHTN cap = 20×)
  * - Family deduction: Nghị quyết 110/2025/UBTVQH15
  * - PIT brackets on monthly taxable salary: Luật Thuế TNCN 109/2025/QH15, Điều 9
  */
 export const SALARY_VN = {
-    effectiveFrom: '01/07/2026',
+    effectiveFrom: '01/01/2027',
     rates: { bhxh: 0.08, bhyt: 0.015, bhtn: 0.01 },
     baseSalary: 2_530_000,
-    regionalMinWage: { 1: 5_310_000, 2: 4_730_000, 3: 4_140_000, 4: 3_700_000 } as Record<Region, number>,
+    regionalMinWage: { 1: 5_700_000, 2: 5_080_000, 3: 4_450_000, 4: 4_040_000 } as Record<Region, number>,
     capMultiplier: 20,
     personalDeduction: 15_500_000,
     dependentDeduction: 6_200_000,

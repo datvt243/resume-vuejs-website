@@ -76,8 +76,8 @@ describe('experience position', () => {
 const url = 'https://a.co/' + 'a'.repeat(87)
 describe('project link', () => {
     const schema = schemaOf(PROJECT, 'link')
-    it('is required and max 100 characters', () => {
-        expect(schema.isValidSync('')).toBe(false)
+    it('is optional (issue #410) and max 100 characters', () => {
+        expect(schema.isValidSync('')).toBe(true)
         expect(schema.isValidSync(url)).toBe(true)
         expect(schema.isValidSync(url + 'a')).toBe(false)
     })

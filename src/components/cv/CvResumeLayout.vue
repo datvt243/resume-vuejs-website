@@ -15,6 +15,7 @@
  */
 import { computed } from 'vue'
 import { formatDate, getLocalizedText, sanitizeHtml } from '@/utilities/index'
+import { compareProjects } from '@/utilities/sectionOrder'
 import generalInformationModel from '@/models/generalInformation.model'
 import { experienceTitle } from '@/models/experience.model'
 import { resolveTheme } from '@/composables/useCvTheme'
@@ -76,6 +77,8 @@ const fullName = computed(() => `${props.data.firstName || ''} ${props.data.last
 const generalInformation = computed(() => props.data.generalInformation || {})
 // newest first, the same order as the exported PDF (the API returns insertion order)
 const experiences = computed(() => [...(props.data.experiences || [])].sort((a, b) => b.startDate - a.startDate))
+// the manual order, else company projects first, newest first
+const projects = computed(() => [...(props.data.projects || [])].sort(compareProjects))
 
 function optionLabel(model, name, value) {
     const field = model.find(f => f.name === name)
@@ -155,9 +158,9 @@ function certDateRange(item) {
             </div>
         </section>
 
-        <section v-if="data.projects?.length" class="cv-section">
+        <section v-if="projects.length" class="cv-section">
             <h3 class="cv-section-title">{{ t.projects }}</h3>
-            <div v-for="pj in data.projects" :key="pj._id" class="cv-item">
+            <div v-for="pj in projects" :key="pj._id" class="cv-item">
                 <div class="cv-item-head">
                     <span class="cv-item-title">{{ pj.name }}</span>
                     <span class="cv-item-date">{{ dateRange({ ...pj, isCurrent: pj.isWorking }) }}</span>

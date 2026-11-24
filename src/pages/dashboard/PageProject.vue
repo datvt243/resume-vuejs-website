@@ -13,7 +13,6 @@ import ProjectItem from '@/components/project/ProjectItem.vue'
 import { ref, computed } from 'vue'
 import { useCandidate } from '@/composables/useCandidate'
 import { useDocument } from '@/composables/useDocument'
-import { useManualOrder } from '@/composables/useManualOrder'
 import { useFormLang } from '@/composables/useFormLang'
 import { localizedToForm, localizedFromForm, formatDate, getLocalizedText, sanitizeHtml } from '@/utilities/index'
 import { t } from '@/i18n'
@@ -22,7 +21,7 @@ import { errorCodeOf } from '@/services/axios'
 
 import model from '@/models/project.model.ts'
 
-const { projects: dataList, removeRecordById, addRecordToList, loadError, getData } = useCandidate({ field: 'projects' })
+const { projects: dataList, removeRecordById, addRecordToList, reorder, loadError, getData } = useCandidate({ field: 'projects' })
 const { experiences } = useCandidate({ field: 'experiences', collection: 'experience' })
 // a project can only belong to a real job, not a career break
 const experienceOptions = computed(() =>
@@ -32,25 +31,21 @@ function linkedExperience(project) {
     return (experiences.value || []).find(e => e._id === project.experienceId)
 }
 
-// Sắp xếp thủ công (issue #57) — chỉ lưu ở trình duyệt (localStorage),
-// KHÔNG đồng bộ server (backend chưa có field order — xem comment đầu
-// `useManualOrder.ts`).
-const { orderedItems, reorder } = useManualOrder('project', dataList)
 const dragId = ref(null)
 function onDragStart(id) {
     dragId.value = id
 }
 function onDrop(targetId) {
     if (dragId.value === null || dragId.value === targetId) return
-    const list = [...orderedItems.value]
+    const list = [...dataList.value]
     const fromIndex = list.findIndex(e => e._id === dragId.value)
     const toIndex = list.findIndex(e => e._id === targetId)
     if (fromIndex === -1 || toIndex === -1) return
 
     const [moved] = list.splice(fromIndex, 1)
     list.splice(toIndex, 0, moved)
-    reorder(list)
     dragId.value = null
+    reorder(list)
 }
 
 /**
@@ -206,7 +201,7 @@ function showModalDuplicateDoc(doc) {
             <p class="mb-2 mt-0 text-xs text-fg-3">{{ $t('common.dragToSort') }}</p>
             <ListTransition class="m-0 list-none divide-y divide-line rounded-md border border-line bg-surface p-0">
                 <li
-                    v-for="edu in orderedItems"
+                    v-for="edu in dataList"
                     :key="edu._id"
                     class="draggable-item flex items-start gap-1 ps-2"
                     draggable="true"

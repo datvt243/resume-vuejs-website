@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import PageProject from './PageProject.vue'
@@ -14,17 +14,23 @@ const experiences = vi.hoisted(() => [
     { _id: 'e2', isCareerBreak: true, careerBreakType: 'travel' },
 ])
 const extraProjects = vi.hoisted((): Record<string, any>[] => [])
+const reorder = vi.hoisted(() => vi.fn())
 const project = vi.hoisted((): Record<string, any> => ({
     _id: 'p1', name: 'P1', position: 'Dev', technology: ['Vue', 'TS'], startDate: 1641038400000, endDate: null, isWorking: true, link: 'https://x.dev',
     description: { vi: 'Mô tả', en: 'Desc' },
 }))
 
-vi.mock('@/composables/useCandidate', () => ({
-    useCandidate: ({ field }: { field: string }) =>
-        field === 'experiences'
-            ? { experiences: ref(experiences) }
-            : { projects: ref([project, ...extraProjects]), removeRecordById: vi.fn(), addRecordToList: vi.fn(), loadError: ref(null), getData: vi.fn() },
-}))
+vi.mock('@/composables/useCandidate', async () => {
+    const { ref } = await import('vue')
+    return {
+        useCandidate: ({ field }: { field: string }) => {
+            if (field === 'experiences') return { experiences: ref(experiences) }
+            const projects = ref([project, ...extraProjects])
+            reorder.mockImplementation(list => (projects.value = list))
+            return { projects, removeRecordById: vi.fn(), addRecordToList: vi.fn(), reorder, loadError: ref(null), getData: vi.fn() }
+        },
+    }
+})
 vi.mock('@/composables/useDocument', () => ({
     useDocument: () => ({ document: reactive({}), updateDoc, deleteDoc: vi.fn() }),
 }))
@@ -171,3 +177,34 @@ describe('PageProject — type / linked experience (#401)', () => {
         }
     })
 })
+
+describe('PageProject — #442 drag-and-drop saves through useCandidate.reorder', () => {
+    it('dropping B onto A reorders to B, A and writes nothing to localStorage', async () => {
+        extraProjects.push({ _id: 'p2', name: 'P2' })
+        const setItem = vi.spyOn(Storage.prototype, 'setItem')
+        try {
+            const w = mountPage()
+            const rows = w.findAll('li[draggable="true"]')
+            expect(rows).toHaveLength(2)
+            await rows[1].trigger('dragstart')
+            await rows[0].trigger('drop')
+
+            expect(reorder.mock.calls[0][0].map((e: { _id: string }) => e._id)).toEqual(['p2', 'p1'])
+            expect(w.findAllComponents(stubs.ProjectItem).map(c => c.props('modelValue')._id)).toEqual(['p2', 'p1'])
+            expect(setItem).not.toHaveBeenCalled()
+        } finally {
+            extraProjects.length = 0
+            setItem.mockRestore()
+            reorder.mockClear()
+        }
+    })
+
+    it('dropping an entry on itself sends nothing', async () => {
+        const w = mountPage()
+        const row = w.find('li[draggable="true"]')
+        await row.trigger('dragstart')
+        await row.trigger('drop')
+        expect(reorder).not.toHaveBeenCalled()
+    })
+})
+

@@ -75,7 +75,6 @@ flowchart TD
 | Node | State | Notes |
 |---|---|---|
 | `issue-122-ai-cv-suggestions-pending` | PENDING | Operator (2026-10-05): "#122 chuyển status thành PENDING". Deliberately deferred, not started — waiting on an owner decision: shared app AI key vs BYOK (BYOK needs new two-way encryption on the backend; only `bcrypt` exists today) + a consent checkbox for sending CV data out. Checked: no branch/PR/evidence for #122; backend `origin/staging` (`f05930a`) has no AI-provider code. Partly overlapped by #159's non-AI JD keyword match. GitHub label `status: pending` applied. Evidence: `evidence/implementer/2026-10-05-issue-122-158-status-rows.md`. |
-| `issue-400-experience-view-lang` | SEALED | 2026-11-19 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-19/issue-400-experience-view-lang-seal.md` |
 | `issue-402-project-view-modal` | SEALED | 2026-11-19 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-19/issue-402-project-view-modal-seal.md` |
 | `issue-419-table-row-keys` | SEALED | 2026-11-20 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-20/issue-419-table-row-keys-seal.md` |
 | `issue-489-typed-delete-confirm` | SEALED | 2026-11-20 — archived, see dev-loop-archive.md. Evidence: evidence/verifier/2026-11-20/issue-489-typed-delete-confirm-seal.md |
@@ -95,3 +94,4 @@ flowchart TD
 | `issue-404-460-461-salary-password-ats` | SEALED | 2026-11-23 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-23/issue-404-460-461-salary-password-ats-seal.md` |
 | `issue-453-454-owner-visit-pagination` | SEALED | 2026-11-24 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-24/issue-453-454-owner-visit-pagination-seal.md` |
 | `issue-509-410-min-wage-project-link` | SEALED | 2026-11-24 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-24/issue-509-410-min-wage-project-link-seal.md` |
+| `issue-442-406-cv-section-order` | SEALED | 2026-11-24 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-24/issue-442-406-cv-section-order-seal-round2.md` |

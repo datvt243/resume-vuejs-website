@@ -48,3 +48,4 @@ Anyone with the candidate's share link can read their CV without an account — 
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/public-resume-spec.md` | - |
 | 2026-11-24 | Behavior #6: no visit POST when the signed-in viewer owns the CV | Open question 2, operator answer — #453 | `issue-453-454-owner-visit-pagination` |
+| 2026-11-24 | Pointer only: Education/Project order on the public page is specified in `cv-timeline-sections.md` Behavior #12–13 (draft) | #442, #406 | - |

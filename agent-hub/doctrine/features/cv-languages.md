@@ -32,7 +32,7 @@ The candidate lists the foreign languages they speak and at what level.
 - (#441) Save fails (API error) → toast via `handleBase`, modal stays open, list unchanged.
 
 ## Out of scope
-- Showing languages on the CV preview/public page (the shared layout has no languages section).
+- Showing languages on the CV preview/public page (the shared layout has no languages section). *(#440 changes this — layout in `cv-preview-export.md` Behavior #20, completion in `home-overview.md` Behavior #4, both draft.)*
 
 - (#441) Reordering languages; duplicate-language detection.
 
@@ -47,3 +47,4 @@ The candidate lists the foreign languages they speak and at what level.
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-languages-spec.md` | - |
 | 2026-11-22 | Behavior #6 (draft): edit an existing language (row click / Edit button → pre-filled modal, PATCH full list) | #441 (operator answer to open question 1) | - |
+| 2026-11-24 | Out of scope note points to the #440 spec | #440, see `evidence/analyst/2026-11-24/issue-440-cv-skills-languages-spec.md` | - |

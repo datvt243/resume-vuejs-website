@@ -40,8 +40,8 @@ The candidate lists their professional skills (grouped, with years), picks their
 - Renaming a group to its current name → nothing is sent.
 
 ## Out of scope
-- Showing skills on the CV preview/public page (the shared layout has no skills section).
-- Counting skills in profile completion.
+- Showing skills on the CV preview/public page (the shared layout has no skills section). *(#440 changes this — specified in `cv-preview-export.md` Behavior #18–23, draft.)*
+- Counting skills in profile completion. *(#440 changes this — counted, see `home-overview.md` Behavior #4, draft.)*
 
 ## Open questions
 1. Main/familiar skills are stored by name. Renaming or deleting a skill (or deleting its group) does not update `mainSkills`/`familiarSkills`, which can then hold names that no longer exist. Intended? → **Answer (operator 2026-11-07):** Bug: keep them in sync — #437
@@ -56,3 +56,4 @@ The candidate lists their professional skills (grouped, with years), picks their
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/cv-skills-spec.md` | - |
 | 2026-11-20 | Behavior (draft): typed `delete` confirm on skill-group delete | #439 / umbrella #489 | - |
+| 2026-11-24 | Out of scope notes point to the #440 spec (layout in `cv-preview-export.md`, completion in `home-overview.md`) | #440, see `evidence/analyst/2026-11-24/issue-440-cv-skills-languages-spec.md` | - |

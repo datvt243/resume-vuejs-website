@@ -14,7 +14,7 @@
  * public API already resolves those fields to plain strings for `?lang=`.
  */
 import { computed } from 'vue'
-import { formatDate, getLocalizedText, sanitizeHtml } from '@/utilities/index'
+import { formatDate, getLocalizedText, groupSkills, sanitizeHtml } from '@/utilities/index'
 import { compareProjects } from '@/utilities/sectionOrder'
 import generalInformationModel from '@/models/generalInformation.model'
 import { experienceTitle } from '@/models/experience.model'
@@ -43,6 +43,12 @@ const LABELS = {
         awards: 'Giải thưởng',
         certificates: 'Chứng chỉ',
         references: 'Người tham khảo',
+        skills: 'Kỹ năng',
+        mainSkills: 'Kỹ năng chính',
+        familiarSkills: 'Kỹ năng quen thuộc',
+        professionalSkills: 'Kỹ năng chuyên môn',
+        personalSkills: 'Kỹ năng cá nhân',
+        languages: 'Ngoại ngữ',
         present: 'Hiện tại',
         noExpiration: 'Không thời hạn',
     },
@@ -61,6 +67,12 @@ const LABELS = {
         awards: 'Awards',
         certificates: 'Certificates',
         references: 'References',
+        skills: 'Skills',
+        mainSkills: 'Main skills',
+        familiarSkills: 'Familiar skills',
+        professionalSkills: 'Professional skills',
+        personalSkills: 'Personal skills',
+        languages: 'Languages',
         present: 'Present',
         noExpiration: 'No expiration',
     },
@@ -79,6 +91,28 @@ const generalInformation = computed(() => props.data.generalInformation || {})
 const experiences = computed(() => [...(props.data.experiences || [])].sort((a, b) => b.startDate - a.startDate))
 // the manual order, else company projects first, newest first
 const projects = computed(() => [...(props.data.projects || [])].sort(compareProjects))
+
+const names = list => (list || []).map(s => s?.name).filter(Boolean)
+// main/familiar first; a professional skill already picked there is left out of its group
+const skillRows = computed(() => {
+    const gi = generalInformation.value
+    const main = names(gi.mainSkills)
+    const familiar = names(gi.familiarSkills)
+    const picked = new Set([...main, ...familiar])
+    const groups = groupSkills(gi.professionalSkills || [], gi.professionalSkillsGroup || []).map(g => ({
+        label: g.name ?? t.value.professionalSkills,
+        names: names(g.skills).filter(n => !picked.has(n)),
+    }))
+    return [{ label: t.value.mainSkills, names: main }, { label: t.value.familiarSkills, names: familiar }, ...groups, { label: t.value.personalSkills, names: names(gi.personalSkills) }].filter(
+        r => r.names.length,
+    )
+})
+const LANGUAGE_LEVELS = ['basic', 'intermediate', 'advanced', 'expert']
+// level in the CV's language; a legacy free-text level shows as stored
+const languageLine = ({ language, level }) => {
+    const label = LANGUAGE_LEVELS.includes(level) ? i18n.global.t(`option.languageLevel.${level}`, {}, { locale: props.lang }) : level
+    return label ? `${language} (${label})` : language
+}
 
 function optionLabel(model, name, value) {
     const field = model.find(f => f.name === name)
@@ -132,6 +166,13 @@ function certDateRange(item) {
                 <li v-if="generalInformation.workLocation"><strong>{{ t.workLocation }}:</strong> {{ generalInformation.workLocation }}</li>
             </ul>
             <div v-if="generalInformation.careerGoal" class="cv-paragraph" v-html="sanitizeHtml(text(generalInformation.careerGoal))"></div>
+        </section>
+
+        <section v-if="skillRows.length" class="cv-section">
+            <h3 class="cv-section-title">{{ t.skills }}</h3>
+            <ul class="cv-facts">
+                <li v-for="(row, i) in skillRows" :key="i"><strong>{{ row.label }}:</strong> {{ row.names.join(', ') }}</li>
+            </ul>
         </section>
 
         <section v-if="data.educations?.length" class="cv-section">
@@ -197,6 +238,13 @@ function certDateRange(item) {
                 <p v-if="ce.organization" class="cv-item-sub">{{ ce.organization }}</p>
                 <div v-if="ce.description" class="cv-item-desc" v-html="sanitizeHtml(text(ce.description))"></div>
             </div>
+        </section>
+
+        <section v-if="generalInformation.foreignLanguages?.length" class="cv-section">
+            <h3 class="cv-section-title">{{ t.languages }}</h3>
+            <ul class="cv-facts">
+                <li v-for="(lg, i) in generalInformation.foreignLanguages" :key="i">{{ languageLine(lg) }}</li>
+            </ul>
         </section>
 
         <section v-if="data.references?.length" class="cv-section">

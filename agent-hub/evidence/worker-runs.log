@@ -23,3 +23,5 @@
 2026-11-24T12:44:31Z role=verifier outcome=SEAL node=issue-509-410-min-wage-project-link rerun=none spawn=resumed hub_bytes_before=100381 hub_bytes_after=100395
 2026-11-24T13:10:00Z role=verifier outcome=REOPEN node=issue-442-406-cv-section-order rerun=none spawn=fresh hub_bytes_before=100395 hub_bytes_after=100865
 2026-11-24T13:30:00Z role=verifier outcome=SEAL node=issue-442-406-cv-section-order rerun=none spawn=resumed hub_bytes_before=100395 hub_bytes_after=100632
+2026-11-24T13:58:38Z role=verifier outcome=REOPEN node=issue-440-cv-skills-languages rerun=none spawn=fresh hub_bytes_before=100632 hub_bytes_after=  101072
+2026-11-24T14:00:41Z role=verifier outcome=SEAL node=issue-440-cv-skills-languages rerun=none spawn=resumed hub_bytes_before=100632 hub_bytes_after=100632

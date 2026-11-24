@@ -14,9 +14,13 @@ import VeeForm from '@/components/veevalidate/VeeForm.vue'
 import { computed, inject } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { handleResetPassword } from '@/services/auth'
+import { authStore } from '@/stores/auth'
 
 const route = useRoute()
 const router = useRouter()
+if (authStore().isAuthenticated) {
+    router?.push('/dashboard/information')
+}
 const refSpinner = inject('spinner')
 const refToast = inject('toast')
 // a repeated ?token= gives an array — treat it as no token

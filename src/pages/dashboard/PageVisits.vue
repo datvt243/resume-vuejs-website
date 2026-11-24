@@ -5,14 +5,11 @@
  * Description: Analytics page for profile visits (DESIGN.md §4.2) —
  * range control → KPIs → chart → source/country breakdowns → paginated
  * detail table. Read-only: stats come from `useVisitStats` (aggregated
- * server-side per interval), the detail rows from the cache
- * `LayoutDefault.vue` already filled via `useVisits()`. Reading that cache
- * through a `computed` (instead of calling `useVisits()` again) keeps it
- * reactive to the parent's in-flight fetch.
+ * server-side per interval), the detail table pages `GET candidate/visits`
+ * itself (`page`/`limit`) and takes the all-time total from its `meta`.
  */
 import { computed, inject, ref, watch } from 'vue'
 import VisitChart from '@/components/visits/VisitChart.vue'
-import { candidateStore } from '@/stores/candidate'
 import { useVisitStats } from '@/composables/useVisitStats'
 import { t, uiLocale } from '@/i18n'
 import { buttonClass } from '@/lib/button.lib'
@@ -20,27 +17,60 @@ import { confirmDelete } from '@/lib/swal.lib'
 import { useHelper } from '@/composables/useHelper'
 import { handleBase } from '@/services/base'
 
-const candidate = candidateStore()
-const dataList = computed(() => candidate.getCandidate?.visits || [])
-
 const { interval, stats, loadError: statsError, getData: reloadStats } = useVisitStats()
+// LayoutDefault's cached count (Home's stat card) — refreshed after Delete all
 const reloadVisits = inject('reloadVisits', null)
-const visitsError = computed(() => !!candidate.getCandidate?.visitsLoadError)
-const loadError = computed(() => statsError.value || visitsError.value)
+const { loading, toast } = useHelper()
+
+/* detail table — DESIGN.md §5.4: paginate past 100 rows; the API pages it */
+const PAGE_SIZE = 25
+const page = ref(1)
+// page the shown rows belong to — the range label must not jump ahead while the next page loads
+const shownPage = ref(1)
+const pageRows = ref([])
+const total = ref(0)
+const pageCount = ref(1)
+const tableError = ref(false)
+async function loadPage() {
+    const requested = page.value
+    let loaded = false
+    await handleBase({ method: 'get', url: 'candidate/visits', params: { page: requested, limit: PAGE_SIZE } }, { loading, toast: null, toastError: toast }, res => {
+        loaded = true
+        // a slower reply for a page the user already left must not overwrite the current one
+        if (requested !== page.value) return
+        shownPage.value = requested
+        pageRows.value = Array.isArray(res.data) ? res.data : []
+        total.value = res.meta?.total ?? pageRows.value.length
+        pageCount.value = Math.max(1, res.meta?.totalPages ?? 1)
+    })
+    if (requested !== page.value) return
+    tableError.value = !loaded
+    // the list shrank (e.g. deleted elsewhere) — move back to the last page
+    if (page.value > pageCount.value) page.value = pageCount.value
+}
+watch(page, loadPage, { immediate: true })
+const rangeLabel = computed(() => {
+    if (!total.value) return ''
+    const from = (shownPage.value - 1) * PAGE_SIZE + 1
+    const to = Math.min(from + pageRows.value.length - 1, total.value)
+    return t('common.rowRange', { from: numberFormat.value.format(from), to: numberFormat.value.format(to), total: numberFormat.value.format(total.value) })
+})
+
+const loadError = computed(() => statsError.value || tableError.value)
 function retry() {
     if (statsError.value) reloadStats()
-    if (visitsError.value) reloadVisits?.()
+    if (tableError.value) loadPage()
 }
-const { loading, toast } = useHelper()
 function deleteAll() {
     confirmDelete({
         title: t('visits.deleteAllTitle'),
-        getHtml: () => t('visits.deleteAllText', { count: numberFormat.value.format(dataList.value.length) }),
+        getHtml: () => t('visits.deleteAllText', { count: numberFormat.value.format(total.value) }),
         typed: true,
         callback: () =>
             handleBase({ method: 'delete', url: 'candidate/visits' }, { loading, toast }, () => {
                 reloadVisits?.()
                 reloadStats()
+                page.value === 1 ? loadPage() : (page.value = 1)
             }),
     })
 }
@@ -67,26 +97,10 @@ const kpis = computed(() => {
     const [sources, countries] = breakdowns.value
     const top = rows => (rows[0] ? { value: rows[0].label, hint: t('visits.shareOfViews', { share: Math.round(rows[0].share) }) } : { value: '—', hint: t('common.noData') })
     return [
-        { label: t('visits.kpiViews', { range: rangeText.value }), value: numberFormat.value.format(stats.value?.total ?? 0), hint: t('visits.kpiViewsHint', { total: numberFormat.value.format(dataList.value.length) }) },
+        { label: t('visits.kpiViews', { range: rangeText.value }), value: numberFormat.value.format(stats.value?.total ?? 0), hint: t('visits.kpiViewsHint', { total: numberFormat.value.format(total.value) }) },
         { label: t('visits.kpiTopSource', { range: rangeText.value }), ...top(sources.rows) },
         { label: t('visits.kpiTopCountry', { range: rangeText.value }), ...top(countries.rows) },
     ]
-})
-
-/* detail table — DESIGN.md §5.4: paginate past 100 rows */
-const PAGE_SIZE = 25
-const page = ref(1)
-const pageCount = computed(() => Math.max(1, Math.ceil(dataList.value.length / PAGE_SIZE)))
-const pageRows = computed(() => dataList.value.slice((page.value - 1) * PAGE_SIZE, page.value * PAGE_SIZE))
-const rangeLabel = computed(() => {
-    const total = dataList.value.length
-    if (!total) return ''
-    const from = (page.value - 1) * PAGE_SIZE + 1
-    const to = Math.min(page.value * PAGE_SIZE, total)
-    return t('common.rowRange', { from: numberFormat.value.format(from), to: numberFormat.value.format(to), total: numberFormat.value.format(total) })
-})
-watch(pageCount, n => {
-    if (page.value > n) page.value = n
 })
 
 const dateFormat = computed(() => new Intl.DateTimeFormat(uiLocale.value, { day: '2-digit', month: '2-digit', year: 'numeric' }))
@@ -102,7 +116,7 @@ const pagerBtn = buttonClass({ variant: 'secondary', size: 'sm' })
 <template>
     <Heading :level="1" :text="t('visits.title')" :description="t('visits.description')">
         <SegmentedControl v-model="interval" :options="INTERVAL_OPTIONS" :aria-label="t('visits.timeRange')" />
-        <Button icon="fa-solid fa-trash" :text="t('visits.deleteAll')" action="delete" :disabled="loadError || !dataList.length" @click="deleteAll" />
+        <Button icon="fa-solid fa-trash" :text="t('visits.deleteAll')" action="delete" :disabled="loadError || !total" @click="deleteAll" />
     </Heading>
 
     <div v-if="loadError" role="alert">

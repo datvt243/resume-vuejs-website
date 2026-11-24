@@ -17,13 +17,14 @@ Anyone with the candidate's share link can read their CV without an account — 
    - `?theme=classic|modern|compact` → layout theme; any other value means `classic`. Not sent to the API.
 4. Response without `success` or `data`, or any request error → a "not found" block with a description. A private profile and a missing one look the same.
 5. On success the CV renders through the shared `CvResumeLayout` (the same component the dashboard Preview uses): name, desired position, phone · address · email, introduction, General information, Education, Experience (newest start date first), Projects, Awards, Certificates, References. Empty sections are hidden. Rich-text fields are sanitized before rendering.
-6. After a successful load the page records a visit: `POST api/me/<slug>/visit` with `document.referrer`. Fire-and-forget — a failure never affects what is shown.
+6. After a successful load the page records a visit: `POST api/me/<slug>/visit` with `document.referrer`. Fire-and-forget — a failure never affects what is shown. No visit is recorded when the browser's cached user (`localStorage` `user`, so also a new tab opened from "View my CV" that has no refresh token yet) has the CV's `email` (case-insensitive) — the owner viewing their own link, by slug or by email (#453).
 
 ## Acceptance criteria
 - `npx vitest run src/pages/public/PagePublicResume.spec.ts` passes.
 - `npx vitest run src/components/cv/CvResumeLayout.spec.ts` passes.
 - Signed out, opening `#/resume/<existing-public-slug>` shows the CV, not `/login`.
 - `#/resume/<unknown>` shows the "not found" block and sends no visit POST.
+- *(#453)* Signed in as the CV owner (also in a new tab without a refresh token), opening the own link sends the GET but no visit POST; another signed-in user's view still posts it. Asserted in `src/pages/public/PagePublicResume.spec.ts`.
 - `#/resume/<slug>?theme=bogus` renders with the `cv-theme-classic` class.
 
 ## Edge cases
@@ -46,3 +47,4 @@ Anyone with the candidate's share link can read their CV without an account — 
 |---|---|---|---|
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/public-resume-spec.md` | - |
+| 2026-11-24 | Behavior #6: no visit POST when the signed-in viewer owns the CV | Open question 2, operator answer — #453 | `issue-453-454-owner-visit-pagination` |

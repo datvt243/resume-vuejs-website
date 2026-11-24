@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatDate, formatDateToInput, getLocalizedText, splitLocalizedText, localizedToForm, localizedFromForm, sanitizeHtml, escapeHtml, groupSkills, formatSalaryRange } from './index'
+import { formatDate, formatDateToInput, getLocalizedText, splitLocalizedText, localizedToForm, localizedFromForm, sanitizeHtml, escapeHtml, groupSkills, formatSalaryRange, safeRedirect } from './index'
 import { setUiLang } from '@/i18n'
 import { nextTick } from 'vue'
 
@@ -156,4 +156,17 @@ describe('formatSalaryRange', () => {
         expect(formatSalaryRange(1000, 2000)).toBe('1,000 – 2,000')
         setUiLang('vi')
     })
+})
+
+describe('safeRedirect', () => {
+    it.each(['/dashboard/preview', '/dashboard/preview?x=1', '/', '/login-help'])('keeps the internal path %s', path => {
+        expect(safeRedirect(path)).toBe(path)
+    })
+
+    it.each([undefined, '', 'https://a.com', '//a.com', '/\\a.com', 'javascript:alert(1)', ['/dashboard/preview'], '/login', '/login?redirect=/x', '/register', '/reset-password?token=abc'])(
+        'falls back to /dashboard/information for %j',
+        target => {
+            expect(safeRedirect(target)).toBe('/dashboard/information')
+        },
+    )
 })

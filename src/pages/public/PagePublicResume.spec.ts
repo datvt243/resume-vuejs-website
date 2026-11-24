@@ -1,10 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createRouter, createMemoryHistory } from 'vue-router'
+import { setActivePinia, createPinia } from 'pinia'
 import PagePublicResume from './PagePublicResume.vue'
+import { authStore } from '@/stores/auth'
 
 const axiosMock = vi.fn()
 vi.mock('@/services/axios', () => ({ _axios: (...args: unknown[]) => axiosMock(...args) }))
+
+beforeEach(() => {
+    localStorage.clear()
+    sessionStorage.clear()
+    setActivePinia(createPinia())
+})
 
 async function mountAt(path: string) {
     const router = createRouter({
@@ -72,6 +80,38 @@ describe('PagePublicResume — visit tracking', () => {
         await mountAt('/resume/dat')
 
         expect(axiosMock.mock.calls.some(([opt]) => opt.method === 'post')).toBe(false)
+    })
+
+    describe('signed-in viewer', () => {
+        beforeEach(() => {
+            axiosMock.mockImplementation(async ({ method }) => (method === 'get' ? { success: true, data: { firstName: 'Dat', email: 'dat@example.com' } } : {}))
+            authStore().setTokens({ token: 't', tokenRefresh: 'r' })
+        })
+
+        it('does not record a visit when the owner opens their own link (email compared case-insensitively)', async () => {
+            authStore().setUser({ email: 'Dat@Example.com' })
+
+            await mountAt('/resume/dat')
+
+            expect(axiosMock.mock.calls.some(([opt]) => opt.method === 'post')).toBe(false)
+        })
+
+        it('does not record a visit when the owner opens it in a new tab (cached user, no refresh token yet)', async () => {
+            authStore().setTokens()
+            authStore().setUser({ email: 'dat@example.com' })
+
+            await mountAt('/resume/dat')
+
+            expect(axiosMock.mock.calls.some(([opt]) => opt.method === 'post')).toBe(false)
+        })
+
+        it("records the visit when someone else signed in opens the link", async () => {
+            authStore().setUser({ email: 'other@example.com' })
+
+            await mountAt('/resume/dat')
+
+            expect(axiosMock.mock.calls.some(([opt]) => opt.method === 'post' && opt.customURL === 'api/me/dat/visit')).toBe(true)
+        })
     })
 })
 

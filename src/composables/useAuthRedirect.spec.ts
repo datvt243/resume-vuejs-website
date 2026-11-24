@@ -19,6 +19,8 @@ const makeRouter = () =>
         routes: [
             { path: '/', component: Blank, meta: { requiresAuth: true } },
             { path: '/login', name: 'login', component: Blank },
+            { path: '/forgot-password', name: 'forgot-password', component: Blank },
+            { path: '/reset-password', name: 'reset-password', component: Blank },
             { path: '/resume/:slug', name: 'public-resume', component: Blank },
             {
                 path: '/dashboard',
@@ -102,6 +104,40 @@ describe('useAuthRedirect', () => {
         await flushPromises()
 
         expect(router.currentRoute.value.path).toBe('/dashboard/information')
+    })
+
+    it('sends a logged-in user who opens /login?redirect= to that target', async () => {
+        logIn()
+        const router = await mountAt('/login?redirect=/dashboard/information?tab=1')
+        await flushPromises()
+
+        expect(router.currentRoute.value.fullPath).toBe('/dashboard/information?tab=1')
+    })
+
+    it('does not keep a logged-in user on /login?redirect=/login', async () => {
+        logIn()
+        const router = await mountAt('/login?redirect=/login')
+        await flushPromises()
+
+        expect(router.currentRoute.value.fullPath).toBe('/dashboard/information')
+    })
+
+    it.each(['/forgot-password', '/reset-password', '/reset-password?token=abc'])(
+        'sends a logged-in user who opens %s to the dashboard',
+        async path => {
+            logIn()
+            const router = await mountAt(path)
+            await flushPromises()
+
+            expect(router.currentRoute.value.path).toBe('/dashboard/information')
+        },
+    )
+
+    it('leaves a logged-out user on /reset-password', async () => {
+        const router = await mountAt('/reset-password?token=abc')
+        await flushPromises()
+
+        expect(router.currentRoute.value.fullPath).toBe('/reset-password?token=abc')
     })
 
     it('leaves a logged-out user on /login', async () => {

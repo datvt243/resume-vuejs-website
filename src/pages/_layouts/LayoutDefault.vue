@@ -88,6 +88,7 @@ const navGroups = [
             { key: 'nav.application', to: '/dashboard/application', icon: 'fa-solid fa-paper-plane' },
             { key: 'nav.importCv', to: '/dashboard/import-linkedin', icon: 'fa-solid fa-file-import' },
             { key: 'nav.atsCheck', to: '/dashboard/ats-check', icon: 'fa-solid fa-circle-check' },
+            { key: 'nav.salaryCalculator', to: '/dashboard/salary-calculator', icon: 'fa-solid fa-calculator' },
             { key: 'nav.cvProfile', to: '/dashboard/profile', icon: 'fa-solid fa-file-lines' },
             { key: 'nav.preview', to: '/dashboard/preview', icon: 'fa-solid fa-eye' },
         ],

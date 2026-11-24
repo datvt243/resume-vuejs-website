@@ -13,6 +13,8 @@ const routes = [
     { path: '/register', name: 'register', component: () => import('@/pages/auth/PageRegister.vue') },
     { path: '/forgot-password', name: 'forgot-password', component: () => import('@/pages/auth/PageForgotPassword.vue') },
     { path: '/reset-password', name: 'reset-password', component: () => import('@/pages/auth/PageResetPassword.vue') },
+    // no requiresAuth and no signed-in redirect: the emailed link must work in any tab (#460)
+    { path: '/confirm-email-change', name: 'confirm-email-change', component: () => import('@/pages/auth/PageConfirmEmailChange.vue') },
     {
         path: '/resume/:slug',
         name: 'public-resume',
@@ -110,6 +112,12 @@ const routes = [
                 meta: { requiresAuth: true },
             },
             {
+                path: 'salary-calculator',
+                name: 'salary-calculator',
+                component: () => import('@/pages/dashboard/PageSalaryCalculator.vue'),
+                meta: { requiresAuth: true },
+            },
+            {
                 path: 'profile',
                 name: 'profile',
                 component: () => import('@/pages/dashboard/PageProfile.vue'),
@@ -153,7 +161,7 @@ router?.beforeEach((to, from, next) => {
         const isAuthenticated = store.isAuthenticated
 
         if (!isAuthenticated) {
-            next({ name: 'login' })
+            next({ name: 'login', query: { redirect: to.fullPath } })
         } else {
             next()
         }

@@ -154,3 +154,12 @@ export const formatSalaryRange = (from: number | null | undefined, to: number | 
     if (hasTo) return t('home.salaryTo', { value: fmt(to) })
     return ''
 }
+
+/**
+ * Post-login target: only a path inside this app (one leading '/', not '//' or '/\\') — anything else would be an
+ * open redirect. Guest-only pages are refused too: a signed-in user on /login?redirect=/login would stay on /login.
+ */
+export const safeRedirect = (target: unknown) =>
+    typeof target === 'string' && /^\/(?![/\\])(?!(login|register|forgot-password|reset-password)([/?#]|$))/.test(target)
+        ? target
+        : '/dashboard/information'

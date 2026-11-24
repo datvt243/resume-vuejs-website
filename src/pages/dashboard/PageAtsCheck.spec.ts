@@ -5,6 +5,7 @@ import { setActivePinia, createPinia } from 'pinia'
 import SegmentedControl from '@/components/global/SegmentedControl.vue'
 import PageAtsCheck from './PageAtsCheck.vue'
 import { useCvLang } from '@/composables/useCvLang'
+import { setUiLang } from '@/i18n'
 import type { AtsCheckResponse } from '@/types/ats.type'
 
 const handleBaseMock = vi.fn()
@@ -119,5 +120,30 @@ describe('PageAtsCheck (issue #159)', () => {
         await flushPromises()
         await downloadButton().trigger('click')
         expect(downloadMock).toHaveBeenLastCalledWith({ template: 'classic', lang: 'en' })
+    })
+
+    it('shows a not-applicable check as neutral and never counts it as failed (#461)', async () => {
+        const naResponse = (passed: boolean): AtsCheckResponse => ({
+            ...response,
+            checks: [
+                { id: 'metadata', passed, severity: 'error', applicable: false, message: 'm' },
+                { id: 'page-count', passed: false, severity: 'warning', message: 'p' },
+            ],
+        })
+        const wrapper = mountPage()
+        await runCheck(wrapper, naResponse(true))
+
+        expect(wrapper.findAll('[data-badge="not-applicable"]').map(b => b.text())).toEqual(['Không áp dụng'])
+        expect(wrapper.findAll('[data-badge="danger"]')).toHaveLength(0)
+        expect(wrapper.findAll('[data-badge="warning"]')).toHaveLength(1)
+        expect(wrapper.text()).toContain('1 tiêu chí chưa đạt')
+
+        setUiLang('en')
+        await flushPromises()
+        expect(wrapper.find('[data-badge="not-applicable"]').text()).toBe('Not applicable')
+        setUiLang('vi')
+
+        await runCheck(wrapper, naResponse(false))
+        expect(wrapper.text()).toContain('1 tiêu chí chưa đạt')
     })
 })

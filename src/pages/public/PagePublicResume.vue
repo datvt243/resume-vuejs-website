@@ -44,9 +44,11 @@ import { _axios } from '@/services/axios'
 import { resolveTheme } from '@/composables/useCvTheme'
 import { resolveCvLang } from '@/composables/useCvLang'
 import CvResumeLayout from '@/components/cv/CvResumeLayout.vue'
+import { authStore } from '@/stores/auth'
 import { t } from '@/i18n'
 
 const route = useRoute()
+const auth = authStore()
 
 const loading = ref(true)
 const notFound = ref(false)
@@ -85,7 +87,12 @@ async function load(identifier) {
          * Ghi nhận lượt ghé thăm — fire-and-forget, không chặn hiển thị CV
          * nếu ghi nhận thất bại.
          */
-        _axios({ method: 'post', customURL: `api/me/${identifier}/visit`, data: { referrer: document.referrer } }).catch(() => {})
+        // the owner opening their own link isn't a visit — the payload's email is the owner's for slug and email links alike.
+        // Cached user, not isAuthenticated: "View my CV" opens a new tab, which has no refresh token yet.
+        const viewerEmail = String(auth.getUser?.email ?? '').toLowerCase()
+        if (!viewerEmail || viewerEmail !== String(res.data.email ?? '').toLowerCase()) {
+            _axios({ method: 'post', customURL: `api/me/${identifier}/visit`, data: { referrer: document.referrer } }).catch(() => {})
+        }
     } catch {
         notFound.value = true
     } finally {

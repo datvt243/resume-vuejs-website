@@ -53,6 +53,8 @@ function showModalCreateDoc() {
 const editIndex = ref(null)
 function showModalEditDoc(index) {
     editIndex.value = index
+    // a real change even when reopening the same row, so VeeForm reloads it and drops a cancelled edit
+    document._id = null
     Object.assign(document, generalInformationField.value[index], { _id: `edit-${index}` })
     refModal02.value?.show()
 }
@@ -177,12 +179,14 @@ async function handleUpdate(values, action = 'create') {
                     :cols-hidden="[]"
                     col-control="fullName"
                     :height-auto="true"
+                    @row-click="showModalEditDoc"
                 >
                     <template #theadMore>
-                        <th scope="col" class="w-12"><span class="sr-only">{{ t('common.actions') }}</span></th>
+                        <th scope="col" class="w-24"><span class="sr-only">{{ t('common.actions') }}</span></th>
                     </template>
                     <template #tbodyMore="{ doc }">
-                        <td class="w-12 text-right">
+                        <td class="w-24 text-right">
+                            <Button icon="fa-solid fa-square-pen" type="ghost" action="update" size="sm" :aria-label="t('generalInfo.editSkill', { name: doc.name || doc.language || '' })" @click="showModalEditDoc(doc.index)" />
                             <Button icon="fa-solid fa-trash" type="ghost" action="delete" size="sm" :aria-label="`${t('common.delete')} ${doc.name || doc.language || ''}`.trim()" @click="handleUpdate({ ...doc }, 'delete')" />
                         </td>
                     </template>

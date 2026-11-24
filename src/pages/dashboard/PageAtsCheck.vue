@@ -44,7 +44,14 @@ const scoreClass = computed(() => {
     return 'text-danger'
 })
 
-const failedCount = computed(() => (result.value?.checks || []).filter(c => !c.passed).length)
+const failedCount = computed(() => (result.value?.checks || []).filter(c => !c.passed && c.applicable !== false).length)
+
+// not-applicable comes first: the backend sends it with `passed: true` (#461)
+const checkIcon = check => {
+    if (check.applicable === false) return { icon: 'fa-solid fa-circle-minus', cls: 'text-fg-3' }
+    if (check.passed) return { icon: 'fa-solid fa-circle-check', cls: 'text-success' }
+    return { icon: 'fa-solid fa-circle-xmark', cls: check.severity === 'error' ? 'text-danger' : 'text-warning' }
+}
 
 const downloadBtn = buttonClass({ variant: 'secondary' })
 const card = 'rounded-md border border-line bg-surface p-4'
@@ -116,15 +123,16 @@ async function handleCheck() {
                 <ul class="m-0 list-none divide-y divide-line p-0">
                     <li v-for="check in result.checks" :key="check.id" class="flex items-start gap-2 py-2">
                         <FontAwesomeIcon
-                            :icon="check.passed ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark'"
-                            :class="check.passed ? 'text-success' : check.severity === 'error' ? 'text-danger' : 'text-warning'"
+                            :icon="checkIcon(check).icon"
+                            :class="checkIcon(check).cls"
                             class="mt-1"
                             aria-hidden="true"
                         />
                         <div class="flex min-w-0 grow flex-wrap items-center gap-2 text-sm">
                             <span>{{ check.message }}</span>
+                            <span v-if="check.applicable === false" :class="badgeClass('neutral')" data-badge="not-applicable">{{ t('ats.notApplicable') }}</span>
                             <span
-                                v-if="!check.passed"
+                                v-else-if="!check.passed"
                                 :class="badgeClass(check.severity === 'error' ? 'danger' : 'warning')"
                                 :data-badge="check.severity === 'error' ? 'danger' : 'warning'"
                             >

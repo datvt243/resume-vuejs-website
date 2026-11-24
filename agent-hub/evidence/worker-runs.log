@@ -19,3 +19,5 @@
 2026-11-23T06:41:14Z role=implementer outcome=blocked node=issue-404-460-461-salary-password-ats hub_bytes_before=100377 verifier_rerun=n/a
 2026-11-23T06:44:47Z role=verifier outcome=SEAL node=issue-404-460-461-salary-password-ats rerun=none spawn=fresh hub_bytes_before=100377 hub_bytes_after=100369
 2026-11-24T12:08:58Z role=verifier outcome=SEAL node=issue-453-454-owner-visit-pagination rerun=none spawn=fresh hub_bytes_before=100369 hub_bytes_after=100381
+2026-11-24T12:38:58Z role=verifier outcome=REOPEN node=issue-509-410-min-wage-project-link rerun=none spawn=fresh hub_bytes_before=100381 hub_bytes_after=100631
+2026-11-24T12:44:31Z role=verifier outcome=SEAL node=issue-509-410-min-wage-project-link rerun=none spawn=resumed hub_bytes_before=100381 hub_bytes_after=100395

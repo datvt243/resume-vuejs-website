@@ -26,3 +26,13 @@ describe('project model — type / linked experience', () => {
         expect(await valid({ type: 'other' }, 'type')).toBe(false)
     })
 })
+
+describe('project model — link (issue #410)', () => {
+    it('is optional, but still checks the URL and length when filled', async () => {
+        expect(await valid({ link: '' }, 'link')).toBe(true)
+        expect(await valid({ link: '  ' }, 'link')).toBe(true)
+        expect(await valid({ link: 'https://x.dev' }, 'link')).toBe(true)
+        await expect(schema.validateAt('link', { link: 'abc' })).rejects.toThrow('validation.urlInvalid')
+        await expect(schema.validateAt('link', { link: `https://x.dev/${'a'.repeat(100)}` })).rejects.toThrow('validation.maxChars')
+    })
+})

@@ -2,7 +2,7 @@
 
 - Status: verified — verified by evidence/verifier/2026-11-23/issue-404-460-461-salary-password-ats-seal.md
 - Source: feature request
-- Issues: #404
+- Issues: #404, #509
 - Anchors: `src/pages/_layouts/LayoutDefault.vue` (`nav.tools` group), `src/routers/index.ts` (`/dashboard` children), `src/models/generalInformation.model.ts` (`salaryDesiredFrom`, `salaryDesiredTo`), `src/composables/useCandidate.ts` (`generalInformation`, as `PageGeneralInformation.vue` / `PageHome.vue` read it), `src/components/veevalidate/part/FrmCurrency.vue` (`VND ` input), `src/components/global/SegmentedControl.vue`, `src/components/global/NoData.vue`, `src/i18n/index.ts`, `DESIGN.md`
 
 ## Goal
@@ -27,6 +27,7 @@ A candidate comparing offers converts a monthly Vietnamese salary between gross 
 7. All legal values live in ONE exported constant object (one file, e.g. `src/utilities/salaryVn.ts`) with the date they apply from and their legal sources in a comment: rates, base salary, regional minimum wages, deduction amounts, PIT brackets. The page reads nothing legal from elsewhere; the page shows the "values as of <date>" line from that object.
 8. The calculation is a pure function (no Vue, no i18n) in `src/utilities/` (or `src/lib/`), e.g. `grossToNet({ gross, dependents, region })` / `netToGross({ net, dependents, region })` returning the breakdown; the page only renders it.
 9. Every visible string (labels, table rows, hint, "values as of", direction options, aria-labels) goes through i18n in `vi` and `en`.
+10. *(#509 — spec complete, not yet implemented/sealed)* Regional minimum wages from 01/01/2027 (Nghị định 399/2026/NĐ-CP, replaces 293/2025): `SALARY_VN.regionalMinWage` in `src/utilities/salaryVn.ts` becomes I 5,700,000 · II 5,080,000 · III 4,450,000 · IV 4,040,000, so the BHTN cap (20×) becomes I 114,000,000 · II 101,600,000 · III 89,000,000 · IV 80,800,000. The legal-sources comment above `SALARY_VN` cites 399/2026 instead of 293/2025 (and drops the "are issue #509" note). Only the one constants block changes; the calculation (Behavior 6) does not. `SALARY_VN.effectiveFrom` becomes `'01/01/2027'`, so the page shows "values as of 01/01/2027" (ships now; early for December 2026 by operator choice, Q4). Base salary 2,530,000 and family deduction 15,500,000 / 6,200,000 stay unchanged (Q5).
 
 ### Legal values shipped (operator 2026-11-23: 2026 regional wages + base salary 2,530,000 from 01/07/2026; "values as of 01/07/2026")
 | Value | Amount | Source |
@@ -34,7 +35,7 @@ A candidate comparing offers converts a monthly Vietnamese salary between gross 
 | Employee rates | BHXH 8%, BHYT 1.5%, BHTN 1% | Luật BHXH 58/2024/QH15 (from 01/07/2025), Luật BHYT, Luật Việc làm |
 | Base salary (lương cơ sở) → BHXH/BHYT cap 20× | 2,530,000 → 50,600,000 (from 01/07/2026; was 2,340,000 → 46,800,000) | Nghị định 161/2026/NĐ-CP (replaces 73/2024) |
 | Regional minimum wage → BHTN cap 20× | I 5,310,000 (cap 106,200,000) · II 4,730,000 · III 4,140,000 · IV 3,700,000 (from 01/01/2026) | Nghị định 293/2025/NĐ-CP |
-| *Not shipped:* regional minimum wage from 01/01/2027 | I 5,700,000 · II 5,080,000 · III 4,450,000 · IV 4,040,000 | Nghị định 399/2026/NĐ-CP (replaces 293/2025) — a separate follow-up issue (opened by the operator) updates the constant object on 01/01/2027 |
+| *#509 (Behavior 10):* regional minimum wage from 01/01/2027 | I 5,700,000 · II 5,080,000 · III 4,450,000 · IV 4,040,000 | Nghị định 399/2026/NĐ-CP (replaces 293/2025); cross-checked 2026-11-24 against press reports of the decree (VietnamPlus, VOV, hcc.nghean.gov.vn) — original decree text not read |
 | Family deduction | self 15,500,000 · each dependent 6,200,000 / month (tax period 2026) | Nghị quyết 110/2025/UBTVQH15 |
 | PIT on salary (monthly taxable) | ≤10M 5% · 10–30M 10% · 30–60M 20% · 60–100M 30% · >100M 35% (5 brackets, salary income from tax period 2026) | Luật Thuế TNCN 109/2025/QH15, Điều 9 (law in force 01/07/2026; salary provisions apply to tax period 2026) |
 
@@ -46,6 +47,14 @@ A candidate comparing offers converts a monthly Vietnamese salary between gross 
   - gross 150,000,000, 2 dependents → insurance 5,869,000 (all three capped), PIT 26,180,850, net 117,950,150.
   - round trip: for each gross above and every integer gross in a sweep (e.g. 1,000,000 … 300,000,000 step 997,001), `|netToGross(round(grossToNet(g).net)) − g| ≤ 1`.
   - `netToGross` of each net above returns the matching gross within 1 đ.
+- (#509) `npx vitest run src/utilities/salaryVn.spec.ts` passes with the 01/01/2027 regional wages (region I, base salary 2,530,000, deductions 15,500,000 / 6,200,000 — Q5):
+  - `SALARY_VN.effectiveFrom === '01/01/2027'`.
+  - `SALARY_VN.regionalMinWage` equals `{ 1: 5_700_000, 2: 5_080_000, 3: 4_450_000, 4: 4_040_000 }`.
+  - gross 15,000,000 / 30,000,000 / 60,000,000 cases above are unchanged (gross below the new BHTN cap).
+  - gross 150,000,000, 2 dependents → insurance 5,947,000 (BHXH/BHYT capped at 50,600,000, BHTN capped at 114,000,000 → 1,140,000), PIT 26,153,550, net 117,899,450.
+  - a region-IV case, e.g. gross 90,000,000, 0 dependents → BHTN 808,000 (capped at 80,800,000).
+  - the round-trip and `netToGross` criteria above still hold.
+- (#509) `grep -n "293/2025" src/utilities/salaryVn.ts` finds nothing; `grep -n "399/2026" src/utilities/salaryVn.ts` hits.
 - `npm run test`, `npm run build` and `npm run lint` pass; every new i18n key exists in `vi` and `en`.
 - A page spec (e.g. `src/pages/dashboard/PageSalaryCalculator.spec.ts`, `npx vitest run <path>`): with a mocked General information salary, the amount input starts at that value; changing the amount sends no request (no `handleBase`/axios call) and leaves the store's `generalInformation` unchanged; without a salary, the hint links to `/dashboard/general-information`.
 - Live (QA account): the menu item opens `#/dashboard/salary-calculator`; switching to EN translates every label.
@@ -68,9 +77,13 @@ A candidate comparing offers converts a monthly Vietnamese salary between gross 
 1. Is the saved desired salary gross or net, and which value fills the amount? → **Answer (operator 2026-11-23):** Gross; default direction Gross → Net; amount from `salaryDesiredFrom`.
 2. Which legal values ship (regional wages change 01/01/2027, Nghị định 399/2026)? → **Answer (operator 2026-11-23):** the 2026 regional wages + base salary 2,530,000 (from 01/07/2026); a follow-up issue covers the 01/01/2027 change.
 3. Region for the BHTN cap → **Answer (operator 2026-11-23):** Region I–IV select, default Region I.
+4. (#509) When do the 2027 values reach users? Today is 2026-11-24; a merge + release now would show the 01/01/2027 wages for the rest of December 2026. Options: (a) ship now, `effectiveFrom: '01/01/2027'` ("values as of 01/01/2027"), accept a month of early values; (b) implement now but release on/after 01/01/2027; (c) keep both sets and pick by today's date (adds logic; today Out of scope says no switching between law versions). → **Answer (operator 2026-11-24):** (a) ship now, `effectiveFrom: '01/01/2027'`, accept a month of early values.
+5. (#509) Base salary (lương cơ sở) and family deduction on 01/01/2027: no source found for a change — base salary stays 2,530,000 (Nghị định 161/2026, from 01/07/2026) and self 15,500,000 / dependent 6,200,000 (Nghị quyết 110/2025, from tax period 2026). Confirm both stay unchanged for 2027, or give the new amount + legal source. → **Answer (operator 2026-11-24):** unchanged — base salary 2,530,000 (Nghị định 161/2026), self 15,500,000 / dependent 6,200,000 (Nghị quyết 110/2025).
 
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
 | 2026-11-23 | Created (draft) | #404 | - |
 | 2026-11-23 | Operator answered Q1–Q3; Behavior 2, 3 and the values table updated | #404 round 2 | - |
+| 2026-11-24 | Behavior 10 (draft): 01/01/2027 regional minimum wages (NĐ 399/2026); Q4–5 open | #509 | - |
+| 2026-11-24 | Q4–5 answered; Behavior 10 spec complete (effectiveFrom 01/01/2027, base salary + deductions unchanged) | operator answers | - |

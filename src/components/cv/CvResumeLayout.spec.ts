@@ -106,4 +106,16 @@ describe('CvResumeLayout', () => {
         expect(subs.join('|')).not.toContain('Dev ·')
         expect(subs.join()).not.toContain('[')
     })
+
+    it('lists company projects first, newest first, unless the user set an order, with no type headings (#406)', () => {
+        const titles = (projects: Record<string, any>[]) =>
+            mount(CvResumeLayout, { props: { data: { projects } } }).findAll('.cv-item-title').map(t => t.text())
+        const personal = { _id: 'p1', name: 'Blog', type: 'personal', startDate: Date.UTC(2024, 0) }
+        const company = { _id: 'p2', name: 'Shop', type: 'company', startDate: Date.UTC(2020, 0) }
+
+        expect(titles([personal, company])).toEqual(['Shop', 'Blog'])
+        expect(titles([{ ...personal, order: 0 }, { ...company, order: 1 }])).toEqual(['Blog', 'Shop'])
+        const w = mount(CvResumeLayout, { props: { data: { projects: [personal, company] } } })
+        expect(w.findAll('.cv-section-title').map(t => t.text())).toEqual(['Dự án'])
+    })
 })

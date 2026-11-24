@@ -103,3 +103,12 @@ describe('PageExperience — experience or career break', () => {
         expect(updateDoc.mock.calls[0][0]).toMatchObject({ endDate: null, isCurrent: true })
     })
 })
+
+describe('PageExperience — #442 no manual order', () => {
+    it('has no drag-and-drop and no "drag to sort" hint', () => {
+        const w = mountPage()
+        expect(w.find('[draggable="true"]').exists()).toBe(false)
+        expect(w.text()).not.toContain(i18n.global.t('common.dragToSort'))
+    })
+})
+

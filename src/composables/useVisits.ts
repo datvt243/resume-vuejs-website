@@ -8,10 +8,10 @@
  * (`visitCount` + `visits`, same generic `setCandidateByField`/
  * `getCandidateByField` mechanism every other CV section already uses)
  * so every `LayoutDefault`-wrapped page shares one fetch instead of each
- * page fetching its own copy. `PageHome.vue`'s stat card and
- * `PageVisits.vue`'s detail table both read the cache directly via a
- * `computed` instead of calling `useVisits()` again — see those files'
- * own comments for why (stale-snapshot-ref risk).
+ * page fetching its own copy. `PageHome.vue`'s stat card reads the cache
+ * directly via a `computed` instead of calling `useVisits()` again
+ * (stale-snapshot-ref risk). The list is only the API's first page now;
+ * `PageVisits.vue` pages the table itself.
  */
 
 import type { Response } from '@/types/api.type'

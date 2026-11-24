@@ -1,12 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ref } from 'vue'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import PageVisits from './PageVisits.vue'
 import Heading from '@/components/global/Heading.vue'
 import SegmentedControl from '@/components/global/SegmentedControl.vue'
 import Button from '@/components/global/Button.vue'
-import { candidateStore } from '@/stores/candidate'
 import { uiLang } from '@/i18n'
 
 const interval = ref('day')
@@ -20,6 +19,15 @@ vi.mock('@/services/base', () => ({ handleBase: (...args: unknown[]) => handleBa
 vi.mock('@/composables/useVisitStats', () => ({
     useVisitStats: () => ({ interval, stats, loadError, getData: reloadStats }),
 }))
+
+// answers the table's `GET candidate/visits?page&limit` like the API (newest-first slice + list meta)
+function serveVisits(visits: any[]) {
+    handleBase.mockImplementation(async (opt, _props, cb) => {
+        if (opt.method !== 'get') return
+        const { page, limit } = opt.params
+        cb({ data: visits.slice((page - 1) * limit, page * limit), meta: { page, limit, total: visits.length, totalPages: Math.max(1, Math.ceil(visits.length / limit)) } })
+    })
+}
 
 function mountPage() {
     return mount(PageVisits, {
@@ -37,23 +45,24 @@ describe('PageVisits', () => {
         reloadStats.mockReset()
         confirmDelete.mockReset()
         handleBase.mockReset()
+        serveVisits([])
     })
 
     it('shows an error with a retry instead of zeros when a load failed, retrying only what failed', async () => {
-        const reloadVisits = vi.fn()
-        candidateStore().setCandidateByField({ visitsLoadError: true })
+        handleBase.mockResolvedValue(undefined) // table request fails: callback never runs
         const wrapper = mount(PageVisits, {
             global: {
                 components: { Heading, SegmentedControl },
                 stubs: { VisitChart: true, NoData: { template: '<div><slot /></div>' }, Button: { template: '<button />' } },
-                provide: { reloadVisits },
             },
         })
+        await flushPromises()
 
         expect(wrapper.find('[role="alert"]').exists()).toBe(true)
         expect(wrapper.find('table').exists()).toBe(false)
         await wrapper.find('[role="alert"] button').trigger('click')
-        expect(reloadVisits).toHaveBeenCalledTimes(1)
+        expect(handleBase).toHaveBeenCalledTimes(2)
+        expect(handleBase.mock.calls[1][0]).toEqual({ method: 'get', url: 'candidate/visits', params: { page: 1, limit: 25 } })
         expect(reloadStats).not.toHaveBeenCalled()
     })
 
@@ -90,8 +99,9 @@ describe('PageVisits', () => {
 
     it('formats numbers and visit times in the app language', async () => {
         stats.value = { interval: 'day', total: 1234, series: [], sources: [], countries: [] }
-        candidateStore().setCandidateByField({ visits: [{ _id: 'v1', createdAt: '2026-10-19T10:00:00.000Z' }] })
+        serveVisits([{ _id: 'v1', createdAt: '2026-10-19T10:00:00.000Z' }])
         const wrapper = mountPage()
+        await flushPromises()
         const at = new Date('2026-10-19T10:00:00.000Z')
         const time = () => wrapper.find('tbody tr td').text()
         const expected = (locale: string) =>
@@ -128,54 +138,76 @@ describe('PageVisits', () => {
         expect(radio('Theo ngày').attributes('aria-checked')).toBe('false')
     })
 
-    it('paginates the detail table 25 rows at a time and shows "—" for missing values', async () => {
+    it('requests the detail table from the API 25 rows at a time and shows "—" for missing values', async () => {
         const visits = Array.from({ length: 30 }, (_, i) => ({
             _id: `v${i}`,
             createdAt: '2026-10-19T10:00:00.000Z',
             location: i === 0 ? '' : 'Hà Nội',
             ip: '1.2.3.4',
         }))
-        candidateStore().setCandidateByField({ visits })
+        serveVisits(visits)
         const wrapper = mountPage()
+        await flushPromises()
 
+        expect(handleBase.mock.calls[0][0]).toEqual({ method: 'get', url: 'candidate/visits', params: { page: 1, limit: 25 } })
         expect(wrapper.findAll('tbody tr')).toHaveLength(25)
         expect(wrapper.find('tbody tr').findAll('td')[1].text()).toBe('—')
         expect(wrapper.text()).toContain('1–25 trong 30')
 
         const next = wrapper.findAll('button').find(b => b.text() === 'Sau')!
         await next.trigger('click')
+        await flushPromises()
 
+        expect(handleBase.mock.calls[1][0].params).toEqual({ page: 2, limit: 25 })
         expect(wrapper.findAll('tbody tr')).toHaveLength(5)
         expect(wrapper.text()).toContain('26–30 trong 30')
         expect(next.attributes('disabled')).toBeDefined()
+    })
+
+    it('keeps the range label on the shown rows while the next page is still loading', async () => {
+        serveVisits(Array.from({ length: 30 }, (_, i) => ({ _id: `v${i}`, createdAt: '2026-10-19T10:00:00.000Z' })))
+        const wrapper = mountPage()
+        await flushPromises()
+        handleBase.mockImplementation(() => new Promise(() => {}))
+
+        await wrapper.findAll('button').find(b => b.text() === 'Sau')!.trigger('click')
+
+        expect(wrapper.text()).toContain('1–25 trong 30')
     })
 
     describe('delete all', () => {
         const visits = [{ _id: 'v1', createdAt: '2026-10-19T10:00:00.000Z', location: 'Hà Nội', ip: '1.2.3.4' }]
         const deleteButton = (wrapper: ReturnType<typeof mount>) => wrapper.findAll('button').find(b => b.text() === 'Xóa tất cả')!
 
-        function mountWithVisits(reloadVisits = vi.fn()) {
-            candidateStore().setCandidateByField({ visits })
-            return mount(PageVisits, {
+        async function mountWithVisits(reloadVisits = vi.fn()) {
+            serveVisits(visits)
+            const wrapper = mount(PageVisits, {
                 global: { components: { Heading, SegmentedControl, Button }, stubs: { VisitChart: true, NoData: true, FontAwesomeIcon: true }, provide: { reloadVisits } },
             })
+            await flushPromises()
+            handleBase.mockClear()
+            return wrapper
         }
 
-        it('confirms, then hard-deletes and reloads the visit list and the stats', async () => {
+        it('confirms, then hard-deletes and reloads the visit count, the stats and the table', async () => {
             confirmDelete.mockImplementation(({ callback }) => callback())
-            handleBase.mockImplementation(async (_opt, _props, cb) => cb({ data: { deletedCount: 1 } }))
             const reloadVisits = vi.fn()
-            await deleteButton(mountWithVisits(reloadVisits)).trigger('click')
+            const wrapper = await mountWithVisits(reloadVisits)
+            handleBase.mockImplementation(async (opt, _props, cb) => cb(opt.method === 'get' ? { data: [], meta: { total: 0, totalPages: 1 } } : { data: { deletedCount: 1 } }))
+            await deleteButton(wrapper).trigger('click')
+            await flushPromises()
 
             expect(confirmDelete.mock.calls[0][0].getHtml()).toContain('vĩnh viễn')
             expect(confirmDelete.mock.calls[0][0].typed).toBe(true)
             expect(handleBase.mock.calls[0][0]).toEqual({ method: 'delete', url: 'candidate/visits' })
+            expect(handleBase.mock.calls[1][0]).toEqual({ method: 'get', url: 'candidate/visits', params: { page: 1, limit: 25 } })
             expect(reloadVisits).toHaveBeenCalledTimes(1)
             expect(reloadStats).toHaveBeenCalledTimes(1)
+            expect(deleteButton(wrapper).attributes('disabled')).toBeDefined()
         })
 
         it('does not call the API when the confirm is cancelled', async () => {
-            await deleteButton(mountWithVisits()).trigger('click')
+            await deleteButton(await mountWithVisits()).trigger('click')
 
             expect(confirmDelete).toHaveBeenCalledTimes(1)
             expect(handleBase).not.toHaveBeenCalled()
@@ -183,9 +215,10 @@ describe('PageVisits', () => {
 
         it('keeps the data when the API fails (callback never runs)', async () => {
             confirmDelete.mockImplementation(({ callback }) => callback())
-            handleBase.mockResolvedValue(undefined)
             const reloadVisits = vi.fn()
-            await deleteButton(mountWithVisits(reloadVisits)).trigger('click')
+            const wrapper = await mountWithVisits(reloadVisits)
+            handleBase.mockResolvedValue(undefined)
+            await deleteButton(wrapper).trigger('click')
 
             expect(reloadVisits).not.toHaveBeenCalled()
             expect(reloadStats).not.toHaveBeenCalled()

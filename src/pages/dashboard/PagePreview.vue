@@ -11,7 +11,7 @@
  * data + lets the owner pick a theme (persisted via `useCvTheme`).
  */
 
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { candidateStore } from '@/stores/candidate'
 import { authStore } from '@/stores/auth'
 import { useCandidate } from '@/composables/useCandidate'
@@ -21,6 +21,7 @@ import { useActiveProfile } from '@/composables/useActiveProfile'
 import { useDownloadCv, withLangSuffix } from '@/composables/useDownloadCv'
 import CvResumeLayout from '@/components/cv/CvResumeLayout.vue'
 import { toJsonResume } from '@/utilities/jsonResume'
+import { pageBreaks, PX_PER_MM } from '@/utilities/pageBreaks'
 import { t } from '@/i18n'
 
 const candidate = candidateStore()
@@ -84,11 +85,70 @@ function handleExportJsonResume() {
     setTimeout(() => URL.revokeObjectURL(url))
 }
 
+// A4 297mm minus the 15mm top + bottom `@page` margin
+const PAGE_HEIGHT = 267 * PX_PER_MM
+
+const viewport = ref(null)
+const sheet = ref(null)
+const scale = ref(1)
+const sheetHeight = ref(0)
+const breaks = ref([])
+
+/** A section title travels with its first entry (or first line), matching `break-after: avoid` with `orphans: 1`. */
+function keepTogetherBlocks(content) {
+    const box = content.getBoundingClientRect()
+    // undo the on-screen scale so positions are in the unscaled A4 px the printer lays out
+    const ratio = content.offsetHeight / box.height || 1
+    const y = px => (px - box.top) * ratio
+    const blocks = []
+    for (const el of content.querySelectorAll('.cv-section-title, .cv-item')) {
+        if (el.classList.contains('cv-item') && el.previousElementSibling?.classList.contains('cv-section-title')) continue
+        const rect = el.getBoundingClientRect()
+        let bottom = rect.bottom
+        const next = el.classList.contains('cv-section-title') && el.nextElementSibling
+        if (next) {
+            const nextRect = next.getBoundingClientRect()
+            const firstLine = (parseFloat(getComputedStyle(next).lineHeight) || 24) / ratio
+            bottom = next.classList.contains('cv-item') ? nextRect.bottom : Math.min(nextRect.bottom, nextRect.top + firstLine)
+        }
+        blocks.push({ top: y(rect.top), bottom: y(bottom) })
+    }
+    return blocks
+}
+
+function measure() {
+    const content = sheet.value?.firstElementChild
+    if (!content) return
+    breaks.value = pageBreaks(keepTogetherBlocks(content), content.offsetHeight, PAGE_HEIGHT)
+    sheetHeight.value = sheet.value.offsetHeight
+    if (viewport.value.clientWidth) scale.value = Math.min(1, viewport.value.clientWidth / sheet.value.offsetWidth)
+}
+
+watch([cvData, selectedTheme, selectedLang], () => nextTick(measure))
+
+// injected only while mounted: Vue never removes a component's <style>, so a static @page would hit every later print
+const pageStyle = document.createElement('style')
+pageStyle.textContent = '@page { size: A4; margin: 15mm; }'
+
+let observer = null
 // Chỉ bật CSS ẩn header/sidebar/footer khi in TRONG LÚC đang ở trang này
 // (class trên <body>, gỡ lại khi rời trang) — tránh ảnh hưởng in ấn ở các
 // trang khác.
-onMounted(() => document.body.classList.add('cv-print-mode'))
-onUnmounted(() => document.body.classList.remove('cv-print-mode'))
+onMounted(() => {
+    document.body.classList.add('cv-print-mode')
+    document.head.append(pageStyle)
+    measure()
+    document.fonts?.ready.then(measure)
+    if (typeof ResizeObserver === 'undefined') return
+    observer = new ResizeObserver(() => measure())
+    observer.observe(viewport.value)
+    observer.observe(sheet.value.firstElementChild)
+})
+onUnmounted(() => {
+    document.body.classList.remove('cv-print-mode')
+    pageStyle.remove()
+    observer?.disconnect()
+})
 </script>
 
 <template>
@@ -116,8 +176,14 @@ onUnmounted(() => document.body.classList.remove('cv-print-mode'))
         </div>
     </div>
 
-    <div id="cv-print-area">
-        <CvResumeLayout :data="cvData" :theme="selectedTheme" :lang="selectedLang" />
+    <div ref="viewport" class="cv-sheet-viewport" :style="scale < 1 ? { height: `${sheetHeight * scale}px` } : null">
+        <!-- the sheet is paper: light tokens even when the app is dark -->
+        <div id="cv-print-area" ref="sheet" class="cv-sheet" data-bs-theme="light" :style="scale < 1 ? { transform: `scale(${scale})` } : null">
+            <CvResumeLayout :data="cvData" :theme="selectedTheme" :lang="selectedLang" />
+            <div v-for="(y, i) in breaks" :key="i" class="cv-page-break no-print" :style="{ top: `calc(15mm + ${y}px)` }" aria-hidden="true">
+                <span class="absolute -top-2.5 right-2 bg-surface px-1 text-xs leading-5 text-fg-3">{{ t('preview.pageN', { n: i + 2 }) }}</span>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -126,18 +192,62 @@ onUnmounted(() => document.body.classList.remove('cv-print-mode'))
    phần tử ngoài template của component này. Class `cv-print-mode` chỉ
    được gắn lên <body> khi component này đang mounted (xem script), nên
    không ảnh hưởng tới việc in ở các trang khác. */
+
+/* One A4 sheet: the 15mm padding is the `@page` margin (set in script), so screen and print lay out the same 180mm box */
+.cv-sheet-viewport {
+    overflow: hidden;
+}
+.cv-sheet {
+    position: relative;
+    box-sizing: border-box;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 15mm;
+    background: var(--color-surface);
+    color: var(--color-fg);
+    box-shadow: var(--shadow-float);
+    transform-origin: top left;
+    /* break between any two lines, the granularity the page-break hints assume */
+    orphans: 1;
+    widows: 1;
+}
+.cv-sheet .cv-item {
+    break-inside: avoid;
+}
+.cv-sheet .cv-section-title {
+    break-after: avoid;
+}
+.cv-page-break {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: 1px dashed var(--color-line-strong);
+}
+
 @media print {
-    body.cv-print-mode header,
+    body.cv-print-mode header:not(.cv-header),
     body.cv-print-mode footer,
-    body.cv-print-mode .dashboard-sidebar,
+    body.cv-print-mode #app-sidebar,
     body.cv-print-mode .no-print {
         display: none !important;
     }
-    body.cv-print-mode .dashboard-layout {
-        display: block !important;
+    /* the layout's sidebar offset, padding and full-height columns would shift the CV or add a blank page */
+    body.cv-print-mode #app-sidebar ~ div,
+    body.cv-print-mode main {
+        min-height: 0 !important;
+        padding: 0 !important;
     }
-    body.cv-print-mode #cv-print-area {
-        max-width: 100%;
+    body.cv-print-mode .cv-sheet-viewport {
+        height: auto !important;
+        overflow: visible;
+    }
+    body.cv-print-mode .cv-sheet {
+        width: auto;
+        min-height: 0;
+        padding: 0;
+        box-shadow: none;
+        transform: none !important;
     }
 }
 </style>

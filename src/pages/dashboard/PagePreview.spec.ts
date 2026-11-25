@@ -1,10 +1,17 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import { candidateStore } from '@/stores/candidate'
 import { useCvLang } from '@/composables/useCvLang'
+import { i18n } from '@/i18n'
 import PagePreview from './PagePreview.vue'
+
+const mocked = vi.hoisted(() => ({ breaks: [] as number[] }))
+vi.mock('@/utilities/pageBreaks', async importOriginal => ({
+    ...(await importOriginal<typeof import('@/utilities/pageBreaks')>()),
+    pageBreaks: () => mocked.breaks,
+}))
 
 const lists: Record<string, unknown[] | Record<string, unknown>> = {
     generalInformation: { positionDesired: 'Frontend Developer' },
@@ -48,9 +55,9 @@ describe('PagePreview — JSON Resume export', () => {
             },
             revokeObjectURL: vi.fn(),
         })
-        vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function () {
-            const a = this as unknown as HTMLAnchorElement
-            clicked.push({ href: a.href, download: a.download })
+        // eslint-disable-next-line no-unused-vars -- the base rule reads a TS `this` type annotation as an unused parameter
+        vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
+            clicked.push({ href: this.href, download: this.download })
         })
     })
     afterEach(async () => {
@@ -115,5 +122,51 @@ describe('PagePreview — JSON Resume export', () => {
 
         expect(clicked[0].download).toBe('My CV_EN.json')
         useCvLang().setLang('vi')
+    })
+})
+
+describe('PagePreview — A4 sheet', () => {
+    function mountSheet() {
+        setActivePinia(createPinia())
+        candidateStore().setCandidate({ firstName: 'Đạt', lastName: 'Võ' })
+        return mount(PagePreview, { global: { stubs } })
+    }
+    afterEach(() => {
+        mocked.breaks = []
+    })
+
+    it('renders the CV inside a light-theme sheet', () => {
+        const sheet = mountSheet().find('#cv-print-area.cv-sheet')
+        expect(sheet.attributes('data-bs-theme')).toBe('light')
+        expect(sheet.find('cv-resume-layout-stub').exists()).toBe(true)
+    })
+
+    it('shows no page-break hint for one page of content', () => {
+        expect(mountSheet().findAll('.cv-page-break')).toHaveLength(0)
+    })
+
+    it('labels each page-break hint with the page it starts, hidden from print and screen readers', async () => {
+        mocked.breaks = [100, 900]
+        const wrapper = mountSheet()
+        await nextTick()
+        const hints = wrapper.findAll('.cv-page-break')
+        expect(hints.map(h => h.text())).toEqual(['Trang 2', 'Trang 3'])
+        expect(hints[0].classes()).toContain('no-print')
+        expect(hints[0].attributes('aria-hidden')).toBe('true')
+    })
+
+    it('sets the A4 @page rule only while the page is mounted', () => {
+        // earlier tests leave their pages mounted, so compare counts
+        const pageRules = () => Array.from(document.head.querySelectorAll('style')).filter(el => el.textContent?.includes('@page { size: A4; margin: 15mm; }')).length
+        const before = pageRules()
+        const wrapper = mountSheet()
+        expect(pageRules()).toBe(before + 1)
+        wrapper.unmount()
+        expect(pageRules()).toBe(before)
+    })
+
+    it('has the page label in both languages', () => {
+        expect(i18n.global.getLocaleMessage('vi').preview.pageN).toBe('Trang {n}')
+        expect(i18n.global.getLocaleMessage('en').preview.pageN).toBe('Page {n}')
     })
 })

@@ -28,3 +28,4 @@
 2026-11-25T12:32:08Z role=verifier outcome=REOPEN node=issue-407-preview-a4-sheet rerun=none spawn=fresh hub_bytes_before=102994 hub_bytes_after=103286
 2026-11-25T12:40:36Z role=verifier outcome=SEAL node=issue-407-preview-a4-sheet rerun=none spawn=resumed hub_bytes_before=102994 hub_bytes_after=102998
 2026-11-25T12:57:35Z role=verifier outcome=SEAL node=issue-516-export-json-skills-languages rerun=none spawn=fresh hub_bytes_before=102998 hub_bytes_after=103192
+2026-11-25T13:11:44Z role=verifier outcome=SEAL node=issue-423-application-accepted-status rerun=none spawn=fresh hub_bytes_before=103016 hub_bytes_after=  103040

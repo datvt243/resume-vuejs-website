@@ -17,7 +17,7 @@ import { candidateStore } from '@/stores/candidate'
 import { API } from '@/config/api.config'
 import { useCvLang } from '@/composables/useCvLang'
 
-import model from '@/models/application.model.ts'
+import model, { allowedStatuses } from '@/models/application.model.ts'
 
 import { formatDate } from '@/utilities/index'
 import { buttonClass } from '@/lib/button.lib'
@@ -36,8 +36,17 @@ const { document, updateDoc, deleteDoc } = useDocument({ collection: 'applicatio
 const refModal = ref()
 const refVeeForm = ref()
 const { profiles } = useCandidate({ field: 'profiles', collection: 'profile' })
+// status of the record being edited as last saved (null on Add / Duplicate) — drives the allowed moves
+const savedStatus = ref(null)
 const formFields = computed(() =>
-  model.map(f => (f.name === 'profileId' ? { ...f, options: profiles.value.map(p => ({ text: p.name, value: p._id })) } : f)),
+  model.map(f => {
+    if (f.name === 'profileId') return { ...f, options: profiles.value.map(p => ({ text: p.name, value: p._id })) }
+    if (f.name === 'status') {
+      const allowed = allowedStatuses(savedStatus.value)
+      return { ...f, options: f.options.filter(o => allowed.includes(o.value)), disabled: allowed.length === 1 }
+    }
+    return f
+  }),
 )
 
 const router = useRouter()
@@ -73,6 +82,7 @@ const statusMeta = {
   applied: { text: 'option.applicationStatus.applied', badge: 'bg-surface-2 text-fg-2', dot: 'bg-fg-3' },
   interview: { text: 'option.applicationStatus.interview', badge: 'bg-warning-subtle text-warning', dot: 'bg-warning' },
   offer: { text: 'option.applicationStatus.offer', badge: 'bg-success-subtle text-success', dot: 'bg-success' },
+  accepted: { text: 'option.applicationStatus.accepted', badge: 'bg-info-subtle text-info', dot: 'bg-info' },
   rejected: { text: 'option.applicationStatus.rejected', badge: 'bg-danger-subtle text-danger', dot: 'bg-danger' },
 }
 const linkBtn = buttonClass({ variant: 'ghost', iconOnly: true })
@@ -110,6 +120,9 @@ async function handleUpdate(values) {
 
 function showModalEditDoc(doc) {
   isDuplicating.value = false
+  // an unknown saved status would match no option and be re-sent as is → edit it as applied
+  if (!statusMeta[doc.status]) doc.status = 'applied'
+  savedStatus.value = doc.status
   const fields = formFields.value.map(e => e.name)
   for (const f of new Set(['_id', ...fields])) {
     document[f] = doc[f]
@@ -119,6 +132,7 @@ function showModalEditDoc(doc) {
 
 function showModalCreateDoc() {
   isDuplicating.value = false
+  savedStatus.value = null
   for (const k of formFields.value) {
     document[k.name] = k.default
   }
@@ -128,6 +142,7 @@ function showModalCreateDoc() {
 
 function showModalDuplicateDoc(doc) {
   isDuplicating.value = true
+  savedStatus.value = null
   const fields = formFields.value.map(e => e.name)
   for (const f of new Set(['_id', ...fields])) {
     document[f] = doc[f]

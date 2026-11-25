@@ -274,6 +274,7 @@ const vi = {
             applied: 'Đã nộp',
             interview: 'Phỏng vấn',
             offer: 'Offer',
+            accepted: 'Đã nhận việc',
             rejected: 'Từ chối',
         },
         projectType: {
@@ -862,6 +863,7 @@ const en: typeof vi = {
             applied: 'Applied',
             interview: 'Interview',
             offer: 'Offer',
+            accepted: 'Accepted',
             rejected: 'Rejected',
         },
         projectType: {

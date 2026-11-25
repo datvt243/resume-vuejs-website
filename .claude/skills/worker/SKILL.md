@@ -36,6 +36,8 @@ Read in this exact order:
    instead).
 4. Every file in `agent-hub/haven/workers/<wid>/recipes/`.
 
+`analyst`/`verifier`: only check the bundle exists (`ls`) — the subagent loads it; reading it here only grows the calling session's context.
+
 ## Become the worker
 From here on you ARE `<wid>` — speak from the identity in `SOUL.md`, obey
 `hard_rules` in `manifest.yaml` absolutely. Do not mix roles.

@@ -106,4 +106,75 @@ describe('CvResumeLayout', () => {
         expect(subs.join('|')).not.toContain('Dev ·')
         expect(subs.join()).not.toContain('[')
     })
+
+    it('lists company projects first, newest first, unless the user set an order, with no type headings (#406)', () => {
+        const titles = (projects: Record<string, any>[]) =>
+            mount(CvResumeLayout, { props: { data: { projects } } }).findAll('.cv-item-title').map(t => t.text())
+        const personal = { _id: 'p1', name: 'Blog', type: 'personal', startDate: Date.UTC(2024, 0) }
+        const company = { _id: 'p2', name: 'Shop', type: 'company', startDate: Date.UTC(2020, 0) }
+
+        expect(titles([personal, company])).toEqual(['Shop', 'Blog'])
+        expect(titles([{ ...personal, order: 0 }, { ...company, order: 1 }])).toEqual(['Blog', 'Shop'])
+        const w = mount(CvResumeLayout, { props: { data: { projects: [personal, company] } } })
+        expect(w.findAll('.cv-section-title').map(t => t.text())).toEqual(['Dự án'])
+    })
+
+    describe('skills and languages (#440)', () => {
+        const withSkills = {
+            firstName: 'Dat',
+            generalInformation: {
+                career: 'IT',
+                mainSkills: [{ name: 'Vue' }],
+                familiarSkills: [{ name: 'Go' }],
+                professionalSkillsGroup: ['Frontend', 'Backend'],
+                professionalSkills: [
+                    { name: 'Vue', exp: 3, group: 'Frontend' },
+                    { name: 'React', exp: 2, group: 'Frontend' },
+                    { name: 'Go', exp: 1, group: 'Backend' },
+                    { name: 'Docker', exp: 1 },
+                ],
+                personalSkills: [{ name: 'Teamwork' }],
+                foreignLanguages: [
+                    { language: 'English', level: 'advanced' },
+                    { language: 'French', level: 'fluent' },
+                    { language: 'German', level: '' },
+                ],
+            },
+            educations: [{ _id: 'ed1', school: 'HCMUT' }],
+            certificates: [{ _id: 'c1', name: 'AWS' }],
+            references: [{ _id: 'r1', fullName: 'Ref' }],
+        }
+        const titles = (wrapper: ReturnType<typeof mount>) => wrapper.findAll('.cv-section-title').map(h => h.text())
+        const sectionItems = (wrapper: ReturnType<typeof mount>, title: string) =>
+            wrapper
+                .findAll('.cv-section')
+                .find(s => s.find('.cv-section-title').text() === title)!
+                .findAll('li')
+                .map(li => li.text())
+
+        it('lists skill rows names-only, picked skills left out of their groups, and languages with the CV-language level', () => {
+            const wrapper = mount(CvResumeLayout, { props: { data: withSkills } })
+            expect(titles(wrapper)).toEqual(['Thông tin chung', 'Kỹ năng', 'Học vấn', 'Chứng chỉ', 'Ngoại ngữ', 'Người tham khảo'])
+            expect(sectionItems(wrapper, 'Kỹ năng')).toEqual([
+                'Kỹ năng chính: Vue',
+                'Kỹ năng quen thuộc: Go',
+                'Frontend: React',
+                'Kỹ năng chuyên môn: Docker',
+                'Kỹ năng cá nhân: Teamwork',
+            ])
+            expect(sectionItems(wrapper, 'Ngoại ngữ')).toEqual(['English (Khá)', 'French (fluent)', 'German'])
+        })
+
+        it('uses English labels and levels for lang="en"', () => {
+            const wrapper = mount(CvResumeLayout, { props: { data: withSkills, lang: 'en' } })
+            expect(sectionItems(wrapper, 'Skills')).toContain('Main skills: Vue')
+            expect(sectionItems(wrapper, 'Skills')).toContain('Professional skills: Docker')
+            expect(sectionItems(wrapper, 'Languages')).toContain('English (Advanced)')
+        })
+
+        it('hides both sections when every list is empty or missing', () => {
+            const wrapper = mount(CvResumeLayout, { props: { data: { firstName: 'Dat', generalInformation: { career: 'IT', professionalSkillsGroup: ['Frontend'], foreignLanguages: [] } } } })
+            expect(titles(wrapper)).toEqual(['Thông tin chung'])
+        })
+    })
 })

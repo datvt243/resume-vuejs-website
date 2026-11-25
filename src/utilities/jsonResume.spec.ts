@@ -87,6 +87,33 @@ describe('toJsonResume', () => {
         expect(r.basics).toEqual({})
         expect(r.work).toEqual([])
         expect(r.education).toEqual([])
+        expect(r.skills).toEqual([])
+        expect(r.languages).toEqual([])
+    })
+
+    it('exports skills and languages as the CV layout shows them', () => {
+        const generalInformation = {
+            mainSkills: [{ name: 'Vue' }],
+            familiarSkills: [{ name: 'Go' }],
+            professionalSkillsGroup: ['Frontend', 'Backend'],
+            professionalSkills: [{ name: 'Vue', group: 'Frontend' }, { name: 'React', group: 'Frontend' }, { name: 'Go', group: 'Backend' }, { name: 'Docker' }, { group: 'Frontend' }],
+            personalSkills: [{ name: 'Teamwork' }],
+            foreignLanguages: [{ language: 'English', level: 'advanced' }, { language: 'French', level: 'fluent' }, { language: 'German', level: '' }, { language: '', level: 'basic' }],
+        }
+        const vi = toJsonResume({ generalInformation }, 'vi')
+        expect(vi.skills).toEqual([
+            { name: 'Kỹ năng chính', keywords: ['Vue'] },
+            { name: 'Kỹ năng quen thuộc', keywords: ['Go'] },
+            { name: 'Frontend', keywords: ['React'] },
+            { name: 'Kỹ năng chuyên môn', keywords: ['Docker'] },
+            { name: 'Kỹ năng cá nhân', keywords: ['Teamwork'] },
+        ])
+        expect(vi.languages).toEqual([{ language: 'English', fluency: 'Khá' }, { language: 'French', fluency: 'fluent' }, { language: 'German' }])
+
+        const en = toJsonResume({ generalInformation }, 'en')
+        expect(en.skills[0].name).toBe('Main skills')
+        expect(en.skills[3].name).toBe('Professional skills')
+        expect(en.languages[0].fluency).toBe('Advanced')
     })
 })
 

@@ -222,4 +222,79 @@ describe('useCandidate', () => {
         await result.getData()
         expect(result.loadError.value).toBe(false)
     })
+
+    describe('#442 backend order', () => {
+        const idsOf = (list: { _id: string }[]) => list.map(e => e._id)
+
+        it('reorder shows the new order at once, PUTs every id, stores order = index, no success toast', async () => {
+            candidateStore().setCandidateByField({ projects: [{ _id: 'A', startDate: 2 }, { _id: 'B', startDate: 1 }] })
+            const { result } = withUseCandidate('projects')
+            await flushPromises()
+            let shownDuringRequest: string[] = []
+            handleBaseMock.mockImplementation(async (_opt, _props, cb) => {
+                shownDuringRequest = idsOf(result.projects.value)
+                cb({ success: true, data: null })
+            })
+
+            const [a, b] = result.projects.value
+            await result.reorder([b, a])
+
+            const [opt, props] = handleBaseMock.mock.calls[0]
+            expect(opt).toEqual({ method: 'put', url: 'project/reorder', data: { ids: ['B', 'A'] } })
+            expect(props.toast).toBeNull()
+            expect(props.toastError).toBeTypeOf('function')
+            expect(shownDuringRequest).toEqual(['B', 'A'])
+            expect(result.projects.value).toMatchObject([{ _id: 'B', order: 0 }, { _id: 'A', order: 1 }])
+            expect(candidateStore().getCandidateByField('projects')).toMatchObject([{ _id: 'B', order: 0 }, { _id: 'A', order: 1 }])
+        })
+
+        it('reorder puts the old order back when the request fails', async () => {
+            candidateStore().setCandidateByField({ educations: [{ _id: 'A', startDate: 2 }, { _id: 'B', startDate: 1 }] })
+            const { result } = withUseCandidate('educations', 'education')
+            await flushPromises()
+            handleBaseMock.mockImplementation(async () => {}) // error path: callback never runs
+
+            const [a, b] = result.educations.value
+            await result.reorder([b, a])
+
+            expect(handleBaseMock.mock.calls[0][0].url).toBe('education/reorder')
+            expect(idsOf(result.educations.value)).toEqual(['A', 'B'])
+            expect(idsOf(candidateStore().getCandidateByField('educations'))).toEqual(['A', 'B'])
+        })
+
+        it('an edited entry keeps its place even though the update response has no order; a new one goes last', async () => {
+            candidateStore().setCandidateByField({
+                educations: [
+                    { _id: 'A', startDate: 1, order: 0 },
+                    { _id: 'B', startDate: 9, order: 1 },
+                ],
+            })
+            const { result } = withUseCandidate('educations')
+            await flushPromises()
+
+            result.addRecordToList({ _id: 'A', startDate: 1, school: 'edited' })
+            expect(idsOf(result.educations.value)).toEqual(['A', 'B'])
+
+            result.addRecordToList({ _id: 'N', startDate: 99 })
+            expect(idsOf(result.educations.value)).toEqual(['A', 'B', 'N'])
+        })
+
+        it('ignores a second drop while the first reorder is still saving', async () => {
+            candidateStore().setCandidateByField({ projects: [{ _id: 'A', startDate: 3 }, { _id: 'B', startDate: 2 }, { _id: 'C', startDate: 1 }] })
+            const { result } = withUseCandidate('projects')
+            await flushPromises()
+            let finish = () => {}
+            handleBaseMock.mockImplementation((_opt, _props, cb) => new Promise<void>(r => (finish = () => (cb({ success: true }), r()))))
+
+            const [a, b, c] = result.projects.value
+            const first = result.reorder([b, a, c])
+            await result.reorder([c, b, a])
+            finish()
+            await first
+
+            expect(handleBaseMock).toHaveBeenCalledTimes(1)
+            expect(idsOf(result.projects.value)).toEqual(['B', 'A', 'C'])
+        })
+    })
 })
+

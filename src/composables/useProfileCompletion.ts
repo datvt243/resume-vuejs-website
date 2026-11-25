@@ -8,7 +8,7 @@
  * `schema.describe().tests` để biết field có `required` hay không, thay
  * vì hard-code lại danh sách field (drift risk nếu model đổi sau này).
  *
- * 8 section coi ngang nhau (1 điểm/section, không cộng dồn theo số field)
+ * 10 section coi ngang nhau (1 điểm/section, không cộng dồn theo số field)
  * để tránh lệch trọng số — 2 section dạng object (Thông tin cơ bản,
  * Thông tin chung) có nhiều field required hơn hẳn các section dạng
  * danh sách (mỗi section danh sách chỉ có 1-2 field required/item), cộng
@@ -72,6 +72,9 @@ export const useProfileCompletion = () => {
     const sections = computed(() => [
         objectSection('nav.information', '/dashboard/information', informationModel, candidate.getCandidate),
         objectSection('nav.generalInformation', '/dashboard/general-information', generalInformationModel, candidate.getGeneralInformation),
+        // skills + languages live on the general-information document
+        listSection('nav.skills', '/dashboard/skills', ['mainSkills', 'familiarSkills', 'professionalSkills', 'personalSkills'].flatMap(k => candidate.getGeneralInformation?.[k] || [])),
+        listSection('nav.languages', '/dashboard/languages', candidate.getGeneralInformation?.foreignLanguages),
         listSection('nav.education', '/dashboard/education', educations.value),
         listSection('nav.experience', '/dashboard/experience', experiences.value),
         listSection('nav.project', '/dashboard/project', projects.value),

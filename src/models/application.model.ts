@@ -45,6 +45,7 @@ const MODEL: modelItem[] = [
             { text: 'option.applicationStatus.applied', value: 'applied' },
             { text: 'option.applicationStatus.interview', value: 'interview' },
             { text: 'option.applicationStatus.offer', value: 'offer' },
+            { text: 'option.applicationStatus.accepted', value: 'accepted' },
             { text: 'option.applicationStatus.rejected', value: 'rejected' },
         ],
         default: 'applied',
@@ -78,5 +79,20 @@ const MODEL: modelItem[] = [
         col: 'col-md-12',
     },
 ]
+
+const FINAL_STATUSES = ['accepted', 'rejected']
+
+/**
+ * Statuses a record saved as `saved` may move to, mirroring the backend's rule: forward (skips ok)
+ * in option order up to offer, accepted only from offer, rejected from any open status; accepted/rejected
+ * are final. No `saved` (create) → all; an unknown status counts as applied.
+ */
+export function allowedStatuses(saved?: string | null): string[] {
+    const all = MODEL.find(f => f.name === 'status')!.options!.map(o => o.value as string)
+    if (!saved) return all
+    if (FINAL_STATUSES.includes(saved)) return [saved]
+    const from = Math.max(all.indexOf(saved), 0)
+    return all.filter((s, i) => s === 'rejected' || (s === 'accepted' ? saved === 'offer' : i >= from))
+}
 
 export default MODEL

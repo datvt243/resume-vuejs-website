@@ -12,7 +12,6 @@ import ExperienceItem from '@/components/experience/ExperienceItem.vue'
 import { ref, computed } from 'vue'
 import { useCandidate } from '@/composables/useCandidate'
 import { useDocument } from '@/composables/useDocument'
-import { useManualOrder } from '@/composables/useManualOrder'
 import { useFormLang } from '@/composables/useFormLang'
 import { localizedToForm, localizedFromForm, formatDate, getLocalizedText, sanitizeHtml } from '@/utilities/index'
 import { t } from '@/i18n'
@@ -20,27 +19,6 @@ import { t } from '@/i18n'
 import model, { experienceTitle, careerBreakPayload, CAREER_BREAK_TYPES } from '@/models/experience.model.ts'
 
 const { experiences: dataList, removeRecordById, addRecordToList, loadError, getData } = useCandidate({ field: 'experiences' })
-
-// Sắp xếp thủ công (issue #57) — chỉ lưu ở trình duyệt (localStorage),
-// KHÔNG đồng bộ server (backend chưa có field order — xem comment đầu
-// `useManualOrder.ts`).
-const { orderedItems, reorder } = useManualOrder('experience', dataList)
-const dragId = ref(null)
-function onDragStart(id) {
-    dragId.value = id
-}
-function onDrop(targetId) {
-    if (dragId.value === null || dragId.value === targetId) return
-    const list = [...orderedItems.value]
-    const fromIndex = list.findIndex(e => e._id === dragId.value)
-    const toIndex = list.findIndex(e => e._id === targetId)
-    if (fromIndex === -1 || toIndex === -1) return
-
-    const [moved] = list.splice(fromIndex, 1)
-    list.splice(toIndex, 0, moved)
-    reorder(list)
-    dragId.value = null
-}
 
 /**
  *
@@ -187,28 +165,16 @@ function showModalDuplicateDoc(doc) {
         </Heading>
 
         <div v-if="dataList.length">
-            <p class="mb-2 mt-0 text-xs text-fg-3">{{ $t('common.dragToSort') }}</p>
             <ListTransition class="m-0 list-none divide-y divide-line rounded-md border border-line bg-surface p-0">
-                <li
-                    v-for="edu in orderedItems"
-                    :key="edu._id"
-                    class="draggable-item flex items-start gap-1 ps-2"
-                    draggable="true"
-                    @dragstart="onDragStart(edu._id)"
-                    @dragover.prevent
-                    @drop="onDrop(edu._id)"
-                >
-                    <span class="drag-handle" aria-hidden="true"><FontAwesomeIcon icon="fa-solid fa-grip-vertical" /></span>
-                    <div class="min-w-0 grow">
-                        <ExperienceItem
-                            :model-value="edu"
-                            :icon="edu.isCareerBreak ? 'fa-mug-hot' : 'fa-building'"
-                            @on-view="showModalViewDoc"
-                            @on-edit="showModalEditDoc"
-                            @on-delete="handleDelete"
-                            @on-duplicate="showModalDuplicateDoc"
-                        />
-                    </div>
+                <li v-for="edu in dataList" :key="edu._id">
+                    <ExperienceItem
+                        :model-value="edu"
+                        :icon="edu.isCareerBreak ? 'fa-mug-hot' : 'fa-building'"
+                        @on-view="showModalViewDoc"
+                        @on-edit="showModalEditDoc"
+                        @on-delete="handleDelete"
+                        @on-duplicate="showModalDuplicateDoc"
+                    />
                 </li>
             </ListTransition>
         </div>
@@ -290,19 +256,3 @@ function showModalDuplicateDoc(doc) {
         </template>
     </Modal>
 </template>
-
-<style scoped>
-.draggable-item {
-    cursor: grab;
-}
-.draggable-item:active {
-    cursor: grabbing;
-}
-.drag-handle {
-    @apply flex h-14 w-6 shrink-0 items-center justify-center text-fg-3;
-}
-/* the handle already gives the row its left inset */
-.draggable-item :deep(.item) {
-    @apply ps-0;
-}
-</style>

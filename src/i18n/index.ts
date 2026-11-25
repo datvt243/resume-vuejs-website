@@ -71,7 +71,7 @@ const vi = {
         downloadPng: 'Tải PNG',
         downloadSvg: 'Tải SVG',
         present: 'Hiện tại',
-        dragToSort: 'Kéo thả để sắp xếp. Thứ tự chỉ lưu trên trình duyệt này.',
+        dragToSort: 'Kéo thả để sắp xếp.',
         reload: 'Tải lại',
         saveChanges: 'Lưu thay đổi',
         comingSoon: 'Sắp ra mắt',
@@ -274,6 +274,7 @@ const vi = {
             applied: 'Đã nộp',
             interview: 'Phỏng vấn',
             offer: 'Offer',
+            accepted: 'Đã nhận việc',
             rejected: 'Từ chối',
         },
         projectType: {
@@ -580,6 +581,7 @@ const vi = {
         theme: 'Giao diện',
         cvTheme: 'Giao diện CV',
         cvLanguage: 'Ngôn ngữ CV',
+        pageN: 'Trang {n}',
     },
     publicResume: {
         loading: 'Đang tải hồ sơ…',
@@ -658,7 +660,7 @@ const en: typeof vi = {
         downloadPng: 'Download PNG',
         downloadSvg: 'Download SVG',
         present: 'Present',
-        dragToSort: 'Drag and drop to reorder. The order is saved in this browser only.',
+        dragToSort: 'Drag and drop to reorder.',
         reload: 'Reload',
         saveChanges: 'Save changes',
         comingSoon: 'Coming soon',
@@ -861,6 +863,7 @@ const en: typeof vi = {
             applied: 'Applied',
             interview: 'Interview',
             offer: 'Offer',
+            accepted: 'Accepted',
             rejected: 'Rejected',
         },
         projectType: {
@@ -1167,6 +1170,7 @@ const en: typeof vi = {
         theme: 'Theme',
         cvTheme: 'CV theme',
         cvLanguage: 'CV language',
+        pageN: 'Page {n}',
     },
     publicResume: {
         loading: 'Loading profile…',

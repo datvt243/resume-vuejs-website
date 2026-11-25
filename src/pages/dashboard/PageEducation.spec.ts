@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import PageEducation from './PageEducation.vue'
@@ -9,10 +9,19 @@ import { useFormLang } from '@/composables/useFormLang'
 
 const updateDoc = vi.hoisted(() => vi.fn())
 const eduEntry: Record<string, any> = vi.hoisted(() => ({}))
+const extraEdus = vi.hoisted((): Record<string, any>[] => [])
+const reorder = vi.hoisted(() => vi.fn())
 
-vi.mock('@/composables/useCandidate', () => ({
-    useCandidate: () => ({ educations: ref([eduEntry]), removeRecordById: vi.fn(), addRecordToList: vi.fn(), loadError: ref(null), getData: vi.fn() }),
-}))
+vi.mock('@/composables/useCandidate', async () => {
+    const { ref } = await import('vue')
+    return {
+        useCandidate: () => {
+            const educations = ref([eduEntry, ...extraEdus])
+            reorder.mockImplementation(list => (educations.value = list))
+            return { educations, removeRecordById: vi.fn(), addRecordToList: vi.fn(), reorder, loadError: ref(null), getData: vi.fn() }
+        },
+    }
+})
 vi.mock('@/composables/useDocument', () => ({
     useDocument: () => ({ document: reactive({}), updateDoc, deleteDoc: vi.fn() }),
 }))
@@ -97,3 +106,30 @@ describe('PageEducation — #444 read-only view', () => {
         }
     })
 })
+
+describe('PageEducation — #442 drag-and-drop saves through useCandidate.reorder', () => {
+    it('dropping B onto A reorders to B, A and writes nothing to localStorage', async () => {
+        Object.assign(eduEntry, { _id: 'A', school: { vi: 'A' } })
+        extraEdus.push({ _id: 'B', school: { vi: 'B' } })
+        const setItem = vi.spyOn(Storage.prototype, 'setItem')
+        try {
+            setActivePinia(createPinia())
+            const w = mount(PageEducation, { global: { stubs, plugins: [i18n] } })
+            const rows = w.findAll('li[draggable="true"]')
+            expect(rows).toHaveLength(2)
+            await rows[1].trigger('dragstart')
+            await rows[0].trigger('drop')
+
+            expect(reorder.mock.calls[0][0].map((e: { _id: string }) => e._id)).toEqual(['B', 'A'])
+            expect(w.findAllComponents(stubs.EducationItem).map(c => c.props('modelValue')._id)).toEqual(['B', 'A'])
+            expect(setItem).not.toHaveBeenCalled()
+            expect(w.text()).toContain('Kéo thả để sắp xếp.')
+        } finally {
+            for (const k of Object.keys(eduEntry)) delete eduEntry[k]
+            extraEdus.length = 0
+            setItem.mockRestore()
+            reorder.mockClear()
+        }
+    })
+})
+

@@ -15,6 +15,8 @@
  */
 import { computed } from 'vue'
 import { formatDate, getLocalizedText, sanitizeHtml } from '@/utilities/index'
+import { skillRows as cvSkillRows, languageLevel } from '@/utilities/cvSkills'
+import { compareProjects } from '@/utilities/sectionOrder'
 import generalInformationModel from '@/models/generalInformation.model'
 import { experienceTitle } from '@/models/experience.model'
 import { resolveTheme } from '@/composables/useCvTheme'
@@ -42,6 +44,8 @@ const LABELS = {
         awards: 'Giải thưởng',
         certificates: 'Chứng chỉ',
         references: 'Người tham khảo',
+        skills: 'Kỹ năng',
+        languages: 'Ngoại ngữ',
         present: 'Hiện tại',
         noExpiration: 'Không thời hạn',
     },
@@ -60,6 +64,8 @@ const LABELS = {
         awards: 'Awards',
         certificates: 'Certificates',
         references: 'References',
+        skills: 'Skills',
+        languages: 'Languages',
         present: 'Present',
         noExpiration: 'No expiration',
     },
@@ -76,6 +82,14 @@ const fullName = computed(() => `${props.data.firstName || ''} ${props.data.last
 const generalInformation = computed(() => props.data.generalInformation || {})
 // newest first, the same order as the exported PDF (the API returns insertion order)
 const experiences = computed(() => [...(props.data.experiences || [])].sort((a, b) => b.startDate - a.startDate))
+// the manual order, else company projects first, newest first
+const projects = computed(() => [...(props.data.projects || [])].sort(compareProjects))
+
+const skillRows = computed(() => cvSkillRows(generalInformation.value, props.lang))
+const languageLine = ({ language, level }) => {
+    const label = languageLevel(level, props.lang)
+    return label ? `${language} (${label})` : language
+}
 
 function optionLabel(model, name, value) {
     const field = model.find(f => f.name === name)
@@ -131,6 +145,13 @@ function certDateRange(item) {
             <div v-if="generalInformation.careerGoal" class="cv-paragraph" v-html="sanitizeHtml(text(generalInformation.careerGoal))"></div>
         </section>
 
+        <section v-if="skillRows.length" class="cv-section">
+            <h3 class="cv-section-title">{{ t.skills }}</h3>
+            <ul class="cv-facts">
+                <li v-for="(row, i) in skillRows" :key="i"><strong>{{ row.label }}:</strong> {{ row.names.join(', ') }}</li>
+            </ul>
+        </section>
+
         <section v-if="data.educations?.length" class="cv-section">
             <h3 class="cv-section-title">{{ t.educations }}</h3>
             <div v-for="edu in data.educations" :key="edu._id" class="cv-item">
@@ -155,9 +176,9 @@ function certDateRange(item) {
             </div>
         </section>
 
-        <section v-if="data.projects?.length" class="cv-section">
+        <section v-if="projects.length" class="cv-section">
             <h3 class="cv-section-title">{{ t.projects }}</h3>
-            <div v-for="pj in data.projects" :key="pj._id" class="cv-item">
+            <div v-for="pj in projects" :key="pj._id" class="cv-item">
                 <div class="cv-item-head">
                     <span class="cv-item-title">{{ pj.name }}</span>
                     <span class="cv-item-date">{{ dateRange({ ...pj, isCurrent: pj.isWorking }) }}</span>
@@ -194,6 +215,13 @@ function certDateRange(item) {
                 <p v-if="ce.organization" class="cv-item-sub">{{ ce.organization }}</p>
                 <div v-if="ce.description" class="cv-item-desc" v-html="sanitizeHtml(text(ce.description))"></div>
             </div>
+        </section>
+
+        <section v-if="generalInformation.foreignLanguages?.length" class="cv-section">
+            <h3 class="cv-section-title">{{ t.languages }}</h3>
+            <ul class="cv-facts">
+                <li v-for="(lg, i) in generalInformation.foreignLanguages" :key="i">{{ languageLine(lg) }}</li>
+            </ul>
         </section>
 
         <section v-if="data.references?.length" class="cv-section">

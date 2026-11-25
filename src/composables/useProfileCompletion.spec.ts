@@ -68,13 +68,13 @@ describe('useProfileCompletion', () => {
         setActivePinia(createPinia())
     })
 
-    it('reports 0% and all 8 sections missing when candidateStore is empty', async () => {
+    it('reports 0% and all 10 sections missing when candidateStore is empty', async () => {
         const { result } = withUseProfileCompletion()
         await flushPromises()
 
         expect(result.percent.value).toBe(0)
-        expect(result.sections.value).toHaveLength(8)
-        expect(result.missingSections.value).toHaveLength(8)
+        expect(result.sections.value).toHaveLength(10)
+        expect(result.missingSections.value).toHaveLength(10)
     })
 
     it('marks "Thông tin cơ bản" complete only once every required field (per the model\'s own yup .required()) is filled', async () => {
@@ -117,13 +117,13 @@ describe('useProfileCompletion', () => {
 
         const section = result.sections.value.find(s => s.label === 'nav.education')
         expect(section?.complete).toBe(true)
-        expect(result.missingSections.value).toHaveLength(7)
+        expect(result.missingSections.value).toHaveLength(9)
     })
 
-    it('reaches 100% only when all 8 sections (2 object + 6 list) are complete', async () => {
+    it('reaches 100% only when all 10 sections (2 object + 8 list) are complete', async () => {
         candidateStore().setCandidate({
             ...FULL_INFORMATION,
-            generalInformation: { ...FULL_GENERAL_INFORMATION },
+            generalInformation: { ...FULL_GENERAL_INFORMATION, personalSkills: [{ name: 'Teamwork' }], foreignLanguages: [{ language: 'English', level: 'basic' }] },
         })
         candidateStore().setCandidateByField({
             educations: [{ _id: '1' }],
@@ -141,7 +141,7 @@ describe('useProfileCompletion', () => {
         expect(result.missingSections.value).toHaveLength(0)
     })
 
-    it('rounds the percentage (e.g. 2/8 complete sections = 25%)', async () => {
+    it('rounds the percentage (e.g. 2/10 complete sections = 20%)', async () => {
         candidateStore().setCandidate({
             ...FULL_INFORMATION,
             generalInformation: { ...FULL_GENERAL_INFORMATION },
@@ -149,7 +149,31 @@ describe('useProfileCompletion', () => {
         const { result } = withUseProfileCompletion()
         await flushPromises()
 
-        expect(result.percent.value).toBe(25)
+        expect(result.percent.value).toBe(20)
+    })
+
+    it('counts Skills complete with any one skill list, and Languages with one language (#440)', async () => {
+        const status = async (gi: Record<string, unknown>) => {
+            candidateStore().setCandidate({ generalInformation: gi })
+            const { result } = withUseProfileCompletion()
+            await flushPromises()
+            const by = (label: string) => result.sections.value.find(s => s.label === label)?.complete
+            return [by('nav.skills'), by('nav.languages')]
+        }
+        expect(await status({ professionalSkillsGroup: ['Frontend'], foreignLanguages: [] })).toEqual([false, false])
+        for (const key of ['mainSkills', 'familiarSkills', 'professionalSkills', 'personalSkills']) {
+            expect((await status({ [key]: [{ name: 'Teamwork' }] }))[0]).toBe(true)
+        }
+        expect(await status({ foreignLanguages: [{ language: 'English', level: 'basic' }] })).toEqual([false, true])
+    })
+
+    it('rounds 1/10 complete sections to 10%, first missing link after General information is Skills', async () => {
+        candidateStore().setCandidate({ ...FULL_INFORMATION })
+        const { result } = withUseProfileCompletion()
+        await flushPromises()
+        expect(result.percent.value).toBe(10)
+        expect(result.missingSections.value).toHaveLength(9)
+        expect(result.sections.value.map(s => s.label).slice(0, 4)).toEqual(['nav.information', 'nav.generalInformation', 'nav.skills', 'nav.languages'])
     })
 
     it('every section links to its real dashboard route', async () => {
@@ -160,6 +184,8 @@ describe('useProfileCompletion', () => {
         expect(byLabel).toEqual({
             'nav.information': '/dashboard/information',
             'nav.generalInformation': '/dashboard/general-information',
+            'nav.skills': '/dashboard/skills',
+            'nav.languages': '/dashboard/languages',
             'nav.education': '/dashboard/education',
             'nav.experience': '/dashboard/experience',
             'nav.project': '/dashboard/project',

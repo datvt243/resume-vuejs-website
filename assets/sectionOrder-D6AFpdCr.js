@@ -1,0 +1,1 @@
+const o=t=>t.startDate??t.issueDate??t.appliedDate??0,s=t=>typeof t.order=="number"?t.order:1/0,n=t=>t.type==="company"?0:1,c=(t,e)=>{const r=s(t)-s(e);return Number.isNaN(r)?0:r},a=(t,e)=>o(e)-o(t),p=(t,e)=>c(t,e)||a(t,e),d=(t,e)=>c(t,e)||n(t)-n(e)||a(t,e);export{p as a,d as c};

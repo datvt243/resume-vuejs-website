@@ -1,0 +1,1 @@
+import{r as c,J as i}from"./index-Dun67jHn.js";const o="cvActiveProfileId";function l(){const t=c(localStorage.getItem(o)||"");i(t,e=>{e?localStorage.setItem(o,e):localStorage.removeItem(o)});function r(e){t.value=e||""}return{activeProfileId:t,setActiveProfile:r}}export{l as u};

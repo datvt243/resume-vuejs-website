@@ -1,0 +1,1 @@
+import{e as o,k as t,p as a,v as r}from"./index-Dun67jHn.js";const s={class:"dashboard"},d={__name:"PageDashboard",setup(c){return(n,_)=>{const e=a("router-view");return r(),o("div",s,[t(e)])}}};export{d as default};

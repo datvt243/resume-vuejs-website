@@ -1,9 +1,9 @@
 # CV preview, theme, language and export (incl. Download CV)
 
-- Status: verified (Behavior 1–9) — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/cv-preview-export-spec.md`; Behavior 10–17 (#408, #452) verified by `evidence/verifier/2026-11-23/issue-408-452-download-overlay-menu-seal.md`; Behavior 18–23 (#440) verified by `evidence/verifier/2026-11-24/issue-440-cv-skills-languages-seal.md`; Behavior 24–31 (#407, operator answered Q16–19) verified by `evidence/verifier/2026-11-25/issue-407-preview-a4-sheet-seal.md`
+- Status: verified (Behavior 1–9) — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/cv-preview-export-spec.md`; Behavior 10–17 (#408, #452) verified by `evidence/verifier/2026-11-23/issue-408-452-download-overlay-menu-seal.md`; Behavior 18–23 (#440) verified by `evidence/verifier/2026-11-24/issue-440-cv-skills-languages-seal.md`; Behavior 24–31 (#407, operator answered Q16–19) verified by `evidence/verifier/2026-11-25/issue-407-preview-a4-sheet-seal.md`; Behavior 32–37 (#516 JSON Resume skills + languages) verified by `evidence/verifier/2026-11-25/issue-516-export-json-skills-languages-seal.md`
 - Source: backfill from code
-- Last verified: cc01f69
-- Issues: #55, #116, #119, #182, #407, #408, #421, #440, #448, #451, #452
+- Last verified: 624adcb
+- Issues: #55, #116, #119, #182, #407, #408, #421, #440, #448, #451, #452, #516
 - Anchors: `src/pages/dashboard/PagePreview.vue`, `src/components/cv/CvResumeLayout.vue`, `src/composables/useCvTheme.ts`, `src/composables/useCvLang.ts`, `src/composables/useActiveProfile.ts`, `src/composables/useDownloadCv.ts`, `src/utilities/jsonResume.ts`, `src/pages/_layouts/Header.vue`, `src/pages/home/PageHome.vue`, `src/pages/dashboard/PageAtsCheck.vue`, `src/routers/index.ts`, `src/lib/swal.lib.js`
 
 ## Goal
@@ -58,6 +58,15 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 30. Mobile / narrow screens: when the content area is narrower than 210mm, the whole sheet is scaled down proportionally to fit the width (content layout and line breaks unchanged, just smaller); the page has no horizontal scroll at 375px. Printing from a phone prints at full A4 (no scale).
 31. The public CV page (`PagePublicResume.vue`, `#/resume/<slug>`) is unchanged: no sheet, no shadow, no forced light tokens, no page-break hints, same width as before.
 
+
+### Export JSON: skills and languages (#516 — draft, follow-up of #440 Q15)
+32. "Export JSON" (`toJsonResume` in `src/utilities/jsonResume.ts`) adds two JSON Resume v1.0.0 keys, both read from `data.generalInformation` (already in `cvData`, no new request): `skills` and `languages`. Like every other section key they are always present, `[]` when there is nothing to export (e.g. `toJsonResume({})`).
+33. `skills` = one `{ name, keywords }` entry per row the CV layout's Skills section shows (Behavior #19), same rows, same order, same content: `name` = the row label in the **chosen CV language** (`lang` argument, the same text the layout prints: `Kỹ năng chính`/`Main skills`, `Kỹ năng quen thuộc`/`Familiar skills`, the professional group name as stored, `Kỹ năng chuyên môn`/`Professional skills` for ungrouped professional skills, `Kỹ năng cá nhân`/`Personal skills`); `keywords` = that row's skill names, stored order. Rows: main → familiar → one per professional group (via `groupSkills`, `professionalSkillsGroup` order, unknown groups after, ungrouped last) → personal.
+34. A professional skill whose name is also in `mainSkills` or `familiarSkills` is left out of its group (exact name match); a row with no names gets no entry (Behavior #19, Q12b). Names only: no JSON Resume `level`, no years (`exp`).
+35. `languages` = one `{ language, fluency }` per `foreignLanguages` item, stored order. `fluency` = the level as the CV layout prints it (Behavior #20): a known level (`basic`, `intermediate`, `advanced`, `expert`) translated into the CV language (`option.languageLevel.<level>` with `locale: lang`, vi `Cơ bản`/`Trung bình`/`Khá`/`Giỏi`, en `Basic`/…/`Expert`), an unknown legacy level as stored, an empty level → no `fluency` key. An item with no `language` text gets no entry.
+36. Not filtered by the CV profile (Behavior #21): the same `skills`/`languages` with "All profiles" or any profile.
+37. Import is unchanged: `fromJsonResume` still reads only `work`/`education` (`import-cv.md` Out of scope); `skills`/`languages` in an imported file are ignored, no error.
+
 ## Acceptance criteria
 - `npx vitest run src/pages/dashboard/PagePreview.spec.ts` passes.
 - `npx vitest run src/composables/useDownloadCv.spec.ts` passes (`withLangSuffix`, file name, params).
@@ -81,6 +90,9 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 - (#407) Live at 375px: `document.documentElement.scrollWidth <= 375`, the whole sheet is visible edge to edge, its text wraps exactly as at desktop width.
 - (#407) Live: `#/resume/<slug>` of `qa.full@example.com` looks the same before and after (screenshot compare at 1440px and 375px).
 - (#407) `npx vitest run src/pages/dashboard/PagePreview.spec.ts` covers: the CV renders inside the sheet element; the page-break hint labels use `preview.pageN` and are absent for one-page content (mocked height); `preview.pageN` exists in both `vi` and `en`.
+- (#516) `npx vitest run src/utilities/jsonResume.spec.ts` passes and covers, with the #440 `generalInformation` fixture above (`mainSkills: [{name:'Vue'}]`, `familiarSkills: [{name:'Go'}]`, groups `['Frontend','Backend']`, professional `Vue/Frontend, React/Frontend, Go/Backend, Docker/(none)`, `personalSkills: [{name:'Teamwork'}]`, languages `English/advanced, French/fluent, German/''`): `toJsonResume(data, 'vi').skills` `toEqual` `[{name:'Kỹ năng chính',keywords:['Vue']},{name:'Kỹ năng quen thuộc',keywords:['Go']},{name:'Frontend',keywords:['React']},{name:'Kỹ năng chuyên môn',keywords:['Docker']},{name:'Kỹ năng cá nhân',keywords:['Teamwork']}]` (no `Backend` entry); `.languages` `toEqual` `[{language:'English',fluency:'Khá'},{language:'French',fluency:'fluent'},{language:'German'}]`; with `'en'`: `skills[0].name === 'Main skills'`, `skills[3].name === 'Professional skills'`, `languages[0].fluency === 'Advanced'`; `toJsonResume({})` has `skills` and `languages` both `[]`.
+- (#516) The skill-row labels in the JSON equal the CV layout's own labels: `npx vitest run src/components/cv/CvResumeLayout.spec.ts` still passes unchanged (the layout's #440 rows are not altered).
+- (#516) Live (QA account `qa.full@example.com`, `#/dashboard/preview`): "Export JSON" in Tiếng Việt and in English → the downloaded file's `skills` entries match the Skills rows on screen one to one (label = `name`, names = `keywords`), and `languages` matches the Languages section; `qa.empty@example.com` → `"skills": []`, `"languages": []`.
 - Every new i18n key exists in both `vi` and `en` in `src/i18n/index.ts`; `npm run lint` and `npm run build` pass. (#440 also: `npm run test` passes; `npm run typecheck` gains no errors in changed files.)
 - DESIGN.md's loading rules list the download overlay as an allowed blocking overlay next to the cold-start one.
 
@@ -105,6 +117,9 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 - (#407) An entry would cross a page boundary → the whole entry (with its section title if it is the first entry) moves to the next page, both in the hints and in print; an entry taller than one page (267mm) starts a new page and is split by the browser — the hints split it at the same 267mm points.
 - (#407) User prints with a non-default print scale, Letter paper or "Headers and footers" on → browser-controlled; the preview does not follow those settings.
 - (#407) Theme/language/profile switched → hints recompute; window resize on mobile → scale recomputes, no horizontal scroll at any width.
+- (#516) `generalInformation` missing (older backend / empty account) or any skill list missing → those rows just absent, no throw; all missing → `skills: []`, `languages: []`.
+- (#516) A skill object without `name` → skipped (as the layout's `names()` does); a stale `mainSkills` name not in `professionalSkills` → still exported (no cross-check, same as #440 edge case).
+- (#516) Skill/language text is exported as typed (not translated); only the fixed row labels and known levels follow the CV language.
 - (#407) Empty CV (`qa.empty@example.com`) → one blank-ish sheet, no hint.
 
 ## Out of scope
@@ -121,6 +136,7 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 - (#407) The server "Download CV" PDF (`download-pdf`, backend renderer) — not made to match the preview.
 - (#407) Paper sizes other than A4, a paper-size picker, zoom controls.
 - (#407) Real multi-sheet pagination on screen (separate sheets per page) — the preview is one sheet with break hints.
+- (#516) JSON Resume `skills[].level`, skill years, a `{ vi, en }` translation of skill/language names, importing `skills`/`languages` (`import-cv.md`), any backend change.
 - (#407) Setting `document.title` to the CV file name while printing (Chrome's default PDF name) — follow-up issue to open separately (Q19); not created by this task.
 
 ## Open questions
@@ -160,3 +176,4 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 | 2026-11-24 | Operator answered Q11–15; Behavior 18–20 finalized, #23 (backend + JSON follow-up issues) added, criteria updated; still draft until SEAL | #440, see `evidence/analyst/2026-11-24/issue-440-cv-skills-languages-spec.md` | - |
 | 2026-11-25 | Behavior 24–31 (A4 sheet preview matching Export PDF, shared screen/print CSS, `@page`, page-break hints, light sheet in dark mode, mobile scale, public page untouched), draft; Q16–19 open | #407 spec, see `evidence/analyst/2026-11-25/issue-407-preview-a4-spec.md` | - |
 | 2026-11-25 | Operator answered Q16–19; Behavior 24, 25, 28 + criteria/edge cases finalized (15mm margin, keep-together with measured hints, always-light sheet), `document.title` follow-up in Out of scope; still draft until SEAL | #407, see `evidence/analyst/2026-11-25/issue-407-preview-a4-spec.md` | - |
+| 2026-11-25 | Behavior 32–37 (Export JSON `skills`/`languages`, mirroring the #440 layout rows and level labels), criteria + edge cases; draft, no open questions | #516 spec, see `evidence/analyst/2026-11-25/issue-516-export-json-skills-languages-spec.md` | - |

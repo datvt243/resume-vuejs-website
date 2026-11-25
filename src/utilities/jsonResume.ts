@@ -6,6 +6,7 @@
 
 import { getLocalizedText } from '@/utilities/index'
 import { t } from '@/i18n'
+import { skillRows, languageLevel } from '@/utilities/cvSkills'
 
 type Lang = 'vi' | 'en'
 type AnyRecord = Record<string, any>
@@ -111,6 +112,10 @@ export const toJsonResume = (data: AnyRecord, lang: Lang = 'vi', socialMedia: An
         references: (data.references || []).map((r: AnyRecord) =>
             compact({ name: r.fullName, reference: [r.position, r.company].filter(Boolean).join(' — ') }),
         ),
+        skills: skillRows(gi, lang).map(r => ({ name: r.label, keywords: r.names })),
+        languages: (gi.foreignLanguages || [])
+            .filter((l: AnyRecord) => l?.language)
+            .map((l: AnyRecord) => compact({ language: l.language, fluency: languageLevel(l.level, lang) })),
         meta: { version: 'v1.0.0', lastModified: new Date().toISOString() },
     }
 }

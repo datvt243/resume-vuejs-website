@@ -14,7 +14,8 @@
  * public API already resolves those fields to plain strings for `?lang=`.
  */
 import { computed } from 'vue'
-import { formatDate, getLocalizedText, groupSkills, sanitizeHtml } from '@/utilities/index'
+import { formatDate, getLocalizedText, sanitizeHtml } from '@/utilities/index'
+import { skillRows as cvSkillRows, languageLevel } from '@/utilities/cvSkills'
 import { compareProjects } from '@/utilities/sectionOrder'
 import generalInformationModel from '@/models/generalInformation.model'
 import { experienceTitle } from '@/models/experience.model'
@@ -44,10 +45,6 @@ const LABELS = {
         certificates: 'Chứng chỉ',
         references: 'Người tham khảo',
         skills: 'Kỹ năng',
-        mainSkills: 'Kỹ năng chính',
-        familiarSkills: 'Kỹ năng quen thuộc',
-        professionalSkills: 'Kỹ năng chuyên môn',
-        personalSkills: 'Kỹ năng cá nhân',
         languages: 'Ngoại ngữ',
         present: 'Hiện tại',
         noExpiration: 'Không thời hạn',
@@ -68,10 +65,6 @@ const LABELS = {
         certificates: 'Certificates',
         references: 'References',
         skills: 'Skills',
-        mainSkills: 'Main skills',
-        familiarSkills: 'Familiar skills',
-        professionalSkills: 'Professional skills',
-        personalSkills: 'Personal skills',
         languages: 'Languages',
         present: 'Present',
         noExpiration: 'No expiration',
@@ -92,25 +85,9 @@ const experiences = computed(() => [...(props.data.experiences || [])].sort((a, 
 // the manual order, else company projects first, newest first
 const projects = computed(() => [...(props.data.projects || [])].sort(compareProjects))
 
-const names = list => (list || []).map(s => s?.name).filter(Boolean)
-// main/familiar first; a professional skill already picked there is left out of its group
-const skillRows = computed(() => {
-    const gi = generalInformation.value
-    const main = names(gi.mainSkills)
-    const familiar = names(gi.familiarSkills)
-    const picked = new Set([...main, ...familiar])
-    const groups = groupSkills(gi.professionalSkills || [], gi.professionalSkillsGroup || []).map(g => ({
-        label: g.name ?? t.value.professionalSkills,
-        names: names(g.skills).filter(n => !picked.has(n)),
-    }))
-    return [{ label: t.value.mainSkills, names: main }, { label: t.value.familiarSkills, names: familiar }, ...groups, { label: t.value.personalSkills, names: names(gi.personalSkills) }].filter(
-        r => r.names.length,
-    )
-})
-const LANGUAGE_LEVELS = ['basic', 'intermediate', 'advanced', 'expert']
-// level in the CV's language; a legacy free-text level shows as stored
+const skillRows = computed(() => cvSkillRows(generalInformation.value, props.lang))
 const languageLine = ({ language, level }) => {
-    const label = LANGUAGE_LEVELS.includes(level) ? i18n.global.t(`option.languageLevel.${level}`, {}, { locale: props.lang }) : level
+    const label = languageLevel(level, props.lang)
     return label ? `${language} (${label})` : language
 }
 

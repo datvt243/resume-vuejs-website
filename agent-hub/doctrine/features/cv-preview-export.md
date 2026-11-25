@@ -1,8 +1,9 @@
 # CV preview, theme, language and export (incl. Download CV)
 
-- Status: verified (Behavior 1–9) — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/cv-preview-export-spec.md`; Behavior 10–17 (#408, #452) verified by `evidence/verifier/2026-11-23/issue-408-452-download-overlay-menu-seal.md`; Behavior 18–23 (#440) verified by `evidence/verifier/2026-11-24/issue-440-cv-skills-languages-seal.md`
+- Status: verified (Behavior 1–9) — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/cv-preview-export-spec.md`; Behavior 10–17 (#408, #452) verified by `evidence/verifier/2026-11-23/issue-408-452-download-overlay-menu-seal.md`; Behavior 18–23 (#440) verified by `evidence/verifier/2026-11-24/issue-440-cv-skills-languages-seal.md`; Behavior 24–31 (#407, operator answered Q16–19) verified by `evidence/verifier/2026-11-25/issue-407-preview-a4-sheet-seal.md`
 - Source: backfill from code
-- Issues: #55, #116, #119, #182, #408, #421, #440, #448, #451, #452
+- Last verified: cc01f69
+- Issues: #55, #116, #119, #182, #407, #408, #421, #440, #448, #451, #452
 - Anchors: `src/pages/dashboard/PagePreview.vue`, `src/components/cv/CvResumeLayout.vue`, `src/composables/useCvTheme.ts`, `src/composables/useCvLang.ts`, `src/composables/useActiveProfile.ts`, `src/composables/useDownloadCv.ts`, `src/utilities/jsonResume.ts`, `src/pages/_layouts/Header.vue`, `src/pages/home/PageHome.vue`, `src/pages/dashboard/PageAtsCheck.vue`, `src/routers/index.ts`, `src/lib/swal.lib.js`
 
 ## Goal
@@ -45,6 +46,18 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 21. Skills and Languages are not filtered by the CV profile (`cv-profiles.md` Out of scope: they are not part of a profile) — the same content shows with "All profiles", any profile, and on `?profile=` public links.
 22. Print ("Export PDF") shows both sections as rendered on screen.
 23. Follow-up issues (Q14, Q15), opened by the implementer as part of this task, no backend code change: (a) ONE issue on `datvt243/resume-nodejs-api` covering all three export gaps with file/line refs — `mainSkills`/`familiarSkills` missing from the classic PDF, ATS PDF and DOCX; raw stored language level printed (`createPDF.ts` `renderForeignLanguages`, `createPDF.ats.ts` `buildLanguagesSection`, `createDocx.ts` ~163–167); classic PDF and DOCX section labels hard-coded Vietnamese for `lang=en` (`createPDF.ts` `renderSkills`/`renderForeignLanguages`, `createDocx.ts` ~99–103, ~163–167); (b) one frontend issue on `datvt243/resume-vuejs-website` for adding `skills`/`languages` to the JSON Resume export (`src/utilities/jsonResume.ts`). Both linked from #440.
+
+### A4 sheet preview = printed PDF (#407 — draft, operator answered Q16–19 on 2026-11-25)
+"PDF" here means **Export PDF** (`window.print()`, Behavior #4). The server "Download CV" PDF (#6, `download-pdf`) has its own renderer and is not changed (Open question 1: two kinds of export, intended).
+24. On `/dashboard/preview` the CV is shown inside a "sheet": an A4 box (210mm wide, at least 297mm tall, so 210:297), white background, `shadow-float`, centered on the page's `bg-bg`/`bg-surface` area. The sheet's inner padding is **15mm on all four sides**, equal to the print page margin (Q16), so the content box is 180mm (≈680px) wide on screen and in print.
+25. One set of CSS for both: the sheet/print rules live in `PagePreview.vue` only (not in `CvResumeLayout.vue`), with `@page { size: A4; margin: 15mm }` (Q16). In `@media print` the sheet drops its shadow, width/height and padding (the `@page` margin takes over) and everything else — font family, font sizes, spacing, theme colors, and the keep-together rules of #28 — is the same rule the screen uses, so the content box width, line wrapping and section spacing match.
+26. The sheet always uses the **light** color tokens (text `--color-fg` etc. of the light theme, Modern accent = light `--color-success`), on screen and in print, even when the app is in dark mode (the app default). Today, printing while the app is dark uses dark-theme text tokens.
+27. Print hides everything except the CV: header, footer, the sidebar (`aside#app-sidebar` — the current `.dashboard-sidebar` / `.dashboard-layout` selectors match nothing since the Bootstrap removal, so the sidebar is not hidden today), the controls (`.no-print`) and the page-break hints (#28); the content column's sidebar offset (`lg:pl-60`), `main` padding and `max-w-6xl` do not shrink or shift the printed CV.
+28. Keep-together (Q17, Option B), screen + print: each entry (`.cv-item`: an education, experience, project, award, certificate or reference) is never split between pages (`break-inside: avoid`), and a section title is never left alone at the bottom of a page — it moves to the next page with its first entry (`break-after: avoid` on `.cv-section-title`, or title + first entry kept together). The rules are scoped to the preview page (print mode / the sheet), not added to `CvResumeLayout.vue`'s own styles, so the public page is unaffected (#31). When the CV is taller than one page, the sheet shows a page-break hint where each printed page will start, **computed by measuring entries**: page height for content = 267mm (297 − 2×15); walking the entries and section titles top to bottom, a block that would cross the current page's bottom edge starts the next page (an entry together with its title if it is the section's first entry); a single block taller than 267mm starts a new page and is split at exact 267mm intervals, as the browser does. Each hint is a dashed line with a small label "Trang N" / "Page N" (`preview.pageN`, new i18n key, vi + en; `aria-hidden`), not printed. The hints recompute when theme, CV language, profile or data change the content. One page of content → no hint.
+29. Holds for every theme of `useCvTheme` (Classic, Modern, Compact) and both CV languages: for the same data, the number of pages and the first section/item on each page are the same in the preview hints and in the browser's print preview (Chrome, "Headers and footers" off, scale Default).
+30. Mobile / narrow screens: when the content area is narrower than 210mm, the whole sheet is scaled down proportionally to fit the width (content layout and line breaks unchanged, just smaller); the page has no horizontal scroll at 375px. Printing from a phone prints at full A4 (no scale).
+31. The public CV page (`PagePublicResume.vue`, `#/resume/<slug>`) is unchanged: no sheet, no shadow, no forced light tokens, no page-break hints, same width as before.
+
 ## Acceptance criteria
 - `npx vitest run src/pages/dashboard/PagePreview.spec.ts` passes.
 - `npx vitest run src/composables/useDownloadCv.spec.ts` passes (`withLangSuffix`, file name, params).
@@ -61,6 +74,13 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 - (#440) Live (QA account `qa.full@example.com`, `#/dashboard/preview`): Skills and Languages show in Classic, Modern and Compact, in Tiếng Việt and English; the same content shows on that account's `#/resume/<slug>` and `?lang=en`; with a CV profile selected they are unchanged. `qa.empty@example.com` shows neither section.
 - (#440) One issue exists on `datvt243/resume-nodejs-api` listing all three export gaps (main/familiar skills missing; raw level printed; classic PDF + DOCX labels hard-coded Vietnamese for `lang=en`) with file/line refs, linked from #440 (`gh issue list -R datvt243/resume-nodejs-api --search "440"` shows it). No file under `resume-nodejs-api` is changed by this task.
 - (#440) One follow-up issue exists on `datvt243/resume-vuejs-website` for JSON Resume `skills`/`languages` export, linked from #440; `src/utilities/jsonResume.ts` is unchanged.
+- (#407) Live (QA account `qa.full@example.com`, `#/dashboard/preview`, desktop 1440px, app in dark mode): the sheet element's rendered width : height ratio is 210:297 (±1px for one page of content, height grows by whole pages otherwise), computed `background-color` is `rgb(255, 255, 255)`, computed CV text color is the light-theme `--color-fg`, `box-shadow` is the `shadow-float` value; content box width = 180mm (≈680px) with Q16's default.
+- (#407) `grep -n "@page" src/pages/dashboard/PagePreview.vue` shows `size: A4` and the Q16 margin; `grep -rn "dashboard-sidebar\|dashboard-layout" src` returns nothing.
+- (#407) Live print check: Playwright `browser_emulate_media` `print` (or Chrome print preview) on `#/dashboard/preview` → header, footer, `aside#app-sidebar`, controls and page-break hints are `display: none`; the CV column starts at the page's left margin (no 240px offset).
+- (#407) Live, for each of Classic / Modern / Compact × Tiếng Việt / English on `qa.full@example.com` (long enough to need ≥2 pages): the number of page-break hints + 1 equals the page count in Chrome's print preview ("Headers and footers" off, scale Default); the first entry (or section title) after each hint is the first block of that printed page; no entry is split across pages in the printed PDF; no printed page ends with a section title.
+- (#407) Live at 375px: `document.documentElement.scrollWidth <= 375`, the whole sheet is visible edge to edge, its text wraps exactly as at desktop width.
+- (#407) Live: `#/resume/<slug>` of `qa.full@example.com` looks the same before and after (screenshot compare at 1440px and 375px).
+- (#407) `npx vitest run src/pages/dashboard/PagePreview.spec.ts` covers: the CV renders inside the sheet element; the page-break hint labels use `preview.pageN` and are absent for one-page content (mocked height); `preview.pageN` exists in both `vi` and `en`.
 - Every new i18n key exists in both `vi` and `en` in `src/i18n/index.ts`; `npm run lint` and `npm run build` pass. (#440 also: `npm run test` passes; `npm run typecheck` gains no errors in changed files.)
 - DESIGN.md's loading rules list the download overlay as an allowed blocking overlay next to the cold-start one.
 
@@ -81,6 +101,12 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 - (#440) Every professional skill is also main or familiar, and no personal skills → only the main/familiar rows show.
 - (#440) Only `professionalSkillsGroup` tags exist, no skills at all → no Skills section.
 
+- (#407) Content exactly one page tall → no hint, one printed page (no empty 2nd page from the sheet's own height/padding).
+- (#407) An entry would cross a page boundary → the whole entry (with its section title if it is the first entry) moves to the next page, both in the hints and in print; an entry taller than one page (267mm) starts a new page and is split by the browser — the hints split it at the same 267mm points.
+- (#407) User prints with a non-default print scale, Letter paper or "Headers and footers" on → browser-controlled; the preview does not follow those settings.
+- (#407) Theme/language/profile switched → hints recompute; window resize on mobile → scale recomputes, no horizontal scroll at any width.
+- (#407) Empty CV (`qa.empty@example.com`) → one blank-ish sheet, no hint.
+
 ## Out of scope
 - Storing theme/profile on the server.
 - Attaching an uploaded CV file (Home "coming soon").
@@ -92,6 +118,10 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 - (#440) Editing skills/languages, reordering them, per-profile selection (`cv-skills.md`, `cv-languages.md`, `cv-profiles.md`).
 - (#440) Any backend change (export gaps go to the backend issue, Behavior #23a) and JSON Resume skills/languages (follow-up issue, #23b).
 - (#440) Skill years (`exp`) on the CV.
+- (#407) The server "Download CV" PDF (`download-pdf`, backend renderer) — not made to match the preview.
+- (#407) Paper sizes other than A4, a paper-size picker, zoom controls.
+- (#407) Real multi-sheet pagination on screen (separate sheets per page) — the preview is one sheet with break hints.
+- (#407) Setting `document.title` to the CV file name while printing (Chrome's default PDF name) — follow-up issue to open separately (Q19); not created by this task.
 
 ## Open questions
 1. "Export PDF" here prints the browser preview (theme + profile applied), while "Download CV" fetches a server PDF that gets no theme and no profile. The two PDFs can differ. Intended? → **Answer (operator 2026-11-07):** Intended (two kinds of export); the profile part is tracked in #448
@@ -112,6 +142,11 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 14. (#440) The backend export check (issue "Expected" #3). Findings from `resume-nodejs-api` @ `staging` 28e61e5 (read-only): classic PDF (`createPDF.ts`), ATS PDF (`createPDF.ats.ts`) and DOCX (`createDocx.ts`) already render professional skills (grouped in both PDFs, flat in DOCX), personal skills (ATS: only with `includePersonalSkills`, off by default) and foreign languages — but **none render `mainSkills` or `familiarSkills`**, and **all show the raw stored level** (`advanced`, not `Khá`/`Advanced`); classic PDF and DOCX labels are hard-coded Vietnamese (`Kỹ năng chuyên môn`, `Ngoại ngữ`) even for `lang=en`. Is opening the backend issue part of this frontend task (the implementer opens it with these findings), done separately by the operator, or dropped? And should that backend issue cover all three gaps or only main/familiar skills? → **Answer (operator 2026-11-24):** The implementer opens ONE issue on datvt243/resume-nodejs-api covering all 3 gaps with file/line refs. No backend code change in this task. Acceptance criterion.
 15. (#440) Export JSON (`src/utilities/jsonResume.ts`) has no `skills`/`languages` either (JSON Resume has both keys). In scope of #440, or a separate issue? Default if unanswered: out of scope. → **Answer (operator 2026-11-24):** Out of scope for #440; the implementer opens a separate frontend follow-up issue for JSON Resume skills/languages export.
 
+16. (#407) Print page margin (= sheet padding on screen)? → **Answer (operator 2026-11-25):** `@page { size: A4; margin: 15mm }` on all four sides; on-screen sheet padding 15mm to match.
+17. (#407) Entries split across pages: A (let the browser cut, fixed-interval hints) or B (keep each entry and each section title with its first entry on one page; hints computed by measuring entries)? → **Answer (operator 2026-11-25):** Option B.
+18. (#407) In dark mode, is the sheet always white with light-theme colors on screen? → **Answer (operator 2026-11-25):** Yes — always white/light-theme on screen regardless of app dark mode, same as print.
+19. (#407) Set `document.title` to the computed CV file name while printing? → **Answer (operator 2026-11-25):** Out of scope for #407; recorded as a separate follow-up in Out of scope (no GitHub issue created by the analyst).
+
 ## Changelog
 | Date | Change | Why | Node |
 |---|---|---|---|
@@ -123,3 +158,5 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 | 2026-11-23 | Operator answered Q7–10; Behavior 11, 12, 15, 17 and criteria updated; still draft until SEAL | operator answers, see `evidence/analyst/2026-11-23/cv-preview-export-408-452-spec.md` | - |
 | 2026-11-24 | Behavior 18–22 (Skills + Languages sections on `CvResumeLayout`), draft; Q11–15 open | #440 spec, see `evidence/analyst/2026-11-24/issue-440-cv-skills-languages-spec.md` | - |
 | 2026-11-24 | Operator answered Q11–15; Behavior 18–20 finalized, #23 (backend + JSON follow-up issues) added, criteria updated; still draft until SEAL | #440, see `evidence/analyst/2026-11-24/issue-440-cv-skills-languages-spec.md` | - |
+| 2026-11-25 | Behavior 24–31 (A4 sheet preview matching Export PDF, shared screen/print CSS, `@page`, page-break hints, light sheet in dark mode, mobile scale, public page untouched), draft; Q16–19 open | #407 spec, see `evidence/analyst/2026-11-25/issue-407-preview-a4-spec.md` | - |
+| 2026-11-25 | Operator answered Q16–19; Behavior 24, 25, 28 + criteria/edge cases finalized (15mm margin, keep-together with measured hints, always-light sheet), `document.title` follow-up in Out of scope; still draft until SEAL | #407, see `evidence/analyst/2026-11-25/issue-407-preview-a4-spec.md` | - |

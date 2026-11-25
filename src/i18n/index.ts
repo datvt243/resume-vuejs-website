@@ -580,6 +580,7 @@ const vi = {
         theme: 'Giao diện',
         cvTheme: 'Giao diện CV',
         cvLanguage: 'Ngôn ngữ CV',
+        pageN: 'Trang {n}',
     },
     publicResume: {
         loading: 'Đang tải hồ sơ…',
@@ -1167,6 +1168,7 @@ const en: typeof vi = {
         theme: 'Theme',
         cvTheme: 'CV theme',
         cvLanguage: 'CV language',
+        pageN: 'Page {n}',
     },
     publicResume: {
         loading: 'Loading profile…',

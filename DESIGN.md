@@ -267,7 +267,7 @@ Read top to bottom: **status → numbers → trend → to-dos**.
 5. Detail table card (§5.4).
 
 ### 4.3 Form / settings (profile sections, account settings), max width `max-w-4xl`
-- Stripe-style sections: at `lg` and up, use a `grid lg:grid-cols-3 gap-6`. Column 1 holds the section title plus a one-line description; columns 2–3 hold a card with the fields.
+- Stacked sections at every width: the section title plus a one-line description on top, the card with the fields below at full width (`grid gap-3`, tighter than the page's `space-y-6` between sections). No left title column: beside a sidebar it starved the form of width (iPad landscape, #538).
 - Fields use two columns at `md` and up only when they're related (first name and last name). Otherwise use one column.
 - A sticky action bar at the bottom of the card holds Cancel (ghost) and Save (primary). Save stays enabled until the request starts, then shows a spinner inside the button.
 - Build each section with the global `<FormSection title description>` (`:card="false"` when the content is already a card, such as `TableDefault`). `VeeForm` renders the action bar; pass `cancelable` for "Hủy".

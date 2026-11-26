@@ -29,6 +29,7 @@
 | Account settings and app language | account-settings.md | verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/account-settings-spec.md` | dashboard / `src/pages/dashboard/PageAccountSettings.vue`, `src/i18n/index.ts` | #63, #182, #431, #460, #489, datvt243/resume-nodejs-api#412 |
 | App dark / light theme | app-theme.md | verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/app-theme-spec.md` | shell / `src/composables/useTheme.ts`, `src/pages/_layouts/Header.vue` | #62 |
 | Gross ↔ Net salary calculator (tool) | salary-calculator.md | verified | dashboard / new `/dashboard/salary-calculator`, `src/pages/_layouts/LayoutDefault.vue`, `src/models/generalInformation.model.ts` | #404, #509 |
+| Form / settings section layout (FormSection stacked header) | page-form-layout.md | verified | shared UI / `src/components/global/FormSection.vue`, `DESIGN.md` §4.3 | #538 |
 
 ## Doc format — `doctrine/features/<slug>.md`
 ~~~markdown

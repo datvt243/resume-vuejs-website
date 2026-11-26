@@ -47,6 +47,32 @@ describe('useDownloadCv', () => {
         expect(axiosMock).toHaveBeenLastCalledWith('api/v1/download-pdf', expect.objectContaining({ params: {} }))
     })
 
+    describe('CV profile (#448)', () => {
+        afterEach(() => localStorage.removeItem('cvActiveProfileId'))
+        const lastParams = () => axiosMock.mock.lastCall![1].params
+
+        it('sends the active profile, read at click time, and none for "All profiles"', async () => {
+            axiosMock.mockResolvedValue(pdfResponse())
+            const { download } = useDownloadCv()
+
+            await download()
+            expect(lastParams()).not.toHaveProperty('profile')
+
+            localStorage.setItem('cvActiveProfileId', 'p1')
+            await download()
+            expect(lastParams()).toEqual({ profile: 'p1' })
+        })
+
+        it('lets an explicit profile win over the active one', async () => {
+            localStorage.setItem('cvActiveProfileId', 'p1')
+            axiosMock.mockResolvedValue(pdfResponse())
+
+            await useDownloadCv().download({ template: 'ats', profile: 'p2' })
+
+            expect(lastParams()).toEqual({ template: 'ats', profile: 'p2' })
+        })
+    })
+
     it('saves under the Content-Disposition name the server sent', async () => {
         candidateStore().setCandidate({ firstName: 'Võ Tấn', lastName: 'Đạt', cvFileName: 'Dat Vo CV' })
         axiosMock.mockResolvedValue(pdfResponse({ 'content-disposition': 'attachment; filename="Dat_Vo_CV.pdf"' }))

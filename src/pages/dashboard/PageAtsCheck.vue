@@ -13,6 +13,7 @@ import { computed, ref } from 'vue'
 import { useHelper } from '@/composables/useHelper'
 import { handleBase } from '@/services/base'
 import { useDownloadCv } from '@/composables/useDownloadCv'
+import { getActiveProfileId } from '@/composables/useActiveProfile'
 import { buttonClass } from '@/lib/button.lib'
 import { badgeClass } from '@/lib/badge.lib'
 import { useCvLang } from '@/composables/useCvLang'
@@ -61,7 +62,9 @@ async function handleCheck() {
     const jd = jobDescription.value.trim()
     jd && (data.jobDescription = jd)
 
-    await handleBase({ method: 'post', url: 'cv/ats-check', data }, { loading, toast }, res => {
+    const profile = getActiveProfileId()
+
+    await handleBase({ method: 'post', url: 'cv/ats-check', data, ...(profile && { params: { profile } }) }, { loading, toast }, res => {
         result.value = res?.data || null
         checkedTemplate.value = data.template
     })

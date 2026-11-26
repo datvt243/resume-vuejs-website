@@ -14,7 +14,7 @@ import { useRouter } from 'vue-router'
 import { useCandidate } from '@/composables/useCandidate'
 import { useDocument } from '@/composables/useDocument'
 import { candidateStore } from '@/stores/candidate'
-import { API } from '@/config/api.config'
+import { useDownloadCv } from '@/composables/useDownloadCv'
 import { useCvLang } from '@/composables/useCvLang'
 
 import model, { allowedStatuses } from '@/models/application.model.ts'
@@ -52,11 +52,11 @@ const formFields = computed(() =>
 const router = useRouter()
 const candidate = candidateStore()
 const { selectedLang } = useCvLang()
+const { download, isDownloading } = useDownloadCv()
 
 /**
- * Public CV link and PDF for the profile an application was sent with.
- * shortcut: both go through the public endpoints, so they only work while the CV is public;
- * the owner's `download-pdf` ignores `?profile=` — switch the PDF to it once the backend supports that.
+ * Public CV link for the profile an application was sent with (the PDF uses the owner export).
+ * shortcut: the public link only works while the CV is public; switch it to an owner view if private CVs need it.
  */
 function getProfileLinks(item) {
   const profile = profiles.value.find(p => p._id === item.profileId)
@@ -65,7 +65,6 @@ function getProfileLinks(item) {
   return {
     name: profile.name,
     publicLink: router.resolve({ name: 'public-resume', params: { slug: identifier }, query: { profile: profile._id } }).href,
-    pdfLink: `${API}api/me/${encodeURIComponent(identifier)}/download-pdf?template=ats&profile=${profile._id}&lang=${selectedLang.value}`,
   }
 }
 
@@ -178,9 +177,10 @@ function showModalDuplicateDoc(doc) {
                 <a :class="viewBtn" :href="getProfileLinks(item).publicLink" target="_blank" rel="noopener" :aria-label="t('crud.application.viewPublicCv')" :title="t('crud.application.viewPublicCvShort')">
                   <FontAwesomeIcon icon="fa-solid fa-eye" aria-hidden="true" />
                 </a>
-                <a :class="linkBtn" :href="getProfileLinks(item).pdfLink" target="_blank" rel="noopener" :aria-label="t('crud.application.downloadPdf')" :title="t('crud.application.downloadPdfShort')">
+                <button type="button" :class="linkBtn" :disabled="isDownloading" :aria-label="t('crud.application.downloadPdf')" :title="t('crud.application.downloadPdfShort')"
+                  @click="download({ template: 'ats', lang: selectedLang, profile: item.profileId })">
                   <FontAwesomeIcon icon="fa-solid fa-download" aria-hidden="true" />
-                </a>
+                </button>
               </template>
               <a v-if="item.jobLink" :class="linkBtn" :href="item.jobLink" target="_blank" rel="noopener" :aria-label="t('crud.application.openJob')" :title="t('crud.application.openJob')">
                 <FontAwesomeIcon icon="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />

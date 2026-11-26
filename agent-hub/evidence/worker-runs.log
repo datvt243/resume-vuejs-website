@@ -29,3 +29,7 @@
 2026-11-25T12:40:36Z role=verifier outcome=SEAL node=issue-407-preview-a4-sheet rerun=none spawn=resumed hub_bytes_before=102994 hub_bytes_after=102998
 2026-11-25T12:57:35Z role=verifier outcome=SEAL node=issue-516-export-json-skills-languages rerun=none spawn=fresh hub_bytes_before=102998 hub_bytes_after=103192
 2026-11-25T13:11:44Z role=verifier outcome=SEAL node=issue-423-application-accepted-status rerun=none spawn=fresh hub_bytes_before=103016 hub_bytes_after=  103040
+2026-11-26T11:54:36Z role=analyst outcome=needs_input task=issue-448-owner-export-profile
+2026-11-26T11:55:46Z role=analyst outcome=spec_ready task=issue-448-owner-export-profile round=2
+2026-11-26T12:30:00Z role=verifier outcome=REOPEN node=issue-448-owner-export-profile rerun=none spawn=fresh hub_bytes_before=103040 hub_bytes_after=103376
+2026-11-26T13:10:00Z role=verifier outcome=SEAL node=issue-448-owner-export-profile rerun=none spawn=resumed hub_bytes_before=103040 hub_bytes_after=103034

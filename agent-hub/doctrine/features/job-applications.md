@@ -17,6 +17,7 @@ The candidate tracks the jobs they applied to, which CV profile they sent, and w
 5. When the application's profile exists and the candidate has a slug or email, the card shows the profile name badge plus:
    - "View public CV" → opens `#/resume/<slug or email>?profile=<id>` in a new tab.
    - "Download PDF" → opens `<API>api/me/<slug or email>/download-pdf?template=ats&profile=<id>&lang=<CV language>` in a new tab (language = the shared CV language setting, `useCvLang`).
+   - *(#448 — draft)* "Download PDF" moves to the owner `GET api/v1/download-pdf` (works for a private CV) — via the shared Download CV flow (overlay, Cancel, `<CV file name>_VI|_EN.pdf`); "View public CV" unchanged — spec in `cv-profiles.md` Behavior 10–11.
 6. "Open job" (only when a job link exists) opens the link in a new tab.
 7. (#423) Status `accepted`: label `option.applicationStatus.accepted` in both `vi` and `en`, and a card badge (dot + subtle background, DESIGN.md §5.6) whose color differs from the other four statuses (still free: `info`, `accent`).
 8. (#423) The status select offers only the transitions the backend allows (datvt243/resume-nodejs-api#410) from the **saved** status of the record being edited (not the value currently picked in the form). Rank: applied 0 < interview 1 < offer 2.
@@ -49,7 +50,7 @@ The candidate tracks the jobs they applied to, which CV profile they sent, and w
 - Reminders, follow-up dates, or status history.
 - (#423) Undoing a final status ("unreject") — backend forbids it; workaround is delete + re-create (resume-nodejs-api#410).
 - (#423) Client-side yup rule for transitions — the select restricts the choice; the backend is the authority.
-- The owner-only PDF endpoint with profile filtering (backend does not support `?profile=` there yet).
+- *(#448)* "View public CV" for a private CV.
 
 ## Open questions
 1. The per-application PDF and public CV go through the PUBLIC endpoints, so they only work while the CV is public (code shortcut note). For a private CV both links fail. Acceptable until the backend's owner `download-pdf` supports `?profile=`? → **Answer (operator 2026-11-07):** Change: owner endpoint once datvt243/resume-nodejs-api#400 lands — #448
@@ -67,3 +68,4 @@ Note (operator 2026-11-07): follow-up — add status `accepted` + status transit
 | 2026-11-15 | Behavior #1: sorted by `appliedDate`, newest first | #447 (operator answer to open question 3) | `issue-443-list-date-sort` |
 | 2026-11-21 | Behavior #5: PDF link passes `lang` from the shared CV language | #450 (operator answer to open question 2) | `issue-427-450-dev-host-pdf-lang` |
 | 2026-11-25 | Behavior 7-9 + criteria / edge cases / out of scope for status `accepted` and allowed transitions; Status → draft until the node SEALs | #423 (backend datvt243/resume-nodejs-api#410, closed) | - |
+| 2026-11-26 | Behavior #5 (draft): per-application PDF via owner export | #448, see `cv-profiles.md` | - |

@@ -11,6 +11,7 @@ import { subURL } from '@/config/api.config'
 import { instanceAxios } from '@/services/axios'
 import { candidateStore } from '@/stores/candidate'
 import { useHelper } from '@/composables/useHelper'
+import { getActiveProfileId } from '@/composables/useActiveProfile'
 import { t } from '@/i18n'
 
 // `_VI`/`_EN` before the extension, unless the name already ends with one
@@ -47,8 +48,9 @@ export const useDownloadCv = () => {
      * `classic` and `vi` are the backend defaults, so they're left off.
      * The server's `Content-Disposition` name wins — it's the sanitized one.
      * Cancel aborts the request; a 401 retry reuses the same config, so it carries the signal too.
+     * `profile` defaults to the active CV profile; empty = full CV.
      */
-    const download = async ({ template = 'classic', lang = 'vi' } = {}) => {
+    const download = async ({ template = 'classic', lang = 'vi', profile = getActiveProfileId() } = {}) => {
         if (isDownloading.value) return
         const { signal } = (controller = new AbortController())
         downloadStatus.value = 'generating'
@@ -57,6 +59,7 @@ export const useDownloadCv = () => {
             const params = {
                 ...(template === 'ats' && { template }),
                 ...(lang === 'en' && { lang }),
+                ...(profile && { profile }),
             }
             const { data, headers } = await instanceAxios.get(`${subURL}download-pdf`, {
                 params,

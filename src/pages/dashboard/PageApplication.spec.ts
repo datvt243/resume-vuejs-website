@@ -8,7 +8,7 @@ import VeeForm from '@/components/veevalidate/VeeForm.vue'
 import { useCvLang } from '@/composables/useCvLang'
 import { t } from '@/i18n'
 
-const { updateDoc } = vi.hoisted(() => ({ updateDoc: vi.fn() }))
+const { updateDoc, download } = vi.hoisted(() => ({ updateDoc: vi.fn(), download: vi.fn() }))
 
 const lists: Record<string, unknown[]> = {
     applications: [
@@ -29,6 +29,9 @@ vi.mock('@/composables/useCandidate', () => ({
 }))
 vi.mock('@/composables/useDocument', () => ({
     useDocument: () => ({ document: reactive({}), updateDoc, deleteDoc: vi.fn() }),
+}))
+vi.mock('@/composables/useDownloadCv', () => ({
+    useDownloadCv: () => ({ download, isDownloading: ref(false) }),
 }))
 vi.mock('vue-router', () => ({
     useRouter: () => ({ resolve: ({ params, query }: any) => ({ href: `#/cv/${params.slug}?profile=${query.profile}` }) }),
@@ -59,22 +62,24 @@ describe('PageApplication — CV profile per application', () => {
         expect(fields.find(f => f.name === 'profileId').options).toEqual([{ text: 'Frontend CV', value: 'p1' }])
     })
 
+    const pdfBtn = (item: ReturnType<ReturnType<typeof mountPage>['find']>) => item.find(`button[aria-label="${t('crud.application.downloadPdf')}"]`)
+
     it('shows public link + PDF only for an application whose profile still exists', () => {
         const items = mountPage().findAll('.item')
         const links = items[0].findAll('a[target="_blank"]').map(a => a.attributes('href'))
         expect(items[0].text()).toContain('Frontend CV')
-        expect(links).toHaveLength(2)
-        expect(links[0]).toBe('#/cv/dat-vo?profile=p1')
-        expect(links[1]).toMatch(/api\/me\/dat-vo\/download-pdf\?template=ats&profile=p1&lang=vi$/)
+        expect(links).toEqual(['#/cv/dat-vo?profile=p1'])
+        expect(pdfBtn(items[0]).exists()).toBe(true)
         expect(items[1].findAll('a[target="_blank"]')).toHaveLength(0)
-        expect(items[2].findAll('a[target="_blank"]')).toHaveLength(0)
+        expect(pdfBtn(items[1]).exists()).toBe(false)
+        expect(pdfBtn(items[2]).exists()).toBe(false)
     })
 
-    it('passes the shared CV language to the PDF link', () => {
+    it('downloads the owner ATS PDF for the application profile in the shared CV language (#448)', async () => {
         useCvLang().setLang('en')
-        const href = mountPage().findAll('.item')[0].findAll('a[target="_blank"]')[1].attributes('href')
+        await pdfBtn(mountPage().findAll('.item')[0]).trigger('click')
         useCvLang().setLang('vi')
-        expect(href).toMatch(/&lang=en$/)
+        expect(download).toHaveBeenCalledWith({ template: 'ats', lang: 'en', profile: 'p1' })
     })
 
     it('falls back to the email when no slug is set', () => {

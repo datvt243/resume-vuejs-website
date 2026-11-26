@@ -11,6 +11,7 @@ The candidate checks whether applicant tracking systems can read their CV PDF an
 ## Behavior
 1. `/dashboard/ats-check` shows: a template switch ATS-optimized / Classic (default ATS), a "Download this template" button, an optional job-description textarea, and a "Check" button in the heading.
 2. "Check" sends `POST api/v1/cv/ats-check` with `template`, the current CV language (`lang`, from the shared CV-language setting) and, if non-blank, the trimmed `jobDescription`. Nothing is saved. Spinner while running; API failure → red toast.
+2a. *(#448 — draft)* With a CV profile active, "Check" also sends `profile=<id>` as a query param — spec in `cv-profiles.md` Behavior 9.
 3. Result block:
    - Score with colour: ≥ 80 green, 50–79 amber, < 50 red.
    - Page count, and "<n> checks failed" or "all checks passed".
@@ -55,3 +56,4 @@ The candidate checks whether applicant tracking systems can read their CV PDF an
 | 2026-11-06 | Backfilled from code | /spec-backfill | - |
 | 2026-11-07 | Operator confirmed Behavior + answered all open questions; Status → verified | analyst backfill re-check, see `evidence/analyst/2026-11-07/ats-check-spec.md` | - |
 | 2026-11-23 | Behavior 6 (draft): neutral not-applicable state, shape from backend #406 / PR #440 | #461 | - |
+| 2026-11-26 | Behavior 2a (draft): ATS check sends the active profile | #448, see `cv-profiles.md` | - |

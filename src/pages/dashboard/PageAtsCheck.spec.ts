@@ -70,6 +70,17 @@ describe('PageAtsCheck (issue #159)', () => {
         expect(opts).toEqual({ method: 'post', url: 'cv/ats-check', data: { template: 'ats', lang: 'vi' } })
     })
 
+    it('sends the active CV profile as a query param (#448)', async () => {
+        localStorage.setItem('cvActiveProfileId', 'p1')
+        const wrapper = mountPage()
+        await runCheck(wrapper)
+        localStorage.removeItem('cvActiveProfileId')
+
+        const [opts] = handleBaseMock.mock.calls[0]
+        expect(opts.params).toEqual({ profile: 'p1' })
+        expect(opts.data).not.toHaveProperty('profile')
+    })
+
     it('sends the trimmed jobDescription, chosen template and the header CV language', async () => {
         const wrapper = mountPage()
         await wrapper.find('textarea').setValue('  TypeScript, Vitest  ')

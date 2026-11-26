@@ -14,8 +14,11 @@ import { ref, watch } from 'vue'
 
 const STORAGE_KEY = 'cvActiveProfileId'
 
+// Read at call time: a long-lived component's `activeProfileId` ref goes stale after a switch elsewhere
+export const getActiveProfileId = () => localStorage.getItem(STORAGE_KEY) || ''
+
 export function useActiveProfile() {
-    const activeProfileId = ref(localStorage.getItem(STORAGE_KEY) || '')
+    const activeProfileId = ref(getActiveProfileId())
 
     watch(activeProfileId, value => {
         if (value) {

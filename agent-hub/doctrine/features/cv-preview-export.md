@@ -19,6 +19,7 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 4. "Export PDF" opens the browser print dialog (`window.print()`). While this page is open, printing hides the header, footer, sidebar and controls; leaving the page removes that print mode.
 5. "Export JSON" downloads `<computed CV file name>_VI|_EN.json` (#8 name with `.json`, suffix per #7) in JSON Resume format, built from the same filtered data, the chosen CV language and the social links.
 6. "Download CV" (header button on wider screens, and the Home CV card) downloads the server-rendered PDF: `GET api/v1/download-pdf` with the Bearer token, `template=ats` only when ATS is chosen (the Home CV card and the ATS check page offer that choice; the header button always uses Classic), `lang=en` only when the CV language is English. A second click while downloading is ignored; the button shows a spinner.
+6a. *(#448 — draft)* With a CV profile active, every Download CV entry point also sends `profile=<id>` (read at click time) — spec in `cv-profiles.md` Behavior 6–8. The Job applications per-application "Download PDF" is now also an entry point of this flow (same overlay, state and file naming; `template=ats`, the application's profile) — `cv-profiles.md` Behavior 10; this replaces the former Out-of-scope line "per-profile PDF link in Job applications — not this flow, no overlay".
 7. Downloaded file name: the server's `Content-Disposition` name if present, else the computed CV file name; then `_VI` or `_EN` is added before the extension unless the name already ends with `_vi`/`_en` (any case).
 8. Computed CV file name: the custom name from Account settings + `.pdf` if set (trimmed), else `<firstName>_<lastName>.pdf` with spaces turned into `_`, else `CV.pdf`.
 9. Download failure → red toast "could not download CV".
@@ -127,7 +128,6 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 - Attaching an uploaded CV file (Home "coming soon").
 - Stopping the PDF render on the server after Cancel (only the browser request is aborted).
 - A percentage progress bar.
-- The per-profile PDF link in Job applications (`PageApplication.vue`, a `?token=` link in a new tab) — not this flow, no overlay.
 - Export PDF (print) and Export JSON — instant, no overlay.
 - (#440) Skill/language content is not translated — names are user CV content shown as typed (no `{ vi, en }` field exists for them).
 - (#440) Editing skills/languages, reordering them, per-profile selection (`cv-skills.md`, `cv-languages.md`, `cv-profiles.md`).
@@ -177,3 +177,5 @@ The candidate sees their CV exactly as others will, picks how it looks and which
 | 2026-11-25 | Behavior 24–31 (A4 sheet preview matching Export PDF, shared screen/print CSS, `@page`, page-break hints, light sheet in dark mode, mobile scale, public page untouched), draft; Q16–19 open | #407 spec, see `evidence/analyst/2026-11-25/issue-407-preview-a4-spec.md` | - |
 | 2026-11-25 | Operator answered Q16–19; Behavior 24, 25, 28 + criteria/edge cases finalized (15mm margin, keep-together with measured hints, always-light sheet), `document.title` follow-up in Out of scope; still draft until SEAL | #407, see `evidence/analyst/2026-11-25/issue-407-preview-a4-spec.md` | - |
 | 2026-11-25 | Behavior 32–37 (Export JSON `skills`/`languages`, mirroring the #440 layout rows and level labels), criteria + edge cases; draft, no open questions | #516 spec, see `evidence/analyst/2026-11-25/issue-516-export-json-skills-languages-spec.md` | - |
+| 2026-11-26 | Behavior 6a (draft): Download CV sends the active profile | #448, see `cv-profiles.md` | - |
+| 2026-11-26 | Out of scope: removed "per-profile PDF link in Job applications — not this flow"; 6a extended | #448, operator answer Q4 (a), see `cv-profiles.md` | - |

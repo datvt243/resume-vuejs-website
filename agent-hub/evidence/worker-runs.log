@@ -35,3 +35,4 @@
 2026-11-26T13:10:00Z role=verifier outcome=SEAL node=issue-448-owner-export-profile rerun=none spawn=resumed hub_bytes_before=103040 hub_bytes_after=103034
 2026-11-26T14:00:00Z role=verifier outcome=SEAL node=issue-538-page-form-layout rerun=none spawn=fresh hub_bytes_before=103034 hub_bytes_after=103026
 2026-11-26T14:14:10Z role=verifier outcome=SEAL node=issue-527-536-skills-page-ux rerun=none spawn=fresh hub_bytes_before=103026 hub_bytes_after=103030
+2026-11-28T14:23:32Z role=verifier outcome=SEAL node=issue-525-home-general-info-fetch rerun=none spawn=fresh hub_bytes_before=103030 hub_bytes_after=103044

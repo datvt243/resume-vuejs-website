@@ -176,6 +176,24 @@ describe('useProfileCompletion', () => {
         expect(result.sections.value.map(s => s.label).slice(0, 4)).toEqual(['nav.information', 'nav.generalInformation', 'nav.skills', 'nav.languages'])
     })
 
+    it('fetches general information on a fresh store so its 3 sections count (#525)', async () => {
+        handleBaseMock.mockImplementation(async (opt: { url: string }, _props: unknown, cb: (_res: unknown) => void) =>
+            cb({
+                success: true,
+                message: '',
+                data: opt.url === 'general-information/'
+                    ? { ...FULL_GENERAL_INFORMATION, personalSkills: [{ name: 'Teamwork' }], foreignLanguages: [{ language: 'English', level: 'basic' }] }
+                    : [],
+            }),
+        )
+        const { result } = withUseProfileCompletion()
+        await flushPromises()
+
+        expect(handleBaseMock.mock.calls.some(([opt]) => opt.url === 'general-information/')).toBe(true)
+        expect(result.percent.value).toBe(30)
+        expect(candidateStore().getGeneralInformation.positionDesired).toBe('Dev')
+    })
+
     it('every section links to its real dashboard route', async () => {
         const { result } = withUseProfileCompletion()
         await flushPromises()

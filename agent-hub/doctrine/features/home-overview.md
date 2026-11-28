@@ -1,6 +1,7 @@
 # Home overview
 
 - Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/home-overview-spec.md`; Behavior #4 (#440, 10 sections) verified by `evidence/verifier/2026-11-24/issue-440-cv-skills-languages-seal.md`
+- Last verified: 41ea24e
 - Source: backfill from code
 - Issues: #59, #403, #440, #455
 - Anchors: `src/pages/home/PageHome.vue`, `src/composables/useProfileCompletion.ts`, `src/composables/useVisitStats.ts`, `src/composables/useVisits.ts`, `src/components/visits/VisitChart.vue`

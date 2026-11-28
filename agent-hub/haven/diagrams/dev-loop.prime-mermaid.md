@@ -75,7 +75,6 @@ flowchart TD
 | Node | State | Notes |
 |---|---|---|
 | `issue-122-ai-cv-suggestions-pending` | PENDING | Operator (2026-10-05): "#122 chuyển status thành PENDING". Deliberately deferred, not started — waiting on an owner decision: shared app AI key vs BYOK (BYOK needs new two-way encryption on the backend; only `bcrypt` exists today) + a consent checkbox for sending CV data out. Checked: no branch/PR/evidence for #122; backend `origin/staging` (`f05930a`) has no AI-provider code. Partly overlapped by #159's non-AI JD keyword match. GitHub label `status: pending` applied. Evidence: `evidence/implementer/2026-10-05-issue-122-158-status-rows.md`. |
-| `issue-457-import-size-limit` | SEALED | 2026-11-21 — archived, see dev-loop-archive.md. Evidence: evidence/verifier/2026-11-21/issue-457-import-size-limit-seal.md |
 | `issue-437-438-skills-stale-names` | SEALED | 2026-11-21 — archived, see dev-loop-archive.md. Evidence: evidence/verifier/2026-11-21/issue-437-438-skills-stale-names-seal.md |
 | `issue-401-project-type-experience` | SEALED | 2026-11-21 — archived, see dev-loop-archive.md. Evidence: evidence/verifier/2026-11-21/issue-401-project-type-experience-seal.md |
 | `issue-403-salary-range` | SEALED | 2026-11-21 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-21/issue-403-salary-range-seal.md` |
@@ -95,3 +94,4 @@ flowchart TD
 | `issue-423-application-accepted-status` | SEALED | 2026-11-25 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-25/issue-423-application-accepted-status-seal.md` |
 | `issue-448-owner-export-profile` | SEALED | 2026-11-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-26/issue-448-owner-export-profile-seal.md` |
 | `issue-527-536-skills-page-ux` | SEALED | 2026-11-26 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-26/issue-527-536-skills-page-ux-seal.md` |
+| `issue-525-home-general-info-fetch` | SEALED | 2026-11-28 — archived, see dev-loop-archive.md. Evidence: `evidence/verifier/2026-11-28/issue-525-home-general-info-fetch-seal.md` |

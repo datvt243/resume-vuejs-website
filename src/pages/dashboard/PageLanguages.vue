@@ -66,7 +66,13 @@ const levelText = level => {
 
     <VeeFormGeneralInformationUpdate v-if="isEditing" key="foreignLanguages" :model-value="generalInformation" :heading="$t('generalInfo.foreignLanguages')"
       :description="$t('generalInfo.foreignLanguagesDescription')" :field-key="'foreignLanguages'" :has-button-add="true"
-      :fields="foreignLanguageFields" />
+      :fields="foreignLanguageFields" :add-text="$t('generalInfo.addLanguage')">
+      <template #empty="{ add }">
+        <NoData :title="$t('generalInfo.languagesEmpty')" :description="$t('generalInfo.foreignLanguagesDescription')">
+          <Button icon="fa-solid fa-plus" action="add" :text="$t('generalInfo.addLanguage')" @click="add()" />
+        </NoData>
+      </template>
+    </VeeFormGeneralInformationUpdate>
 
     <ul v-else-if="languages.length" class="divide-y divide-line rounded-md border border-line bg-surface">
       <li v-for="(item, i) in languages" :key="`${item.language}_${i}`" class="flex items-center justify-between gap-3 px-4 py-3">
@@ -76,8 +82,8 @@ const levelText = level => {
     </ul>
 
     <LoadingGate v-else :error="loadError" @retry="getData">
-      <NoData :description="$t('generalInfo.foreignLanguagesDescription')">
-        <Button icon="fa-solid fa-plus" action="add" :text="$t('common.add')" @click="isEditing = true" />
+      <NoData :title="$t('generalInfo.languagesEmpty')" :description="$t('generalInfo.foreignLanguagesDescription')">
+        <Button icon="fa-solid fa-plus" action="add" :text="$t('generalInfo.addLanguage')" @click="isEditing = true" />
       </NoData>
     </LoadingGate>
   </div>

@@ -5,10 +5,12 @@
  */
 
 import Modal from '@/components/Modal.vue'
-import { ref, computed, defineProps } from 'vue'
+import { ref, computed, defineProps, defineEmits } from 'vue'
 
 const props = defineProps({
     title: { type: String, default: '' },
+    // visible label of the open-picker button
+    addText: { type: String, default: '' },
     description: { type: String, default: '' },
     pickTitle: { type: String, default: '' },
     // stored picks, [{ name }]
@@ -21,6 +23,8 @@ const props = defineProps({
     // saves the new [{ name }] list, resolves true on success
     save: { type: Function, required: true },
 })
+// no professional skills to pick from: the page takes the user to where they are added
+const emit = defineEmits(['need-skills'])
 
 const refModal = ref()
 const selected = ref([])
@@ -43,6 +47,11 @@ function toggle(name) {
     selected.value = selected.value.includes(name) ? selected.value.filter(n => n !== name) : [...selected.value, name]
 }
 
+function needSkills() {
+    refModal.value?.hide()
+    emit('need-skills')
+}
+
 async function submit() {
     if (await props.save(selected.value.map(name => ({ name })))) refModal.value?.hide()
 }
@@ -51,7 +60,7 @@ async function submit() {
 <template>
     <FormSection :title="title" :description="description" :card="false">
         <template #actions>
-            <Button icon="fa-solid fa-plus" action="add" :text="$t('common.add')" size="sm" @click="open()" />
+            <Button icon="fa-solid fa-plus" action="add" :text="addText" size="sm" @click="open()" />
         </template>
 
         <ul v-if="modelValue.length" class="m-0 flex list-none flex-wrap gap-2 p-0">
@@ -69,11 +78,16 @@ async function submit() {
                 </span>
             </li>
         </ul>
-        <NoData v-else />
+        <NoData v-else :title="$t('generalInfo.pickedEmpty')" :description="$t(skills.length ? 'generalInfo.pickedEmptyText' : 'generalInfo.pickNeedsSkills')">
+            <Button v-if="!skills.length" icon="fa-solid fa-plus" action="add" :text="$t('generalInfo.addProfessionalSkill')" @click="needSkills()" />
+        </NoData>
     </FormSection>
 
     <Modal ref="refModal" :title="pickTitle">
-        <div class="space-y-3">
+        <NoData v-if="!skills.length" :title="$t('generalInfo.professionalSkillsEmpty')" :description="$t('generalInfo.pickNeedsSkills')">
+            <Button icon="fa-solid fa-plus" action="add" :text="$t('generalInfo.addProfessionalSkill')" @click="needSkills()" />
+        </NoData>
+        <div v-else class="space-y-3">
             <div class="flex flex-wrap gap-2">
                 <input v-model="search" type="search" class="form-control min-w-0 flex-1" :placeholder="$t('generalInfo.searchSkill')" :aria-label="$t('generalInfo.searchSkill')" />
                 <select v-model="group" class="form-select w-auto" :aria-label="$t('generalInfo.group')">
@@ -100,7 +114,7 @@ async function submit() {
             <NoData v-else />
         </div>
         <template #footer>
-            <Button :text="$t('common.save')" @click="submit()" />
+            <Button v-if="skills.length" :text="$t('common.save')" @click="submit()" />
         </template>
     </Modal>
 </template>

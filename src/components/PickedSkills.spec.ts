@@ -20,12 +20,12 @@ const skills = [
     { name: 'Node', group: 'Backend' },
 ]
 
-function mountComponent(save = vi.fn().mockResolvedValue(true), modelValue = [{ name: 'Vue' }], max = 2) {
+function mountComponent(save = vi.fn().mockResolvedValue(true), modelValue = [{ name: 'Vue' }], max = 2, list = skills) {
     return mount(PickedSkills, {
-        props: { modelValue, skills, groups: ['Frontend', 'Backend'], max, save },
+        props: { modelValue, skills: list, groups: ['Frontend', 'Backend'], max, save, addText: 'pick' },
         global: {
             components: { Button, FormSection },
-            stubs: { Modal: ModalStub, NoData: { template: '<p class="no-data" />' }, FontAwesomeIcon: true },
+            stubs: { Modal: ModalStub, NoData: { template: '<div class="no-data"><slot /></div>' }, FontAwesomeIcon: true },
             mocks: { $t: (key: string) => key },
         },
     })
@@ -45,7 +45,7 @@ describe('PickedSkills picker', () => {
     it('starts from the saved selection, caps it at max and saves the names', async () => {
         const save = vi.fn().mockResolvedValue(true)
         const wrapper = mountComponent(save)
-        await wrapper.findAll('button').find(b => b.text() === 'common.add')!.trigger('click')
+        await wrapper.findAll('button').find(b => b.text() === 'pick')!.trigger('click')
 
         const boxes = () => wrapper.findAll('input[type=checkbox]')
         expect(boxes().map(b => (b.element as HTMLInputElement).checked)).toEqual([true, false, false])
@@ -85,9 +85,23 @@ describe('PickedSkills picker', () => {
 
     it('has no limit when max is 0', async () => {
         const wrapper = mountComponent(vi.fn(), [{ name: 'Vue' }, { name: 'React' }], 0)
-        await wrapper.findAll('button').find(b => b.text() === 'common.add')!.trigger('click')
+        await wrapper.findAll('button').find(b => b.text() === 'pick')!.trigger('click')
         await wrapper.findAll('input[type=checkbox]')[2].trigger('change')
         expect(wrapper.findAll('input[type=checkbox]').some(b => (b.element as HTMLInputElement).disabled)).toBe(false)
         expect(wrapper.find('[aria-live]').text()).toBe('generalInfo.selectedCount')
+    })
+
+    it('#527: with no professional skills the picker says so and its button leads to them', async () => {
+        hide.mockClear()
+        const wrapper = mountComponent(vi.fn(), [], 5, [])
+        expect(wrapper.find('input[type=search]').exists()).toBe(false)
+        expect(wrapper.findAll('button').some(b => b.text() === 'common.save')).toBe(false)
+
+        const ctas = wrapper.findAll('button').filter(b => b.text() === 'generalInfo.addProfessionalSkill')
+        // one in the page's empty state, one in the picker
+        expect(ctas).toHaveLength(2)
+        await ctas[1].trigger('click')
+        expect(hide).toHaveBeenCalled()
+        expect(wrapper.emitted('need-skills')).toHaveLength(1)
     })
 })

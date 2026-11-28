@@ -1,12 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ref } from 'vue'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import PageSkills from './PageSkills.vue'
 import { i18n } from '@/i18n'
 import { candidateStore } from '@/stores/candidate'
 
-vi.mock('vue-router', () => ({ useRoute: () => ({ query: {} }), useRouter: () => ({ replace: vi.fn() }) }))
+const replace = vi.hoisted(() => vi.fn())
+vi.mock('vue-router', () => ({ useRoute: () => ({ query: {} }), useRouter: () => ({ replace }) }))
 const doc = vi.hoisted(() => ({ value: {} as Record<string, unknown> }))
 const baseDoc = () => ({ _id: 'g1', professionalSkills: [{ name: 'Vue', group: 'FE' }], mainSkills: [] })
 vi.mock('@/composables/useCandidate', () => ({
@@ -27,7 +28,7 @@ function freshStore(id = 'g1') {
     candidateStore().setCandidate({ generalInformation: { _id: id } })
 }
 
-const PickedStub = { name: 'PickedSkills', props: ['title', 'modelValue', 'skills', 'groups', 'max', 'save'], template: '<div />' }
+const PickedStub = { name: 'PickedSkills', props: ['title', 'addText', 'modelValue', 'skills', 'groups', 'max', 'save'], template: '<div />' }
 
 function mountPage() {
     return mount(PageSkills, {
@@ -110,6 +111,25 @@ describe('PageSkills — empty professional list', () => {
         const wrapper = mount(PageSkills, { global: { plugins: [i18n], stubs: listStubs } })
         expect(wrapper.find('.no-data').exists()).toBe(false)
         expect(wrapper.find('h3').text()).toBe('FE')
+    })
+})
+
+describe('PageSkills — main/familiar skills need professional skills first (#527)', () => {
+    it('labels each picker button, and need-skills opens the Professional tab with the group input focused', async () => {
+        doc.value = baseDoc()
+        freshStore()
+        const input = document.createElement('input')
+        input.id = 'skill-group-input'
+        document.body.appendChild(input)
+        const wrapper = mountPage()
+        const [main, familiar] = wrapper.findAllComponents(PickedStub)
+        expect([main.props('addText'), familiar.props('addText')]).toEqual(['Chọn kỹ năng chính', 'Chọn kỹ năng quen thuộc'])
+
+        main.vm.$emit('need-skills')
+        await flushPromises()
+        expect(replace).toHaveBeenCalledWith({ query: { tab: 'professional' } })
+        expect(document.activeElement).toBe(input)
+        input.remove()
     })
 })
 

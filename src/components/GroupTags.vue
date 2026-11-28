@@ -17,6 +17,8 @@ const tagClass = badgeClass()
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
     title: { type: String, default: 'Title' },
+    // ties the title to the input as its label
+    inputId: { type: String, required: true },
     handleAction: { type: Function, default: () => {} },
     modelValue: { type: Array, default: () => [] },
 })
@@ -50,10 +52,10 @@ async function removeTag(_tag, index) {
 <template>
     <div>
         <div class="mb-3 flex flex-wrap items-center gap-3">
-            <p class="m-0 text-sm font-medium text-fg">{{ props.title }}</p>
+            <label :for="props.inputId" class="m-0 text-sm font-medium text-fg">{{ props.title }}</label>
             <div class="m-0">
                 <div class="input-group input-group-sm mb-0">
-                    <input type="text" class="form-control" :placeholder="t('form.newTag')" v-model="tag" />
+                    <input :id="props.inputId" type="text" class="form-control" :placeholder="t('form.newTag')" v-model="tag" />
                     <button :class="addClass" type="button" :aria-label="t('form.addTag')" @click="addTag()">
                         <FontAwesomeIcon icon="fa-solid fa-plus" />
                     </button>

@@ -20,6 +20,7 @@ import Swal from 'sweetalert2'
 import { groupSkills } from '@/utilities/index'
 
 const _mesRequired = 'validation.required'
+const GROUP_INPUT_ID = 'skill-group-input'
 // the API rejects more than this many main skills
 const MAIN_SKILLS_MAX = 5
 const candidate = candidateStore()
@@ -45,6 +46,13 @@ const tab = computed({
     get: () => (route.query.tab === 'personal' ? 'personal' : 'professional'),
     set: value => router.replace({ query: { ...route.query, tab: value } }),
 })
+
+// main/familiar skills are picked from professional skills: an account without any is sent to the group input
+async function goToSkillGroups() {
+    await router.replace({ query: { ...route.query, tab: 'professional' } })
+    await nextTick()
+    document.getElementById(GROUP_INPUT_ID)?.focus()
+}
 
 /**
  * skill groups
@@ -209,6 +217,7 @@ const personalSkillFields = [
 
         <PickedSkills
             :title="$t('generalInfo.mainSkills')"
+            :add-text="$t('generalInfo.mainSkillsPick')"
             :description="$t('generalInfo.mainSkillsDescription', { max: MAIN_SKILLS_MAX })"
             :pick-title="$t('generalInfo.mainSkillsPick')"
             :model-value="info.mainSkills || []"
@@ -216,15 +225,18 @@ const personalSkillFields = [
             :groups="groupNames"
             :max="MAIN_SKILLS_MAX"
             :save="list => savePicked('mainSkills', list)"
+            @need-skills="goToSkillGroups"
         />
         <PickedSkills
             :title="$t('generalInfo.familiarSkills')"
+            :add-text="$t('generalInfo.familiarSkillsPick')"
             :description="$t('generalInfo.familiarSkillsDescription')"
             :pick-title="$t('generalInfo.familiarSkillsPick')"
             :model-value="info.familiarSkills || []"
             :skills="skills"
             :groups="groupNames"
             :save="list => savePicked('familiarSkills', list)"
+            @need-skills="goToSkillGroups"
         />
 
         <Tabs v-model="tab" :tabs="TABS" :aria-label="$t('nav.skills')">
@@ -233,6 +245,8 @@ const personalSkillFields = [
                     key="professionalSkills"
                     :model-value="generalInformation"
                     :heading="$t('generalInfo.professionalSkills')"
+                    in-tab
+                    :add-text="$t('generalInfo.addProfessionalSkill')"
                     :description="$t('generalInfo.professionalSkillsDescription')"
                     field-key="professionalSkills"
                     has-button-add
@@ -240,7 +254,7 @@ const personalSkillFields = [
                     :sync-payload="syncPicked"
                 >
                     <template #group>
-                        <GroupTags :title="$t('generalInfo.skillGroups')" v-model="skillsGroup" :handle-action="handleUpdateGroup" />
+                        <GroupTags :title="$t('generalInfo.skillGroups')" :input-id="GROUP_INPUT_ID" v-model="skillsGroup" :handle-action="handleUpdateGroup" />
                     </template>
                     <template #list="{ items, remove, add, edit }">
                         <div v-if="items.length || skillsGroup.length" class="divide-y divide-line rounded-md border border-line bg-surface px-4">
@@ -248,7 +262,7 @@ const personalSkillFields = [
                                 <div class="mb-2 flex flex-wrap items-center gap-2">
                                     <h3 class="m-0 text-md font-semibold text-fg">{{ group.name ?? $t('generalInfo.ungrouped') }}</h3>
                                     <template v-if="group.name">
-                                        <Button :text="$t('common.add')" icon="fa-solid fa-plus" action="add" type="ghost" size="sm" :aria-label="$t('generalInfo.addSkillToGroup', { name: group.name })" @click="addToGroup(group.name, add)" />
+                                        <Button :text="$t('generalInfo.addSkill')" icon="fa-solid fa-plus" action="add" type="ghost" size="sm" :aria-label="$t('generalInfo.addSkillToGroup', { name: group.name })" @click="addToGroup(group.name, add)" />
                                         <Button icon="fa-solid fa-square-pen" type="ghost" action="update" size="sm" class="ms-auto" :aria-label="$t('generalInfo.renameGroup', { name: group.name })" @click="renameGroup(group)" />
                                         <Button icon="fa-solid fa-trash" type="ghost" action="delete" size="sm" :aria-label="$t('generalInfo.deleteGroup', { name: group.name })" @click="deleteGroup(group)" />
                                     </template>
@@ -278,7 +292,9 @@ const personalSkillFields = [
                                 </ul>
                             </section>
                         </div>
-                        <NoData v-else />
+                        <NoData v-else :title="$t('generalInfo.professionalSkillsEmpty')" :description="$t('generalInfo.professionalSkillsEmptyText')">
+                            <Button icon="fa-solid fa-plus" action="add" :text="$t('generalInfo.addSkillGroup')" @click="goToSkillGroups()" />
+                        </NoData>
                     </template>
                 </VeeFormGeneralInformationUpdate>
             </template>
@@ -288,10 +304,18 @@ const personalSkillFields = [
                     :model-value="generalInformation"
                     :heading="$t('generalInfo.personalSkills')"
                     :description="$t('generalInfo.personalSkillsDescription')"
+                    in-tab
+                    :add-text="$t('generalInfo.addPersonalSkill')"
                     field-key="personalSkills"
                     has-button-add
                     :fields="personalSkillFields"
-                />
+                >
+                    <template #empty="{ add }">
+                        <NoData :title="$t('generalInfo.personalSkillsEmpty')" :description="$t('generalInfo.personalSkillsDescription')">
+                            <Button icon="fa-solid fa-plus" action="add" :text="$t('generalInfo.addPersonalSkill')" @click="add()" />
+                        </NoData>
+                    </template>
+                </VeeFormGeneralInformationUpdate>
             </template>
         </Tabs>
     </div>

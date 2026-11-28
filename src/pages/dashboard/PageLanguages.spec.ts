@@ -48,7 +48,7 @@ describe('PageLanguages — view / edit', () => {
         expect(wrapper.find('.no-data').exists()).toBe(true)
         expect(wrapper.findAll('button').some(b => b.text() === 'Sửa')).toBe(false)
 
-        await button(wrapper, 'Thêm').trigger('click')
+        await button(wrapper, 'Thêm ngoại ngữ').trigger('click')
         expect(wrapper.find('.edit-form').exists()).toBe(true)
     })
 })

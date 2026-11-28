@@ -1,6 +1,7 @@
 # Skills
 
 - Status: verified — confirmed by operator 2026-11-07, see `evidence/analyst/2026-11-07/cv-skills-spec.md`
+- Last verified: 82fedcf
 - Source: backfill from code
 - Issues: #437, #438, #439, #440, #489
 - Anchors: `src/pages/dashboard/PageSkills.vue`, `src/components/PickedSkills.vue`, `src/components/GroupTags.vue`, `src/components/veevalidate/VeeFormGeneralInformationUpdate.vue`, `src/utilities/index.ts` (`groupSkills`)

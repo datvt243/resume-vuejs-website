@@ -22,6 +22,10 @@ const candidate = inject('candidate')
 
 const props = defineProps({
     heading: { type: String, default: '' },
+    // the surrounding tab already shows `heading`, so the section doesn't repeat it
+    inTab: { type: Boolean, default: false },
+    // visible label of the add button
+    addText: { type: String, default: '' },
     description: { type: String, default: '' },
     fieldKey: { type: String, default: '' },
     fields: { type: Array, default: () => [] },
@@ -163,16 +167,17 @@ async function handleUpdate(values, action = 'create') {
 </script>
 
 <template>
-    <FormSection :title="props.heading" :description="props.description" :card="false">
+    <FormSection :title="props.inTab ? '' : props.heading" :description="props.description" :card="false">
         <template v-if="props.hasButtonAdd" #actions>
-            <Button icon="fa-solid fa-plus" action="add" :text="t('common.add')" size="sm" @click="showModalCreateDoc()" />
+            <Button icon="fa-solid fa-plus" action="add" :text="props.addText || t('common.add')" size="sm" @click="showModalCreateDoc()" />
         </template>
 
         <div class="space-y-4">
             <slot name="group"></slot>
 
             <!-- `list` replaces the table; `remove(index)` runs the same confirm + patch as the row delete, `add()` / `edit(index)` open the modal -->
-            <slot name="list" :items="generalInformationField" :remove="index => handleUpdate({ index }, 'delete')" :add="showModalCreateDoc" :edit="showModalEditDoc">
+            <slot v-if="!generalInformationField.length && $slots.empty" name="empty" :add="showModalCreateDoc"></slot>
+            <slot v-else name="list" :items="generalInformationField" :remove="index => handleUpdate({ index }, 'delete')" :add="showModalCreateDoc" :edit="showModalEditDoc">
                 <TableDefault
                     :model-value="generalInformationField"
                     :settings="props.fields"

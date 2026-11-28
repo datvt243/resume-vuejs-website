@@ -58,6 +58,8 @@ export const useProfileCompletion = () => {
     const { awards } = useCandidate({ field: 'awards' })
     const { certificates } = useCandidate({ field: 'certificates' })
     const { references } = useCandidate({ field: 'references' })
+    // PageHome reads the general-information document (status, position, skills, languages) from the store
+    useCandidate({ field: 'generalInformation', collection: 'general-information' })
 
     function objectSection(label: string, to: string, model: modelItem[], data: Record<string, any>) {
         const requiredFields = model.filter(isRequiredField)
